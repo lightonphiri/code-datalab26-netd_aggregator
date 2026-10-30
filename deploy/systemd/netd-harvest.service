@@ -1,0 +1,9 @@
+[Unit]
+Description=NETD harvest + process + index (all sources)
+After=network-online.target netd-solr.service
+
+[Service]
+Type=oneshot
+User=netd
+WorkingDirectory=/opt/netd/harvester
+ExecStart=/opt/netd/harvester/.venv/bin/python -m netd.cli run

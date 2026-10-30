@@ -1,0 +1,14 @@
+# secrets / local
+access/
+*.sqlite3
+*.log
+harvester/.venv/
+harvester/**/__pycache__/
+# Rails
+portal/log/*
+portal/tmp/*
+portal/storage/*
+portal/public/assets/
+portal/vendor/bundle/
+portal/.bundle/
+portal/config/master.key

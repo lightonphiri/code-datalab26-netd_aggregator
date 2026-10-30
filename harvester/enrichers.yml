@@ -1,0 +1,9 @@
+# Extra enrichers run after the built-in rules (whitespace, title case, person names,
+# unit case). Add DataLab ML models here as "package.module:function".
+# Each function takes a record dict and returns it; see netd/enrich.py for the contract.
+enrichers: []
+#  - datalab_models.titles:normalise
+#  - datalab_models.supervisors:extract_from_pdf
+
+# Values whose record["confidence"][field] is below this are searchable but not faceted.
+min_confidence: 0.6

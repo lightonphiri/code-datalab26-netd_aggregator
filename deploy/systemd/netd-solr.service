@@ -1,0 +1,17 @@
+[Unit]
+Description=NETD Solr 9 (127.0.0.1:8983)
+After=network.target
+
+[Service]
+User=netd
+Environment=SOLR_HEAP=512m
+Environment=SOLR_JETTY_HOST=127.0.0.1
+Environment=SOLR_HOME=/opt/netd/solr-home
+Environment=SOLR_LOGS_DIR=/opt/netd/logs/solr
+Environment=SOLR_PID_DIR=/opt/netd/solr-home
+ExecStart=/opt/netd/solr-dist/bin/solr start -f -p 8983
+Restart=on-failure
+LimitNOFILE=65000
+
+[Install]
+WantedBy=multi-user.target

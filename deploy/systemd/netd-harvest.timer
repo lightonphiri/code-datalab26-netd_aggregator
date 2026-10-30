@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily NETD harvest
+
+[Timer]
+OnCalendar=*-*-* 02:30:00
+RandomizedDelaySec=20min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

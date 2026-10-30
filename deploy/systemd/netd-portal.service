@@ -1,0 +1,20 @@
+[Unit]
+Description=NETD Blacklight portal (Puma 127.0.0.1:3010, served at /beta)
+After=network.target netd-solr.service
+
+[Service]
+User=netd
+WorkingDirectory=/opt/netd/portal
+Environment=PATH=/opt/netd/ruby/bin:/usr/bin:/bin
+Environment=RAILS_ENV=production
+Environment=RAILS_RELATIVE_URL_ROOT=/beta
+Environment=SOLR_URL=http://127.0.0.1:8983/solr/netd
+Environment=RAILS_MAX_THREADS=3
+Environment=WEB_CONCURRENCY=0
+Environment=BUNDLE_DEPLOYMENT=1
+EnvironmentFile=/opt/netd/portal.env
+ExecStart=/opt/netd/ruby/bin/bundle exec puma -b tcp://127.0.0.1:3010 -e production
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,27 @@
+# Source registry: one entry per Higher Education Institution (HEI) repository.
+# The harvester requests the first metadata format in `formats` that the source offers.
+# `sets` restricts harvesting to ETD collections/communities (OAI-PMH setSpec values).
+# `ignore_set_names` are community/collection names that are containers, not
+# faculties/departments, so they are not used when deriving Faculty/Department.
+
+sources:
+  - id: unza
+    name: The University of Zambia
+    short_name: UNZA
+    base_url: https://rims.unza.ac.zm/server/oai/request
+    formats: [dim, etdms, oai_dc]
+    sets: [com_123456789_18, col_123456789_6021]
+    ignore_set_names: ["Theses and Dissertations", "Medical Theses and Dissertations",
+                       "African Digital Health Library (ADHL) - Zambia"]
+    # RIMS ETD collections are the Schools (e.g. "Natural Sciences"), so map them to Faculty.
+    collections_are: faculty
+
+  - id: unilus
+    name: University of Lusaka
+    short_name: UNILUS
+    base_url: https://research.unilus.ac.zm/server/oai/request
+    formats: [dim, etdms, oai_dc]
+    sets: [com_123456789_41]
+    ignore_set_names: ["Theses and Dissertations Collection", "SCHOOL OF POSTGRADUATE STUDIES",
+                       "MASTER'S THESES", "PHD/DBA THESES"]
+    # UNILUS ETD collections are degree levels, not units; Faculty/Department need text/PDF extraction.
