@@ -183,7 +183,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | NFR-6 | Maintainability | Adding a new DSpace source shall need only a registry entry. | M |
 | NFR-7 | Portability | Installation scripted (`deploy/install-server.sh`, `deploy/deploy.sh`). | M |
 | NFR-8 | Usability | Responsive layout; WCAG 2.1 AA colour contrast for badges and links. | S |
-| NFR-9 | Security | HTTPS for netd.ac.zm with a valid certificate (currently missing; the server presents the emi.org.zm certificate). | S |
+| NFR-9 | Security | HTTPS for netd.ac.zm with a valid certificate (in place since October 30, 2026; Let's Encrypt, auto-renewing). | S |
 | NFR-10 | Politeness | At most one concurrent request per source. | M |
 
 ### 3.4 Data requirements

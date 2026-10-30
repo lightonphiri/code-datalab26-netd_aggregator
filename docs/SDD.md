@@ -339,5 +339,5 @@ flowchart TB
 
 ## 10. Known limitations (v0.1)
 - Supervisor and Department are empty for both sample sources: the IRs don't expose them. This is the first target for ML/PDF extraction.
-- No HTTPS certificate for netd.ac.zm yet (NFR-9).
+- HTTPS for netd.ac.zm is in place (NFR-9); HTTP is not yet redirected to HTTPS, so the live portal behaves as before.
 - No OAI-PMH provider yet (EI-4); no deduplication (FR-19).
