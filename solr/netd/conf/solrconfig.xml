@@ -41,6 +41,7 @@
           subject_tsim^2
           faculty_tsim
           department_tsim
+          discipline_tsim
           abstract_tesim
         </str>
         <str name="pf">

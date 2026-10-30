@@ -11,7 +11,7 @@ import re
 
 from lxml import etree
 
-FIELDS = ["title", "author", "supervisor", "subject", "faculty", "department",
+FIELDS = ["title", "author", "supervisor", "subject", "faculty", "department", "discipline",
           "degree", "degree_level", "year", "abstract", "url", "language", "type"]
 
 
@@ -60,6 +60,7 @@ MAP = {
     "faculty": ["thesis.degree.faculty", "dc.description.faculty", "local.faculty", "dc.contributor.faculty"],
     "department": ["thesis.degree.department", "dc.description.department", "local.department",
                    "dc.contributor.department"],
+    "discipline": ["thesis.degree.discipline", "dc.description.discipline"],
     "degree": ["thesis.degree.name", "dc.description.degree", "dc.type.degree"],
     "degree_level": ["thesis.degree.level"],
     "year": ["dc.date.issued", "dc.date"],
@@ -76,6 +77,30 @@ DEGREE_PAT = [
 ]
 FAC_PAT = re.compile(r"\b(school|faculty|college|institute)\s+of\b", re.I)
 DEPT_TXT = re.compile(r"department of ([A-Z][\w ,&\-]+?)(?:[.,;]| in | at | of the|$)", re.I)
+
+
+DEGREE_TXT = re.compile(r"\b((?:master|doctor|bachelor)s?\s+of\s+[a-z ]+?)(?:\s+in\s+([a-z][a-z ,&()'\-]+?))?\s*[.;]?$", re.I)
+PHD_TXT = re.compile(r"^(?:thesis\s+(?:of|for)\s+)?ph\.?\s?d\.?\s+(?:in\s+)?([a-z][a-z ,&()'\-]+?)\s*\.?$", re.I)
+
+
+def _tc(t):
+    small = {"of", "in", "and", "the", "for", "a", "an", "on", "to", "with"}
+    w = t.strip().lower().split()
+    return " ".join(x if (i and x in small) else x[:1].upper() + x[1:] for i, x in enumerate(w))
+
+
+def degree_from_text(v):
+    """'Thesis of Doctor of Philosophy in Education and Development.' ->
+    ('Doctor of Philosophy', 'Education and Development'); 'PHD GENDER' -> ('Doctor of Philosophy', 'Gender')."""
+    v = v.strip()
+    m = PHD_TXT.search(v)
+    if m:
+        return "Doctor of Philosophy", _tc(m.group(1))
+    m = DEGREE_TXT.search(v)
+    if m:
+        deg = re.sub(r"^(master|doctor|bachelor)s\b", r"\1", m.group(1).strip(), flags=re.I)
+        return _tc(deg), (_tc(m.group(2)) if m.group(2) else None)
+    return None, None
 
 
 def record_id(source, oai_id):
@@ -153,6 +178,19 @@ def to_canonical(row, src, set_names):
                         break
                 if rec.get("department"):
                     break
+
+    # Degree name and discipline from free-text descriptions (e.g. UNZA "Master of Education in ...")
+    if not rec.get("degree") or not rec.get("discipline"):
+        for v in flat.get("dc.description", []):
+            deg, disc = degree_from_text(v)
+            if deg and not rec.get("degree"):
+                rec["degree"] = [deg]
+                rec["provenance"]["degree"] = "text:dc.description"
+            if disc and not rec.get("discipline"):
+                rec["discipline"] = [disc]
+                rec["provenance"]["discipline"] = "text:dc.description"
+            if deg:
+                break
 
     # Degree level from degree name / type / description text
     if not rec.get("degree_level"):

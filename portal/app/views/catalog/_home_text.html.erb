@@ -1,0 +1,21 @@
+<%# Landing page: introduction + one card per participating institution (InvenioRDM "communities" equivalent) %>
+<% inst = @response&.aggregations&.dig('institution_ssim')&.items || [] %>
+<% total = @response&.total || 0 %>
+<div class="netd-home">
+  <h1 class="h3">Theses and dissertations from Zambian universities, in one place</h1>
+  <p class="lead">The Zambia National ETD Portal brings together metadata for <strong><%= number_with_delimiter(total) %></strong>
+    electronic theses and dissertations harvested from institutional repositories. Search above, or start with an institution.</p>
+  <div class="row g-3 mt-1">
+    <% inst.each do |item| %>
+      <div class="col-md-6">
+        <%= link_to search_action_path(f: { institution_ssim: [item.value] }), class: 'netd-inst-card' do %>
+          <span class="netd-inst-name"><%= item.value %></span>
+          <span class="netd-inst-count"><%= number_with_delimiter(item.hits) %> ETDs</span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  <p class="mt-4"><%= link_to 'Browse all ETDs →', search_action_path(search_field: 'all_fields', q: ''), class: 'btn btn-primary' %></p>
+  <p class="text-muted small">This is a beta of the next-generation portal. Supervisor and Department are not yet supplied by the source
+    repositories; DataLab is working on automatic extraction to fill these gaps.</p>
+</div>

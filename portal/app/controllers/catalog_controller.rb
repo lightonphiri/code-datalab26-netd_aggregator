@@ -25,7 +25,8 @@ class CatalogController < ApplicationController
     config.add_show_field 'faculty_tsim', label: 'Faculty / School', link_to_facet: 'faculty_ssim'
     config.add_show_field 'department_tsim', label: 'Department', link_to_facet: 'department_ssim'
     config.add_show_field 'degree_level_ssim', label: 'Degree level', link_to_facet: true
-    config.add_show_field 'degree_ssim', label: 'Degree'
+    config.add_show_field 'degree_ssim', label: 'Degree', link_to_facet: true
+    config.add_show_field 'discipline_tsim', label: 'Programme / Discipline', link_to_facet: 'discipline_ssim'
     config.add_show_field 'year_ssim', label: 'Year', link_to_facet: true
     config.add_show_field 'subject_tsim', label: 'Subjects', link_to_facet: 'subject_ssim', separator_options: { words_connector: '; ', last_word_connector: '; ', two_words_connector: '; ' }
     config.add_show_field 'language_ssim', label: 'Language'
@@ -36,6 +37,8 @@ class CatalogController < ApplicationController
     config.add_facet_field 'degree_level_ssim', label: 'Degree level', collapse: false
     config.add_facet_field 'faculty_ssim', label: 'Faculty / School', limit: 10
     config.add_facet_field 'department_ssim', label: 'Department', limit: 10
+    config.add_facet_field 'discipline_ssim', label: 'Programme / Discipline', limit: 10
+    config.add_facet_field 'degree_ssim', label: 'Degree', limit: 10
     config.add_facet_field 'supervisor_ssim', label: 'Supervisor', limit: 10
     config.add_facet_field 'subject_ssim', label: 'Subject', limit: 15
     config.add_facet_field 'year_ssim', label: 'Year', limit: 15, sort: 'index desc'

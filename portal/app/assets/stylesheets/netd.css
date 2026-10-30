@@ -49,3 +49,9 @@ footer.netd-footer { color: var(--netd-muted); font-size: .85rem; padding: 2rem 
 .navbar-search .advanced_search, .navbar-search a { color: #e6f2f5 !important; }
 footer.netd-footer { background: #0b4f6c; color: #d9e9ef; margin-top: 2rem; }
 footer.netd-footer a { color: #fff; }
+.netd-home { background: #fff; border: 1px solid #dde3ea; border-radius: 8px; padding: 1.5rem 1.75rem; }
+.netd-inst-card { display: flex; justify-content: space-between; align-items: center; border: 1px solid #dde3ea; border-radius: 8px;
+  padding: 1rem 1.25rem; text-decoration: none; color: var(--netd-ink); background: #f9fbfc; }
+.netd-inst-card:hover { border-color: var(--netd-primary); background: #eef6f9; }
+.netd-inst-name { font-weight: 700; color: var(--netd-primary); }
+.netd-inst-count { background: #e7eef5; color: var(--netd-primary); border-radius: 999px; padding: .15rem .65rem; font-size: .85rem; font-weight: 700; }

@@ -80,5 +80,5 @@ def run(rec, fns, min_confidence=0.0):
     for fn in fns:
         rec = fn(rec) or rec
     rec["facetable"] = {f: (rec.get("confidence", {}).get(f, 1.0) >= min_confidence)
-                        for f in ("supervisor", "faculty", "department", "subject")}
+                        for f in ("supervisor", "faculty", "department", "discipline", "subject")}
     return rec

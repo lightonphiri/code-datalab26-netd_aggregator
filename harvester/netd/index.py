@@ -10,6 +10,7 @@ SOLR = {
     "subject": ["subject_tsim", "subject_ssim"],
     "faculty": ["faculty_tsim", "faculty_ssim"],
     "department": ["department_tsim", "department_ssim"],
+    "discipline": ["discipline_tsim", "discipline_ssim"],
     "degree": ["degree_ssim"],
     "degree_level": ["degree_level_ssim"],
     "abstract": ["abstract_tesim"],
@@ -17,7 +18,7 @@ SOLR = {
     "language": ["language_ssim"],
     "type": ["type_ssim"],
 }
-FACETED = {"supervisor", "faculty", "department", "subject"}
+FACETED = {"supervisor", "faculty", "department", "discipline", "subject"}
 
 
 def to_solr(rec):

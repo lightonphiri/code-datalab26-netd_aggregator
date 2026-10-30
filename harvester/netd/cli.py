@@ -65,7 +65,8 @@ def do_index(store, srcs, solr):
 
 
 def do_report(store):
-    fields = ["title", "author", "supervisor", "subject", "faculty", "department", "degree_level", "year"]
+    fields = ["title", "author", "supervisor", "subject", "faculty", "department", "discipline", "degree",
+              "degree_level", "year"]
     stats = {}
     for rec in store.records():
         s = stats.setdefault(rec["institution_short"], {"n": 0, **{f: 0 for f in fields}})

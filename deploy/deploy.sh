@@ -22,6 +22,7 @@ sudo -u netd env PATH=$N/ruby/bin:$PATH RAILS_ENV=production RAILS_RELATIVE_URL_
 # systemd units
 cp $N/deploy/systemd/netd-* /etc/systemd/system/ && systemctl daemon-reload
 systemctl enable -q --now netd-solr.service netd-harvest.timer
+sleep 3; curl -s -o /dev/null "http://127.0.0.1:8983/solr/admin/cores?action=RELOAD&core=netd" || true  # pick up configset changes
 systemctl restart netd-portal.service; systemctl enable -q netd-portal.service
 
 # Apache: add /beta proxy to the netd.ac.zm vhost once
