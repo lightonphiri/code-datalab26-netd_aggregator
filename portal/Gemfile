@@ -33,3 +33,5 @@ end
 
 gem "blacklight", "~> 9.0"
 gem "json", "< 3.0"
+
+gem "rsolr", ">= 1.0.6", "< 3"

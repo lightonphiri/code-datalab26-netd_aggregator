@@ -78,6 +78,13 @@ FAC_PAT = re.compile(r"\b(school|faculty|college|institute)\s+of\b", re.I)
 DEPT_TXT = re.compile(r"department of ([A-Z][\w ,&\-]+?)(?:[.,;]| in | at | of the|$)", re.I)
 
 
+def record_id(source, oai_id):
+    """URL-safe record id: oai:rims.unza.ac.zm:123456789/9143 -> unza-123456789-9143
+    (no '/', ':' or '.', which break Apache/Rails routing)."""
+    local = oai_id.rsplit(":", 1)[-1]
+    return source + "-" + re.sub(r"[^A-Za-z0-9_-]+", "-", local).strip("-")
+
+
 def degree_level(texts):
     blob = " ".join(texts).lower()
     for pat, level in DEGREE_PAT:
@@ -91,7 +98,7 @@ def to_canonical(row, src, set_names):
     if row["deleted"]:
         return None
     flat = flatten(row["xml"], row["metadata_prefix"])
-    rec = {"id": "%s:%s" % (src["id"], row["oai_id"]), "source": src["id"],
+    rec = {"id": record_id(src["id"], row["oai_id"]), "source": src["id"],
            "institution": src["name"], "institution_short": src.get("short_name", src["id"].upper()),
            "oai_id": row["oai_id"], "datestamp": row["datestamp"], "provenance": {},
            "raw_fields": sorted(flat)}

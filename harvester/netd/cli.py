@@ -38,7 +38,7 @@ def do_process(store, srcs, ecfg):
         names = store.set_names(src["id"])
         for row in store.raw_records(src["id"]):
             rec = crosswalk.to_canonical(row, src, names)
-            rid = "%s:%s" % (src["id"], row["oai_id"])
+            rid = crosswalk.record_id(src["id"], row["oai_id"])
             if rec is None:
                 store.delete_record(rid)
                 continue
@@ -58,7 +58,7 @@ def do_index(store, srcs, solr):
                 batch = []
         if batch:
             index.post(solr, batch)
-        gone = [r["source"] + ":" + r["oai_id"] for r in store.raw_records(src["id"]) if r["deleted"]]
+        gone = [crosswalk.record_id(src["id"], r["oai_id"]) for r in store.raw_records(src["id"]) if r["deleted"]]
         index.delete_ids(solr, gone)
     index.post(solr, [], commit=True)
     print("indexed into %s" % solr)

@@ -14,7 +14,6 @@
     </updateLog>
   </updateHandler>
 
-  <lib dir="${solr.install.dir:../../../..}/modules/analysis-extras/lib" />
 
   <dataDir>${solr.data.dir:}</dataDir>
 

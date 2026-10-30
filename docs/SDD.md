@@ -109,7 +109,7 @@ flowchart LR
 | `netd.index` | Canonical → Solr document (Blacklight dynamic-field names) | FR-21 |
 | `netd.cli` | `harvest`, `process`, `index`, `run`, `report` | FR-9, FR-27 |
 | Blacklight portal | Search UI, facets, sorting, record pages, JSON API | FR-20–FR-24, EI-3, EI-5 |
-| Solr core `netd` | Blacklight's schema; `qf` tuned to ETD fields | NFR-1 |
+| Solr core `netd` | Blacklight schema (ICU analysers replaced by built-in ASCII folding, as the slim Solr distribution lacks the ICU module); `qf` tuned to ETD fields | NFR-1 |
 
 ---
 
@@ -134,7 +134,7 @@ erDiagram
     text set_name
   }
   RECORDS {
-    text id PK "source:oai_id"
+    text id PK "source-handle, e.g. unza-123456789-9143"
     text source
     text data "canonical JSON"
     real updated_at

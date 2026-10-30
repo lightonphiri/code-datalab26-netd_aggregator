@@ -36,3 +36,14 @@ body { font-family: "Lato", system-ui, sans-serif; color: var(--netd-ink); backg
 .blacklight-catalog-show h1, .blacklight-catalog-show .document-title-heading { font-size: 1.55rem; font-weight: 700; }
 .etd-source { margin-top: 1rem; }
 footer.netd-footer { color: var(--netd-muted); font-size: .85rem; padding: 2rem 0; text-align: center; }
+/* layout fixes: stack badges, title, metadata and snippet vertically */
+#documents article.document { display: block !important; }
+#documents article.document > * { width: auto; max-width: none; flex: none; }
+.etd-badge { vertical-align: middle; }
+/* brand: replace the Blacklight logo with the portal name */
+.navbar-brand.navbar-logo, a.navbar-logo { background-image: none !important; width: auto !important;
+  height: auto !important; text-indent: 0 !important; color: #fff !important; font-weight: 700; font-size: 1.25rem; }
+.navbar-brand.navbar-logo img, a.navbar-logo img { display: none; }
+.navbar-brand.navbar-logo::before, a.navbar-logo::before { content: "BETA"; background: #ffc107; color: #222; font-size: .65rem;
+  border-radius: 4px; padding: .1rem .35rem; margin-right: .5rem; vertical-align: middle; }
+.navbar-search .advanced_search, .navbar-search a { color: #e6f2f5 !important; }
