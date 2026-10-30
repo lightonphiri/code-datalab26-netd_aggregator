@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SRS, structured per ISO/IEC/IEEE 29148:2018 (supersedes IEEE 830-1998) |
-| Version | 0.1 (bare implementation, "beta") |
+| Version | 0.2 (beta) |
 | Date | October 30, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Repository | https://github.com/lightonphiri/code-datalab26-netd_aggregator |
@@ -146,7 +146,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | ID | Requirement | Pri |
 |---|---|---|
 | FR-11 | Raw metadata shall be stored unmodified; processing shall be re-runnable from the raw store without re-harvesting. | M |
-| FR-12 | A crosswalk shall map `dim`, `etdms` and `oai_dc` to canonical fields: title, author, supervisor, subject, faculty, department, degree, degree level, year, abstract, URL, language, type, institution. | M |
+| FR-12 | A crosswalk shall map `dim`, `etdms` and `oai_dc` to canonical fields: title, author, supervisor, subject, faculty, department, discipline, degree, degree level, year, abstract, URL, language, type, institution. | M |
 | FR-13 | Faculty/Department shall be derived from the set hierarchy where a source's collections represent units (per-source rule `collections_are`). | M |
 | FR-14 | Supervisor, Department and Degree shall be extracted from free-text fields and, later, from PDF front matter. | S (text) / C (PDF) |
 | FR-15 | Every canonical field value shall carry provenance (`harvested:`, `set:`, `text:`, `rule:`, `model:`). | M |
@@ -159,12 +159,12 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | ID | Requirement | Pri |
 |---|---|---|
 | FR-20 | Users shall search by keyword across all fields, or within Title, Author, Supervisor or Subject. | M |
-| FR-21 | Users shall filter by facets: Institution, Degree level, Faculty/School, Department, Supervisor, Subject, Year. | M |
+| FR-21 | Users shall filter by facets: Institution, Degree level, Faculty/School, Department, Programme/Discipline, Degree, Supervisor, Subject, Year. | M |
 | FR-22 | Users shall sort by relevance, newest, oldest and title. | M |
 | FR-23 | Result cards shall show degree-level, year and institution badges, title, author, supervisor (when present), and an abstract snippet. | M |
 | FR-24 | Record pages shall show all canonical fields, link facet values, and link to the record in the source IR. | M |
 | FR-25 | Hierarchical Faculty → Department browsing. | S |
-| FR-26 | Institution landing pages (InvenioRDM "communities" equivalent). | S |
+| FR-26 | Institution entry points (InvenioRDM "communities" equivalent): the home page lists each institution with its ETD count. Implemented in v0.2. | S |
 
 **Reporting**
 | ID | Requirement | Pri |
@@ -203,12 +203,16 @@ The canonical record is a JSON object stored in SQLite (`records.data`):
 | NFR-1, NFR-3 | Measurement (`curl -w`, `ps`) | Recorded at deployment |
 | NFR-4, NFR-5 | Inspection of systemd units | `deploy/systemd/*.service` |
 
-Baseline completeness (October 30, 2026, after v0.1 rules):
+Completeness (October 30, 2026, after v0.2 rules):
 
-| Institution | Records | Title | Author | Supervisor | Subject | Faculty | Department | Degree level | Year |
-|---|---|---|---|---|---|---|---|---|---|
-| UNILUS | 62 | 100% | 100% | 0% | 85% | 0% | 0% | 100% | 100% |
-| UNZA | 5,736 | 100% | 100% | 0% | 84% | 100% | 0% | 40% | 100% |
+| Institution | Records | Title | Author | Supervisor | Subject | Faculty | Department | Discipline | Degree | Degree level | Year |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| UNILUS | 62 | 100% | 100% | 0% | 85% | 0% | 0% | 0% | 0% | 100% | 100% |
+| UNZA | 5,736 | 100% | 100% | 0% | 84% | 100% | 0% | 16% | 18% | 40% | 100% |
+
+PDF pilot (October 30, 2026): the OAI-PMH `ore` format exposes each ETD's PDF link. Of 12 randomly sampled UNZA PDFs (0.2–16 MB; 2 links returned HTTP 500), 4 had no extractable text (scanned images), and no supervisor name was found by rules in the first six pages; 1 yielded a department. Supervisor/Department extraction therefore needs OCR and ML, not rules — the intended use of FR-14/FR-16. UNILUS PDF links point to an internal address (`41.63.7.239:4000`) that the portal cannot reach.
+
+Other HEIs in [R6] (Cavendish, Mulungushi, ZCAS, Chalimbana, LAMU, plus Copperbelt): no OAI-PMH endpoint was found at common DSpace addresses on October 30, 2026. Their base URLs are needed to onboard them (FR-1).
 
 These gaps (Supervisor, Department, UNZA degree level) are the targets for the DataLab ML enrichers (FR-14, FR-16).
 

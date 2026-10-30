@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SDD, structured per IEEE 1016-2009 (design viewpoints) |
-| Version | 0.1 (bare implementation, "beta") |
+| Version | 0.2 (beta) |
 | Date | October 30, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Related | `docs/SRS.md` (requirement IDs referenced below) |
@@ -211,12 +211,13 @@ classDiagram
 | subject | `dc.subject`, `.other`, `.lcsh`, `.ddc` | — |
 | faculty | `thesis.degree.faculty`, local fields | set hierarchy (`collections_are`, "School/Faculty of …") |
 | department | `thesis.degree.department`, local fields | set hierarchy; "Department of …" pattern in descriptions |
+| degree, discipline | `thesis.degree.name`, `thesis.degree.discipline` | "Master of X in Y" / "PhD Y" patterns in `dc.description` |
 | degree_level | `thesis.degree.level` | patterns over degree, type, description and set names |
 | year | `dc.date.issued` | first 4-digit year |
 | url | `dc.identifier.uri` | — |
 
 ### 4.4 Solr document
-`id, title_tsim/ssm/ssort, author_tsim/ssim, supervisor_tsim/ssim, subject_tsim/ssim, faculty_tsim/ssim, department_tsim/ssim, faculty_department_ssim ("Faculty|Dept"), degree_ssim, degree_level_ssim, year_isi/ssim, abstract_tesim, url_ssm, institution_ssim, institution_short_ssim, provenance_ssm, completeness_isi`. A facet (`*_ssim`) value is omitted when its field is not `facetable` (FR-17).
+`id, title_tsim/ssm/ssort, author_tsim/ssim, supervisor_tsim/ssim, subject_tsim/ssim, faculty_tsim/ssim, department_tsim/ssim, faculty_department_ssim ("Faculty|Dept"), discipline_tsim/ssim, degree_ssim, degree_level_ssim, year_isi/ssim, abstract_tesim, url_ssm, institution_ssim, institution_short_ssim, provenance_ssm, completeness_isi`. A facet (`*_ssim`) value is omitted when its field is not `facetable` (FR-17).
 
 ---
 
