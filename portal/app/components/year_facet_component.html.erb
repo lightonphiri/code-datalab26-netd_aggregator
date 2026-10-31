@@ -1,0 +1,24 @@
+<% total = facet_item_presenters.size %>
+<%= render(layout.new(facet_field: @facet_field)) do |component| %>
+  <% component.with_label do %>
+    <%= @facet_field.label %>
+  <% end %>
+  <% component.with_body do %>
+    <%= render(Blacklight::Facets::InclusiveConstraintComponent.new(facet_field: @facet_field)) %>
+    <%= content_tag :ul, class: @classes, role: @role do %>
+      <%= render items(0...YearFacetComponent::SHOWN) %>
+    <% end %>
+    <% if total > YearFacetComponent::SHOWN %>
+      <ul class="<%= @classes.join(' ') %> collapse" id="<%= collapse_id %>">
+        <%= render items(YearFacetComponent::SHOWN...total) %>
+      </ul>
+      <div class="more_facets">
+        <a class="netd-more-toggle collapsed" data-bs-toggle="collapse" href="#<%= collapse_id %>" role="button"
+           aria-expanded="false" aria-controls="<%= collapse_id %>">
+          <span class="when-collapsed">more <span class="visually-hidden">years</span> »</span>
+          <span class="when-expanded">« fewer</span>
+        </a>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

@@ -43,7 +43,7 @@ class CatalogController < ApplicationController
     config.add_facet_field 'degree_ssim', label: 'Degree', limit: 10
     config.add_facet_field 'supervisor_ssim', label: 'Supervisor', limit: 10
     config.add_facet_field 'subject_ssim', label: 'Subject', limit: 15
-    config.add_facet_field 'year_ssim', label: 'Year', limit: 15, sort: 'index desc'
+    config.add_facet_field 'year_ssim', label: 'Year', limit: 200, sort: 'index', component: YearFacetComponent
     config.add_facet_field 'author_ssim', label: 'Author', show: false
     config.add_facet_fields_to_solr_request!
 
