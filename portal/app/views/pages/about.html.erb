@@ -3,6 +3,9 @@
 <div class="netd-page">
   <h1 class="h3">About the <%= p['name'] %></h1>
   <p><%= p['summary'] %></p>
+  <a href="<%= p['group_url'] %>" class="datalab-credit" title="DataLab Research Group" target="_blank" rel="noopener">
+    <img src="/images/datalab-logo-light.svg" alt="DataLab Research Group" height="40">
+  </a>
   <p>Developed by the <%= link_to p['group'], p['group_url'], target: '_blank', rel: 'noopener' %>.
     Project page: <%= link_to p['url'], p['url'], target: '_blank', rel: 'noopener' %></p>
   <h2 class="h5 mt-4">Project members</h2>

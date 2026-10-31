@@ -158,3 +158,10 @@ button.netd-report:hover { text-decoration: underline; }
 .netd-report-form .req { color: #b02a1c; }
 .netd-report-url { font-size: .92rem; word-break: break-all; }
 .netd-hp { position: absolute; left: -9999px; }
+/* DataLab logo (keep its own colours; height only, width auto) */
+.datalab-credit { display: inline-block; padding: 10px 10px 10px 0; }
+.datalab-credit img { height: 40px; width: auto; max-width: 100%; display: block; }
+footer.netd-footer .datalab-credit { padding: 0 12px 0 0; }
+footer.netd-footer .datalab-credit img { height: 30px; }
+.netd-footer-credit { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; }
+@media (max-width: 600px) { .datalab-credit img { height: 32px; } footer.netd-footer .datalab-credit img { height: 28px; } }
