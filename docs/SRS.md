@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SRS, structured per ISO/IEC/IEEE 29148:2018 (supersedes IEEE 830-1998) |
-| Version | 0.14 |
+| Version | 0.15 |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Repository | https://github.com/lightonphiri/code-datalab26-netd_aggregator |
@@ -15,6 +15,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial SRS: harvesting (UNZA, UNILUS), cleaning pipeline, Blacklight discovery |
 | 0.2 | October 30, 2026 | Discipline and Degree fields (FR-12, FR-21); institution entry points (FR-26); HTTPS (NFR-9); PDF pilot and onboarding findings (§4) |
+| 0.15 | October 31, 2026 | FR-34: Report a problem popup form (stored and emailed) replaces the email link |
 | 0.14 | October 31, 2026 | FR-24: Report a problem email link and Analysis panel (Google Scholar link) on record pages |
 | 0.13 | October 31, 2026 | EI-5: header link row limited to About and Explore |
 | 0.12 | October 31, 2026 | FR-22: "Sort by" menu as on Academic Commons — Best Match, Published Latest, Published Earliest, Title A-Z, Title Z-A |
@@ -180,7 +181,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | FR-21 | Users shall filter by facets: Institution, Degree level, Faculty/School, Department, Programme/Discipline, Degree, Supervisor, Subject, Year (newest first; the 5 latest years visible, the rest behind "more »"). | M |
 | FR-22 | Users shall sort results from a "Sort by" menu beside the result count, as on Academic Commons [R15]: Best Match (default), Published Latest, Published Earliest, Title A-Z, Title Z-A. | M |
 | FR-23 | Result cards shall show degree-level, year and institution badges, title, author, supervisor (when present), and an abstract snippet. | M |
-| FR-24 | Record pages shall follow the Academic Commons record layout [R15]: year/type/degree-level kicker, title, authors, abstract; Subjects and Programme/Discipline as tag buttons linking to searches; a Files panel (name, type, size, download per file); all other metadata (institution, faculty, department, thesis advisors, degree, degree level, year, language, source record) in a "More About This Work" panel; and a top-right panel with Download, persistent link with copy, sharing links, rights and holding institution, a "Report a problem" link (email to lighton.phiri@unza.ac.zm and datalab@unza.zm, subject "(Zambia National ETD Portal) Problem with record: <title>", with the record links in the body), and an Analysis panel linking to the work on Google Scholar, where its "Cited by" count is shown. Google Scholar has no public API, so the count itself is not shown on the portal. | M |
+| FR-24 | Record pages shall follow the Academic Commons record layout [R15]: year/type/degree-level kicker, title, authors, abstract; Subjects and Programme/Discipline as tag buttons linking to searches; a Files panel (name, type, size, download per file); all other metadata (institution, faculty, department, thesis advisors, degree, degree level, year, language, source record) in a "More About This Work" panel; and a top-right panel with Download, persistent link with copy, sharing links, rights and holding institution, a "Report a problem" button opening the form in FR-34, and an Analysis panel linking to the work on Google Scholar, where its "Cited by" count is shown. Google Scholar has no public API, so the count itself is not shown on the portal. | M |
 | FR-25 | Hierarchical Faculty → Department browsing. | S |
 | FR-26 | Institution entry points (InvenioRDM "communities" equivalent): the home page lists each institution with its ETD count. Implemented in v0.2. | S |
 
@@ -196,6 +197,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | FR-29 | An institution registry (`harvester/institutions.yml`) shall list every HEI with at least one HEA-accredited Master's or Doctoral programme [R12], [R13]. The home page and the Institution facet shall show every registry institution (the facet shows the top 10 rows, harvested institutions first, with a "more »" toggle for the rest), with **0** where nothing is harvested and the reason (no repository known, no ETD collection, repository not reachable). | M |
 | FR-30 | The home page shall state that metadata is meant to be harvested from all institutions offering HEA-accredited Master's and PhD programmes, citing HEA. | M |
 | FR-31 | The portal (About page) and the repository (`PUBLICATIONS.md`) shall list the project details [R14], the project members with their roles as on the DataLab people page (the PI marked Principal Investigator), and the publications, dissertations and capstone reports based on the Zambia National ETD Portal project, with a short explanation of how they relate to the portal, from one source file (`portal/config/publications.yml`). | M |
+| FR-34 | Record pages shall offer a "Report a problem" popup form (problem type, message, name, email address, record URL). Each report shall be stored in the portal database and emailed to lighton.phiri@unza.ac.zm and datalab@unza.zm (subject "(Zambia National ETD Portal) <problem>: <title>", reply-to the reporter) through an authenticated SMTP account; the form shall have a spam trap and a rate limit. | M |
 | FR-33 | The landing page shall show a one-line introduction, two prominent buttons — Explore Master's Manuscripts and Explore PhD Manuscripts (degree-level filtered searches) — "stats at a glance" (total ETDs, master's, doctoral, with full-text PDF, institutions contributing of those listed, years covered) and the contributing institutions, with the not-yet-harvested HEA institutions behind a toggle. | M |
 | FR-32 | For every ETD whose repository exposes it, the portal shall link directly to the full-text file (bitstream), preferring the largest PDF, on result cards and record pages, and offer a Full text facet (PDF available / other file / metadata only). Files stay in the source repositories. | M |
 

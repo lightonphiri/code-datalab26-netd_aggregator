@@ -13,8 +13,12 @@ class ProblemReportsController < ApplicationController
                                      .merge(remote_ip: request.remote_ip))
     if report.save
       begin
-        ProblemMailer.report(report).deliver_now
-        report.update(emailed: true)
+        if ActionMailer::Base.delivery_method == :test
+          report.update(email_error: 'SMTP not configured; report stored only')
+        else
+          ProblemMailer.report(report).deliver_now
+          report.update(emailed: true)
+        end
       rescue StandardError => e
         report.update(email_error: e.message.truncate(500))
         Rails.logger.error("Problem report #{report.id} not emailed: #{e.message}")

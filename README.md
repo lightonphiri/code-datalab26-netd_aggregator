@@ -61,3 +61,15 @@ Apache sites for netd.ac.zm are kept in `deploy/apache/` and installed by `deplo
 
 ### HTTPS
 netd.ac.zm has a Let's Encrypt certificate (obtained on October 30, 2026 with `certbot certonly --webroot -w /var/www/html -d netd.ac.zm`; it renews automatically and Apache reloads via the deploy hook). The HTTPS site `/etc/apache2/sites-available/netd-le-ssl.conf` proxies the whole site to the portal, plus `RequestHeader set X-Forwarded-Proto "https"` (mod_headers) so Rails knows requests arrived over HTTPS; without it, clicking a search result fails Rails' CSRF origin check (fixed October 31, 2026).
+
+### Problem reports (record page form)
+Reports are stored in the portal database and emailed to lighton.phiri@unza.ac.zm and datalab@unza.zm once SMTP is configured.
+To enable email, create a Google app password for the sending account (Google Account → Security → 2-Step Verification → App passwords), then on the server:
+```bash
+sudo tee -a /opt/netd/portal.env >/dev/null <<'ENV'
+SMTP_USER=datalab@unza.zm
+SMTP_PASSWORD=the-16-character-app-password
+ENV
+sudo systemctl restart netd-portal
+```
+List reports: `cd /opt/netd/portal && sudo -u netd env PATH=/opt/netd/ruby/bin:$PATH RAILS_ENV=production $(sudo cat /opt/netd/portal.env) bin/rails netd:reports`
