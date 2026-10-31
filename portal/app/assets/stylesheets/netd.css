@@ -179,3 +179,23 @@ footer.netd-footer .datalab-credit img { height: 30px; }
   #skip-link { overflow: hidden; max-width: 100vw; }
 }
 html, body { overflow-x: clip; }
+/* footer (Academic Commons layout) */
+footer.netd-footer { padding: 0; background: #fff; }
+.netd-footer-links { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .6rem; padding: 1rem 15px; border-bottom: 1px solid var(--netd-line); }
+.netd-footer-links nav a { color: var(--netd-blue); }
+.netd-footer-links nav span { color: #999; margin: 0 .55rem; }
+.netd-footer-mail { display: inline-flex; align-items: center; gap: .35rem; }
+.netd-footer-text { padding: 1rem 15px 1.6rem; color: #666; font-size: .92rem; line-height: 1.6; }
+.netd-footer-text a { color: #555; text-decoration: underline; }
+/* partner logos and content pages */
+.netd-partner-logos { display: flex; align-items: center; flex-wrap: wrap; gap: 1.5rem; margin: .4rem 0 .2rem; }
+.zamren-credit { display: inline-block; padding: 6px 0; }
+.zamren-credit img { height: 48px; width: auto; max-width: 100%; display: block; }
+.netd-credit-list { padding-left: 1.1rem; }
+.netd-credit-list li { padding: .2rem 0; }
+.netd-faq h2 { font-size: 1.12rem; font-weight: 600; margin: 1.6rem 0 .4rem; }
+.netd-api code, .netd-faq code { color: #0b3d6b; background: #f3f6f9; padding: .05rem .3rem; border-radius: 2px; overflow-wrap: anywhere; }
+.netd-api th { width: 9.5rem; }
+.netd-code { background: #f3f6f9; border: 1px solid var(--netd-line); padding: .7rem .9rem; font-size: .88rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.netd-status { background: #fff7e0; border-left: 4px solid #e6a700; padding: .5rem .8rem; }
+@media (max-width: 600px) { .zamren-credit img { height: 40px; } }

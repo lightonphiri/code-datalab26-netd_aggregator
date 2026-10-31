@@ -1,0 +1,29 @@
+<% content_for(:page_title) { "Credits — Zambia National ETD Portal" } %>
+<% c = @data['credits']; h = c['hosting'] %>
+<div class="netd-page">
+  <h1>Credits</h1>
+  <p>The Zambia National ETD Portal is developed and maintained by the
+    <%= link_to 'DataLab Research Group', 'https://datalab.unza.zm', target: '_blank', rel: 'noopener' %>,
+    and hosted by <%= link_to "#{h['name']} (#{h['full_name']})", h['url'], target: '_blank', rel: 'noopener' %>,
+    which provides the server space for the portal.</p>
+  <div class="netd-partner-logos">
+    <a href="https://datalab.unza.zm" class="datalab-credit" target="_blank" rel="noopener" title="DataLab Research Group"><img src="/images/datalab-logo-light.svg" alt="DataLab Research Group" height="40"></a>
+    <a href="<%= h['url'] %>" class="zamren-credit" target="_blank" rel="noopener" title="<%= h['full_name'] %>"><img src="/images/zamren-logo.png" alt="ZAMREN — Zambia Research and Education Network" height="48"></a>
+  </div>
+
+  <h2 class="h5 mt-4">Core Team</h2>
+  <ul class="netd-credit-list">
+    <% c['core_team'].each do |m| %>
+      <li><%= link_to m['name'], m['url'], target: '_blank', rel: 'noopener' %>, <%= m['role'] %></li>
+    <% end %>
+  </ul>
+
+  <h2 class="h5 mt-4">Contributors and Former Team Members</h2>
+  <p>Students who worked on problems related to the portal as part of the
+    <%= link_to 'Zambia National ETD Portal project', @data['project']['url'], target: '_blank', rel: 'noopener' %>:</p>
+  <ul class="netd-credit-list netd-members">
+    <% @contributors.each do |m| %>
+      <li><%= m['url'] ? link_to(m['name'], m['url'], target: '_blank', rel: 'noopener') : m['name'] %><% if m['role'] %> (<%= m['role'] %>)<% end %></li>
+    <% end %>
+  </ul>
+</div>

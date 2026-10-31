@@ -6,7 +6,14 @@ class PagesController < ApplicationController
   copy_blacklight_config_from(CatalogController)
   layout 'blacklight'
 
-  def about
-    @data = YAML.safe_load_file(Rails.root.join('config', 'publications.yml'))
+  before_action { @data = YAML.safe_load_file(Rails.root.join('config', 'publications.yml')) }
+
+  def about; end
+  def faq; end
+  def developers; end
+
+  def credits
+    roles = @data['project']['members'].to_h { |m| [m['name'], m] }
+    @contributors = @data['credits']['contributors'].map { |n| roles[n] || { 'name' => n } }
   end
 end

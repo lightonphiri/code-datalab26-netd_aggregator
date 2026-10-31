@@ -1,0 +1,37 @@
+<% content_for(:page_title) { "FAQ — Zambia National ETD Portal" } %>
+<div class="netd-page netd-faq">
+  <h1>Frequently Asked Questions</h1>
+
+  <h2>What is the Zambia National ETD Portal?</h2>
+  <p>A single place to search the electronic theses and dissertations (ETDs) of Zambian universities and higher education
+    institutions. It collects descriptions of ETDs (title, author, abstract, subjects, institution, year and so on) from each
+    institution's repository and links to the full text held there.</p>
+
+  <h2>Does the portal store the theses themselves?</h2>
+  <p>No. Only the metadata is harvested. The "Download" button opens the file in the institution's own repository, and the
+    rights and conditions for reuse are those of that repository.</p>
+
+  <h2>Which institutions are included?</h2>
+  <p>The portal aims to include every institution with Master's or PhD programmes accredited by the
+    <a href="https://www.hea.org.zm" target="_blank" rel="noopener">Higher Education Authority</a>. The home page lists them all;
+    institutions showing 0 have no public repository yet, no ETD collection, or a repository that cannot currently be harvested.</p>
+
+  <h2>How can my institution's ETDs be included?</h2>
+  <p>Set up an institutional repository (for example DSpace), place theses and dissertations in a dedicated collection, and make
+    the repository harvestable over OAI-PMH. Then email <a href="mailto:datalab@unza.zm">datalab@unza.zm</a> with the repository address.</p>
+
+  <h2>How often is the portal updated?</h2>
+  <p>Every participating repository is harvested automatically once a day, so new ETDs normally appear within a day of being
+    published in the repository.</p>
+
+  <h2>A record has a mistake or a broken download link. What should I do?</h2>
+  <p>Use "Report a problem" on the record's page. Corrections to the metadata itself are best made in the institution's
+    repository, since the portal updates from there.</p>
+
+  <h2>Why do some records have no supervisor, department or degree level?</h2>
+  <p>Many repositories do not record these details. The portal shows what each repository provides; work on filling these gaps
+    automatically is under way.</p>
+
+  <h2>Can I use the portal's data in my own work?</h2>
+  <p>Yes. See <%= link_to 'Developer Resources', developers_path %> for the JSON API and the OAI-PMH interface.</p>
+</div>

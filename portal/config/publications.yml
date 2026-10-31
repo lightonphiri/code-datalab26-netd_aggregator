@@ -34,6 +34,19 @@ project:
     - {name: "Philomena Mwanza", role: "Undergraduate Student, BA Library and Information Science", url: "https://datalab.unza.zm/people/philomenamwanza"}
     - {name: "Daisy Nawila", role: "Undergraduate Student, BA Library and Information Science", url: "https://datalab.unza.zm/people/daisynawila"}
 
+# Credits page (FR-35). Contributors = students listed on the project page
+# https://datalab.unza.zm/projects/zambia-national-etd-portal (checked October 31, 2026).
+credits:
+  core_team:
+    - {name: "Lighton Phiri", role: "Lead Developer and Principal Investigator", url: "https://datalab.unza.zm/people/lightonphiri"}
+    - {name: "Elijah Chileshe", role: "Assistant Programmer/Analyst", url: "https://datalab.unza.zm/people/elijahchileshe"}
+  contributors: [Adrian Chisale, Cecilia Kasonde, Angela Banda, Mubanga Chibesa, Richard Mufuzi, Chanda Chilufya,
+                 Kamfwa Chileshe, Memory Phiri, Mainda Chuulu, Gift Muwele, Geoffrey Ngoma, Nkole Mulenga]
+  hosting:
+    name: ZAMREN
+    full_name: Zambia Research and Education Network
+    url: https://zamren.zm
+
 publications:
   - type: Poster
     year: 2024

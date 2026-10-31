@@ -3,10 +3,13 @@
 <div class="netd-page">
   <h1 class="h3">About the <%= p['name'] %></h1>
   <p><%= p['summary'] %></p>
-  <a href="<%= p['group_url'] %>" class="datalab-credit" title="DataLab Research Group" target="_blank" rel="noopener">
-    <img src="/images/datalab-logo-light.svg" alt="DataLab Research Group" height="40">
-  </a>
-  <p>Developed by the <%= link_to p['group'], p['group_url'], target: '_blank', rel: 'noopener' %>.
+  <div class="netd-partner-logos">
+    <a href="<%= p['group_url'] %>" class="datalab-credit" title="DataLab Research Group" target="_blank" rel="noopener"><img src="/images/datalab-logo-light.svg" alt="DataLab Research Group" height="40"></a>
+    <a href="https://zamren.zm" class="zamren-credit" title="Zambia Research and Education Network" target="_blank" rel="noopener"><img src="/images/zamren-logo.png" alt="ZAMREN — Zambia Research and Education Network" height="48"></a>
+  </div>
+  <p>Developed by the <%= link_to p['group'], p['group_url'], target: '_blank', rel: 'noopener' %>, and hosted by
+    <%= link_to 'ZAMREN', 'https://zamren.zm', target: '_blank', rel: 'noopener' %> (Zambia Research and Education Network), which
+    provides the server space for the portal. See also the <%= link_to 'credits', credits_path %>.
     Project page: <%= link_to p['url'], p['url'], target: '_blank', rel: 'noopener' %></p>
   <h2 class="h5 mt-4">Project members</h2>
   <ul class="netd-members">
