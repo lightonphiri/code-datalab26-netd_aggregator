@@ -105,3 +105,32 @@ footer.netd-footer strong { color: var(--netd-ink); font-weight: 600; }
 #sidebar .facet-limit-active, #sidebar .facet-limit-active .card-header, #sidebar .facet-limit-active .facet-field-heading { border-color: #a9cbe8; background: #eef5fb; }
 #sidebar .facet-limit-active .card-header button, #sidebar .facet-limit-active .facet-field-heading button { color: var(--netd-ink); }
 #sidebar .selected, #sidebar .facet-values .selected { color: var(--netd-ink); font-weight: 600; }
+
+/* ---------- record page (Academic Commons layout) ---------- */
+.netd-record { padding-top: .6rem; }
+.netd-rec-kicker span { font-size: .82rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--netd-muted); margin-right: .9rem; }
+.netd-rec-title { font-size: 2.05rem; font-weight: 600; line-height: 1.25; margin: .35rem 0 .7rem; }
+.netd-rec-authors { font-size: 1.05rem; margin-bottom: 1.2rem; }
+.netd-rec-abstract p { font-size: 1.05rem; line-height: 1.7; margin-bottom: 1.1rem; }
+.netd-rec-h { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 .6rem; }
+.netd-tags { display: flex; flex-wrap: wrap; gap: .5rem; }
+.netd-tags a { background: var(--netd-blue); color: #fff; border-radius: 3px; padding: 3px 7px; font-size: .9rem; text-decoration: none; }
+.netd-tags a:hover { background: var(--netd-blue-dark); color: #fff; }
+.netd-panel { border: 1px solid #dfe3e6; border-radius: 4px; margin-top: 1.8rem; overflow: hidden; }
+.netd-panel h2 { background: #f3f4f3; border-bottom: 1px solid #dfe3e6; font-size: 1.05rem; font-weight: 600; margin: 0; padding: .8rem 1rem; }
+.netd-files { list-style: none; margin: 0; padding: 0; }
+.netd-files li { display: flex; align-items: center; gap: 1.1rem; padding: .8rem 1rem; border-top: 1px solid #eef0f2; }
+.netd-files li:first-child { border-top: 0; }
+.netd-file-name { flex: 1; font-weight: 600; color: var(--netd-ink); word-break: break-word; }
+.netd-file-meta { color: var(--netd-muted); font-size: .9rem; white-space: nowrap; }
+.netd-file-dl { color: var(--netd-blue); }
+.netd-about { width: 100%; margin: .4rem 0; }
+.netd-about th { width: 11rem; font-weight: 600; font-size: .92rem; padding: .35rem 1rem; vertical-align: top; }
+.netd-about td { font-size: .95rem; padding: .35rem 1rem; }
+.netd-side { border: 1px solid #dfe3e6; border-radius: 4px; padding: .7rem; position: sticky; top: 1rem; }
+.netd-dl { font-size: 1.05rem; padding: .55rem; }
+.netd-nofile { display: block; color: var(--netd-muted); font-size: .92rem; padding: .4rem 0; }
+.netd-side-label { font-size: .82rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin: 1rem 0 .3rem; }
+.netd-copy input { font-size: .85rem; }
+.netd-share { display: flex; gap: .55rem; margin-top: 1rem; }
+.netd-rights { font-size: .85rem; margin-top: 1rem; color: var(--netd-muted); }

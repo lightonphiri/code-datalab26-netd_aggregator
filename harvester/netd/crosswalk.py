@@ -68,6 +68,7 @@ MAP = {
     "url": ["dc.identifier.uri", "dc.identifier"],
     "language": ["dc.language.iso", "dc.language"],
     "type": ["dc.type"],
+    "rights": ["dc.rights", "dc.rights.uri", "dc.rights.license"],
 }
 
 DEGREE_PAT = [
@@ -191,6 +192,9 @@ def to_canonical(row, src, set_names, files=None):
     elif files:
         rec["file_url"] = [f["url"] for f in files]
         rec["provenance"]["file_url"] = "harvested:files"
+    if files:  # full file list for the record page (PDFs first, largest first)
+        rec["files"] = [{"url": f["url"], "name": f.get("name"), "mime": f.get("mime"), "size": f.get("size")}
+                        for f in sorted(files, key=lambda f: (f not in pdf_files, -(f.get("size") or 0)))]
 
     # Degree name and discipline from free-text descriptions (e.g. UNZA "Master of Education in ...")
     if not rec.get("degree") or not rec.get("discipline"):

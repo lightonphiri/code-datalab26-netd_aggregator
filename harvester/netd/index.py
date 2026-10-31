@@ -17,6 +17,7 @@ SOLR = {
     "url": ["url_ssm"],
     "pdf_url": ["pdf_url_ssm"],
     "file_url": ["file_url_ssm"],
+    "rights": ["rights_ssm"],
     "language": ["language_ssim"],
     "type": ["type_ssim"],
 }
@@ -44,6 +45,8 @@ def to_solr(rec):
         doc["year_ssim"] = rec["year"]
     if rec.get("faculty") and rec.get("department"):
         doc["faculty_department_ssim"] = ["%s|%s" % (rec["faculty"][0], d) for d in rec["department"]]
+    if rec.get("files"):
+        doc["files_ssm"] = [json.dumps(f, ensure_ascii=False) for f in rec["files"]]
     doc["full_text_ssim"] = ["PDF available" if rec.get("pdf_url") else
                              ("Other file available" if rec.get("file_url") else "Metadata only")]
     doc["completeness_isi"] = sum(1 for f in ("title", "author", "supervisor", "subject", "faculty",

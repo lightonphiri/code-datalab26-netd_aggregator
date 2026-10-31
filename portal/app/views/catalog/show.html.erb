@@ -1,0 +1,108 @@
+<%# Record page modelled on Columbia's Academic Commons: kicker, title, authors, abstract, subject tags,
+    Files and "More About This Work" panels; download/link panel on the right. %>
+<% presenter = document_presenter(@document) %>
+<% d = @document %>
+<% title = rec_values(d, 'title_tsim').first %>
+<% @page_title = "#{title} — #{application_name}" %>
+<% files = rec_files(d) %>
+<% pdf = rec_values(d, 'pdf_url_ssm').first || files.first&.dig('url') %>
+<% handle = rec_values(d, 'url_ssm').first %>
+<%= render presenter.view_config.document_header_component.new(document: d, search_context: @search_context, search_session: search_session) %>
+<div class="row g-5 netd-record" id="document">
+  <div class="col-lg-8">
+    <div class="netd-rec-kicker">
+      <% (rec_values(d, 'year_ssim') + ['Theses'] + rec_values(d, 'degree_level_ssim')).each do |k| %><span><%= k %></span><% end %>
+    </div>
+    <h1 class="netd-rec-title"><%= title %></h1>
+    <p class="netd-rec-authors">
+      <%= safe_join(rec_values(d, 'author_ssim').map { |a| facet_link(a, 'author_ssim', a) }, '; ') %>
+    </p>
+    <% if (abs = rec_values(d, 'abstract_tesim').first) %>
+      <div class="netd-rec-abstract"><%= simple_format(abs) %></div>
+    <% end %>
+
+    <% { 'Subjects' => 'subject_ssim', 'Programme / Discipline' => 'discipline_ssim' }.each do |label, field| %>
+      <% vals = rec_values(d, field) %>
+      <% next if vals.empty? %>
+      <h2 class="netd-rec-h"><%= label %></h2>
+      <div class="netd-tags"><% vals.each do |v| %><%= facet_link(v, field, v) %><% end %></div>
+    <% end %>
+
+    <% if files.any? %>
+      <section class="netd-panel">
+        <h2>Files</h2>
+        <ul class="netd-files">
+          <% files.each_with_index do |f, i| %>
+            <li>
+              <span class="netd-file-icon" aria-hidden="true">
+                <svg width="22" height="26" viewBox="0 0 22 26" fill="none" stroke="#9aa3ad" stroke-width="1.2"><path d="M1 1h13l7 7v17H1z"/><path d="M14 1v7h7"/></svg>
+              </span>
+              <a class="netd-file-name" href="<%= f['url'] %>" target="_blank" rel="noopener"><%= file_label(f, i) %></a>
+              <span class="netd-file-meta"><%= f['mime'] %></span>
+              <span class="netd-file-meta"><%= human_size(f['size']) %></span>
+              <a class="netd-file-dl" href="<%= f['url'] %>" target="_blank" rel="noopener" aria-label="Download <%= file_label(f, i) %>">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 7v9M8 12.5l4 4 4-4"/></svg>
+              </a>
+            </li>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
+
+    <section class="netd-panel">
+      <h2>More About This Work</h2>
+      <table class="netd-about">
+        <% rows = [
+             ['Institution', 'institution_ssim', true], ['Faculty / School', 'faculty_ssim', true],
+             ['Department', 'department_ssim', true], ['Thesis Advisors', 'supervisor_ssim', true],
+             ['Degree', 'degree_ssim', true], ['Degree Level', 'degree_level_ssim', true],
+             ['Year', 'year_ssim', true], ['Language', 'language_ssim', false] ] %>
+        <% rows.each do |label, field, facet| %>
+          <% vals = rec_values(d, field) %>
+          <% next if vals.empty? %>
+          <tr><th><%= label %></th>
+            <td><%= safe_join(vals.map { |v| facet ? facet_link(v, field, v) : v }, '; ') %></td></tr>
+        <% end %>
+        <% if handle %>
+          <tr><th>Source Record</th><td><%= link_to handle, handle, target: '_blank', rel: 'noopener' %></td></tr>
+        <% end %>
+      </table>
+    </section>
+  </div>
+
+  <aside class="col-lg-4">
+    <div class="netd-side">
+      <% if pdf %>
+        <a class="btn btn-primary w-100 netd-dl" href="<%= pdf %>" target="_blank" rel="noopener">Download</a>
+      <% else %>
+        <span class="netd-nofile">No full text available from the repository</span>
+      <% end %>
+      <% if handle %>
+        <div class="netd-side-label">Persistent link</div>
+        <div class="input-group netd-copy">
+          <input type="text" class="form-control" value="<%= handle %>" readonly id="netd-handle" aria-label="Persistent link">
+          <button class="btn btn-outline-secondary" type="button" title="Copy link"
+                  onclick="navigator.clipboard.writeText(document.getElementById('netd-handle').value); this.textContent='Copied';">Copy</button>
+        </div>
+      <% end %>
+      <div class="netd-share">
+        <% url = request.original_url %>
+        <a href="https://twitter.com/intent/tweet?url=<%= ERB::Util.url_encode(url) %>&text=<%= ERB::Util.url_encode(title) %>" target="_blank" rel="noopener" aria-label="Share on X">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="#0071c2"><rect width="24" height="24" rx="3"/><path d="M6 6l12 12M18 6L6 18" stroke="#fff" stroke-width="2"/></svg></a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=<%= ERB::Util.url_encode(url) %>" target="_blank" rel="noopener" aria-label="Share on Facebook">
+          <svg width="26" height="26" viewBox="0 0 24 24"><rect width="24" height="24" rx="3" fill="#0071c2"/><path d="M13.2 19v-6h2l.3-2.4h-2.3V9.2c0-.7.2-1.2 1.2-1.2h1.2V5.9a16 16 0 0 0-1.8-.1c-1.8 0-3 1.1-3 3.1v1.7h-2V13h2v6z" fill="#fff"/></svg></a>
+        <a href="mailto:?subject=<%= ERB::Util.url_encode(title) %>&body=<%= ERB::Util.url_encode(url) %>" aria-label="Share by email">
+          <svg width="26" height="26" viewBox="0 0 24 24"><rect width="24" height="24" rx="3" fill="#8a929b"/><path d="M5 8h14v9H5z M5 8l7 5 7-5" fill="none" stroke="#fff" stroke-width="1.5"/></svg></a>
+      </div>
+      <div class="netd-rights">
+        <% if (r = rec_values(d, 'rights_ssm').first) %>
+          <%= r.start_with?('http') ? link_to(r, r, target: '_blank', rel: 'noopener') : r %>
+        <% else %>
+          Rights and reuse: see the <%= link_to 'institutional repository record', handle || '#', target: '_blank', rel: 'noopener' %>.
+        <% end %>
+      </div>
+      <div class="netd-side-label mt-3">Held by</div>
+      <div><%= facet_link(rec_values(d, 'institution_ssim').first.to_s, 'institution_ssim', rec_values(d, 'institution_ssim').first.to_s) %></div>
+    </div>
+  </aside>
+</div>
