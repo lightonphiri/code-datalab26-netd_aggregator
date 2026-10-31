@@ -1,66 +1,104 @@
-/* Zambia National ETD Portal (beta): repository-style theme over Bootstrap 5 / Blacklight 9 */
-@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
-:root { --netd-primary: #0b4f6c; --netd-accent: #198754; --netd-ink: #1b1f24; --netd-muted: #5f6b76;
-        --bs-link-color: #0b4f6c; --bs-link-hover-color: #07384d; }
-body { font-family: "Lato", system-ui, sans-serif; color: var(--netd-ink); background: #f6f8fa; }
-#main-container, .container { max-width: 1240px; }
-.navbar.topbar, header .navbar { background: linear-gradient(90deg, #0b4f6c, #127a8a) !important; }
-.navbar .navbar-brand, .navbar .nav-link { color: #fff !important; }
-.navbar-logo { font-weight: 700; letter-spacing: .2px; }
-.navbar-search { background: linear-gradient(90deg, #0b4f6c, #127a8a) !important; padding: 1.25rem 0 1.5rem; }
-.netd-beta { background: #ffc107; color: #222; border-radius: 4px; font-size: .7rem; padding: .1rem .4rem;
-             margin-left: .5rem; vertical-align: middle; font-weight: 700; }
-/* facets */
-#facets .facet-limit, #facets .card { border: 1px solid #dde3ea; border-radius: 8px; margin-bottom: .75rem;
-                                       background: #fff; box-shadow: none; }
-#facets .card-header, #facets .facet-field-heading { background: #fff; font-weight: 700; border-bottom: 1px solid #eef1f4; }
-#facets .facet-count { color: var(--netd-muted); }
-/* result cards */
-#documents article.document { background: #fff; border: 1px solid #dde3ea; border-radius: 8px;
-                              padding: 1rem 1.25rem; margin-bottom: .9rem; }
-#documents article.document:hover { border-color: #b7c4d1; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
-.document .index_title, .document .document-title-heading { font-size: 1.12rem; font-weight: 700; line-height: 1.35; }
-.document .index_title a { color: var(--netd-primary); text-decoration: none; }
-.document .index_title a:hover { text-decoration: underline; }
-.document .document-counter { display: none; }
-.document dl.document-metadata { margin: .35rem 0 0; font-size: .92rem; }
-.document dl.document-metadata dt { color: var(--netd-muted); font-weight: 400; }
-.etd-badge { display: inline-block; font-size: .74rem; font-weight: 700; border-radius: 4px; padding: .15rem .5rem;
-             margin: 0 .35rem .45rem 0; text-transform: uppercase; letter-spacing: .3px; }
-.etd-badge-level { background: #e3f1ea; color: #146c43; }
-.etd-badge-year { background: #e7eef5; color: #0b4f6c; }
-.etd-badge-inst { background: #f1ecf8; color: #59359a; }
-.etd-snippet { color: #3d4650; font-size: .92rem; margin: .5rem 0 0; }
-/* record page */
-.blacklight-catalog-show #document { background: #fff; border: 1px solid #dde3ea; border-radius: 8px; padding: 1.5rem; }
-.blacklight-catalog-show h1, .blacklight-catalog-show .document-title-heading { font-size: 1.55rem; font-weight: 700; }
-.etd-source { margin-top: 1rem; }
-footer.netd-footer { color: var(--netd-muted); font-size: .85rem; padding: 2rem 0; text-align: center; }
-/* layout fixes: stack badges, title, metadata and snippet vertically */
-#documents article.document { display: block !important; }
+/* Zambia National ETD Portal — theme modelled on Columbia University Libraries' Academic Commons:
+   system UI typography, white pages, one blue for links and actions, a navy group bar, light cards. */
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&display=swap");
+
+:root {
+  --netd-navy: #0b1f6b;
+  --netd-blue: #0071c2;
+  --netd-blue-dark: #005a9c;
+  --netd-ink: #111;
+  --netd-muted: #5b6470;
+  --netd-line: #e3e6ea;
+  --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --bs-body-color: #111;
+  --bs-link-color: #0071c2;
+  --bs-link-color-rgb: 0, 113, 194;
+  --bs-link-hover-color: #005a9c;
+  --bs-primary: #0071c2;
+  --bs-primary-rgb: 0, 113, 194;
+}
+body { font-family: var(--bs-body-font-family); color: var(--netd-ink); background: #fff; }
+a { color: var(--netd-blue); text-decoration: none; }
+a:hover { color: var(--netd-blue-dark); text-decoration: underline; }
+.container, #main-container { max-width: 1180px; }
+.btn-primary { --bs-btn-bg: #0071c2; --bs-btn-border-color: #0071c2; --bs-btn-hover-bg: #005a9c; --bs-btn-hover-border-color: #005a9c; }
+.btn-outline-primary { --bs-btn-color: #0071c2; --bs-btn-border-color: #0071c2; --bs-btn-hover-bg: #0071c2; --bs-btn-hover-border-color: #0071c2; }
+
+/* ---------- header ---------- */
+.netd-groupbar { background: var(--netd-navy); font-size: .82rem; letter-spacing: .06em; text-transform: uppercase; }
+.netd-groupbar a { color: #fff; display: inline-block; padding: .55rem 0; }
+.netd-masthead { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding-top: 1.4rem; padding-bottom: 1.4rem; flex-wrap: wrap; }
+.netd-wordmark { display: flex; align-items: center; font-family: "Cinzel", "Trajan Pro", Georgia, serif; font-size: 2.15rem;
+  line-height: 1; letter-spacing: .01em; text-decoration: none !important; }
+.netd-wm-a { color: var(--netd-navy); font-weight: 600; }
+.netd-wm-sep { width: 1px; height: 2.6rem; background: #9db6d6; margin: 0 .7rem; }
+.netd-wm-b { color: var(--netd-blue); font-weight: 500; }
+.netd-search { display: flex; width: min(360px, 100%); }
+.netd-search input { flex: 1; border: 1px solid #c9ced4; border-right: 0; padding: .45rem .7rem; font-style: italic; border-radius: 2px 0 0 2px; }
+.netd-search input:focus { outline: 2px solid #9ccaf0; font-style: normal; }
+.netd-search button { background: var(--netd-blue); color: #fff; border: 0; padding: 0 .9rem; border-radius: 0 2px 2px 0; }
+.netd-search button:hover { background: var(--netd-blue-dark); }
+.netd-navrow { border-top: 1px solid #eef0f2; border-bottom: 1px solid #e3e6ea; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+.netd-navrow a { display: inline-block; padding: .6rem 1.1rem .6rem 0; }
+
+/* ---------- landing page ---------- */
+#main-container:has(.netd-home) #sidebar { display: none; }
+#main-container:has(.netd-home) #content { flex: 0 0 100%; max-width: 100%; }
+.netd-home { padding: 1.6rem 0 1rem; }
+.netd-intro { font-size: 1.32rem; line-height: 1.6; max-width: 900px; margin-bottom: 1.8rem; }
+.netd-intro strong { font-weight: 600; }
+.netd-card { display: block; height: 100%; padding: 1.8rem 1.9rem; border: 1px solid #e1e4e8; background: #fff;
+  box-shadow: 0 3px 12px rgba(0,0,0,.08); color: var(--netd-ink); text-decoration: none !important; transition: box-shadow .15s; }
+.netd-card:hover { box-shadow: 0 5px 18px rgba(0,0,0,.14); }
+.netd-card-title { display: flex; align-items: center; gap: .7rem; color: var(--netd-blue); font-size: 1.45rem; font-weight: 600; margin-bottom: .7rem; }
+.netd-card-text { display: block; color: #333; line-height: 1.65; }
+.netd-kicker { font-size: .88rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; margin: 1.2rem 0 1rem; }
+.netd-stats { width: 100%; border-collapse: collapse; }
+.netd-stats td { padding: .5rem 0; border-bottom: 1px solid var(--netd-line); vertical-align: baseline; }
+.netd-stats td:first-child { font-size: 1.22rem; white-space: nowrap; padding-right: 1rem; width: 1%; }
+.netd-note { color: var(--netd-muted); font-size: .9rem; margin-top: .9rem; line-height: 1.6; }
+.netd-inst { list-style: none; padding: 0; margin: 0; }
+.netd-inst li { display: flex; justify-content: space-between; gap: 1rem; padding: .5rem 0; border-bottom: 1px solid var(--netd-line); font-size: 1.05rem; }
+.netd-inst li > span:last-child { font-size: 1.1rem; }
+.netd-inst-waiting li { color: var(--netd-muted); font-size: .95rem; }
+.netd-inst-waiting small { display: block; font-size: .8rem; color: #8a929b; }
+
+/* ---------- search results ---------- */
+#sidebar .facet-limit, #sidebar .card { border: 1px solid var(--netd-line); border-radius: 0; box-shadow: none; margin-bottom: .8rem; }
+#sidebar .card-header, #sidebar .facet-field-heading { background: #fff; border-bottom: 1px solid var(--netd-line); }
+#sidebar .facet-field-heading button, #sidebar .card-header button { font-weight: 600; color: var(--netd-ink); }
+#sidebar .facet-count { color: var(--netd-muted); }
+.facets-heading, #sidebar h2 { font-size: .88rem !important; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+#documents article.document { display: block !important; padding: 1.2rem 0 1.3rem; margin: 0; border-bottom: 1px solid var(--netd-line); }
 #documents article.document > * { width: auto; max-width: none; flex: none; }
-.etd-badge { vertical-align: middle; }
-/* brand: replace the Blacklight logo with the portal name */
-.navbar-brand.navbar-logo, a.navbar-logo { background-image: none !important; width: auto !important;
-  height: auto !important; text-indent: 0 !important; color: #fff !important; font-weight: 700; font-size: 1.25rem; }
-.navbar-brand.navbar-logo img, a.navbar-logo img { display: none; }
-.navbar-search .advanced_search, .navbar-search a { color: #e6f2f5 !important; }
-footer.netd-footer { background: #0b4f6c; color: #d9e9ef; margin-top: 2rem; }
-footer.netd-footer a { color: #fff; }
-.netd-home { background: #fff; border: 1px solid #dde3ea; border-radius: 8px; padding: 1.5rem 1.75rem; }
-.netd-inst-card { display: flex; justify-content: space-between; align-items: center; border: 1px solid #dde3ea; border-radius: 8px;
-  padding: 1rem 1.25rem; text-decoration: none; color: var(--netd-ink); background: #f9fbfc; }
-.netd-inst-card:hover { border-color: var(--netd-primary); background: #eef6f9; }
-.netd-inst-name { font-weight: 700; color: var(--netd-primary); }
-.netd-inst-count { background: #e7eef5; color: var(--netd-primary); border-radius: 999px; padding: .15rem .65rem; font-size: .85rem; font-weight: 700; }
-.netd-inst-zero { background: #fafafa; color: var(--netd-muted); }
-.netd-inst-zero .netd-inst-name { color: #4a5560; font-weight: 700; }
-.netd-inst-status { display: block; font-size: .78rem; color: var(--netd-muted); font-weight: 400; }
-.netd-inst-zero .netd-inst-count { background: #eef0f2; color: #5f6b76; }
-.netd-facet-zero { display: flex; justify-content: space-between; color: #8a949e; padding: .15rem 0; }
-.netd-pubs li { margin-bottom: .9rem; }
-.etd-badge-pdf { background: #fdecea; color: #a1281c; }
-.etd-pdf-link { display: inline-block; margin-top: .4rem; font-weight: 700; font-size: .9rem; color: #a1281c; text-decoration: none; }
-.etd-pdf-link:hover { text-decoration: underline; }
-.netd-more-toggle { font-size: .9rem; }
+.document .document-counter { display: none; }
+.document .index_title, .document .document-title-heading { font-size: 1.2rem; font-weight: 500; line-height: 1.4; }
+.document .index_title a { color: var(--netd-blue); }
+.document dl.document-metadata { margin: .35rem 0 0; font-size: .95rem; }
+.document dl.document-metadata dt { color: var(--netd-muted); font-weight: 400; }
+.etd-badge { display: inline-block; font-size: .72rem; font-weight: 600; padding: .12rem .45rem; margin: 0 .35rem .5rem 0;
+  letter-spacing: .05em; text-transform: uppercase; border: 1px solid; border-radius: 2px; vertical-align: middle; }
+.etd-badge-level { color: #146c43; border-color: #a9d5bf; }
+.etd-badge-year { color: var(--netd-blue); border-color: #a9cbe8; }
+.etd-badge-inst { color: #4b3a8c; border-color: #c9bfe6; }
+.etd-badge-pdf { color: #a1281c; border-color: #e5b3ad; }
+.etd-snippet { color: #333; font-size: .95rem; line-height: 1.6; margin: .55rem 0 0; }
+.etd-pdf-link { display: inline-block; margin-top: .45rem; font-weight: 600; font-size: .92rem; }
+.netd-facet-zero { display: flex; justify-content: space-between; color: #8a929b; padding: .15rem 0; }
+.netd-more-toggle { font-size: .92rem; }
 .netd-more-toggle.collapsed .when-expanded, .netd-more-toggle:not(.collapsed) .when-collapsed { display: none; }
+
+/* ---------- record page ---------- */
+.blacklight-catalog-show #document { padding: .5rem 0 1rem; }
+.blacklight-catalog-show .document-title-heading, .blacklight-catalog-show h1 { font-size: 1.75rem; font-weight: 600; line-height: 1.3; margin: .4rem 0 1rem; }
+.etd-source { margin: .4rem 0 .6rem; }
+
+/* ---------- about page ---------- */
+.netd-page { padding: 1.6rem 0; max-width: 900px; }
+.netd-page h1 { font-size: 1.9rem; font-weight: 600; }
+.netd-pubs { padding-left: 0; list-style: none; }
+.netd-pubs li { padding: .8rem 0; border-bottom: 1px solid var(--netd-line); }
+
+/* ---------- footer ---------- */
+footer.netd-footer { border-top: 1px solid var(--netd-line); margin-top: 2.5rem; padding: 2rem 0; color: var(--netd-muted); font-size: .92rem; background: #f7f8f9; }
+footer.netd-footer strong { color: var(--netd-ink); font-weight: 600; }

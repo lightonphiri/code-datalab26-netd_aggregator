@@ -1,37 +1,66 @@
-<%# Landing page: introduction + every HEA-accredited postgraduate institution with its ETD count %>
-<% counts = (@response&.aggregations&.dig('institution_ssim')&.items || []).to_h { |i| [i.value, i.hits] } %>
+<%# Landing page in the style of Columbia's Academic Commons: one-line intro, two explore cards,
+    stats at a glance, contributing institutions (all HEA-accredited postgraduate HEIs, 0 where none). %>
+<% agg = ->(f) { (@response&.aggregations&.dig(f)&.items || []).to_h { |i| [i.value, i.hits] } } %>
+<% inst = agg.call('institution_ssim'); lvl = agg.call('degree_level_ssim'); ft = agg.call('full_text_ssim') %>
+<% years = agg.call('year_ssim').keys.map(&:to_i).select(&:positive?) %>
 <% total = @response&.total || 0 %>
-<% insts = InstitutionRegistry.all.sort_by { |i| [-(counts[i[:name]] || 0), i[:name]] } %>
+<% registry = InstitutionRegistry.all %>
+<% contributing = registry.select { |i| inst[i[:name]].to_i.positive? }.sort_by { |i| -inst[i[:name]] } %>
+<% waiting = registry - contributing %>
+<% fmt = ->(n) { number_with_delimiter(n.to_i) } %>
 <div class="netd-home">
-  <h1 class="h3">Theses and dissertations from Zambian universities, in one place</h1>
-  <p class="lead">The Zambia National ETD Portal brings together metadata for <strong><%= number_with_delimiter(total) %></strong>
-    electronic theses and dissertations harvested from institutional repositories. Search above, or start with an institution.</p>
-  <p>Metadata is meant to be harvested from <strong>all <%= insts.size %> universities and institutions that offer
-    Master's and PhD programmes</strong> accredited by the
-    <a href="https://www.hea.org.zm" target="_blank" rel="noopener">Higher Education Authority (HEA)</a>, as listed in HEA's
-    gazettes of accredited learning programmes. Institutions showing 0 have no public repository yet, no ETD collection,
-    or a repository that cannot currently be harvested.</p>
-  <div class="row g-2 mt-1">
-    <% insts.each do |i| %>
-      <% n = counts[i[:name]] || 0 %>
-      <div class="col-md-6">
-        <% if n.positive? %>
-          <%= link_to search_action_path(f: { institution_ssim: [i[:name]] }), class: 'netd-inst-card' do %>
-            <span class="netd-inst-name"><%= i[:name] %></span>
-            <span class="netd-inst-count"><%= number_with_delimiter(n) %> ETDs</span>
-          <% end %>
-        <% else %>
-          <div class="netd-inst-card netd-inst-zero" title="<%= InstitutionRegistry::STATUS_LABELS[i[:status]] %>">
-            <span><span class="netd-inst-name"><%= i[:name] %></span>
-              <span class="netd-inst-status"><%= InstitutionRegistry::STATUS_LABELS[i[:status]] %></span></span>
-            <span class="netd-inst-count">0 ETDs</span>
-          </div>
-        <% end %>
-      </div>
-    <% end %>
+  <p class="netd-intro"><strong>Zambia National ETD Portal</strong> provides a single point of access to theses and
+    dissertations produced at Zambian universities and higher education institutions.
+    <%= link_to 'Learn more →', about_path %></p>
+
+  <div class="row g-4 netd-cards">
+    <div class="col-md-6">
+      <%= link_to search_action_path(f: { degree_level_ssim: ['Masters'] }), class: 'netd-card' do %>
+        <span class="netd-card-title"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 5h11M4 9h11M4 13h7"/><circle cx="16" cy="15" r="3.5"/><path d="m18.6 17.6 2.4 2.4"/></svg>
+          Explore Master's Manuscripts</span>
+        <span class="netd-card-text">Browse <%= fmt.(lvl['Masters']) %> master's dissertations and theses, filter by institution,
+          faculty, subject and year, and download the full text where the repository provides it.</span>
+      <% end %>
+    </div>
+    <div class="col-md-6">
+      <%= link_to search_action_path(f: { degree_level_ssim: ['Doctoral'] }), class: 'netd-card' do %>
+        <span class="netd-card-title"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/><path d="M22 9v6"/></svg>
+          Explore PhD Manuscripts</span>
+        <span class="netd-card-text">Browse <%= fmt.(lvl['Doctoral']) %> doctoral theses from Zambian universities,
+          with direct links to the full text held in each institutional repository.</span>
+      <% end %>
+    </div>
   </div>
-  <p class="mt-4"><%= link_to 'Browse all ETDs →', search_action_path(search_field: 'all_fields', q: ''), class: 'btn btn-primary' %>
-    <%= link_to 'About the project and publications', about_path, class: 'btn btn-outline-primary ms-2' %></p>
-  <p class="text-muted small">Supervisor and Department are not yet supplied by the source repositories.
-    Institution list compiled from HEA's accredited learning programmes (Special Gazette No. 61 of 2025; Gazette No. 7965 of 2026).</p>
+
+  <div class="row g-5 mt-1">
+    <div class="col-lg-4">
+      <h2 class="netd-kicker">Stats at a glance</h2>
+      <table class="netd-stats">
+        <tr><td><%= fmt.(total) %></td><td><%= link_to 'total ETDs', search_action_path(q: '', search_field: 'all_fields') %></td></tr>
+        <tr><td><%= fmt.(lvl['Masters']) %></td><td><%= link_to "master's", search_action_path(f: { degree_level_ssim: ['Masters'] }) %></td></tr>
+        <tr><td><%= fmt.(lvl['Doctoral']) %></td><td><%= link_to 'doctoral', search_action_path(f: { degree_level_ssim: ['Doctoral'] }) %></td></tr>
+        <tr><td><%= fmt.(ft['PDF available']) %></td><td><%= link_to 'with full-text PDF', search_action_path(f: { full_text_ssim: ['PDF available'] }) %></td></tr>
+        <tr><td><%= contributing.size %> of <%= registry.size %></td><td>institutions contributing</td></tr>
+        <% if years.any? %><tr><td><%= years.min %>–<%= years.max %></td><td>years covered</td></tr><% end %>
+      </table>
+      <p class="netd-note"><%= fmt.(total - lvl.values.sum) %> ETDs do not yet state their degree level in the source repository.</p>
+    </div>
+    <div class="col-lg-8">
+      <h2 class="netd-kicker">Contributing institutions</h2>
+      <ul class="netd-inst">
+        <% contributing.each do |i| %>
+          <li><%= link_to i[:name], search_action_path(f: { institution_ssim: [i[:name]] }) %><span><%= fmt.(inst[i[:name]]) %></span></li>
+        <% end %>
+      </ul>
+      <p class="netd-note">Metadata is meant to be harvested from all <strong><%= registry.size %></strong> institutions offering
+        Master's and PhD programmes accredited by the <a href="https://www.hea.org.zm" target="_blank" rel="noopener">Higher Education Authority</a>.
+        <a class="netd-more-toggle collapsed" data-bs-toggle="collapse" href="#netd-waiting" role="button" aria-expanded="false" aria-controls="netd-waiting">
+          <span class="when-collapsed">Show the <%= waiting.size %> not yet harvested »</span><span class="when-expanded">« Hide</span></a></p>
+      <ul class="netd-inst netd-inst-waiting collapse" id="netd-waiting">
+        <% waiting.sort_by { |i| i[:name] }.each do |i| %>
+          <li><span><%= i[:name] %><small><%= InstitutionRegistry::STATUS_LABELS[i[:status]] %></small></span><span>0</span></li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
 </div>

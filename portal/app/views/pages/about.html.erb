@@ -1,6 +1,6 @@
 <% p = @data['project'] %>
 <% content_for(:page_title) { "About — #{p['name']}" } %>
-<div class="netd-home">
+<div class="netd-page">
   <h1 class="h3">About the <%= p['name'] %></h1>
   <p><%= p['summary'] %></p>
   <p>Developed by the <%= link_to p['group'], p['group_url'], target: '_blank', rel: 'noopener' %>.

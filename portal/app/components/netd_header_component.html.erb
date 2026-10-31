@@ -1,0 +1,26 @@
+<header class="netd-header" role="banner">
+  <div class="netd-groupbar">
+    <div class="container"><a href="https://datalab.unza.zm" target="_blank" rel="noopener">DataLab Research Group</a></div>
+  </div>
+  <div class="container netd-masthead">
+    <a class="netd-wordmark" href="<%= helpers.root_path %>">
+      <span class="netd-wm-a">Zambia</span><span class="netd-wm-sep"></span><span class="netd-wm-b">National ETD Portal</span>
+    </a>
+    <form class="netd-search" action="<%= helpers.search_action_url %>" method="get" role="search">
+      <input type="hidden" name="search_field" value="all_fields">
+      <label for="netd-q" class="visually-hidden">Search</label>
+      <input id="netd-q" type="search" name="q" value="<%= helpers.params[:q] %>" placeholder="Search theses and dissertations…">
+      <button type="submit" aria-label="Search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+      </button>
+    </form>
+  </div>
+  <nav class="netd-navrow" aria-label="Main">
+    <div class="container">
+      <a href="<%= helpers.about_path %>">About</a>
+      <a href="<%= helpers.search_action_path(q: '', search_field: 'all_fields') %>">Explore</a>
+      <a href="<%= explore_path('Masters') %>">Master's</a>
+      <a href="<%= explore_path('Doctoral') %>">PhD</a>
+    </div>
+  </nav>
+</header>

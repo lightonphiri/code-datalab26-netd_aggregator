@@ -6,6 +6,7 @@ class CatalogController < ApplicationController
   include Blacklight::Catalog
 
   configure_blacklight do |config|
+    config.header_component = NetdHeaderComponent
     config.default_solr_params = { rows: 20 }
     config.per_page = [20, 50, 100]
 

@@ -2,6 +2,8 @@
 
 # Static "About" page: project details and linked publications (config/publications.yml).
 class PagesController < ApplicationController
+  include Blacklight::Configurable
+  copy_blacklight_config_from(CatalogController)
   layout 'blacklight'
 
   def about
