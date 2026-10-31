@@ -64,10 +64,10 @@ netd.ac.zm has a Let's Encrypt certificate (obtained on October 30, 2026 with `c
 
 ### Problem reports (record page form)
 Reports are stored in the portal database and emailed to lighton.phiri@unza.ac.zm and datalab@unza.zm once SMTP is configured.
-To enable email, create a Google app password for the sending account (Google Account → Security → 2-Step Verification → App passwords), then on the server:
+Mail is sent from lighton.phiri@unza.ac.zm (datalab@unza.zm is a mailing list and cannot send); configured October 31, 2026. To change the sending account, create a Google app password for it (Google Account → Security → 2-Step Verification → App passwords), then on the server:
 ```bash
 sudo tee -a /opt/netd/portal.env >/dev/null <<'ENV'
-SMTP_USER=datalab@unza.zm
+SMTP_USER=lighton.phiri@unza.ac.zm
 SMTP_PASSWORD=the-16-character-app-password
 ENV
 sudo systemctl restart netd-portal
