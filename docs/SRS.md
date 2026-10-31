@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SRS, structured per ISO/IEC/IEEE 29148:2018 (supersedes IEEE 830-1998) |
-| Version | 0.7 (beta) |
+| Version | 0.8 |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Repository | https://github.com/lightonphiri/code-datalab26-netd_aggregator |
@@ -15,6 +15,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial SRS: harvesting (UNZA, UNILUS), cleaning pipeline, Blacklight discovery |
 | 0.2 | October 30, 2026 | Discipline and Degree fields (FR-12, FR-21); institution entry points (FR-26); HTTPS (NFR-9); PDF pilot and onboarding findings (§4) |
+| 0.8 | October 31, 2026 | Portal moved to the site root, https://netd.ac.zm/, replacing the earlier ETD Portal; HTTP redirects to HTTPS; /beta and old portal addresses redirect (EI-2, C3, §1.2) |
 | 0.7 | October 31, 2026 | FR-21: Year facet lists newest years first, 5 visible with a "more »" toggle |
 | 0.6 | October 31, 2026 | FR-29: Institution facet shows the top 10 rows with a "more »" toggle for the rest |
 | 0.5 | October 31, 2026 | Direct links to full-text files (FR-32): PDF link on result cards and record pages, Full text facet |
@@ -29,12 +30,12 @@
 This document specifies the requirements for a national Electronic Theses and Dissertations (ETD) aggregation service for Zambia. The service harvests ETD metadata from Higher Education Institution (HEI) institutional repositories (IRs) using OAI-PMH, cleans and enriches it, and offers faceted discovery by Title, Author, Subject, Supervisor, Faculty and Department. It is intended for the DataLab project team, HEI repository managers, and reviewers such as the Higher Education Authority (HEA).
 
 ### 1.2 Scope
-The system ("NETD v2") replaces, in stages, the current Zambia National ETD Portal at https://netd.ac.zm, which runs the UCT ETD Portal software [R4] and holds about 5,269 UNZA records [R1]. Version 0.3 runs **alongside** the current portal at `https://netd.ac.zm/beta/` and covers:
+The system ("NETD v2") replaces, in stages, the current Zambia National ETD Portal at https://netd.ac.zm, which runs the UCT ETD Portal software [R4] and holds about 5,269 UNZA records [R1]. Since October 31, 2026 (v0.8) it is served at `https://netd.ac.zm/`, replacing the earlier portal, and covers:
 - harvesting from three HEIs (UNZA RIMS and UNILUS over OAI-PMH; ZCAS University over the DSpace REST API), and listing all HEA-accredited postgraduate institutions [R12], [R13];
 - a cleaning pipeline with a plug-in point for DataLab's machine-learning (ML) models;
 - a Blacklight 9 discovery interface over Apache Solr.
 
-Out of scope for v0.1: depositing ETDs, user accounts, hosting full texts, and replacing the live portal.
+Out of scope: depositing ETDs, user accounts and hosting full texts. (Replacing the earlier portal was completed in v0.8.)
 
 ### 1.3 Definitions, acronyms and abbreviations
 | Term | Meaning |
@@ -112,7 +113,7 @@ flowchart LR
 ### 2.5 Design and implementation constraints
 - C1 Must not disturb the live portal or other services on the server, and must not change system packages (apt is currently in a broken state).
 - C2 Memory budget: Solr heap ≤ 512 MB; web app ≤ 300 MB resident.
-- C3 Must not depend on actions by third parties (e.g. DNS changes); hence sub-path `/beta`.
+- C3 Must not depend on actions by third parties (e.g. DNS changes). The `/beta` sub-path was used while both portals ran (October 30–31, 2026); retired in v0.8.
 - C4 Open-source components only; source code versioned on GitHub.
 - C5 ML models are Python; the cleaning tier must be Python.
 - C6 British English in the interface and documentation.
@@ -132,7 +133,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | ID | Requirement | Pri |
 |---|---|---|
 | EI-1 | The harvester shall act as an OAI-PMH 2.0 client supporting `Identify`, `ListMetadataFormats`, `ListSets` and `ListRecords`, with resumption tokens. | M |
-| EI-2 | The portal shall be served over HTTP(S) at `/beta/` on netd.ac.zm through the existing Apache server (reverse proxy); the HTTPS proxy shall pass `X-Forwarded-Proto: https` so that form posts pass Rails' origin check. | M |
+| EI-2 | The portal shall be served over HTTPS at the root of netd.ac.zm through the existing Apache server (reverse proxy), with HTTP redirected to HTTPS and the former `/beta/` and old ETD Portal addresses (`/portal`, `/summary`, `/harvester`) redirected; the HTTPS proxy shall pass `X-Forwarded-Proto: https` so that form posts pass Rails' origin check. | M |
 | EI-3 | The portal shall offer a JSON view of search results and records (Blacklight `.json`). | S |
 | EI-4 | The system shall expose an OAI-PMH data provider (`oai_dc`, `etdms`) of canonical records. | C |
 | EI-5 | The UI shall follow a repository-style layout (facet sidebar, result cards with badges, record page with metadata panel) comparable to InvenioRDM. | M |

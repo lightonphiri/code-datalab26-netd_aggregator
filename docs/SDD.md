@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SDD, structured per IEEE 1016-2009 (design viewpoints) |
-| Version | 0.5 (beta) |
+| Version | 0.8 |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Related | `docs/SRS.md` (requirement IDs referenced below) |
@@ -14,6 +14,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial design: harvester, raw/canonical stores, crosswalk, enrichers, Blacklight portal, deployment |
 | 0.2 | October 30, 2026 | Discipline/degree derivation; Solr analysers; URL-safe record ids; HTTPS |
+| 0.8 | October 31, 2026 | Served at the site root; Apache sites managed in `deploy/apache` (HTTP→HTTPS, redirects for `/beta` and old portal paths, `/znrp` and `/ojs` excluded); old Tomcat portal no longer proxied |
 | 0.5 | October 31, 2026 | `bitstreams` table; file links from OAI `ore`, DSpace REST bundles and METS; `pdf_url`, `full_text_ssim` |
 | 0.4 | October 31, 2026 | DSpace 6 METS loader (`netd.mets`); HTTPS proxy passes X-Forwarded-Proto (fixes record clicks) |
 | 0.3 | October 31, 2026 | DSpace REST loader (`netd.rest`); institution registry, zero-count Institution facet and home page; About page from `publications.yml` |
@@ -22,7 +23,7 @@
 
 ## 1. Introduction
 ### 1.1 Purpose and scope
-This SDD describes how NETD v2 meets the SRS: the system's context, components, information model, interfaces, interaction, state, deployment, and the main design decisions. It covers release 0.5.
+This SDD describes how NETD v2 meets the SRS: the system's context, components, information model, interfaces, interaction, state, deployment, and the main design decisions. It covers release 0.8.
 
 ### 1.2 Stakeholders and concerns
 | Stakeholder | Concerns | Viewpoints |
@@ -325,21 +326,21 @@ stateDiagram-v2
 ```mermaid
 flowchart TB
   subgraph server ["Server portal — netd.ac.zm — Ubuntu 20.04, 2 vCPU, 3.8 GiB + 2 GiB swap"]
-    AP[Apache 2.4 :80/:443<br/>netd.conf: /portal → Tomcat, /beta → Puma]
-    TC["Tomcat :8080<br/>current ETD Portal, unchanged"]
+    AP[Apache 2.4 :80/:443<br/>netd.ac.zm: / → Puma; HTTP → HTTPS]
+    TC["Tomcat :8080<br/>other applications; old portal no longer proxied"]
     PU[netd-portal.service<br/>Puma 127.0.0.1:3010, 1 worker]
     SO[netd-solr.service<br/>Solr 9.11 127.0.0.1:8983, 512 MB heap]
     TI[netd-harvest.timer<br/>daily harvest+process+index]
     FS["/opt/netd: harvester, portal, solr, ruby, netd.sqlite3"]
   end
-  AP --> TC
   AP --> PU
   PU --> SO
   TI --> SO
 ```
 - All NETD services run as the unprivileged user `netd` (NFR-5) and are installed under `/opt/netd`.
 - No Docker and no apt changes (C1). Python comes via `uv`; Ruby is compiled with `ruby-build`.
-- Rollback: disable the `/beta` proxy lines and stop the `netd-*` units. The live portal is never touched.
+- Apache sites for netd.ac.zm live in `deploy/apache/` and are installed by `deploy.sh`, which backs up the previous files in `/opt/netd/`. Rollback: restore those backups and restart Apache.
+- The earlier ETD Portal (Tomcat :8080) is no longer proxied; Tomcat keeps running because it hosts other applications.
 
 ---
 
@@ -354,8 +355,9 @@ flowchart TB
 | Sub-path `/beta` | New sub-domain | No DNS change needed (constraint C3) |
 | Native systemd services | Docker | Lower memory overhead on a shared 4 GB server |
 
-## 10. Known limitations (v0.4)
+## 10. Known limitations (v0.8)
 - Supervisor and Department are empty for all harvested sources: the IRs don't expose them. ML/PDF extraction is deferred until the portal is complete.
 - 30 of the 34 HEA-listed institutions show 0 (no reachable ETD repository).
-- HTTPS for netd.ac.zm is in place (NFR-9); HTTP is not yet redirected to HTTPS, so the live portal behaves as before.
+- HTTPS for netd.ac.zm is in place (NFR-9); HTTP redirects to HTTPS since v0.8.
+- The old portal's OAI-PMH endpoint (/OAI-PMH) is retired with it; NETD v2's own OAI-PMH provider (EI-4) is not built yet.
 - No OAI-PMH provider yet (EI-4); no deduplication (FR-19).
