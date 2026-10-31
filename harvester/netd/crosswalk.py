@@ -181,8 +181,10 @@ def to_canonical(row, src, set_names, files=None):
                     break
 
     # Direct links to the full text (bitstreams); PDFs first
-    pdfs = [f["url"] for f in files or [] if (f.get("mime") or "").endswith("pdf")
-            or (f.get("name") or "").lower().endswith(".pdf")]
+    # largest PDF first: items often also hold small "preliminary pages" PDFs
+    pdf_files = [f for f in files or [] if (f.get("mime") or "").endswith("pdf")
+                 or (f.get("name") or "").lower().endswith(".pdf")]
+    pdfs = [f["url"] for f in sorted(pdf_files, key=lambda f: -(f.get("size") or 0))]
     if pdfs:
         rec["pdf_url"] = pdfs
         rec["provenance"]["pdf_url"] = "harvested:files"

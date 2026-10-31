@@ -34,11 +34,14 @@ def _files(doc, base):
             continue
         for f in grp.iter("{http://www.loc.gov/METS/}file"):
             loc = f.find("{http://www.loc.gov/METS/}FLocat")
-            href = loc.get("{http://www.w3.org/1999/xlink}href") if loc is not None else None
+            # DSpace 6 declares xlink as http://www.w3.org/TR/xlink/ (non-standard); accept both
+            attr = lambda n: (loc.get("{http://www.w3.org/1999/xlink}" + n) or
+                              loc.get("{http://www.w3.org/TR/xlink/}" + n)) if loc is not None else None
+            href = attr("href")
             if href:
                 out.append({"url": urllib.parse.urljoin(origin, href), "mime": f.get("MIMETYPE"),
                             "size": int(f.get("SIZE") or 0) or None,
-                            "name": loc.get("{http://www.w3.org/1999/xlink}title")})
+                            "name": attr("title")})
     return out
 
 
