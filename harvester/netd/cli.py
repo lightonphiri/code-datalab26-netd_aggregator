@@ -5,7 +5,7 @@
   index    [--source ID]                        push canonical records to Solr
   run      [--source ID] [--full]               harvest + process + index (scheduled job)
   report                                        field completeness per institution
-  check    [--max-age-hours H]                  health check after the scheduled run (exit 1 = problem)
+  check    [--max-age-hours H]                  health check after the scheduled run, incl. OAI-PMH Identify (exit 1 = problem)
 """
 import argparse
 import os
@@ -117,6 +117,13 @@ def do_check(store, srcs, solr, max_age_hours):
                 problems.append("%s: %d records stored but only %d in the search index" % (src["id"], a, b))
     print("check: %d records indexed; sources %s" % (total, ", ".join(
         "%s=%d" % (s["id"], indexed.get(s["id"], 0)) for s in srcs)))
+    oai = os.environ.get("NETD_OAI", "http://127.0.0.1:3010/oai")
+    try:
+        body = urllib.request.urlopen(oai + "?verb=Identify", timeout=30).read().decode("utf-8", "replace")
+        if "<repositoryName>" not in body or "<error" in body:
+            problems.append("OAI-PMH Identify did not return a valid response")
+    except Exception as e:
+        problems.append("OAI-PMH data provider not answering: %s" % e)
     for p in problems:
         print("PROBLEM: " + p)
     if problems:

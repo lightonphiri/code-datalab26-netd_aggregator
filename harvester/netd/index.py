@@ -1,5 +1,6 @@
 """Push canonical records to Solr using Blacklight's dynamic-field naming conventions."""
 import json
+import time
 import urllib.request
 
 # canonical field -> Solr fields
@@ -38,6 +39,8 @@ def to_solr(rec):
             if t.endswith("_ssim") and f in FACETED and not ok.get(f, True):
                 continue  # low-confidence value: searchable, not facetable
             doc[t] = vals
+    if rec.get("_updated_at"):  # last content change in the portal: OAI-PMH datestamp (UTC, seconds)
+        doc["updated_dtsi"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(rec["_updated_at"]))
     if rec.get("title"):
         doc["title_ssort"] = rec["title"][0].lower()
     if rec.get("year"):

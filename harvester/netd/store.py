@@ -76,16 +76,25 @@ class Store:
 
     # --- canonical layer ---------------------------------------------------
     def put_record(self, rec):
+        """Store a canonical record. updated_at changes only when the record's content changes, so it can
+        serve as the OAI-PMH datestamp of the portal's own data provider (incremental harvesting)."""
+        data = json.dumps(rec, ensure_ascii=False)
+        old = self.db.execute("SELECT data FROM records WHERE id=?", (rec["id"],)).fetchone()
+        if old is not None and old["data"] == data:
+            return
         self.db.execute("INSERT OR REPLACE INTO records VALUES (?,?,?,?)",
-                        (rec["id"], rec["source"], json.dumps(rec, ensure_ascii=False), time.time()))
+                        (rec["id"], rec["source"], data, time.time()))
 
     def delete_record(self, rec_id):
         self.db.execute("DELETE FROM records WHERE id=?", (rec_id,))
 
     def records(self, source=None):
-        q = "SELECT data FROM records" + (" WHERE source=?" if source else "")
+        """Canonical records; each carries "_updated_at" (epoch seconds of its last content change)."""
+        q = "SELECT data, updated_at FROM records" + (" WHERE source=?" if source else "")
         for r in self.db.execute(q, (source,) if source else ()):
-            yield json.loads(r["data"])
+            rec = json.loads(r["data"])
+            rec["_updated_at"] = r["updated_at"]
+            yield rec
 
     # --- harvest bookkeeping ---------------------------------------------
     def last_success(self, source):

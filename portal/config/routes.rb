@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  match 'oai', to: 'oai#index', via: [:get, :post], as: :oai  # OAI-PMH data provider (SRS EI-4)
   mount Blacklight::Engine => '/'
   root to: "catalog#index"
   get "about", to: "pages#about", as: :about
