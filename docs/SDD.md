@@ -4,16 +4,23 @@
 | Item | Value |
 |---|---|
 | Document | SDD, structured per IEEE 1016-2009 (design viewpoints) |
-| Version | 0.2 (beta) |
-| Date | October 30, 2026 |
+| Version | 0.3 (beta) |
+| Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Related | `docs/SRS.md` (requirement IDs referenced below) |
+
+### Revision history
+| Version | Date | Changes |
+|---|---|---|
+| 0.1 | October 30, 2026 | Initial design: harvester, raw/canonical stores, crosswalk, enrichers, Blacklight portal, deployment |
+| 0.2 | October 30, 2026 | Discipline/degree derivation; Solr analysers; URL-safe record ids; HTTPS |
+| 0.3 | October 31, 2026 | DSpace REST loader (`netd.rest`); institution registry, zero-count Institution facet and home page; About page from `publications.yml` |
 
 ---
 
 ## 1. Introduction
 ### 1.1 Purpose and scope
-This SDD describes how NETD v2 meets the SRS: the system's context, components, information model, interfaces, interaction, state, deployment, and the main design decisions. It covers release 0.1.
+This SDD describes how NETD v2 meets the SRS: the system's context, components, information model, interfaces, interaction, state, deployment, and the main design decisions. It covers release 0.3.
 
 ### 1.2 Stakeholders and concerns
 | Stakeholder | Concerns | Viewpoints |
@@ -107,7 +114,12 @@ flowchart LR
 | `netd.crosswalk` | Flattening of `dim`/`etdms`/`oai_dc`; field mapping; set-based and text-based derivation; provenance | FR-12–FR-15 |
 | `netd.enrich` | Built-in rules; loading and running external enrichers; confidence → facetable | FR-16–FR-18 |
 | `netd.index` | Canonical → Solr document (Blacklight dynamic-field names) | FR-21 |
+| `netd.rest` | Fallback loader: DSpace 7 REST API items → `dim` XML in the raw layer (set specs from collection and parent community) | FR-10 |
 | `netd.cli` | `harvest`, `process`, `index`, `run`, `report` | FR-9, FR-27 |
+| `institutions.yml` + `InstitutionRegistry` | All HEA-accredited postgraduate HEIs with harvest status | FR-29 |
+| `InstitutionFacetComponent` | Institution facet listing registry institutions with no records as 0 (hidden once an institution is selected) | FR-29 |
+| Home page (`catalog/_home_text`) | HEA statement; all institutions with counts and status | FR-26, FR-30 |
+| `PagesController#about` + `publications.yml` | Project details and publications; `deploy/gen_publications_md.py` writes `PUBLICATIONS.md` from the same file | FR-31 |
 | Blacklight portal | Search UI, facets, sorting, record pages, JSON API | FR-20–FR-24, EI-3, EI-5 |
 | Solr core `netd` | Blacklight schema (ICU analysers replaced by built-in ASCII folding, as the slim Solr distribution lacks the ICU module); `qf` tuned to ETD fields | NFR-1 |
 
@@ -338,7 +350,8 @@ flowchart TB
 | Sub-path `/beta` | New sub-domain | No DNS change needed (constraint C3) |
 | Native systemd services | Docker | Lower memory overhead on a shared 4 GB server |
 
-## 10. Known limitations (v0.1)
-- Supervisor and Department are empty for both sample sources: the IRs don't expose them. This is the first target for ML/PDF extraction.
+## 10. Known limitations (v0.3)
+- Supervisor and Department are empty for all harvested sources: the IRs don't expose them. ML/PDF extraction is deferred until the portal is complete.
+- 31 of the 34 HEA-listed institutions show 0 (no reachable ETD repository).
 - HTTPS for netd.ac.zm is in place (NFR-9); HTTP is not yet redirected to HTTPS, so the live portal behaves as before.
 - No OAI-PMH provider yet (EI-4); no deduplication (FR-19).

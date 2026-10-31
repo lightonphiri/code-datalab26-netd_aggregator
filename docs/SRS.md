@@ -4,11 +4,18 @@
 | Item | Value |
 |---|---|
 | Document | SRS, structured per ISO/IEC/IEEE 29148:2018 (supersedes IEEE 830-1998) |
-| Version | 0.2 (beta) |
-| Date | October 30, 2026 |
+| Version | 0.3 (beta) |
+| Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Repository | https://github.com/lightonphiri/code-datalab26-netd_aggregator |
 | Status | Draft for review |
+
+### Revision history
+| Version | Date | Changes |
+|---|---|---|
+| 0.1 | October 30, 2026 | Initial SRS: harvesting (UNZA, UNILUS), cleaning pipeline, Blacklight discovery |
+| 0.2 | October 30, 2026 | Discipline and Degree fields (FR-12, FR-21); institution entry points (FR-26); HTTPS (NFR-9); PDF pilot and onboarding findings (§4) |
+| 0.3 | October 31, 2026 | HEA institution registry with zero counts (FR-29, FR-30); About page with publications (FR-31); ZCAS via DSpace REST fallback (FR-10); ML/PDF extraction deferred until the portal is complete (FR-14); new sources [R12]–[R14] |
 
 ---
 
@@ -18,8 +25,8 @@
 This document specifies the requirements for a national Electronic Theses and Dissertations (ETD) aggregation service for Zambia. The service harvests ETD metadata from Higher Education Institution (HEI) institutional repositories (IRs) using OAI-PMH, cleans and enriches it, and offers faceted discovery by Title, Author, Subject, Supervisor, Faculty and Department. It is intended for the DataLab project team, HEI repository managers, and reviewers such as the Higher Education Authority (HEA).
 
 ### 1.2 Scope
-The system ("NETD v2") replaces, in stages, the current Zambia National ETD Portal at https://netd.ac.zm, which runs the UCT ETD Portal software [R4] and holds about 5,269 UNZA records [R1]. Version 0.1 runs **alongside** the current portal at `https://netd.ac.zm/beta/` and covers:
-- harvesting from two sample HEIs (UNZA RIMS and UNILUS);
+The system ("NETD v2") replaces, in stages, the current Zambia National ETD Portal at https://netd.ac.zm, which runs the UCT ETD Portal software [R4] and holds about 5,269 UNZA records [R1]. Version 0.3 runs **alongside** the current portal at `https://netd.ac.zm/beta/` and covers:
+- harvesting from three HEIs (UNZA RIMS and UNILUS over OAI-PMH; ZCAS University over the DSpace REST API), and listing all HEA-accredited postgraduate institutions [R12], [R13];
 - a cleaning pipeline with a plug-in point for DataLab's machine-learning (ML) models;
 - a Blacklight 9 discovery interface over Apache Solr.
 
@@ -140,7 +147,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | FR-7 | Each harvest run shall be logged (source, start/end, from-date, counts, status, message). | M |
 | FR-8 | The harvester shall store the set hierarchy (`ListSets`) for each source. | M |
 | FR-9 | Harvests shall run on a schedule (daily) without manual action. | S |
-| FR-10 | Fallback adapters (DSpace REST API, CSV upload) shall be available for HEIs without working OAI-PMH. | C |
+| FR-10 | Fallback adapters shall be available for HEIs without working OAI-PMH: DSpace 7 REST API (implemented in v0.3, used for ZCAS), CSV upload (later). | S |
 
 **Processing, cleaning and enrichment**
 | ID | Requirement | Pri |
@@ -148,7 +155,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | FR-11 | Raw metadata shall be stored unmodified; processing shall be re-runnable from the raw store without re-harvesting. | M |
 | FR-12 | A crosswalk shall map `dim`, `etdms` and `oai_dc` to canonical fields: title, author, supervisor, subject, faculty, department, discipline, degree, degree level, year, abstract, URL, language, type, institution. | M |
 | FR-13 | Faculty/Department shall be derived from the set hierarchy where a source's collections represent units (per-source rule `collections_are`). | M |
-| FR-14 | Supervisor, Department and Degree shall be extracted from free-text fields and, later, from PDF front matter. | S (text) / C (PDF) |
+| FR-14 | Supervisor, Department and Degree shall be extracted from free-text fields (v0.2) and, later, from PDF front matter with OCR/ML. PDF/ML work is **deferred until the portal is complete** (decision of October 31, 2026). | S (text) / C (PDF, deferred) |
 | FR-15 | Every canonical field value shall carry provenance (`harvested:`, `set:`, `text:`, `rule:`, `model:`). | M |
 | FR-16 | Enrichers shall be pluggable as Python callables `f(record) -> record`, registered in `enrichers.yml` without code changes to the platform. | M |
 | FR-17 | Enrichers may set a confidence per field. Values below `min_confidence` shall stay searchable but shall not be used as facet values. | M |
@@ -171,6 +178,13 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 |---|---|---|
 | FR-27 | The administrator shall obtain a per-institution field-completeness report from the command line. | M |
 | FR-28 | A public quality dashboard (completeness and ETD-MS compliance per HEI). | C |
+
+**Coverage and project information**
+| ID | Requirement | Pri |
+|---|---|---|
+| FR-29 | An institution registry (`harvester/institutions.yml`) shall list every HEI with at least one HEA-accredited Master's or Doctoral programme [R12], [R13]. The home page and the Institution facet shall show every registry institution, with **0** where nothing is harvested and the reason (no repository known, no ETD collection, repository not reachable). | M |
+| FR-30 | The home page shall state that metadata is meant to be harvested from all institutions offering HEA-accredited Master's and PhD programmes, citing HEA. | M |
+| FR-31 | The portal (About page) and the repository (`PUBLICATIONS.md`) shall list the project details [R14] and all linked publications, dissertations and capstone reports, from one source file (`portal/config/publications.yml`). | M |
 
 ### 3.3 Non-functional requirements
 | ID | Category | Requirement | Pri |
@@ -203,16 +217,17 @@ The canonical record is a JSON object stored in SQLite (`records.data`):
 | NFR-1, NFR-3 | Measurement (`curl -w`, `ps`) | Recorded at deployment |
 | NFR-4, NFR-5 | Inspection of systemd units | `deploy/systemd/*.service` |
 
-Completeness (October 30, 2026, after v0.2 rules):
+Completeness (October 31, 2026, v0.3):
 
 | Institution | Records | Title | Author | Supervisor | Subject | Faculty | Department | Discipline | Degree | Degree level | Year |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | UNILUS | 62 | 100% | 100% | 0% | 85% | 0% | 0% | 0% | 0% | 100% | 100% |
 | UNZA | 5,736 | 100% | 100% | 0% | 84% | 100% | 0% | 16% | 18% | 40% | 100% |
+| ZCASU | 116 | 99% | 98% | 0% | 49% | 100% | 0% | 0% | 0% | 0% | 99% |
+
+Institution registry (October 31, 2026): 34 HEIs have HEA-accredited postgraduate programmes, taken from HEA's accredited-programmes data and checked against [R12] (text) — [R13] is a scanned PDF and could not be machine-read. 3 are harvested; Mulungushi University's repository (space.mu.ac.zm) has no reachable OAI-PMH endpoint; Mukuba University's repository has no ETD collection; 29 have no known public repository. Kapasa Makasa University and NIPA repositories were checked but have no ETD collection and no HEA-accredited postgraduate programme. ZCAS's OAI-PMH endpoint answers but returns no records for any set, so its items are read from the DSpace 7 REST API (FR-10).
 
 PDF pilot (October 30, 2026): the OAI-PMH `ore` format exposes each ETD's PDF link. Of 12 randomly sampled UNZA PDFs (0.2–16 MB; 2 links returned HTTP 500), 4 had no extractable text (scanned images), and no supervisor name was found by rules in the first six pages; 1 yielded a department. Supervisor/Department extraction therefore needs OCR and ML, not rules — the intended use of FR-14/FR-16. UNILUS PDF links point to an internal address (`41.63.7.239:4000`) that the portal cannot reach.
-
-Other HEIs in [R6] (Cavendish, Mulungushi, ZCAS, Chalimbana, LAMU, plus Copperbelt): no OAI-PMH endpoint was found at common DSpace addresses on October 30, 2026. Their base URLs are needed to onboard them (FR-1).
 
 These gaps (Supervisor, Department, UNZA degree level) are the targets for the DataLab ML enrichers (FR-14, FR-16).
 
@@ -225,3 +240,5 @@ These gaps (Supervisor, Department, UNZA degree level) are the targets for the D
 | SA NETD tiered architecture [R4] | §2.1 |
 | Feed NDLTD [R9] | EI-4 |
 | Faceting by Supervisor/Faculty/Department (project brief) | FR-21, FR-25 |
+| National coverage of HEA-accredited postgraduate institutions [R12], [R13] | FR-29, FR-30 |
+| Project visibility and publications [R14] | FR-31 |

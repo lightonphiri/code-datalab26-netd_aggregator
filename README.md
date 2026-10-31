@@ -5,7 +5,16 @@ Harvests Electronic Theses and Dissertations (ETD) metadata from Zambian institu
 - **Beta:** https://netd.ac.zm/beta/ (runs alongside the current portal)
 - **Requirements:** [docs/SRS.md](docs/SRS.md) (ISO/IEC/IEEE 29148)
 - **Design:** [docs/SDD.md](docs/SDD.md) (IEEE 1016, with UML)
+- **Project page:** https://datalab.unza.zm/projects/zambia-national-etd-portal
+- **Publications, dissertations and reports:** [PUBLICATIONS.md](PUBLICATIONS.md) (also on the portal's About page)
 - **Maintainer:** DataLab Research Group
+
+### Document versioning
+The SRS and SDD are kept in two places, changed together on every release:
+- `docs/SRS.md` and `docs/SDD.md` here: full history in git.
+- Google Docs working copies ([SRS](https://docs.google.com/document/d/1rGBlOvs6cJsIqVdYAZG1lUyff2j0-QYRwmqODysBhPM/edit), [SDD](https://docs.google.com/document/d/12g3y1FZUcVuRKnmhpchIZglu1xEXX8pPo3x2XOJ0Rno/edit)), updated with targeted edits so Google's version history records each change.
+
+Each document starts with a revision history giving the version, date and changes.
 
 ## Layout
 | Path | What |
