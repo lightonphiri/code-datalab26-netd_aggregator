@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SRS, structured per ISO/IEC/IEEE 29148:2018 (supersedes IEEE 830-1998) |
-| Version | 0.5 (beta) |
+| Version | 0.6 (beta) |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Repository | https://github.com/lightonphiri/code-datalab26-netd_aggregator |
@@ -15,6 +15,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial SRS: harvesting (UNZA, UNILUS), cleaning pipeline, Blacklight discovery |
 | 0.2 | October 30, 2026 | Discipline and Degree fields (FR-12, FR-21); institution entry points (FR-26); HTTPS (NFR-9); PDF pilot and onboarding findings (§4) |
+| 0.6 | October 31, 2026 | FR-29: Institution facet shows the top 10 rows with a "more »" toggle for the rest |
 | 0.5 | October 31, 2026 | Direct links to full-text files (FR-32): PDF link on result cards and record pages, Full text facet |
 | 0.4 | October 31, 2026 | Mulungushi University harvested via DSpace 6 METS exports (FR-10); EI-2 clarified for HTTPS form posts |
 | 0.3 | October 31, 2026 | HEA institution registry with zero counts (FR-29, FR-30); About page with publications (FR-31); ZCAS via DSpace REST fallback (FR-10); ML/PDF extraction deferred until the portal is complete (FR-14); new sources [R12]–[R14] |
@@ -184,7 +185,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 **Coverage and project information**
 | ID | Requirement | Pri |
 |---|---|---|
-| FR-29 | An institution registry (`harvester/institutions.yml`) shall list every HEI with at least one HEA-accredited Master's or Doctoral programme [R12], [R13]. The home page and the Institution facet shall show every registry institution, with **0** where nothing is harvested and the reason (no repository known, no ETD collection, repository not reachable). | M |
+| FR-29 | An institution registry (`harvester/institutions.yml`) shall list every HEI with at least one HEA-accredited Master's or Doctoral programme [R12], [R13]. The home page and the Institution facet shall show every registry institution (the facet shows the top 10 rows, harvested institutions first, with a "more »" toggle for the rest), with **0** where nothing is harvested and the reason (no repository known, no ETD collection, repository not reachable). | M |
 | FR-30 | The home page shall state that metadata is meant to be harvested from all institutions offering HEA-accredited Master's and PhD programmes, citing HEA. | M |
 | FR-31 | The portal (About page) and the repository (`PUBLICATIONS.md`) shall list the project details [R14] and all linked publications, dissertations and capstone reports, from one source file (`portal/config/publications.yml`). | M |
 | FR-32 | For every ETD whose repository exposes it, the portal shall link directly to the full-text file (bitstream), preferring the largest PDF, on result cards and record pages, and offer a Full text facet (PDF available / other file / metadata only). Files stay in the source repositories. | M |
