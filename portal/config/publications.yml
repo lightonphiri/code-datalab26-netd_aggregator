@@ -12,27 +12,27 @@ project:
     with research into metadata quality, completeness and ETD-MS compliance.
   # roles as shown on https://datalab.unza.zm/people (checked October 31, 2026)
   members:
-    - {name: "Lighton Phiri", role: "Principal Investigator"}
-    - {name: "Elijah Chileshe", role: "Postgraduate Student, MSc Computer Science"}
-    - {name: "Frazer Nyambe", role: "Postgraduate Student, MSc Computer Science"}
-    - {name: "Robert M'sendo", role: "Postgraduate Student, PhD Computer Science"}
-    - {name: "Mubanga Chibesa", role: "Postgraduate Student, PgDip Computer Science"}
-    - {name: "Adrian Chisale", role: "Postgraduate Student, MA Library and Information Science"}
-    - {name: "Cecilia Kasonde", role: "Postgraduate Student, MA Library and Information Science"}
-    - {name: "Angela Banda", role: "Postgraduate Student, MA Library and Information Science"}
-    - {name: "Richard Mufuzi", role: "Undergraduate Student, B.ICT With Education"}
-    - {name: "Chanda Chilufya", role: "Undergraduate Student, B.ICT With Education"}
-    - {name: "Kamfwa Chileshe", role: "Undergraduate Student, B.ICT With Education"}
-    - {name: "Memory Phiri", role: "Undergraduate Student, B.ICT With Education"}
-    - {name: "Mainda Chuulu", role: "Undergraduate Student, B.ICT With Education"}
-    - {name: "Gift Muwele", role: "Undergraduate Student, B.ICT With Education"}
-    - {name: "Geoffrey Ngoma", role: "Undergraduate Student, BA Library and Information Science"}
-    - {name: "Nkole Mulenga", role: "Undergraduate Student, BA Library and Information Science"}
-    - {name: "Bertha Chipangila", role: "Undergraduate Student, BA Library and Information Science"}
-    - {name: "Eric Liswaniso", role: "Undergraduate Student, BA Library and Information Science"}
-    - {name: "Andrew Mawila", role: "Undergraduate Student, BA Library and Information Science"}
-    - {name: "Philomena Mwanza", role: "Undergraduate Student, BA Library and Information Science"}
-    - {name: "Daisy Nawila", role: "Undergraduate Student, BA Library and Information Science"}
+    - {name: "Lighton Phiri", role: "Principal Investigator", url: "https://datalab.unza.zm/people/lightonphiri"}
+    - {name: "Elijah Chileshe", role: "Postgraduate Student, MSc Computer Science", url: "https://datalab.unza.zm/people/elijahchileshe"}
+    - {name: "Frazer Nyambe", role: "Postgraduate Student, MSc Computer Science", url: "https://datalab.unza.zm/people/frazernyambe"}
+    - {name: "Robert M'sendo", role: "Postgraduate Student, PhD Computer Science", url: "https://datalab.unza.zm/people/robertmsendo"}
+    - {name: "Mubanga Chibesa", role: "Postgraduate Student, PgDip Computer Science", url: "https://datalab.unza.zm/people/mubangachibesa"}
+    - {name: "Adrian Chisale", role: "Postgraduate Student, MA Library and Information Science", url: "https://datalab.unza.zm/people/adrianchisale"}
+    - {name: "Cecilia Kasonde", role: "Postgraduate Student, MA Library and Information Science", url: "https://datalab.unza.zm/people/ceciliakasonde"}
+    - {name: "Angela Banda", role: "Postgraduate Student, MA Library and Information Science", url: "https://datalab.unza.zm/people/angelabanda"}
+    - {name: "Richard Mufuzi", role: "Undergraduate Student, B.ICT With Education", url: "https://datalab.unza.zm/people/richardmufuzi"}
+    - {name: "Chanda Chilufya", role: "Undergraduate Student, B.ICT With Education", url: "https://datalab.unza.zm/people/chandachilufya"}
+    - {name: "Kamfwa Chileshe", role: "Undergraduate Student, B.ICT With Education", url: "https://datalab.unza.zm/people/kamfwachileshe"}
+    - {name: "Memory Phiri", role: "Undergraduate Student, B.ICT With Education", url: "https://datalab.unza.zm/people/memoryphiri"}
+    - {name: "Mainda Chuulu", role: "Undergraduate Student, B.ICT With Education", url: "https://datalab.unza.zm/people/maindachuulu"}
+    - {name: "Gift Muwele", role: "Undergraduate Student, B.ICT With Education", url: "https://datalab.unza.zm/people/giftmuwele"}
+    - {name: "Geoffrey Ngoma", role: "Undergraduate Student, BA Library and Information Science", url: "https://datalab.unza.zm/people/geoffreyngoma"}
+    - {name: "Nkole Mulenga", role: "Undergraduate Student, BA Library and Information Science", url: "https://datalab.unza.zm/people/nkolemulenga"}
+    - {name: "Bertha Chipangila", role: "Undergraduate Student, BA Library and Information Science", url: "https://datalab.unza.zm/people/berthachipangila"}
+    - {name: "Eric Liswaniso", role: "Undergraduate Student, BA Library and Information Science", url: "https://datalab.unza.zm/people/ericliswaniso"}
+    - {name: "Andrew Mawila", role: "Undergraduate Student, BA Library and Information Science", url: "https://datalab.unza.zm/people/andrewmawila"}
+    - {name: "Philomena Mwanza", role: "Undergraduate Student, BA Library and Information Science", url: "https://datalab.unza.zm/people/philomenamwanza"}
+    - {name: "Daisy Nawila", role: "Undergraduate Student, BA Library and Information Science", url: "https://datalab.unza.zm/people/daisynawila"}
 
 publications:
   - type: Poster

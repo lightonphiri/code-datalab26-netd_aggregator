@@ -6,31 +6,31 @@ A national aggregator of electronic theses and dissertations (ETDs) produced by 
 
 ## Project members
 
-- Lighton Phiri (Principal Investigator)
-- Elijah Chileshe (Postgraduate Student, MSc Computer Science)
-- Frazer Nyambe (Postgraduate Student, MSc Computer Science)
-- Robert M'sendo (Postgraduate Student, PhD Computer Science)
-- Mubanga Chibesa (Postgraduate Student, PgDip Computer Science)
-- Adrian Chisale (Postgraduate Student, MA Library and Information Science)
-- Cecilia Kasonde (Postgraduate Student, MA Library and Information Science)
-- Angela Banda (Postgraduate Student, MA Library and Information Science)
-- Richard Mufuzi (Undergraduate Student, B.ICT With Education)
-- Chanda Chilufya (Undergraduate Student, B.ICT With Education)
-- Kamfwa Chileshe (Undergraduate Student, B.ICT With Education)
-- Memory Phiri (Undergraduate Student, B.ICT With Education)
-- Mainda Chuulu (Undergraduate Student, B.ICT With Education)
-- Gift Muwele (Undergraduate Student, B.ICT With Education)
-- Geoffrey Ngoma (Undergraduate Student, BA Library and Information Science)
-- Nkole Mulenga (Undergraduate Student, BA Library and Information Science)
-- Bertha Chipangila (Undergraduate Student, BA Library and Information Science)
-- Eric Liswaniso (Undergraduate Student, BA Library and Information Science)
-- Andrew Mawila (Undergraduate Student, BA Library and Information Science)
-- Philomena Mwanza (Undergraduate Student, BA Library and Information Science)
-- Daisy Nawila (Undergraduate Student, BA Library and Information Science)
+- [Lighton Phiri](https://datalab.unza.zm/people/lightonphiri) (Principal Investigator)
+- [Elijah Chileshe](https://datalab.unza.zm/people/elijahchileshe) (Postgraduate Student, MSc Computer Science)
+- [Frazer Nyambe](https://datalab.unza.zm/people/frazernyambe) (Postgraduate Student, MSc Computer Science)
+- [Robert M'sendo](https://datalab.unza.zm/people/robertmsendo) (Postgraduate Student, PhD Computer Science)
+- [Mubanga Chibesa](https://datalab.unza.zm/people/mubangachibesa) (Postgraduate Student, PgDip Computer Science)
+- [Adrian Chisale](https://datalab.unza.zm/people/adrianchisale) (Postgraduate Student, MA Library and Information Science)
+- [Cecilia Kasonde](https://datalab.unza.zm/people/ceciliakasonde) (Postgraduate Student, MA Library and Information Science)
+- [Angela Banda](https://datalab.unza.zm/people/angelabanda) (Postgraduate Student, MA Library and Information Science)
+- [Richard Mufuzi](https://datalab.unza.zm/people/richardmufuzi) (Undergraduate Student, B.ICT With Education)
+- [Chanda Chilufya](https://datalab.unza.zm/people/chandachilufya) (Undergraduate Student, B.ICT With Education)
+- [Kamfwa Chileshe](https://datalab.unza.zm/people/kamfwachileshe) (Undergraduate Student, B.ICT With Education)
+- [Memory Phiri](https://datalab.unza.zm/people/memoryphiri) (Undergraduate Student, B.ICT With Education)
+- [Mainda Chuulu](https://datalab.unza.zm/people/maindachuulu) (Undergraduate Student, B.ICT With Education)
+- [Gift Muwele](https://datalab.unza.zm/people/giftmuwele) (Undergraduate Student, B.ICT With Education)
+- [Geoffrey Ngoma](https://datalab.unza.zm/people/geoffreyngoma) (Undergraduate Student, BA Library and Information Science)
+- [Nkole Mulenga](https://datalab.unza.zm/people/nkolemulenga) (Undergraduate Student, BA Library and Information Science)
+- [Bertha Chipangila](https://datalab.unza.zm/people/berthachipangila) (Undergraduate Student, BA Library and Information Science)
+- [Eric Liswaniso](https://datalab.unza.zm/people/ericliswaniso) (Undergraduate Student, BA Library and Information Science)
+- [Andrew Mawila](https://datalab.unza.zm/people/andrewmawila) (Undergraduate Student, BA Library and Information Science)
+- [Philomena Mwanza](https://datalab.unza.zm/people/philomenamwanza) (Undergraduate Student, BA Library and Information Science)
+- [Daisy Nawila](https://datalab.unza.zm/people/daisynawila) (Undergraduate Student, BA Library and Information Science)
 
-## Publications based on the Zambia National ETD Portal project
+## Publications based on the [Zambia National ETD Portal project](https://datalab.unza.zm/projects/zambia-national-etd-portal)
 
-The publications, dissertations and capstone reports below come out of the Zambia National ETD Portal project. They study the visibility of Zambian research, the quality, completeness and ETD-MS compliance of ETD metadata in institutional repositories, and ways of improving it; their findings shaped how this portal harvests, cleans and presents ETD metadata.
+The publications, dissertations and capstone reports below come out of the [Zambia National ETD Portal project](https://datalab.unza.zm/projects/zambia-national-etd-portal). They study the visibility of Zambian research, the quality, completeness and ETD-MS compliance of ETD metadata in institutional repositories, and ways of improving it; their findings shaped how this portal harvests, cleans and presents ETD metadata.
 
 | Year | Type | Reference |
 |---|---|---|

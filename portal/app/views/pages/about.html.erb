@@ -7,10 +7,10 @@
     Project page: <%= link_to p['url'], p['url'], target: '_blank', rel: 'noopener' %></p>
   <h2 class="h5 mt-4">Project members</h2>
   <ul class="netd-members">
-    <% p['members'].each do |m| %><li><strong><%= m['name'] %></strong> (<%= m['role'] %>)</li><% end %>
+    <% p['members'].each do |m| %><li><strong><%= m['url'] ? link_to(m['name'], m['url'], target: '_blank', rel: 'noopener') : m['name'] %></strong> (<%= m['role'] %>)</li><% end %>
   </ul>
-  <h2 class="h5 mt-4">Publications based on the Zambia National ETD Portal project</h2>
-  <p>The publications, dissertations and capstone reports below come out of the Zambia National ETD Portal project.
+  <h2 class="h5 mt-4">Publications based on the <%= link_to 'Zambia National ETD Portal project', p['url'], target: '_blank', rel: 'noopener' %></h2>
+  <p>The publications, dissertations and capstone reports below come out of the <%= link_to 'Zambia National ETD Portal project', p['url'], target: '_blank', rel: 'noopener' %>.
     They study the visibility of Zambian research, the quality, completeness and ETD-MS compliance of ETD metadata in
     institutional repositories, and ways of improving it; their findings shaped how this portal harvests, cleans and
     presents ETD metadata.</p>
