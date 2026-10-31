@@ -102,3 +102,6 @@ a:hover { color: var(--netd-blue-dark); text-decoration: underline; }
 /* ---------- footer ---------- */
 footer.netd-footer { border-top: 1px solid var(--netd-line); margin-top: 2.5rem; padding: 2rem 0; color: var(--netd-muted); font-size: .92rem; background: #f7f8f9; }
 footer.netd-footer strong { color: var(--netd-ink); font-weight: 600; }
+#sidebar .facet-limit-active, #sidebar .facet-limit-active .card-header, #sidebar .facet-limit-active .facet-field-heading { border-color: #a9cbe8; background: #eef5fb; }
+#sidebar .facet-limit-active .card-header button, #sidebar .facet-limit-active .facet-field-heading button { color: var(--netd-ink); }
+#sidebar .selected, #sidebar .facet-values .selected { color: var(--netd-ink); font-weight: 600; }
