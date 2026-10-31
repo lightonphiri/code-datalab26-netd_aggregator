@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SRS, structured per ISO/IEC/IEEE 29148:2018 (supersedes IEEE 830-1998) |
-| Version | 0.12 |
+| Version | 0.13 |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Repository | https://github.com/lightonphiri/code-datalab26-netd_aggregator |
@@ -15,6 +15,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial SRS: harvesting (UNZA, UNILUS), cleaning pipeline, Blacklight discovery |
 | 0.2 | October 30, 2026 | Discipline and Degree fields (FR-12, FR-21); institution entry points (FR-26); HTTPS (NFR-9); PDF pilot and onboarding findings (§4) |
+| 0.13 | October 31, 2026 | EI-5: header link row limited to About and Explore |
 | 0.12 | October 31, 2026 | FR-22: "Sort by" menu as on Academic Commons — Best Match, Published Latest, Published Earliest, Title A-Z, Title Z-A |
 | 0.11 | October 31, 2026 | FR-31: About page lists project members with their DataLab roles and only publications based on the Zambia National ETD Portal project, with an explanatory paragraph |
 | 0.10 | October 31, 2026 | FR-24: record page modelled on Academic Commons — subject tags, Files panel, More About This Work panel, download/persistent-link panel |
@@ -140,7 +141,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | EI-2 | The portal shall be served over HTTPS at the root of netd.ac.zm through the existing Apache server (reverse proxy), with HTTP redirected to HTTPS and the former `/beta/` and old ETD Portal addresses (`/portal`, `/summary`, `/harvester`) redirected; the HTTPS proxy shall pass `X-Forwarded-Proto: https` so that form posts pass Rails' origin check. | M |
 | EI-3 | The portal shall offer a JSON view of search results and records (Blacklight `.json`). | S |
 | EI-4 | The system shall expose an OAI-PMH data provider (`oai_dc`, `etdms`) of canonical records. | C |
-| EI-5 | The UI shall follow the style of Columbia's Academic Commons [R15]: system UI typography, a navy group bar, a serif wordmark with the search box, a link row (About, Explore, Master's, PhD), white pages with light cards, one blue for links and actions; facet sidebar and result list with badges on search pages. | M |
+| EI-5 | The UI shall follow the style of Columbia's Academic Commons [R15]: system UI typography, a navy group bar, a serif wordmark with the search box, a link row (About, Explore), white pages with light cards, one blue for links and actions; facet sidebar and result list with badges on search pages. | M |
 
 ### 3.2 Functional requirements
 
