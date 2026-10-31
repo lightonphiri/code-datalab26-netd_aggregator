@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SRS, structured per ISO/IEC/IEEE 29148:2018 (supersedes IEEE 830-1998) |
-| Version | 0.3 (beta) |
+| Version | 0.4 (beta) |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Repository | https://github.com/lightonphiri/code-datalab26-netd_aggregator |
@@ -15,6 +15,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial SRS: harvesting (UNZA, UNILUS), cleaning pipeline, Blacklight discovery |
 | 0.2 | October 30, 2026 | Discipline and Degree fields (FR-12, FR-21); institution entry points (FR-26); HTTPS (NFR-9); PDF pilot and onboarding findings (§4) |
+| 0.4 | October 31, 2026 | Mulungushi University harvested via DSpace 6 METS exports (FR-10); EI-2 clarified for HTTPS form posts |
 | 0.3 | October 31, 2026 | HEA institution registry with zero counts (FR-29, FR-30); About page with publications (FR-31); ZCAS via DSpace REST fallback (FR-10); ML/PDF extraction deferred until the portal is complete (FR-14); new sources [R12]–[R14] |
 
 ---
@@ -128,7 +129,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | ID | Requirement | Pri |
 |---|---|---|
 | EI-1 | The harvester shall act as an OAI-PMH 2.0 client supporting `Identify`, `ListMetadataFormats`, `ListSets` and `ListRecords`, with resumption tokens. | M |
-| EI-2 | The portal shall be served over HTTP(S) at `/beta/` on netd.ac.zm through the existing Apache server (reverse proxy). | M |
+| EI-2 | The portal shall be served over HTTP(S) at `/beta/` on netd.ac.zm through the existing Apache server (reverse proxy); the HTTPS proxy shall pass `X-Forwarded-Proto: https` so that form posts pass Rails' origin check. | M |
 | EI-3 | The portal shall offer a JSON view of search results and records (Blacklight `.json`). | S |
 | EI-4 | The system shall expose an OAI-PMH data provider (`oai_dc`, `etdms`) of canonical records. | C |
 | EI-5 | The UI shall follow a repository-style layout (facet sidebar, result cards with badges, record page with metadata panel) comparable to InvenioRDM. | M |
@@ -147,7 +148,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | FR-7 | Each harvest run shall be logged (source, start/end, from-date, counts, status, message). | M |
 | FR-8 | The harvester shall store the set hierarchy (`ListSets`) for each source. | M |
 | FR-9 | Harvests shall run on a schedule (daily) without manual action. | S |
-| FR-10 | Fallback adapters shall be available for HEIs without working OAI-PMH: DSpace 7 REST API (implemented in v0.3, used for ZCAS), CSV upload (later). | S |
+| FR-10 | Fallback adapters shall be available for HEIs without working OAI-PMH: DSpace 7 REST API (v0.3, used for ZCAS); DSpace 6 XMLUI browse pages + per-item METS exports (v0.4, used for Mulungushi); CSV upload (later). | S |
 
 **Processing, cleaning and enrichment**
 | ID | Requirement | Pri |
@@ -223,9 +224,10 @@ Completeness (October 31, 2026, v0.3):
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | UNILUS | 62 | 100% | 100% | 0% | 85% | 0% | 0% | 0% | 0% | 100% | 100% |
 | UNZA | 5,736 | 100% | 100% | 0% | 84% | 100% | 0% | 16% | 18% | 40% | 100% |
+| MU | 12 | 100% | 100% | 0% | 100% | 0% | 0% | 0% | 0% | 0% | 100% |
 | ZCASU | 116 | 99% | 98% | 0% | 49% | 100% | 0% | 0% | 0% | 0% | 99% |
 
-Institution registry (October 31, 2026): 34 HEIs have HEA-accredited postgraduate programmes, taken from HEA's accredited-programmes data and checked against [R12] (text) — [R13] is a scanned PDF and could not be machine-read. 3 are harvested; Mulungushi University's repository (space.mu.ac.zm) has no reachable OAI-PMH endpoint; Mukuba University's repository has no ETD collection; 29 have no known public repository. Kapasa Makasa University and NIPA repositories were checked but have no ETD collection and no HEA-accredited postgraduate programme. ZCAS's OAI-PMH endpoint answers but returns no records for any set, so its items are read from the DSpace 7 REST API (FR-10).
+Institution registry (October 31, 2026): 34 HEIs have HEA-accredited postgraduate programmes, taken from HEA's accredited-programmes data and checked against [R12] (text) — [R13] is a scanned PDF and could not be machine-read. 4 are harvested (Mulungushi University since v0.4: OAI-PMH and REST are switched off on its DSpace 6.3, so its Theses and Dissertations collection is read from per-item METS exports); Mukuba University's repository has no ETD collection; 29 have no known public repository. Kapasa Makasa University and NIPA repositories were checked but have no ETD collection and no HEA-accredited postgraduate programme. ZCAS's OAI-PMH endpoint answers but returns no records for any set, so its items are read from the DSpace 7 REST API (FR-10).
 
 PDF pilot (October 30, 2026): the OAI-PMH `ore` format exposes each ETD's PDF link. Of 12 randomly sampled UNZA PDFs (0.2–16 MB; 2 links returned HTTP 500), 4 had no extractable text (scanned images), and no supervisor name was found by rules in the first six pages; 1 yielded a department. Supervisor/Department extraction therefore needs OCR and ML, not rules — the intended use of FR-14/FR-16. UNILUS PDF links point to an internal address (`41.63.7.239:4000`) that the portal cannot reach.
 
