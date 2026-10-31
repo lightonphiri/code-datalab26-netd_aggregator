@@ -103,6 +103,24 @@
       </div>
       <div class="netd-side-label mt-3">Held by</div>
       <div><%= facet_link(rec_values(d, 'institution_ssim').first.to_s, 'institution_ssim', rec_values(d, 'institution_ssim').first.to_s) %></div>
+      <% subject = "(Zambia National ETD Portal) Problem with record: #{title.to_s.truncate(120)}" %>
+      <% body = "Record: #{request.original_url}\nSource record: #{handle}\n\nPlease describe the problem:\n" %>
+      <a class="netd-report" href="mailto:lighton.phiri@unza.ac.zm,datalab@unza.zm?subject=<%= ERB::Util.url_encode(subject) %>&body=<%= ERB::Util.url_encode(body) %>">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#6c757d"/><path d="M12 6v8M12 16.5v1.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
+        Report a problem</a>
+    </div>
+
+    <% author = rec_values(d, 'author_ssim').first.to_s.split(',').first.to_s.strip %>
+    <% scholar = "https://scholar.google.com/scholar?q=#{ERB::Util.url_encode(%("#{title}" #{author}).strip)}" %>
+    <div class="netd-analysis">
+      <h2>Analysis</h2>
+      <a class="netd-analysis-row" href="<%= scholar %>" target="_blank" rel="noopener">
+        <span class="netd-gs-logo" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 2 1 9.2l11 7.2 9-5.9V17h2V9.2z" fill="#4285f4"/><circle cx="12" cy="16.5" r="5" fill="#356ac3"/><circle cx="12" cy="15" r="3.2" fill="#a0c3ff"/></svg></span>
+        <span class="netd-analysis-name">Google Scholar</span>
+        <span class="netd-analysis-val">Citations ↗</span>
+      </a>
+      <p class="netd-analysis-note">Opens this work on Google Scholar, where its "Cited by" count is shown.</p>
     </div>
   </aside>
 </div>

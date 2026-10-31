@@ -144,3 +144,10 @@ footer.netd-footer strong { color: var(--netd-ink); font-weight: 600; }
 #sort-dropdown .btn:hover, .sort-dropdown .btn:hover { background: #5a6268; color: #fff; }
 .dropdown-menu { --bs-dropdown-link-active-bg: #0071c2; --bs-dropdown-link-hover-bg: #eef5fb; border-radius: 3px; }
 .dropdown-menu .dropdown-item.active { background: #0071c2; color: #fff; }
+.netd-report { display: inline-flex; align-items: center; gap: .4rem; margin-top: 1rem; font-size: .92rem; color: var(--netd-ink); }
+.netd-analysis { background: #f3f4f5; border-radius: 4px; padding: .9rem 1rem; margin-top: 1rem; }
+.netd-analysis h2 { font-size: 1.3rem; font-weight: 600; margin: 0 0 .7rem; }
+.netd-analysis-row { display: flex; align-items: center; gap: .6rem; color: var(--netd-ink); text-decoration: none !important; }
+.netd-analysis-name { flex: 1; border-bottom: 1px dotted #888; }
+.netd-analysis-val { color: var(--netd-blue); font-weight: 600; font-size: .92rem; }
+.netd-analysis-note { font-size: .8rem; color: var(--netd-muted); margin: .5rem 0 0; }
