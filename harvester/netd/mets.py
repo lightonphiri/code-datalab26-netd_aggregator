@@ -25,6 +25,23 @@ def _get(url, tries=4):
             time.sleep(10 * (i + 1))
 
 
+def _files(doc, base):
+    """Files in the METS CONTENT group, as absolute URLs on the repository host."""
+    origin = "{0.scheme}://{0.netloc}".format(urllib.parse.urlparse(base))
+    out = []
+    for grp in doc.iter("{http://www.loc.gov/METS/}fileGrp"):
+        if grp.get("USE") != "CONTENT":
+            continue
+        for f in grp.iter("{http://www.loc.gov/METS/}file"):
+            loc = f.find("{http://www.loc.gov/METS/}FLocat")
+            href = loc.get("{http://www.w3.org/1999/xlink}href") if loc is not None else None
+            if href:
+                out.append({"url": urllib.parse.urljoin(origin, href), "mime": f.get("MIMETYPE"),
+                            "size": int(f.get("SIZE") or 0) or None,
+                            "name": loc.get("{http://www.w3.org/1999/xlink}title")})
+    return out
+
+
 def _item_handles(base, coll, prefix):
     seen, offset = [], 0
     while True:
@@ -57,8 +74,9 @@ def harvest_mets(store, src, log=print, limit=None):
             dim = next(doc.iter(DIM), None)
             if dim is None:
                 continue
-            store.put_raw(src["id"], "oai:%s:%s" % (host, h), None, [cspec], False, "dim",
-                          etree.tostring(dim, encoding="unicode"))
+            oai_id = "oai:%s:%s" % (host, h)
+            store.put_raw(src["id"], oai_id, None, [cspec], False, "dim", etree.tostring(dim, encoding="unicode"))
+            store.put_bitstreams(src["id"], oai_id, _files(doc, base))
             n += 1
             time.sleep(1)  # politeness (NFR-10)
             if limit and n >= limit:

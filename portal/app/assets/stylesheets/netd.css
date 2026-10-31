@@ -61,3 +61,6 @@ footer.netd-footer a { color: #fff; }
 .netd-inst-zero .netd-inst-count { background: #eef0f2; color: #5f6b76; }
 .netd-facet-zero { display: flex; justify-content: space-between; color: #8a949e; padding: .15rem 0; }
 .netd-pubs li { margin-bottom: .9rem; }
+.etd-badge-pdf { background: #fdecea; color: #a1281c; }
+.etd-pdf-link { display: inline-block; margin-top: .4rem; font-weight: 700; font-size: .9rem; color: #a1281c; text-decoration: none; }
+.etd-pdf-link:hover { text-decoration: underline; }

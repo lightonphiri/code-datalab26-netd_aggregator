@@ -118,8 +118,9 @@ def degree_level(texts):
     return None
 
 
-def to_canonical(row, src, set_names):
-    """row: a raw_records row. Returns canonical dict or None for deleted records."""
+def to_canonical(row, src, set_names, files=None):
+    """row: a raw_records row; files: bitstreams harvested for it.
+    Returns canonical dict or None for deleted records."""
     if row["deleted"]:
         return None
     flat = flatten(row["xml"], row["metadata_prefix"])
@@ -178,6 +179,16 @@ def to_canonical(row, src, set_names):
                         break
                 if rec.get("department"):
                     break
+
+    # Direct links to the full text (bitstreams); PDFs first
+    pdfs = [f["url"] for f in files or [] if (f.get("mime") or "").endswith("pdf")
+            or (f.get("name") or "").lower().endswith(".pdf")]
+    if pdfs:
+        rec["pdf_url"] = pdfs
+        rec["provenance"]["pdf_url"] = "harvested:files"
+    elif files:
+        rec["file_url"] = [f["url"] for f in files]
+        rec["provenance"]["file_url"] = "harvested:files"
 
     # Degree name and discipline from free-text descriptions (e.g. UNZA "Master of Education in ...")
     if not rec.get("degree") or not rec.get("discipline"):

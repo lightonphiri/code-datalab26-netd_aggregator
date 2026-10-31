@@ -1,7 +1,9 @@
 """OAI-PMH harvesting (Sickle). Stores raw metadata XML; no cleaning happens here."""
 import datetime
 import json
+import re
 import time
+import urllib.parse
 
 from lxml import etree
 from sickle import Sickle
@@ -27,6 +29,46 @@ def harvest_sets(sickle, store, src):
     pairs = [(s.setSpec, s.setName) for s in sickle.ListSets()]
     store.put_set_names(src["id"], pairs)
     return dict(pairs)
+
+
+ATOM = "{http://www.w3.org/2005/Atom}"
+AGG = "http://www.openarchives.org/ore/terms/aggregates"
+BITSTREAM_RE = re.compile(r"/bitstreams/([0-9a-f-]{36})/download")
+
+
+def bitstream_url(href, base_url):
+    """Normalise DSpace 7 UI download links (which may carry an internal host, as at UNILUS)
+    to the public REST content URL on the repository's own host."""
+    m = BITSTREAM_RE.search(href or "")
+    if not m:
+        return href
+    u = urllib.parse.urlparse(base_url)
+    return "%s://%s/server/api/core/bitstreams/%s/content" % (u.scheme, u.netloc, m.group(1))
+
+
+def harvest_files(store, sickle, src, from_date, log=print):
+    """Second pass with the `ore` format: collect file (bitstream) links per record."""
+    n = 0
+    for set_spec in src.get("sets") or [None]:
+        params = {"metadataPrefix": "ore", "ignore_deleted": True}
+        if set_spec:
+            params["set"] = set_spec
+        if from_date:
+            params["from"] = from_date
+        try:
+            for rec in sickle.ListRecords(**params):
+                files = []
+                for link in rec.xml.iter(ATOM + "link"):
+                    if link.get("rel") == AGG:
+                        files.append({"url": bitstream_url(link.get("href"), src["base_url"]),
+                                      "mime": link.get("type"), "name": link.get("title"),
+                                      "size": int(link.get("length") or 0) or None})
+                store.put_bitstreams(src["id"], rec.header.identifier, files)
+                n += 1
+        except NoRecordsMatch:
+            pass
+    store.commit()
+    log("  %s: file links for %d records (ore)" % (src["id"], n))
 
 
 def harvest_source(store, src, full=False, limit=None, log=print):
@@ -82,6 +124,12 @@ def harvest_source(store, src, full=False, limit=None, log=print):
         message = "stopped at limit %d" % limit
     except Exception as e:  # keep what we have; mark run as failed
         status, message = "error", repr(e)[:500]
+    if status == "ok" and src.get("files", True):
+        try:
+            if "ore" in [f.metadataPrefix for f in sickle.ListMetadataFormats()]:
+                harvest_files(store, sickle, src, from_date, log=log)
+        except Exception as e:
+            message = (message + " files: " + repr(e))[:500]
     store.log_run(source=src["id"], started_at=started, finished_at=time.time(), from_date=from_date,
                   records=n, deleted=d, status=status, message=message)
     store.commit()

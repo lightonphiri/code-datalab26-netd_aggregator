@@ -36,8 +36,9 @@ def do_process(store, srcs, ecfg):
     n = 0
     for src in srcs:
         names = store.set_names(src["id"])
+        files = store.bitstreams(src["id"])
         for row in store.raw_records(src["id"]):
-            rec = crosswalk.to_canonical(row, src, names)
+            rec = crosswalk.to_canonical(row, src, names, files.get(row["oai_id"]))
             rid = crosswalk.record_id(src["id"], row["oai_id"])
             if rec is None:
                 store.delete_record(rid)
@@ -66,7 +67,7 @@ def do_index(store, srcs, solr):
 
 def do_report(store):
     fields = ["title", "author", "supervisor", "subject", "faculty", "department", "discipline", "degree",
-              "degree_level", "year"]
+              "degree_level", "year", "pdf_url"]
     stats = {}
     for rec in store.records():
         s = stats.setdefault(rec["institution_short"], {"n": 0, **{f: 0 for f in fields}})

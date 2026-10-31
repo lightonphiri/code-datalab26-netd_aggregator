@@ -25,6 +25,11 @@ CREATE TABLE IF NOT EXISTS records (
     data        TEXT NOT NULL,     -- JSON canonical record incl. provenance
     updated_at  REAL
 );
+CREATE TABLE IF NOT EXISTS bitstreams (
+    source TEXT NOT NULL, oai_id TEXT NOT NULL, url TEXT NOT NULL,
+    mime TEXT, name TEXT, size INTEGER,
+    PRIMARY KEY (source, oai_id, url)
+);
 CREATE TABLE IF NOT EXISTS harvest_runs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     source TEXT, started_at REAL, finished_at REAL,
@@ -56,6 +61,18 @@ class Store:
     def set_names(self, source):
         return {r["set_spec"]: r["set_name"] for r in
                 self.db.execute("SELECT * FROM set_names WHERE source=?", (source,))}
+
+    def put_bitstreams(self, source, oai_id, files):
+        """files: list of dicts {url, mime, name, size}; replaces what was stored for the item."""
+        self.db.execute("DELETE FROM bitstreams WHERE source=? AND oai_id=?", (source, oai_id))
+        self.db.executemany("INSERT OR REPLACE INTO bitstreams VALUES (?,?,?,?,?,?)",
+                            [(source, oai_id, f["url"], f.get("mime"), f.get("name"), f.get("size")) for f in files])
+
+    def bitstreams(self, source):
+        out = {}
+        for r in self.db.execute("SELECT * FROM bitstreams WHERE source=?", (source,)):
+            out.setdefault(r["oai_id"], []).append(dict(r))
+        return out
 
     # --- canonical layer ---------------------------------------------------
     def put_record(self, rec):

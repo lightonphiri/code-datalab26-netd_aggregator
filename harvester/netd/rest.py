@@ -42,6 +42,24 @@ def _dim(metadata):
     return "".join(out)
 
 
+def _files(api, item):
+    """Bitstreams in the item's ORIGINAL bundle, as public REST content URLs."""
+    out = []
+    try:
+        bundles = _get(item["_links"]["bundles"]["href"])["_embedded"]["bundles"]
+        for b in bundles:
+            if b.get("name") != "ORIGINAL":
+                continue
+            for bs in _get(b["_links"]["bitstreams"]["href"])["_embedded"]["bitstreams"]:
+                name = bs.get("name") or ""
+                out.append({"url": "%s/core/bitstreams/%s/content" % (api, bs["uuid"]), "name": name,
+                            "size": bs.get("sizeBytes"),
+                            "mime": "application/pdf" if name.lower().endswith(".pdf") else None})
+    except Exception:
+        pass
+    return out
+
+
 def harvest_rest(store, src, log=print, limit=None):
     api = src["rest_api"].rstrip("/")
     host = urllib.parse.urlparse(api).hostname
@@ -65,6 +83,7 @@ def harvest_rest(store, src, log=print, limit=None):
                 oai_id = "oai:%s:%s" % (host, item.get("handle") or item["uuid"])
                 store.put_raw(src["id"], oai_id, item.get("lastModified"), [cspec, pspec],
                               item.get("withdrawn", False), "dim", _dim(md))
+                store.put_bitstreams(src["id"], oai_id, _files(api, item))
                 n += 1
                 if limit and n >= limit:
                     break
