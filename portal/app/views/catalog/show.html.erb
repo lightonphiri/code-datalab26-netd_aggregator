@@ -103,11 +103,9 @@
       </div>
       <div class="netd-side-label mt-3">Held by</div>
       <div><%= facet_link(rec_values(d, 'institution_ssim').first.to_s, 'institution_ssim', rec_values(d, 'institution_ssim').first.to_s) %></div>
-      <% subject = "(Zambia National ETD Portal) Problem with record: #{title.to_s.truncate(120)}" %>
-      <% body = "Record: #{request.original_url}\nSource record: #{handle}\n\nPlease describe the problem:\n" %>
-      <a class="netd-report" href="mailto:lighton.phiri@unza.ac.zm,datalab@unza.zm?subject=<%= ERB::Util.url_encode(subject) %>&body=<%= ERB::Util.url_encode(body) %>">
+      <button type="button" class="netd-report" data-bs-toggle="modal" data-bs-target="#netd-report-modal">
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#6c757d"/><path d="M12 6v8M12 16.5v1.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
-        Report a problem</a>
+        Report a problem</button>
     </div>
 
     <% author = rec_values(d, 'author_ssim').first.to_s.split(',').first.to_s.strip %>
@@ -123,4 +121,35 @@
       <p class="netd-analysis-note">Opens this work on Google Scholar, where its "Cited by" count is shown.</p>
     </div>
   </aside>
+</div>
+
+<div class="modal fade" id="netd-report-modal" tabindex="-1" aria-labelledby="netd-report-title" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <%= form_with url: problem_reports_path, method: :post, local: true, data: { turbo: false }, class: 'modal-content netd-report-form' do %>
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="netd-report-title">Report a problem with this record</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="pr-problem">Problem <span class="req">*</span></label>
+        <select id="pr-problem" name="problem_report[problem]" class="form-select" required>
+          <% ProblemReport::PROBLEMS.each do |p| %><option><%= p %></option><% end %>
+        </select>
+        <label for="pr-message">Your message <span class="req">*</span></label>
+        <textarea id="pr-message" name="problem_report[message]" class="form-control" rows="5" required maxlength="5000"></textarea>
+        <label for="pr-name">Your name</label>
+        <input id="pr-name" name="problem_report[name]" class="form-control" value="Anonymous" maxlength="200">
+        <label for="pr-email">Your email address <span class="req">*</span></label>
+        <input id="pr-email" type="email" name="problem_report[email]" class="form-control" required>
+        <div class="netd-hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
+        <label>URL</label>
+        <div class="netd-report-url"><%= request.original_url %></div>
+        <input type="hidden" name="problem_report[record_url]" value="<%= request.original_url %>">
+        <input type="hidden" name="problem_report[record_title]" value="<%= title %>">
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Send</button>
+      </div>
+    <% end %>
+  </div>
 </div>

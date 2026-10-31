@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   mount Blacklight::Engine => '/'
   root to: "catalog#index"
   get "about", to: "pages#about", as: :about
+  post "report-problem", to: "problem_reports#create", as: :problem_reports
   concern :searchable, Blacklight::Routes::Searchable.new
 
   resource :catalog, only: [], as: 'catalog', path: '/catalog', controller: 'catalog' do

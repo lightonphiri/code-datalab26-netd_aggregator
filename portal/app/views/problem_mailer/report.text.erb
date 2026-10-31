@@ -1,0 +1,12 @@
+A problem was reported on the Zambia National ETD Portal.
+
+Problem:  <%= @r.problem %>
+Record:   <%= @r.record_title %>
+URL:      <%= @r.record_url %>
+From:     <%= @r.name.presence || 'Anonymous' %> <<%= @r.email %>>
+Sent:     <%= @r.created_at&.strftime('%B %-d, %Y %H:%M %Z') %>
+
+Message:
+<%= @r.message %>
+
+(Report #<%= @r.id %>; reply to this email to answer the reporter.)
