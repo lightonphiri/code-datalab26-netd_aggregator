@@ -32,17 +32,19 @@ def harvest_sets(sickle, store, src):
 def harvest_source(store, src, full=False, limit=None, log=print):
     """Harvest one source. Incremental (from= last successful run) unless full=True."""
     started = time.time()
-    if src.get("loader") == "dspace7-rest":  # fallback when OAI-PMH is empty/broken (FR-10)
+    if src.get("loader") in ("dspace7-rest", "dspace6-mets"):  # fallbacks when OAI-PMH is empty/off (FR-10)
+        from .mets import harvest_mets
         from .rest import harvest_rest
+        fn = harvest_rest if src["loader"] == "dspace7-rest" else harvest_mets
         status, message, n = "ok", "", 0
         try:
-            n = harvest_rest(store, src, log=log, limit=limit)
+            n = fn(store, src, log=log, limit=limit)
         except Exception as e:
             status, message = "error", repr(e)[:500]
         store.log_run(source=src["id"], started_at=started, finished_at=time.time(), from_date=None,
                       records=n, deleted=0, status=status, message=message)
         store.commit()
-        log("%s: %d records via DSpace REST API, status=%s %s" % (src["id"], n, status, message))
+        log("%s: %d records via %s, status=%s %s" % (src["id"], n, src["loader"], status, message))
         return n
     sickle = client(src)
     prefix = choose_format(sickle, src)

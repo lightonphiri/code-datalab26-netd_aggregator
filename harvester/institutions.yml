@@ -34,8 +34,8 @@ institutions:
   - {name: Lusaka Apex Medical University, levels: [Masters], status: no-repository-known}
   - {name: Mukuba University, levels: [Masters], status: no-etd-collection,
      repository: "http://elibrary.mukuba.edu.zm:8080/jspui/"}
-  - {name: Mulungushi University, levels: [Masters, PhD], status: repository-unreachable,
-     repository: "https://space.mu.ac.zm/xmlui"}
+  - {name: Mulungushi University, levels: [Masters, PhD], status: harvested, source: mu,
+     repository: "https://space.mu.ac.zm/xmlui/handle/123456789/56"}
   - {name: Northrise University, levels: [Masters], status: no-repository-known}
   - {name: Open Window University, levels: [Masters], status: no-repository-known}
   - {name: Phoenix Open University, levels: [Masters], status: no-repository-known}

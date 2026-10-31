@@ -60,4 +60,4 @@ sudo -u netd /opt/netd/harvester/.venv/bin/python -m netd.cli run --full   # fir
 Roll back by deleting the "NETD v2 beta" lines in `/etc/apache2/sites-enabled/netd.conf` (a backup is kept in `/opt/netd/`), then `systemctl disable --now netd-portal netd-solr netd-harvest.timer`.
 
 ### HTTPS
-netd.ac.zm has a Let's Encrypt certificate (obtained on October 30, 2026 with `certbot certonly --webroot -w /var/www/html -d netd.ac.zm`; it renews automatically and Apache reloads via the deploy hook). The HTTPS site `/etc/apache2/sites-available/netd-le-ssl.conf` mirrors `netd.conf`, including the `/beta` proxy.
+netd.ac.zm has a Let's Encrypt certificate (obtained on October 30, 2026 with `certbot certonly --webroot -w /var/www/html -d netd.ac.zm`; it renews automatically and Apache reloads via the deploy hook). The HTTPS site `/etc/apache2/sites-available/netd-le-ssl.conf` mirrors `netd.conf`, including the `/beta` proxy, plus `RequestHeader set X-Forwarded-Proto "https"` (mod_headers) so Rails knows requests arrived over HTTPS; without it, clicking a search result fails Rails' CSRF origin check (fixed October 31, 2026).

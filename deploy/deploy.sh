@@ -32,4 +32,12 @@ if ! grep -q "NETD v2 beta" $C; then
   sed -i "/ProxyPass \/portal /e cat $N/deploy/apache-netd-beta.conf" $C
   apache2ctl configtest && systemctl reload apache2
 fi
+# HTTPS site (netd-le-ssl.conf, see README): same /beta proxy, and tell Rails the request is HTTPS,
+# otherwise form posts (e.g. clicking a result) fail the CSRF origin check.
+S=/etc/apache2/sites-available/netd-le-ssl.conf
+if [ -f $S ] && ! grep -q "X-Forwarded-Proto" $S; then
+  cp $S /opt/netd/netd-le-ssl.conf.bak-$(date +%Y%m%d%H%M)
+  sed -i 's#        ProxyPass /beta http://127.0.0.1:3010/beta#        RequestHeader set X-Forwarded-Proto "https"\n        ProxyPass /beta http://127.0.0.1:3010/beta#' $S
+  a2enmod -q headers && apache2ctl configtest && systemctl restart apache2
+fi
 echo "deploy: done"

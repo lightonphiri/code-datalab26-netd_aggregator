@@ -39,3 +39,15 @@ sources:
     collections: [123456789/12, 123456789/13, 123456789/16, 123456789/19, 123456789/22]
     sets: [col_123456789_12, col_123456789_13, col_123456789_16, col_123456789_19, col_123456789_22]
     ignore_set_names: ["DBA Thesis", "Dissertations"]
+
+  - id: mu
+    name: Mulungushi University
+    short_name: MU
+    base_url: https://space.mu.ac.zm/oai/request
+    # DSpace 6.3 with OAI-PMH and REST switched off (October 31, 2026): items are listed from the
+    # collection's browse pages and read from each item's public METS export (dim metadata).
+    loader: dspace6-mets
+    xmlui: https://space.mu.ac.zm/xmlui
+    collections: [123456789/56]
+    sets: [col_123456789_56]
+    ignore_set_names: ["Theses and Dissertations"]
