@@ -58,10 +58,12 @@ class CatalogController < ApplicationController
     end
 
     # ---- sorting -------------------------------------------------------------
-    config.add_sort_field 'score desc, year_isi desc', label: 'relevance'
-    config.add_sort_field 'year_isi desc, title_ssort asc', label: 'newest'
-    config.add_sort_field 'year_isi asc, title_ssort asc', label: 'oldest'
-    config.add_sort_field 'title_ssort asc', label: 'title'
+    # Sort options as on Columbia's Academic Commons (FR-22)
+    config.add_sort_field 'relevance', sort: 'score desc, year_isi desc, title_ssort asc', label: 'Best Match'
+    config.add_sort_field 'latest', sort: 'year_isi desc, title_ssort asc', label: 'Published Latest'
+    config.add_sort_field 'earliest', sort: 'year_isi asc, title_ssort asc', label: 'Published Earliest'
+    config.add_sort_field 'title_az', sort: 'title_ssort asc, year_isi desc', label: 'Title A-Z'
+    config.add_sort_field 'title_za', sort: 'title_ssort desc, year_isi desc', label: 'Title Z-A'
 
     config.spell_max = 5
     config.autocomplete_enabled = false

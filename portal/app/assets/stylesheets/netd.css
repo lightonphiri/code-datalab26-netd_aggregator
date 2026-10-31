@@ -139,3 +139,8 @@ footer.netd-footer strong { color: var(--netd-ink); font-weight: 600; }
 .netd-members { list-style: none; padding: 0; columns: 2; column-gap: 2rem; font-size: .95rem; }
 .netd-members li { break-inside: avoid; padding: .25rem 0; }
 @media (max-width: 768px) { .netd-members { columns: 1; } }
+/* sort control (Academic Commons style): grey button, blue highlighted option */
+#sort-dropdown .btn, .sort-dropdown .btn { background: #6c757d; border-color: #6c757d; color: #fff; }
+#sort-dropdown .btn:hover, .sort-dropdown .btn:hover { background: #5a6268; color: #fff; }
+.dropdown-menu { --bs-dropdown-link-active-bg: #0071c2; --bs-dropdown-link-hover-bg: #eef5fb; border-radius: 3px; }
+.dropdown-menu .dropdown-item.active { background: #0071c2; color: #fff; }
