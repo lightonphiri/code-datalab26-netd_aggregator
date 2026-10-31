@@ -64,3 +64,5 @@ footer.netd-footer a { color: #fff; }
 .etd-badge-pdf { background: #fdecea; color: #a1281c; }
 .etd-pdf-link { display: inline-block; margin-top: .4rem; font-weight: 700; font-size: .9rem; color: #a1281c; text-decoration: none; }
 .etd-pdf-link:hover { text-decoration: underline; }
+.netd-more-toggle { font-size: .9rem; }
+.netd-more-toggle.collapsed .when-expanded, .netd-more-toggle:not(.collapsed) .when-collapsed { display: none; }

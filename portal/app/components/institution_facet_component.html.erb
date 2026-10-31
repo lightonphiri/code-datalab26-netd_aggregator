@@ -1,3 +1,5 @@
+<% zeros = missing_institutions %>
+<% shown, hidden = zeros.first(visible_slots), zeros.drop(visible_slots) %>
 <%= render(layout.new(facet_field: @facet_field)) do |component| %>
   <% component.with_label do %>
     <%= @facet_field.label %>
@@ -6,9 +8,23 @@
     <%= render(Blacklight::Facets::InclusiveConstraintComponent.new(facet_field: @facet_field)) %>
     <%= content_tag :ul, class: @classes, role: @role do %>
       <%= render facet_items %>
-      <% missing_institutions.each do |name| %>
+      <% shown.each do |name| %>
         <li class="netd-facet-zero"><span class="facet-label"><%= name %></span><span class="facet-count">0</span></li>
       <% end %>
+    <% end %>
+    <% if hidden.any? %>
+      <ul class="<%= @classes.join(' ') %> collapse" id="<%= collapse_id %>">
+        <% hidden.each do |name| %>
+          <li class="netd-facet-zero"><span class="facet-label"><%= name %></span><span class="facet-count">0</span></li>
+        <% end %>
+      </ul>
+      <div class="more_facets">
+        <a class="netd-more-toggle collapsed" data-bs-toggle="collapse" href="#<%= collapse_id %>" role="button"
+           aria-expanded="false" aria-controls="<%= collapse_id %>">
+          <span class="when-collapsed">more <span class="sr-only visually-hidden">Institution</span> »</span>
+          <span class="when-expanded">« fewer</span>
+        </a>
+      </div>
     <% end %>
   <% end %>
 <% end %>

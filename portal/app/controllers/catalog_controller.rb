@@ -33,7 +33,7 @@ class CatalogController < ApplicationController
     config.add_show_field 'abstract_tesim', label: 'Abstract'
 
     # ---- facets ----------------------------------------------------------
-    config.add_facet_field 'institution_ssim', label: 'Institution', limit: 50, collapse: false,
+    config.add_facet_field 'institution_ssim', label: 'Institution', limit: 10, collapse: false,
                                               component: InstitutionFacetComponent
     config.add_facet_field 'full_text_ssim', label: 'Full text', collapse: false
     config.add_facet_field 'degree_level_ssim', label: 'Degree level', collapse: false
