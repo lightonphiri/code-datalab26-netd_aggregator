@@ -6,7 +6,7 @@ Harvests Electronic Theses and Dissertations (ETD) metadata from Zambian institu
 - **Requirements:** [docs/SRS.md](docs/SRS.md) (ISO/IEC/IEEE 29148)
 - **Design:** [docs/SDD.md](docs/SDD.md) (IEEE 1016, with UML)
 - **Project page:** https://datalab.unza.zm/projects/zambia-national-etd-portal
-- **Publications, dissertations and reports:** [PUBLICATIONS.md](PUBLICATIONS.md) (also on the portal's About page)
+- **Publications based on the project:** [PUBLICATIONS.md](PUBLICATIONS.md) (also on the portal's About page)
 - **Maintainer:** DataLab Research Group
 
 ### Document versioning

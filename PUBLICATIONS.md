@@ -1,4 +1,4 @@
-# Publications and related work
+# Publications based on the Zambia National ETD Portal project
 
 Project: [Zambia National ETD Portal](https://datalab.unza.zm/projects/zambia-national-etd-portal), DataLab Research Group ([https://datalab.unza.zm](https://datalab.unza.zm)).
 
@@ -28,7 +28,9 @@ A national aggregator of electronic theses and dissertations (ETDs) produced by 
 - Philomena Mwanza (Undergraduate Student, BA Library and Information Science)
 - Daisy Nawila (Undergraduate Student, BA Library and Information Science)
 
-## Publications, dissertations and reports (DataLab Research Group)
+## Publications based on the Zambia National ETD Portal project
+
+The publications, dissertations and capstone reports below come out of the Zambia National ETD Portal project. They study the visibility of Zambian research, the quality, completeness and ETD-MS compliance of ETD metadata in institutional repositories, and ways of improving it; their findings shaped how this portal harvests, cleans and presents ETD metadata.
 
 | Year | Type | Reference |
 |---|---|---|

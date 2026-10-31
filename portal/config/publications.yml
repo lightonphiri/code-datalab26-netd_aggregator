@@ -1,3 +1,4 @@
+# Publications based on the Zambia National ETD Portal project (not all DataLab output).
 # Single source for the portal's About page and the repository's PUBLICATIONS.md
 # (regenerate the latter with: python3 deploy/gen_publications_md.py)
 project:

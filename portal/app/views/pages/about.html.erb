@@ -9,7 +9,11 @@
   <ul class="netd-members">
     <% p['members'].each do |m| %><li><strong><%= m['name'] %></strong> (<%= m['role'] %>)</li><% end %>
   </ul>
-  <h2 class="h5 mt-4">Publications, dissertations and reports from the DataLab Research Group</h2>
+  <h2 class="h5 mt-4">Publications based on the Zambia National ETD Portal project</h2>
+  <p>The publications, dissertations and capstone reports below come out of the Zambia National ETD Portal project.
+    They study the visibility of Zambian research, the quality, completeness and ETD-MS compliance of ETD metadata in
+    institutional repositories, and ways of improving it; their findings shaped how this portal harvests, cleans and
+    presents ETD metadata.</p>
   <ul class="netd-pubs">
     <% @data['publications'].each do |x| %>
       <li><span class="etd-badge etd-badge-year"><%= x['year'] %></span> <span class="etd-badge etd-badge-level"><%= x['type'] %></span><br>
