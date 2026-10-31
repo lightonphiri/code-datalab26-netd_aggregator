@@ -134,3 +134,5 @@ footer.netd-footer strong { color: var(--netd-ink); font-weight: 600; }
 .netd-copy input { font-size: .85rem; }
 .netd-share { display: flex; gap: .55rem; margin-top: 1rem; }
 .netd-rights { font-size: .85rem; margin-top: 1rem; color: var(--netd-muted); }
+#main-container:has(.netd-record) #sidebar { display: none; }
+#main-container:has(.netd-record) #content, #main-container:has(.netd-record) .show-document { flex: 0 0 100%; max-width: 100%; width: 100%; }
