@@ -42,7 +42,8 @@ This document specifies the requirements for a national Electronic Theses and Di
 
 ### 1.2 Scope
 The system ("NETD v2") replaces, in stages, the current Zambia National ETD Portal at https://netd.ac.zm, which runs the UCT ETD Portal software [R4] and holds about 5,269 UNZA records [R1]. Since October 31, 2026 (v0.8) it is served at `https://netd.ac.zm/`, replacing the earlier portal, and covers:
-- harvesting from three HEIs (UNZA RIMS and UNILUS over OAI-PMH; ZCAS University over the DSpace REST API), and listing all HEA-accredited postgraduate institutions [R12], [R13];
+
+- harvesting from four HEIs (UNZA RIMS and UNILUS over OAI-PMH; ZCAS University over the DSpace REST API; Mulungushi University from DSpace 6 METS exports), and listing all HEA-accredited postgraduate institutions [R12], [R13];
 - a cleaning pipeline with a plug-in point for DataLab's machine-learning (ML) models;
 - a Blacklight 9 discovery interface over Apache Solr.
 
@@ -152,6 +153,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 ### 3.2 Functional requirements
 
 **Source management and harvesting**
+
 | ID | Requirement | Pri |
 |---|---|---|
 | FR-1 | Sources shall be configured in a registry file (`harvester/sources.yml`) giving id, name, short name, base URL, preferred metadata formats, ETD sets, and set-name rules. | M |
@@ -166,6 +168,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | FR-10 | Fallback adapters shall be available for HEIs without working OAI-PMH: DSpace 7 REST API (v0.3, used for ZCAS); DSpace 6 XMLUI browse pages + per-item METS exports (v0.4, used for Mulungushi); CSV upload (later). | S |
 
 **Processing, cleaning and enrichment**
+
 | ID | Requirement | Pri |
 |---|---|---|
 | FR-11 | Raw metadata shall be stored unmodified; processing shall be re-runnable from the raw store without re-harvesting. | M |
@@ -179,6 +182,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | FR-19 | Duplicate ETDs across sources shall be detected (identifier, then title+author+year). | C |
 
 **Discovery**
+
 | ID | Requirement | Pri |
 |---|---|---|
 | FR-20 | Users shall search by keyword across all fields, or within Title, Author, Supervisor or Subject. | M |
@@ -190,12 +194,14 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | FR-26 | Institution entry points (InvenioRDM "communities" equivalent): the home page lists each institution with its ETD count. Implemented in v0.2. | S |
 
 **Reporting**
+
 | ID | Requirement | Pri |
 |---|---|---|
 | FR-27 | The administrator shall obtain a per-institution field-completeness report from the command line. | M |
 | FR-28 | A public quality dashboard (completeness and ETD-MS compliance per HEI). | C |
 
 **Coverage and project information**
+
 | ID | Requirement | Pri |
 |---|---|---|
 | FR-29 | An institution registry (`harvester/institutions.yml`) shall list every HEI with at least one HEA-accredited Master's or Doctoral programme [R12], [R13]. The home page and the Institution facet shall show every registry institution (the facet shows the top 10 rows, harvested institutions first, with a "more »" toggle for the rest), with **0** where nothing is harvested and the reason (no repository known, no ETD collection, repository not reachable). | M |

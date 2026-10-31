@@ -349,6 +349,7 @@ flowchart TB
   BK -. OnFailure .-> AL
   PR -. OnFailure .-> AL
 ```
+
 - All NETD services run as the unprivileged user `netd` (NFR-5) and are installed under `/opt/netd`.
 - No Docker and no apt changes (C1). Python comes via `uv`; Ruby is compiled with `ruby-build`.
 - Apache sites for netd.ac.zm live in `deploy/apache/` and are installed by `deploy.sh`, which backs up the previous files in `/opt/netd/`. Rollback: restore those backups and restart Apache.
