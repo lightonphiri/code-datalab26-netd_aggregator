@@ -58,6 +58,9 @@ class CatalogController < ApplicationController
     end
 
     # ---- sorting -------------------------------------------------------------
+    # Sort control next to the result count (the default tools were dropped when this file was rewritten)
+    config.add_results_collection_tool(:sort_widget)
+
     # Sort options as on Columbia's Academic Commons (FR-22)
     config.add_sort_field 'relevance', sort: 'score desc, year_isi desc, title_ssort asc', label: 'Best Match'
     config.add_sort_field 'latest', sort: 'year_isi desc, title_ssort asc', label: 'Published Latest'
