@@ -45,7 +45,8 @@ def load_schema():
     for name, url in XSD_FILES.items():
         path = os.path.join(XSD, name)
         if not os.path.exists(path):
-            text = urllib.request.urlopen(url, timeout=60).read().decode("utf-8")
+            req = urllib.request.Request(url, headers={"User-Agent": "netd-oai-conformance/1.0 (+https://netd.ac.zm)"})
+            text = urllib.request.urlopen(req, timeout=60).read().decode("utf-8")
             text = text.replace("http://dublincore.org/schemas/xmls/simpledc20021212.xsd", "simpledc20021212.xsd")
             text = text.replace("http://www.w3.org/2001/03/xml.xsd", "xml.xsd")
             with open(path, "w") as fh:
