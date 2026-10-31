@@ -2,7 +2,7 @@
 
 Harvests Electronic Theses and Dissertations (ETD) metadata from Zambian institutional repositories over OAI-PMH, cleans it (rules plus pluggable ML models, with per-field provenance), and serves faceted discovery with Blacklight 9 and Solr.
 
-- **Beta:** https://netd.ac.zm/beta/ (runs alongside the current portal)
+- **Live:** https://netd.ac.zm/ (replaced the earlier UCT ETD Portal deployment on October 31, 2026)
 - **Requirements:** [docs/SRS.md](docs/SRS.md) (ISO/IEC/IEEE 29148)
 - **Design:** [docs/SDD.md](docs/SDD.md) (IEEE 1016, with UML)
 - **Project page:** https://datalab.unza.zm/projects/zambia-national-etd-portal
@@ -54,10 +54,10 @@ Write `def enrich(record) -> record` in any importable package. Set `record["pro
 ## Server deployment (netd.ac.zm)
 ```bash
 sudo bash /opt/netd/deploy/install-server.sh   # once: swap, Solr 9, Ruby 3.3 (no Docker, no apt)
-sudo bash /opt/netd/deploy/deploy.sh           # each release: core, gems, assets, systemd, Apache /beta
+sudo bash /opt/netd/deploy/deploy.sh           # each release: core, gems, assets, systemd, Apache sites
 sudo -u netd /opt/netd/harvester/.venv/bin/python -m netd.cli run --full   # first load
 ```
-Roll back by deleting the "NETD v2 beta" lines in `/etc/apache2/sites-enabled/netd.conf` (a backup is kept in `/opt/netd/`), then `systemctl disable --now netd-portal netd-solr netd-harvest.timer`.
+Apache sites for netd.ac.zm are kept in `deploy/apache/` and installed by `deploy.sh` (the previous files are backed up in `/opt/netd/*.bak-*`). The old Tomcat ETD Portal addresses (`/portal`, `/summary`, `/harvester`) redirect to the home page; `/beta/...` redirects to the same path at the root.
 
 ### HTTPS
-netd.ac.zm has a Let's Encrypt certificate (obtained on October 30, 2026 with `certbot certonly --webroot -w /var/www/html -d netd.ac.zm`; it renews automatically and Apache reloads via the deploy hook). The HTTPS site `/etc/apache2/sites-available/netd-le-ssl.conf` mirrors `netd.conf`, including the `/beta` proxy, plus `RequestHeader set X-Forwarded-Proto "https"` (mod_headers) so Rails knows requests arrived over HTTPS; without it, clicking a search result fails Rails' CSRF origin check (fixed October 31, 2026).
+netd.ac.zm has a Let's Encrypt certificate (obtained on October 30, 2026 with `certbot certonly --webroot -w /var/www/html -d netd.ac.zm`; it renews automatically and Apache reloads via the deploy hook). The HTTPS site `/etc/apache2/sites-available/netd-le-ssl.conf` proxies the whole site to the portal, plus `RequestHeader set X-Forwarded-Proto "https"` (mod_headers) so Rails knows requests arrived over HTTPS; without it, clicking a search result fails Rails' CSRF origin check (fixed October 31, 2026).

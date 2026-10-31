@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Discovery configuration for the Zambia National ETD Portal (beta).
+# Discovery configuration for the Zambia National ETD Portal (netd.ac.zm).
 # Field names follow the harvester's Solr mapping (harvester/netd/index.py).
 class CatalogController < ApplicationController
   include Blacklight::Catalog

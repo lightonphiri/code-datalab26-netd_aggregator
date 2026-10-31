@@ -1,5 +1,5 @@
 #!/bin/bash
-# One-off server setup for the NETD beta (Ubuntu 20.04, no Docker, no apt changes).
+# One-off server setup for NETD v2 (Ubuntu 20.04, no Docker, no apt changes).
 # Installs under /opt/netd as user "netd": Ruby (ruby-build), Solr 9 (127.0.0.1:8983), swap file.
 set -euo pipefail
 RUBY_VERSION=${RUBY_VERSION:-3.3.6}

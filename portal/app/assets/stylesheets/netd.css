@@ -44,8 +44,6 @@ footer.netd-footer { color: var(--netd-muted); font-size: .85rem; padding: 2rem 
 .navbar-brand.navbar-logo, a.navbar-logo { background-image: none !important; width: auto !important;
   height: auto !important; text-indent: 0 !important; color: #fff !important; font-weight: 700; font-size: 1.25rem; }
 .navbar-brand.navbar-logo img, a.navbar-logo img { display: none; }
-.navbar-brand.navbar-logo::before, a.navbar-logo::before { content: "BETA"; background: #ffc107; color: #222; font-size: .65rem;
-  border-radius: 4px; padding: .1rem .35rem; margin-right: .5rem; vertical-align: middle; }
 .navbar-search .advanced_search, .navbar-search a { color: #e6f2f5 !important; }
 footer.netd-footer { background: #0b4f6c; color: #d9e9ef; margin-top: 2rem; }
 footer.netd-footer a { color: #fff; }
