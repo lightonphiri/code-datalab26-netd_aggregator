@@ -4,7 +4,31 @@ Project: [Zambia National ETD Portal](https://datalab.unza.zm/projects/zambia-na
 
 A national aggregator of electronic theses and dissertations (ETDs) produced by Zambian higher education institutions, harvested from institutional repositories using OAI-PMH, with research into metadata quality, completeness and ETD-MS compliance.
 
-**Project members:** Lighton Phiri, Elijah Chileshe, Adrian Chisale, Cecilia Kasonde, Angela Banda, Frazer Nyambe, Richard Mufuzi, Nkole Mulenga, Geoffrey Ngoma, Chanda Chilufya, Mainda Chuulu, Kamfwa Chileshe, Memory Phiri, Gift Muwele, Mubanga Chibesa, Robert Msendo, Bertha Chipangila, Eric Liswaniso, Andrew Mawila, Philomena Mwanza, Daisy Nawila.
+## Project members
+
+- Lighton Phiri (Principal Investigator)
+- Elijah Chileshe (Postgraduate Student, MSc Computer Science)
+- Frazer Nyambe (Postgraduate Student, MSc Computer Science)
+- Robert M'sendo (Postgraduate Student, PhD Computer Science)
+- Mubanga Chibesa (Postgraduate Student, PgDip Computer Science)
+- Adrian Chisale (Postgraduate Student, MA Library and Information Science)
+- Cecilia Kasonde (Postgraduate Student, MA Library and Information Science)
+- Angela Banda (Postgraduate Student, MA Library and Information Science)
+- Richard Mufuzi (Undergraduate Student, B.ICT With Education)
+- Chanda Chilufya (Undergraduate Student, B.ICT With Education)
+- Kamfwa Chileshe (Undergraduate Student, B.ICT With Education)
+- Memory Phiri (Undergraduate Student, B.ICT With Education)
+- Mainda Chuulu (Undergraduate Student, B.ICT With Education)
+- Gift Muwele (Undergraduate Student, B.ICT With Education)
+- Geoffrey Ngoma (Undergraduate Student, BA Library and Information Science)
+- Nkole Mulenga (Undergraduate Student, BA Library and Information Science)
+- Bertha Chipangila (Undergraduate Student, BA Library and Information Science)
+- Eric Liswaniso (Undergraduate Student, BA Library and Information Science)
+- Andrew Mawila (Undergraduate Student, BA Library and Information Science)
+- Philomena Mwanza (Undergraduate Student, BA Library and Information Science)
+- Daisy Nawila (Undergraduate Student, BA Library and Information Science)
+
+## Publications, dissertations and reports (DataLab Research Group)
 
 | Year | Type | Reference |
 |---|---|---|
@@ -18,6 +42,5 @@ A national aggregator of electronic theses and dissertations (ETDs) produced by 
 | 2020 | Journal article | Phiri, L. (2020). *Automatic Classification of Digital Objects for Improved Metadata Quality of Electronic Theses and Dissertations in Institutional Repositories*. International Journal of Metadata, Semantics and Ontologies, 14, 234–248. https://doi.org/10.1504/IJMSO.2020.112804 |
 | 2019 | Journal article | Phiri, L. (2019). *A Multi-Faceted Multi-Stakeholder Approach for Increased Visibility of ETDs in Zambia*. Cadernos BAD, 2019(1). http://hdl.handle.net/20.500.11959/brapci/134563 |
 | 2018 | Conference paper | Phiri, L. (2018). *Research Visibility in the Global South: Towards Increased Online Visibility of Scholarly Research Output in Zambia*. 2nd IEEE International Conference in Information and Communication Technologies (ICICT 2018), Lusaka, Zambia. http://dspace.unza.zm/handle/123456789/5723 |
-| 2011 | Software | Webley, L., Chipeperekwa, T. & Suleman, H. (2011). *Creating a National Electronic Thesis and Dissertation Portal in South Africa (ETD Portal software used by the current portal)*. ETD 2011, Cape Town, South Africa. https://dl.cs.uct.ac.za/projects/etd_portal.html |
 
 _Generated from `portal/config/publications.yml`; the same list is shown on the portal's About page._

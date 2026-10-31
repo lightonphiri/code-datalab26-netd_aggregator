@@ -136,3 +136,6 @@ footer.netd-footer strong { color: var(--netd-ink); font-weight: 600; }
 .netd-rights { font-size: .85rem; margin-top: 1rem; color: var(--netd-muted); }
 #main-container:has(.netd-record) #sidebar { display: none; }
 #main-container:has(.netd-record) #content, #main-container:has(.netd-record) .show-document { flex: 0 0 100%; max-width: 100%; width: 100%; }
+.netd-members { list-style: none; padding: 0; columns: 2; column-gap: 2rem; font-size: .95rem; }
+.netd-members li { break-inside: avoid; padding: .25rem 0; }
+@media (max-width: 768px) { .netd-members { columns: 1; } }

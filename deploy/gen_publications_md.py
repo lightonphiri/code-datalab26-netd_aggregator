@@ -7,7 +7,7 @@ d = yaml.safe_load(open(os.path.join(ROOT, "portal", "config", "publications.yml
 p = d["project"]
 out = ["# Publications and related work", "",
        "Project: [%s](%s), %s ([%s](%s))." % (p["name"], p["url"], p["group"], p["group_url"], p["group_url"]), "",
-       p["summary"], "", "**Project members:** " + ", ".join(p["members"]) + ".", "",
+       p["summary"], "", "## Project members", ""] + ["- %s (%s)" % (m["name"], m["role"]) for m in p["members"]] + ["", "## Publications, dissertations and reports (DataLab Research Group)", "",
        "| Year | Type | Reference |", "|---|---|---|"]
 for x in d["publications"]:
     out.append("| %s | %s | %s (%s). *%s*. %s. %s |" % (x["year"], x["type"], x["authors"], x["year"], x["title"], x["venue"], x["url"]))

@@ -9,10 +9,29 @@ project:
     A national aggregator of electronic theses and dissertations (ETDs) produced by Zambian
     higher education institutions, harvested from institutional repositories using OAI-PMH,
     with research into metadata quality, completeness and ETD-MS compliance.
-  members: [Lighton Phiri, Elijah Chileshe, Adrian Chisale, Cecilia Kasonde, Angela Banda, Frazer Nyambe,
-            Richard Mufuzi, Nkole Mulenga, Geoffrey Ngoma, Chanda Chilufya, Mainda Chuulu, Kamfwa Chileshe,
-            Memory Phiri, Gift Muwele, Mubanga Chibesa, Robert Msendo, Bertha Chipangila, Eric Liswaniso,
-            Andrew Mawila, Philomena Mwanza, Daisy Nawila]
+  # roles as shown on https://datalab.unza.zm/people (checked October 31, 2026)
+  members:
+    - {name: "Lighton Phiri", role: "Principal Investigator"}
+    - {name: "Elijah Chileshe", role: "Postgraduate Student, MSc Computer Science"}
+    - {name: "Frazer Nyambe", role: "Postgraduate Student, MSc Computer Science"}
+    - {name: "Robert M'sendo", role: "Postgraduate Student, PhD Computer Science"}
+    - {name: "Mubanga Chibesa", role: "Postgraduate Student, PgDip Computer Science"}
+    - {name: "Adrian Chisale", role: "Postgraduate Student, MA Library and Information Science"}
+    - {name: "Cecilia Kasonde", role: "Postgraduate Student, MA Library and Information Science"}
+    - {name: "Angela Banda", role: "Postgraduate Student, MA Library and Information Science"}
+    - {name: "Richard Mufuzi", role: "Undergraduate Student, B.ICT With Education"}
+    - {name: "Chanda Chilufya", role: "Undergraduate Student, B.ICT With Education"}
+    - {name: "Kamfwa Chileshe", role: "Undergraduate Student, B.ICT With Education"}
+    - {name: "Memory Phiri", role: "Undergraduate Student, B.ICT With Education"}
+    - {name: "Mainda Chuulu", role: "Undergraduate Student, B.ICT With Education"}
+    - {name: "Gift Muwele", role: "Undergraduate Student, B.ICT With Education"}
+    - {name: "Geoffrey Ngoma", role: "Undergraduate Student, BA Library and Information Science"}
+    - {name: "Nkole Mulenga", role: "Undergraduate Student, BA Library and Information Science"}
+    - {name: "Bertha Chipangila", role: "Undergraduate Student, BA Library and Information Science"}
+    - {name: "Eric Liswaniso", role: "Undergraduate Student, BA Library and Information Science"}
+    - {name: "Andrew Mawila", role: "Undergraduate Student, BA Library and Information Science"}
+    - {name: "Philomena Mwanza", role: "Undergraduate Student, BA Library and Information Science"}
+    - {name: "Daisy Nawila", role: "Undergraduate Student, BA Library and Information Science"}
 
 publications:
   - type: Poster
@@ -75,9 +94,3 @@ publications:
     title: "Research Visibility in the Global South: Towards Increased Online Visibility of Scholarly Research Output in Zambia"
     venue: 2nd IEEE International Conference in Information and Communication Technologies (ICICT 2018), Lusaka, Zambia
     url: http://dspace.unza.zm/handle/123456789/5723
-  - type: Software
-    year: 2011
-    authors: Webley, L., Chipeperekwa, T. & Suleman, H.
-    title: Creating a National Electronic Thesis and Dissertation Portal in South Africa (ETD Portal software used by the current portal)
-    venue: ETD 2011, Cape Town, South Africa
-    url: https://dl.cs.uct.ac.za/projects/etd_portal.html
