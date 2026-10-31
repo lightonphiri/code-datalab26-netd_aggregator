@@ -1,0 +1,9 @@
+[Unit]
+Description=NETD weekly status email (Mondays 08:00 Lusaka)
+
+[Timer]
+OnCalendar=Mon *-*-* 06:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

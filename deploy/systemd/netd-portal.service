@@ -1,4 +1,5 @@
 [Unit]
+OnFailure=netd-alert@%n.service
 Description=NETD Blacklight portal (Puma 127.0.0.1:3010, served at https://netd.ac.zm/)
 After=network.target netd-solr.service
 

@@ -1,0 +1,7 @@
+[Unit]
+Description=Check that https://netd.ac.zm/ is serving search results
+OnFailure=netd-alert@%n.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/netd/deploy/ops/netd-probe.sh

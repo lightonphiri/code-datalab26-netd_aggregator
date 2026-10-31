@@ -1,0 +1,6 @@
+[Unit]
+Description=Email an alert that %i failed
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/netd/deploy/ops/netd-alert.py %i

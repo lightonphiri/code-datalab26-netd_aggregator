@@ -1,4 +1,5 @@
 [Unit]
+OnFailure=netd-alert@%n.service
 Description=NETD harvest + process + index (all sources)
 After=network-online.target netd-solr.service
 
@@ -7,3 +8,5 @@ Type=oneshot
 User=netd
 WorkingDirectory=/opt/netd/harvester
 ExecStart=/opt/netd/harvester/.venv/bin/python -m netd.cli run
+# health check: any source failed/stale or index out of step with the store -> unit fails -> alert
+ExecStart=/opt/netd/harvester/.venv/bin/python -m netd.cli check

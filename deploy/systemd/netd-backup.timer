@@ -1,0 +1,9 @@
+[Unit]
+Description=NETD nightly backup, after the daily harvest
+
+[Timer]
+OnCalendar=*-*-* 04:15:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

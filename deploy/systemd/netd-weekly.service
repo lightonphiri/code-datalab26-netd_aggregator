@@ -1,0 +1,7 @@
+[Unit]
+Description=NETD weekly status email
+OnFailure=netd-alert@%n.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/netd/deploy/ops/netd-alert.py --weekly

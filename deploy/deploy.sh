@@ -19,9 +19,13 @@ cd $N/portal
 sudo -u netd env PATH=$N/ruby/bin:$PATH bash -c 'bundle config set --local deployment true && bundle config set --local without development:test && bundle install -j2 --quiet'
 sudo -u netd env PATH=$N/ruby/bin:$PATH RAILS_ENV=production RAILS_RELATIVE_URL_ROOT=/ $(cat $N/portal.env) bash -c 'bin/rails db:prepare && bin/rails assets:precompile' >/dev/null
 
+# Operations: backup/alert scripts, rclone for the off-server copy (docs/OPERATIONS.md)
+chmod 755 $N/deploy/ops/*
+command -v rclone >/dev/null || { curl -sSf https://rclone.org/install.sh | bash >/dev/null; }
+
 # systemd units
 cp $N/deploy/systemd/netd-* /etc/systemd/system/ && systemctl daemon-reload
-systemctl enable -q --now netd-solr.service netd-harvest.timer
+systemctl enable -q --now netd-solr.service netd-harvest.timer netd-backup.timer netd-probe.timer netd-weekly.timer
 sleep 3; curl -s -o /dev/null "http://127.0.0.1:8983/solr/admin/cores?action=RELOAD&core=netd" || true  # pick up configset changes
 systemctl restart netd-portal.service; systemctl enable -q netd-portal.service
 

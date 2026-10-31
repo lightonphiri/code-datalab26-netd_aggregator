@@ -1,0 +1,10 @@
+[Unit]
+Description=NETD nightly backup (server copy, then Google Drive)
+OnFailure=netd-alert@%n.service
+After=netd-solr.service
+
+[Service]
+Type=oneshot
+Nice=10
+ExecStart=/opt/netd/deploy/ops/netd-backup.sh
+ExecStart=/opt/netd/deploy/ops/netd-backup-to-gdrive.sh

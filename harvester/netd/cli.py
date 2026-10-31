@@ -5,6 +5,7 @@
   index    [--source ID]                        push canonical records to Solr
   run      [--source ID] [--full]               harvest + process + index (scheduled job)
   report                                        field completeness per institution
+  check    [--max-age-hours H]                  health check after the scheduled run (exit 1 = problem)
 """
 import argparse
 import os
@@ -80,12 +81,56 @@ def do_report(store):
             "%*.0f%%" % (len(f) - 1, 100.0 * s[f] / max(s["n"], 1)) for f in fields))
 
 
+def do_check(store, srcs, solr, max_age_hours):
+    """Fail (exit 1) if any source's latest harvest failed or is stale, or Solr disagrees with the store."""
+    import json
+    import time
+    import urllib.request
+    problems = []
+    for src in srcs:
+        r = store.db.execute("SELECT status, message, started_at FROM harvest_runs WHERE source=? "
+                             "ORDER BY started_at DESC LIMIT 1", (src["id"],)).fetchone()
+        if r is None:
+            problems.append("%s: never harvested" % src["id"])
+            continue
+        if r["status"] != "ok":
+            problems.append("%s: latest harvest status=%s %s" % (src["id"], r["status"], r["message"] or ""))
+        age = (time.time() - r["started_at"]) / 3600.0
+        if age > max_age_hours:
+            problems.append("%s: latest harvest is %.0f hours old" % (src["id"], age))
+    stored = {r["source"]: r["n"] for r in store.db.execute("SELECT source, count(*) n FROM records GROUP BY source")}
+    try:
+        q = solr + "/select?q=*:*&rows=0&facet=true&facet.field=source_ssi&facet.limit=-1&wt=json"
+        res = json.load(urllib.request.urlopen(q, timeout=60))
+        f = res["facet_counts"]["facet_fields"]["source_ssi"]
+        indexed = dict(zip(f[::2], f[1::2]))
+        total = res["response"]["numFound"]
+    except Exception as e:
+        problems.append("Solr not answering: %s" % e)
+        indexed, total = {}, 0
+    if indexed or total:
+        for src in srcs:
+            a, b = stored.get(src["id"], 0), indexed.get(src["id"], 0)
+            if a == 0:
+                problems.append("%s: no records in the staging store" % src["id"])
+            elif b < 0.9 * a:
+                problems.append("%s: %d records stored but only %d in the search index" % (src["id"], a, b))
+    print("check: %d records indexed; sources %s" % (total, ", ".join(
+        "%s=%d" % (s["id"], indexed.get(s["id"], 0)) for s in srcs)))
+    for p in problems:
+        print("PROBLEM: " + p)
+    if problems:
+        sys.exit(1)
+    print("check: OK")
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(prog="netd")
-    p.add_argument("command", choices=["harvest", "process", "index", "run", "report"])
+    p.add_argument("command", choices=["harvest", "process", "index", "run", "report", "check"])
     p.add_argument("--source")
     p.add_argument("--full", action="store_true")
     p.add_argument("--limit", type=int)
+    p.add_argument("--max-age-hours", type=float, default=30)
     p.add_argument("--db", default=os.environ.get("NETD_DB", os.path.join(HERE, "netd.sqlite3")))
     p.add_argument("--solr", default=os.environ.get("NETD_SOLR", "http://127.0.0.1:8983/solr/netd"))
     a = p.parse_args(argv)
@@ -103,6 +148,8 @@ def main(argv=None):
         do_index(store, srcs, a.solr)
     if a.command == "report":
         do_report(store)
+    if a.command == "check":
+        do_check(store, srcs, a.solr, a.max_age_hours)
 
 
 if __name__ == "__main__":
