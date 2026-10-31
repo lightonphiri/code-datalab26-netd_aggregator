@@ -32,6 +32,18 @@ def harvest_sets(sickle, store, src):
 def harvest_source(store, src, full=False, limit=None, log=print):
     """Harvest one source. Incremental (from= last successful run) unless full=True."""
     started = time.time()
+    if src.get("loader") == "dspace7-rest":  # fallback when OAI-PMH is empty/broken (FR-10)
+        from .rest import harvest_rest
+        status, message, n = "ok", "", 0
+        try:
+            n = harvest_rest(store, src, log=log, limit=limit)
+        except Exception as e:
+            status, message = "error", repr(e)[:500]
+        store.log_run(source=src["id"], started_at=started, finished_at=time.time(), from_date=None,
+                      records=n, deleted=0, status=status, message=message)
+        store.commit()
+        log("%s: %d records via DSpace REST API, status=%s %s" % (src["id"], n, status, message))
+        return n
     sickle = client(src)
     prefix = choose_format(sickle, src)
     harvest_sets(sickle, store, src)

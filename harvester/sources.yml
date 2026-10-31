@@ -30,7 +30,12 @@ sources:
     name: ZCAS University
     short_name: ZCASU
     base_url: https://dspace.zcas.edu.zm/server/oai/request
-    formats: [dim, etdms, oai_dc]
-    # DBA Thesis + the four School "Dissertations" collections; Schools are communities (-> Faculty)
+    # OAI-PMH answers but its index is empty (noRecordsMatch for every set on October 31, 2026),
+    # so items are read from the DSpace 7 REST API instead. Switch back to OAI-PMH once ZCAS
+    # rebuilds its OAI index (dspace oai import) by removing `loader`.
+    loader: dspace7-rest
+    rest_api: https://dspace.zcas.edu.zm/server/api
+    # DBA Thesis + the four School "Dissertations" collections; Schools are parent communities (-> Faculty)
+    collections: [123456789/12, 123456789/13, 123456789/16, 123456789/19, 123456789/22]
     sets: [col_123456789_12, col_123456789_13, col_123456789_16, col_123456789_19, col_123456789_22]
     ignore_set_names: ["DBA Thesis", "Dissertations"]
