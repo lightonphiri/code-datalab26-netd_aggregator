@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SRS, structured per ISO/IEC/IEEE 29148:2018 (supersedes IEEE 830-1998) |
-| Version | 0.17 |
+| Version | 0.18 |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Repository | https://github.com/lightonphiri/code-datalab26-netd_aggregator |
@@ -15,6 +15,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial SRS: harvesting (UNZA, UNILUS), cleaning pipeline, Blacklight discovery |
 | 0.2 | October 30, 2026 | Discipline and Degree fields (FR-12, FR-21); institution entry points (FR-26); HTTPS (NFR-9); PDF pilot and onboarding findings (§4) |
+| 0.18 | October 31, 2026 | NFR-11 recoverability (nightly backups on the server and Google Drive, restore procedure) and NFR-12 monitoring (failure alerts, site probe, weekly status, post-harvest health check); see `docs/OPERATIONS.md` |
 | 0.17 | October 31, 2026 | FR-23: result items as on Academic Commons — authors; YEAR · DEGREE · INSTITUTION; subject links |
 | 0.16 | October 31, 2026 | FR-35: footer with About, FAQ, Developer Resources and Credits; FAQ, Developer Resources (REST API; OAI-PMH in development) and Credits pages; ZAMREN hosting credit with logo |
 | 0.15 | October 31, 2026 | FR-34: Report a problem popup form (stored and emailed) replaces the email link |
@@ -217,6 +218,8 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | NFR-8 | Usability | Responsive layout; WCAG 2.1 AA colour contrast for badges and links. | S |
 | NFR-9 | Security | HTTPS for netd.ac.zm with a valid certificate (in place since October 30, 2026; Let's Encrypt, auto-renewing). | S |
 | NFR-10 | Politeness | At most one concurrent request per source. | M |
+| NFR-11 | Recoverability | The staging store and portal database shall be backed up nightly, verified by checksum, kept 14 days on the server and about 60 days off the server (Google Drive); a restore procedure shall be documented and tested. | M |
+| NFR-12 | Monitoring | The maintainer shall be emailed when a scheduled job or service fails, when a source's latest harvest failed or is more than 30 hours old, when the index disagrees with the store, and when the public site stops serving results (once per outage, plus recovery); a weekly status email shall confirm the alert path works. | M |
 
 ### 3.4 Data requirements
 The canonical record is a JSON object stored in SQLite (`records.data`):
@@ -234,6 +237,7 @@ The canonical record is a JSON object stored in SQLite (`records.data`):
 | FR-20–FR-24, EI-2, EI-5 | Demonstration in browser at `/beta/` | Screenshots in release notes |
 | NFR-1, NFR-3 | Measurement (`curl -w`, `ps`) | Recorded at deployment |
 | NFR-4, NFR-5 | Inspection of systemd units | `deploy/systemd/*.service` |
+| NFR-11, NFR-12 | Test backup and restore check; test alert (`netd-alert@test`) | October 31, 2026; `docs/OPERATIONS.md` |
 
 Completeness (October 31, 2026, v0.3):
 

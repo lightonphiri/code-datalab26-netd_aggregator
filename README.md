@@ -5,6 +5,7 @@ Harvests Electronic Theses and Dissertations (ETD) metadata from Zambian institu
 - **Live:** https://netd.ac.zm/ (replaced the earlier UCT ETD Portal deployment on October 31, 2026)
 - **Requirements:** [docs/SRS.md](docs/SRS.md) (ISO/IEC/IEEE 29148)
 - **Design:** [docs/SDD.md](docs/SDD.md) (IEEE 1016, with UML)
+- **Operations:** [docs/OPERATIONS.md](docs/OPERATIONS.md) (schedules, backups, alerts, restore, server maintenance)
 - **Project page:** https://datalab.unza.zm/projects/zambia-national-etd-portal
 - **Publications based on the project:** [PUBLICATIONS.md](PUBLICATIONS.md) (also on the portal's About page)
 - **Maintainer:** DataLab Research Group

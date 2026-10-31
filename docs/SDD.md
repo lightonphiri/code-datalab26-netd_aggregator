@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SDD, structured per IEEE 1016-2009 (design viewpoints) |
-| Version | 0.16 |
+| Version | 0.17 |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Related | `docs/SRS.md` (requirement IDs referenced below) |
@@ -14,6 +14,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial design: harvester, raw/canonical stores, crosswalk, enrichers, Blacklight portal, deployment |
 | 0.2 | October 30, 2026 | Discipline/degree derivation; Solr analysers; URL-safe record ids; HTTPS |
+| 0.17 | October 31, 2026 | Operations (§8): `netd.cli check`; `deploy/ops/` backup, Drive upload, alert and probe scripts; `netd-backup`, `netd-probe`, `netd-weekly` timers and `netd-alert@` template with `OnFailure=` on every unit |
 | 0.16 | October 31, 2026 | `PagesController#faq/#developers/#credits`; footer partial; `credits` section in `publications.yml`; ZAMREN logo in `public/images/` |
 | 0.10 | October 31, 2026 | Record page `catalog/show.html.erb` + `RecordHelper`; index gains `files_ssm` (name, type, size, URL per file) and `rights_ssm` |
 | 0.9 | October 31, 2026 | `NetdHeaderComponent` (header), landing page redesign, new theme `netd.css` modelled on Academic Commons |
@@ -26,7 +27,7 @@
 
 ## 1. Introduction
 ### 1.1 Purpose and scope
-This SDD describes how NETD v2 meets the SRS: the system's context, components, information model, interfaces, interaction, state, deployment, and the main design decisions. It covers release 0.16.
+This SDD describes how NETD v2 meets the SRS: the system's context, components, information model, interfaces, interaction, state, deployment, and the main design decisions. It covers release 0.17.
 
 ### 1.2 Stakeholders and concerns
 | Stakeholder | Concerns | Viewpoints |
@@ -334,16 +335,24 @@ flowchart TB
     TC["Tomcat :8080<br/>other applications; old portal no longer proxied"]
     PU[netd-portal.service<br/>Puma 127.0.0.1:3010, 1 worker]
     SO[netd-solr.service<br/>Solr 9.11 127.0.0.1:8983, 512 MB heap]
-    TI[netd-harvest.timer<br/>daily harvest+process+index]
+    TI[netd-harvest.timer<br/>daily harvest+process+index, then check]
+    BK[netd-backup.timer<br/>nightly backup + Drive copy]
+    PR[netd-probe.timer<br/>site check every 15 min]
+    AL[netd-alert@ unit<br/>email via SMTP]
     FS["/opt/netd: harvester, portal, solr, ruby, netd.sqlite3"]
   end
   AP --> PU
   PU --> SO
   TI --> SO
+  BK --> GD[(Google Drive<br/>NETD portal backups)]
+  TI -. OnFailure .-> AL
+  BK -. OnFailure .-> AL
+  PR -. OnFailure .-> AL
 ```
 - All NETD services run as the unprivileged user `netd` (NFR-5) and are installed under `/opt/netd`.
 - No Docker and no apt changes (C1). Python comes via `uv`; Ruby is compiled with `ruby-build`.
 - Apache sites for netd.ac.zm live in `deploy/apache/` and are installed by `deploy.sh`, which backs up the previous files in `/opt/netd/`. Rollback: restore those backups and restart Apache.
+- Operations (NFR-11, NFR-12): every NETD unit has `OnFailure=netd-alert@%n.service`, which emails the unit's status and log. The harvest service ends with `netd.cli check`, which fails if a source's latest run failed or is stale, or if Solr per-source counts fall below 90% of the store. `netd-backup.sh` writes a dated folder only when every step succeeds, and `netd-backup-to-gdrive.sh` copies and verifies it with rclone. The Solr index is not backed up because it is rebuilt from the store. Details and the restore procedure are in `docs/OPERATIONS.md`.
 - The earlier ETD Portal (Tomcat :8080) is no longer proxied; Tomcat keeps running because it hosts other applications.
 
 ---
