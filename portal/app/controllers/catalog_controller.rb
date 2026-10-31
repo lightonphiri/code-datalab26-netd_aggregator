@@ -7,8 +7,10 @@ class CatalogController < ApplicationController
 
   configure_blacklight do |config|
     config.header_component = NetdHeaderComponent
-    config.default_solr_params = { rows: 20 }
-    config.per_page = [20, 50, 100]
+    # 10 results per page as on Google Scholar; "Show" menu offers 20, 50 and 100
+    config.default_solr_params = { rows: 10 }
+    config.default_per_page = 10
+    config.per_page = [10, 20, 50, 100]
 
     # ---- results list --------------------------------------------------
     config.index.title_field = 'title_tsim'
@@ -58,6 +60,7 @@ class CatalogController < ApplicationController
     # ---- sorting -------------------------------------------------------------
     # Sort control next to the result count (the default tools were dropped when this file was rewritten)
     config.add_results_collection_tool(:sort_widget)
+    config.add_results_collection_tool(:per_page_widget)
 
     # Sort options as on Columbia's Academic Commons (FR-22)
     config.add_sort_field 'relevance', sort: 'score desc, year_isi desc, title_ssort asc', label: 'Best Match'

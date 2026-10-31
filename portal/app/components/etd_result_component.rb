@@ -32,6 +32,7 @@ class EtdResultComponent < Blacklight::DocumentComponent
     parts << content_tag(:div, authors.join('; '), class: 'etd-authors') if authors.any?
     parts << content_tag(:div, safe_join(kicker.map { |k| content_tag(:span, k) }, content_tag(:span, '·', class: 'etd-dot')),
                          class: 'etd-kicker') if kicker.any?
+    parts << snippet
     if subjects.any?
       parts << content_tag(:div, safe_join(subjects.map { |s| link_to(s, helpers.search_action_path(f: { subject_ssim: [s] })) }),
                            class: 'etd-subjects')
@@ -49,7 +50,7 @@ class EtdResultComponent < Blacklight::DocumentComponent
 
   def snippet
     text = first('abstract_tesim')
-    text ? content_tag(:p, truncate(text, length: 320, separator: ' '), class: 'etd-snippet') : ''
+    text ? content_tag(:p, truncate(text.squish, length: 300, separator: ' '), class: 'etd-snippet') : nil
   end
 
   def source_link

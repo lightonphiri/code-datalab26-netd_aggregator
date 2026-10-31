@@ -8,7 +8,7 @@
   <p>Every search and record page is also available as JSON. No key is needed; please keep to a few requests per second.</p>
   <table class="netd-about netd-api">
     <tr><th>Search</th><td><code>GET https://netd.ac.zm/catalog.json?q=malaria</code></td></tr>
-    <tr><th>Paging</th><td><code>&amp;page=2&amp;per_page=50</code> (up to 100 per page)</td></tr>
+    <tr><th>Paging</th><td><code>&amp;page=2&amp;per_page=50</code> (10 by default; 20, 50 or 100 per page)</td></tr>
     <tr><th>Filter</th><td><code>&amp;f[institution_ssim][]=University+of+Zambia&amp;f[degree_level_ssim][]=Doctoral</code></td></tr>
     <tr><th>Sort</th><td><code>&amp;sort=latest</code> (also <code>relevance</code>, <code>earliest</code>, <code>title_az</code>, <code>title_za</code>)</td></tr>
     <tr><th>Search a field</th><td><code>&amp;search_field=title</code> (also <code>author</code>, <code>supervisor</code>, <code>subject</code>)</td></tr>

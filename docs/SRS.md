@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SRS, structured per ISO/IEC/IEEE 29148:2018 (supersedes IEEE 830-1998) |
-| Version | 0.18 |
+| Version | 0.19 |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Repository | https://github.com/lightonphiri/code-datalab26-netd_aggregator |
@@ -15,6 +15,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial SRS: harvesting (UNZA, UNILUS), cleaning pipeline, Blacklight discovery |
 | 0.2 | October 30, 2026 | Discipline and Degree fields (FR-12, FR-21); institution entry points (FR-26); HTTPS (NFR-9); PDF pilot and onboarding findings (§4) |
+| 0.19 | October 31, 2026 | FR-23: abstract snippet (up to three lines) restored under the YEAR · DEGREE · INSTITUTION line; FR-22: 10 results per page by default (as on Google Scholar), with a "Show" menu for 20, 50 or 100 |
 | 0.18 | October 31, 2026 | NFR-11 recoverability (nightly backups on the server and Google Drive, restore procedure) and NFR-12 monitoring (failure alerts, site probe, weekly status, post-harvest health check); see `docs/OPERATIONS.md` |
 | 0.17 | October 31, 2026 | FR-23: result items as on Academic Commons — authors; YEAR · DEGREE · INSTITUTION; subject links |
 | 0.16 | October 31, 2026 | FR-35: footer with About, FAQ, Developer Resources and Credits; FAQ, Developer Resources (REST API; OAI-PMH in development) and Credits pages; ZAMREN hosting credit with logo |
@@ -182,8 +183,8 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 |---|---|---|
 | FR-20 | Users shall search by keyword across all fields, or within Title, Author, Supervisor or Subject. | M |
 | FR-21 | Users shall filter by facets: Institution, Degree level, Faculty/School, Department, Programme/Discipline, Degree, Supervisor, Subject, Year (newest first; the 5 latest years visible, the rest behind "more »"). | M |
-| FR-22 | Users shall sort results from a "Sort by" menu beside the result count, as on Academic Commons [R15]: Best Match (default), Published Latest, Published Earliest, Title A-Z, Title Z-A. | M |
-| FR-23 | Each search result shall show, as on Academic Commons [R15]: the title (link to the record); the authors; a line "YEAR · DEGREE · INSTITUTION" (degree name, or degree level when no name is recorded); the subjects as links to subject searches; and a Download PDF link when available. | M |
+| FR-22 | Users shall sort results from a "Sort by" menu beside the result count, as on Academic Commons [R15]: Best Match (default), Published Latest, Published Earliest, Title A-Z, Title Z-A. Results shall be shown 10 per page by default, as on Google Scholar, with a "Show" menu offering 20, 50 or 100 per page. | M |
+| FR-23 | Each search result shall show, as on Academic Commons [R15]: the title (link to the record); the authors; a line "YEAR · DEGREE · INSTITUTION" (degree name, or degree level when no name is recorded); an abstract snippet of up to three lines; the subjects as links to subject searches; and a Download PDF link when available. | M |
 | FR-24 | Record pages shall follow the Academic Commons record layout [R15]: year/type/degree-level kicker, title, authors, abstract; Subjects and Programme/Discipline as tag buttons linking to searches; a Files panel (name, type, size, download per file); all other metadata (institution, faculty, department, thesis advisors, degree, degree level, year, language, source record) in a "More About This Work" panel; and a top-right panel with Download, persistent link with copy, sharing links, rights and holding institution, a "Report a problem" button opening the form in FR-34, and an Analysis panel linking to the work on Google Scholar, where its "Cited by" count is shown. Google Scholar has no public API, so the count itself is not shown on the portal. | M |
 | FR-25 | Hierarchical Faculty → Department browsing. | S |
 | FR-26 | Institution entry points (InvenioRDM "communities" equivalent): the home page lists each institution with its ETD count. Implemented in v0.2. | S |
