@@ -6,7 +6,7 @@ How the Zambia National ETD Portal (https://netd.ac.zm/) is kept running: schedu
 
 | Unit | When (UTC) | What it does |
 |---|---|---|
-| `netd-harvest.timer` | daily 02:30 (+ up to 20 min) | harvest → process → index all sources, then `netd.cli check` |
+| `netd-harvest.timer` | daily 02:30 (+ up to 20 min) | harvest → process → index all sources, then `netd.cli check` (which also asks the OAI-PMH provider at http://127.0.0.1:3010/oai for `Identify`) |
 | `netd-backup.timer` | daily 04:15 | server backup to `/var/backups/netd/`, then copy to Google Drive |
 | `netd-probe.timer` | every 15 min | checks that https://netd.ac.zm/ returns search results |
 | `netd-weekly.timer` | Mondays 06:00 | weekly status email |

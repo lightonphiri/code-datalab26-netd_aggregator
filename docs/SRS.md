@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SRS, structured per ISO/IEC/IEEE 29148:2018 (supersedes IEEE 830-1998) |
-| Version | 0.19 |
+| Version | 0.20 |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Repository | https://github.com/lightonphiri/code-datalab26-netd_aggregator |
@@ -15,6 +15,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial SRS: harvesting (UNZA, UNILUS), cleaning pipeline, Blacklight discovery |
 | 0.2 | October 30, 2026 | Discipline and Degree fields (FR-12, FR-21); institution entry points (FR-26); HTTPS (NFR-9); PDF pilot and onboarding findings (§4) |
+| 0.20 | October 31, 2026 | EI-4 raised from C to M and met: OAI-PMH 2.0 data provider at https://netd.ac.zm/oai (all six verbs; `oai_dc` and `etdms` (ETD-MS v1.1); sets `inst:<institution>` and `level:masters`/`level:doctoral`; datestamps are the last change of a record in the portal, at seconds granularity); Developer Resources no longer marks it as in development (FR-35) |
 | 0.19 | October 31, 2026 | FR-23: abstract snippet (up to three lines) restored under the YEAR · DEGREE · INSTITUTION line; FR-22: 10 results per page by default (as on Google Scholar), with a "Show" menu for 20, 50 or 100 |
 | 0.18 | October 31, 2026 | NFR-11 recoverability (nightly backups on the server and Google Drive, restore procedure) and NFR-12 monitoring (failure alerts, site probe, weekly status, post-harvest health check); see `docs/OPERATIONS.md` |
 | 0.17 | October 31, 2026 | FR-23: result items as on Academic Commons — authors; YEAR · DEGREE · INSTITUTION; subject links |
@@ -84,7 +85,7 @@ Section 2 describes the product context and constraints. Section 3 lists verifia
 ## 2. Overall description
 
 ### 2.1 Product perspective
-NETD v2 follows the SA NETD multi-tier model [R4]: *Harvester → Repository (store) → Portal*. It adds a **cleaning tier** with provenance between harvesting and indexing, motivated by the metadata-quality findings in [R2], [R5] and [R6]. Downstream, it will in turn expose an OAI-PMH provider so that NDLTD [R9] can harvest Zambia as a single source (planned for v0.3).
+NETD v2 follows the SA NETD multi-tier model [R4]: *Harvester → Repository (store) → Portal*. It adds a **cleaning tier** with provenance between harvesting and indexing, motivated by the metadata-quality findings in [R2], [R5] and [R6]. Downstream, it exposes its own OAI-PMH data provider (https://netd.ac.zm/oai, EI-4) so that NDLTD [R9] and other aggregators can harvest Zambia as a single source.
 
 ```mermaid
 flowchart LR
@@ -97,7 +98,7 @@ flowchart LR
   P --> K[(Canonical records<br/>with provenance)]
   K --> S[(Solr index)]
   S --> U[Blacklight portal<br/>netd.ac.zm/beta]
-  K -.->|v0.3| O[OAI-PMH provider] -.-> N[NDLTD Union Catalog]
+  K --> O[OAI-PMH provider /oai] --> N[NDLTD Union Catalog]
 ```
 
 ### 2.2 Product functions (summary)
@@ -147,7 +148,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | EI-1 | The harvester shall act as an OAI-PMH 2.0 client supporting `Identify`, `ListMetadataFormats`, `ListSets` and `ListRecords`, with resumption tokens. | M |
 | EI-2 | The portal shall be served over HTTPS at the root of netd.ac.zm through the existing Apache server (reverse proxy), with HTTP redirected to HTTPS and the former `/beta/` and old ETD Portal addresses (`/portal`, `/summary`, `/harvester`) redirected; the HTTPS proxy shall pass `X-Forwarded-Proto: https` so that form posts pass Rails' origin check. | M |
 | EI-3 | The portal shall offer a JSON view of search results and records (Blacklight `.json`). | S |
-| EI-4 | The system shall expose an OAI-PMH data provider (`oai_dc`, `etdms`) of canonical records. | C |
+| EI-4 | The system shall expose an OAI-PMH 2.0 data provider of canonical records at https://netd.ac.zm/oai, supporting all six verbs, the formats `oai_dc` and `etdms` (ETD-MS v1.1), one set per institution and per degree level, resumption tokens, and incremental harvesting by the date a record last changed in the portal. | M |
 | EI-5 | The UI shall follow the style of Columbia's Academic Commons [R15]: system UI typography, a navy group bar, a serif wordmark with the search box, a link row (About, Explore), white pages with light cards, one blue for links and actions; facet sidebar and result list with badges on search pages. | M |
 
 ### 3.2 Functional requirements
@@ -207,7 +208,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | FR-29 | An institution registry (`harvester/institutions.yml`) shall list every HEI with at least one HEA-accredited Master's or Doctoral programme [R12], [R13]. The home page and the Institution facet shall show every registry institution (the facet shows the top 10 rows, harvested institutions first, with a "more »" toggle for the rest), with **0** where nothing is harvested and the reason (no repository known, no ETD collection, repository not reachable). | M |
 | FR-30 | The home page shall state that metadata is meant to be harvested from all institutions offering HEA-accredited Master's and PhD programmes, citing HEA. | M |
 | FR-31 | The portal (About page) and the repository (`PUBLICATIONS.md`) shall list the project details [R14], the project members with their roles as on the DataLab people page (the PI marked Principal Investigator), and the publications, dissertations and capstone reports based on the Zambia National ETD Portal project, with a short explanation of how they relate to the portal, from one source file (`portal/config/publications.yml`). | M |
-| FR-35 | Every page shall have a footer, as on Academic Commons [R15], with links to About, FAQ, Developer Resources and Credits, the contact address datalab@unza.zm, and a line crediting the DataLab Research Group (development) and ZAMREN (hosting). The About page shall credit both, with their logos. Developer Resources shall document the JSON (REST) API and the OAI-PMH interface (EI-4; marked as in development until built). Credits shall name DataLab and ZAMREN, the Core Team (Lighton Phiri, Lead Developer and Principal Investigator; Elijah Chileshe, Assistant Programmer/Analyst), and as Contributors and Former Team Members the students listed on the project page [R14]. | M |
+| FR-35 | Every page shall have a footer, as on Academic Commons [R15], with links to About, FAQ, Developer Resources and Credits, the contact address datalab@unza.zm, and a line crediting the DataLab Research Group (development) and ZAMREN (hosting). The About page shall credit both, with their logos. Developer Resources shall document the JSON (REST) API and the OAI-PMH interface (EI-4). Credits shall name DataLab and ZAMREN, the Core Team (Lighton Phiri, Lead Developer and Principal Investigator; Elijah Chileshe, Assistant Programmer/Analyst), and as Contributors and Former Team Members the students listed on the project page [R14]. | M |
 | FR-34 | Record pages shall offer a "Report a problem" popup form (problem type, message, name, email address, record URL). Each report shall be stored in the portal database and emailed to lighton.phiri@unza.ac.zm and datalab@unza.zm (subject "(Zambia National ETD Portal) <problem>: <title>", reply-to the reporter) through an authenticated SMTP account; the form shall have a spam trap and a rate limit. | M |
 | FR-33 | The landing page shall show a one-line introduction, two prominent buttons — Explore Master's Manuscripts and Explore PhD Manuscripts (degree-level filtered searches) — "stats at a glance" (total ETDs, master's, doctoral, with full-text PDF, institutions contributing of those listed, years covered) and the contributing institutions, with the not-yet-harvested HEA institutions behind a toggle. | M |
 | FR-32 | For every ETD whose repository exposes it, the portal shall link directly to the full-text file (bitstream), preferring the largest PDF, on result cards and record pages, and offer a Full text facet (PDF available / other file / metadata only). Files stay in the source repositories. | M |

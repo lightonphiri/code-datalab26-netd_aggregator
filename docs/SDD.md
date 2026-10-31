@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SDD, structured per IEEE 1016-2009 (design viewpoints) |
-| Version | 0.17 |
+| Version | 0.18 |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Related | `docs/SRS.md` (requirement IDs referenced below) |
@@ -14,6 +14,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial design: harvester, raw/canonical stores, crosswalk, enrichers, Blacklight portal, deployment |
 | 0.2 | October 30, 2026 | Discipline/degree derivation; Solr analysers; URL-safe record ids; HTTPS |
+| 0.18 | October 31, 2026 | OAI-PMH data provider (§5.1, EI-4): `OaiController` at `/oai`, read from Solr only; `records.updated_at` now changes only when a record's content changes and is indexed as `updated_dtsi` (datestamp); `netd.cli check` asserts that `Identify` answers; conformance test `tests/oai_conformance.py` |
 | 0.17 | October 31, 2026 | Operations (§8): `netd.cli check`; `deploy/ops/` backup, Drive upload, alert and probe scripts; `netd-backup`, `netd-probe`, `netd-weekly` timers and `netd-alert@` template with `OnFailure=` on every unit |
 | 0.16 | October 31, 2026 | `PagesController#faq/#developers/#credits`; footer partial; `credits` section in `publications.yml`; ZAMREN logo in `public/images/` |
 | 0.10 | October 31, 2026 | Record page `catalog/show.html.erb` + `RecordHelper`; index gains `files_ssm` (name, type, size, URL per file) and `rights_ssm` |
@@ -27,7 +28,7 @@
 
 ## 1. Introduction
 ### 1.1 Purpose and scope
-This SDD describes how NETD v2 meets the SRS: the system's context, components, information model, interfaces, interaction, state, deployment, and the main design decisions. It covers release 0.17.
+This SDD describes how NETD v2 meets the SRS: the system's context, components, information model, interfaces, interaction, state, deployment, and the main design decisions. It covers release 0.18.
 
 ### 1.2 Stakeholders and concerns
 | Stakeholder | Concerns | Viewpoints |
@@ -79,7 +80,7 @@ flowchart TB
   IR1 -->|ListRecords dim| NETD
   IR2 -->|ListRecords dim| NETD
   Users -->|HTTPS /beta| NETD
-  NETD -.->|v0.3 OAI-PMH etdms| NDLTD
+  NETD -->|OAI-PMH /oai oai_dc, etdms| NDLTD
 ```
 
 ---
@@ -239,17 +240,34 @@ classDiagram
 | url | `dc.identifier.uri` | — |
 
 ### 4.4 Solr document
-`id, title_tsim/ssm/ssort, author_tsim/ssim, supervisor_tsim/ssim, subject_tsim/ssim, faculty_tsim/ssim, department_tsim/ssim, faculty_department_ssim ("Faculty|Dept"), discipline_tsim/ssim, degree_ssim, degree_level_ssim, year_isi/ssim, abstract_tesim, url_ssm, institution_ssim, institution_short_ssim, provenance_ssm, completeness_isi`. A facet (`*_ssim`) value is omitted when its field is not `facetable` (FR-17).
+`id, title_tsim/ssm/ssort, author_tsim/ssim, supervisor_tsim/ssim, subject_tsim/ssim, faculty_tsim/ssim, department_tsim/ssim, faculty_department_ssim ("Faculty|Dept"), discipline_tsim/ssim, degree_ssim, degree_level_ssim, year_isi/ssim, abstract_tesim, url_ssm, pdf_url_ssm, rights_ssm, language_ssim, type_ssim, institution_ssim, institution_short_ssim, source_ssi, oai_id_ssi, datestamp_ssi (source datestamp), updated_dtsi (last content change in the portal; OAI-PMH datestamp), provenance_ssm, completeness_isi`. A facet (`*_ssim`) value is omitted when its field is not `facetable` (FR-17).
 
 ---
 
 ## 5. Interface viewpoint
 | Interface | Description |
 |---|---|
-| CLI | `python -m netd.cli {harvest|process|index|run|report} [--source ID] [--full] [--limit N] [--db PATH] [--solr URL]`; env `NETD_DB`, `NETD_SOLR`, `NETD_SOURCES`, `NETD_ENRICHERS` |
+| CLI | `python -m netd.cli {harvest|process|index|run|report|check} [--source ID] [--full] [--limit N] [--db PATH] [--solr URL]`; env `NETD_DB`, `NETD_SOLR`, `NETD_SOURCES`, `NETD_ENRICHERS` |
 | Enricher contract | `def enrich(record: dict) -> dict`; set `record["provenance"][field] = "model:<name>-<version>"` and optionally `record["confidence"][field] = float` |
 | Solr | JSON `POST /solr/netd/update`; Blacklight queries `/select` (edismax, ETD `qf`) |
-| HTTP | `GET /beta/` (search), `/beta/catalog/<id>` (record), `/beta/catalog.json?q=…` (JSON) |
+| HTTP | `GET /` (search), `/catalog/<id>` (record), `/catalog.json?q=…` (JSON) |
+| OAI-PMH | `GET`/`POST /oai` (§5.1) |
+
+### 5.1 OAI-PMH data provider (EI-4)
+`OaiController` (`portal/app/controllers/oai_controller.rb`) answers OAI-PMH 2.0 at https://netd.ac.zm/oai. It reads Solr only, so the harvester's SQLite store is never touched by web requests, and it needs no new service.
+
+| Aspect | Design |
+|---|---|
+| Verbs | `Identify`, `ListMetadataFormats`, `ListSets`, `ListIdentifiers`, `ListRecords`, `GetRecord`; GET or POST; repeated, missing or illegal arguments give `badArgument`, an unknown verb gives `badVerb` |
+| Identifiers | `oai:netd.ac.zm:<Solr id>`, e.g. `oai:netd.ac.zm:unza-123456789-9150` |
+| Datestamp | `updated_dtsi`: when the record's canonical content last changed (`records.updated_at`, which `Store.put_record` leaves alone when a reprocessed record is unchanged). Granularity `YYYY-MM-DDThh:mm:ssZ`; `from`/`until` accept days or seconds (same granularity for both) |
+| Sets | `inst:<source id>` (from a Solr pivot of `source_ssi` and `institution_ssim`) and `level:masters`, `level:doctoral` (`degree_level_ssim`) |
+| Formats | `oai_dc`; `etdms` (ETD-MS v1.1, elements in schema order, supervisors as `contributor role="advisor"`, `degree` with name, level, discipline (or department) and grantor). Identifiers are the portal record page, the source landing page and the full-text link |
+| Paging | 100 records per page; Solr `cursorMark` with `sort=id asc`. Resumption tokens are stateless: URL-safe Base64 JSON of prefix, set, date bounds, cursor mark, cursor and a 24-hour expiry; `completeListSize` and `cursor` are given |
+| Deletions | `deletedRecord=transient`: records the harvester removes disappear from Solr |
+| Errors | `badVerb`, `badArgument`, `cannotDisseminateFormat`, `idDoesNotExist`, `noRecordsMatch` (also for an unknown set), `badResumptionToken`; `noSetHierarchy` does not apply |
+| Monitoring | `netd.cli check` fails if `Identify` does not answer (NFR-12) |
+| Verification | `tests/oai_conformance.py` (Sickle and lxml): validates responses against the OAI-PMH and `oai_dc` schemas, checks ETD-MS element order, harvests every record in each format through resumption tokens, and exercises sets, dates, `GetRecord` and every error condition |
 
 ---
 
@@ -368,10 +386,11 @@ flowchart TB
 | Provenance and confidence on every value | Overwrite in place | Lets the team measure each model's contribution; low-confidence values don't pollute facets |
 | Sub-path `/beta` | New sub-domain | No DNS change needed (constraint C3) |
 | Native systemd services | Docker | Lower memory overhead on a shared 4 GB server |
+| OAI-PMH provider in Rails, reading Solr | A separate OAI server (e.g. jOAI); serving from the SQLite store | No extra service or memory; Solr already holds every exposed field; stateless tokens survive Puma restarts |
 
 ## 10. Known limitations (v0.8)
 - Supervisor and Department are empty for all harvested sources: the IRs don't expose them. ML/PDF extraction is deferred until the portal is complete.
 - 30 of the 34 HEA-listed institutions show 0 (no reachable ETD repository).
 - HTTPS for netd.ac.zm is in place (NFR-9); HTTP redirects to HTTPS since v0.8.
-- The old portal's OAI-PMH endpoint (/OAI-PMH) is retired with it; NETD v2's own OAI-PMH provider (EI-4) is not built yet.
-- No OAI-PMH provider yet (EI-4); no deduplication (FR-19).
+- The old portal's OAI-PMH endpoint (/OAI-PMH) is retired with it; NETD v2's own provider at /oai (EI-4) replaces it from release 0.18.
+- No deduplication (FR-19).

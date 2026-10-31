@@ -23,14 +23,14 @@
   <pre class="netd-code">curl -s "https://netd.ac.zm/catalog.json?q=malaria&amp;f[degree_level_ssim][]=Doctoral&amp;per_page=5"</pre>
 
   <h2>OAI-PMH</h2>
-  <p class="netd-status">Status: in development. This interface is not yet available; the details below describe it as it is
-    being built.</p>
   <table class="netd-about netd-api">
     <tr><th>Base URL</th><td><code>https://netd.ac.zm/oai</code></td></tr>
     <tr><th>Protocol</th><td>OAI-PMH 2.0; all six verbs (<code>Identify</code>, <code>ListMetadataFormats</code>, <code>ListSets</code>,
       <code>ListIdentifiers</code>, <code>ListRecords</code>, <code>GetRecord</code>)</td></tr>
     <tr><th>Metadata formats</th><td><code>oai_dc</code> (Dublin Core) and <code>etdms</code> (ETD-MS v1.1, for NDLTD)</td></tr>
     <tr><th>Sets</th><td>One per institution (for example <code>inst:unza</code>) and per degree level (<code>level:doctoral</code>, <code>level:masters</code>)</td></tr>
+    <tr><th>Datestamps</th><td>When the record last changed in the portal (UTC, <code>YYYY-MM-DDThh:mm:ssZ</code>); use <code>from</code> and <code>until</code> for incremental harvesting</td></tr>
+    <tr><th>Paging</th><td>100 records per response, with resumption tokens valid for 24 hours</td></tr>
     <tr><th>Identifiers</th><td><code>oai:netd.ac.zm:&lt;record id&gt;</code>, e.g. <code>oai:netd.ac.zm:unza-123456789-9150</code></td></tr>
   </table>
   <pre class="netd-code">https://netd.ac.zm/oai?verb=ListRecords&amp;metadataPrefix=etdms&amp;set=inst:unza</pre>
