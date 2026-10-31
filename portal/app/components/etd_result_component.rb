@@ -6,8 +6,9 @@ class EtdResultComponent < Blacklight::DocumentComponent
   include ActionView::Helpers::TextHelper
 
   def before_render
-    with_header_content(badges) unless header?
-    with_footer_content(@show ? source_link : safe_join([snippet, pdf_link].compact)) unless footer?
+    # On the record page Blacklight fills the footer slot itself, so the links go in the header.
+    with_header_content(@show ? safe_join([badges, source_link]) : badges) unless header?
+    with_footer_content(safe_join([snippet, pdf_link].compact)) unless @show || footer?
     super
   end
 
