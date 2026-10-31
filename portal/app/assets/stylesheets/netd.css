@@ -165,3 +165,11 @@ footer.netd-footer .datalab-credit { padding: 0 12px 0 0; }
 footer.netd-footer .datalab-credit img { height: 30px; }
 .netd-footer-credit { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; }
 @media (max-width: 600px) { .datalab-credit img { height: 32px; } footer.netd-footer .datalab-credit img { height: 28px; } }
+/* phone widths: no sideways scrolling */
+@media (max-width: 600px) {
+  .netd-wordmark { font-size: 1.22rem; }
+  .netd-wm-sep { height: 1.6rem; margin: 0 .45rem; }
+  .netd-masthead { gap: 1rem; padding-top: 1rem; padding-bottom: 1rem; }
+  .netd-search { width: 100%; }
+}
+.netd-page a, .netd-pubs a, footer.netd-footer a, .netd-about td a { overflow-wrap: anywhere; }
