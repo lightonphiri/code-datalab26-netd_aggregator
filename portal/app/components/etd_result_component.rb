@@ -7,8 +7,8 @@ class EtdResultComponent < Blacklight::DocumentComponent
 
   def before_render
     # On the record page Blacklight fills the footer slot itself, so the links go in the header.
-    with_header_content(@show ? safe_join([badges, source_link]) : badges) unless header?
-    with_footer_content(safe_join([snippet, pdf_link].compact)) unless @show || footer?
+    with_header_content(safe_join([badges, source_link])) if @show && !header?
+    with_footer_content(result_details) unless @show || footer?
     super
   end
 
@@ -21,6 +21,23 @@ class EtdResultComponent < Blacklight::DocumentComponent
              [first('institution_short_ssim'), 'inst'],
              [(first('pdf_url_ssm') ? 'PDF' : nil), 'pdf']].select(&:first)
     safe_join(items.map { |text, kind| content_tag(:span, text, class: "etd-badge etd-badge-#{kind}") })
+  end
+
+  # Result line as on Academic Commons: authors; YEAR · DEGREE · INSTITUTION; subject links; PDF link.
+  def result_details
+    authors = Array(@document['author_ssim'])
+    kicker = [first('year_ssim'), (first('degree_ssim') || first('degree_level_ssim')), first('institution_ssim')].compact
+    subjects = Array(@document['subject_ssim']).first(8)
+    parts = []
+    parts << content_tag(:div, authors.join('; '), class: 'etd-authors') if authors.any?
+    parts << content_tag(:div, safe_join(kicker.map { |k| content_tag(:span, k) }, content_tag(:span, '·', class: 'etd-dot')),
+                         class: 'etd-kicker') if kicker.any?
+    if subjects.any?
+      parts << content_tag(:div, safe_join(subjects.map { |s| link_to(s, helpers.search_action_path(f: { subject_ssim: [s] })) }),
+                           class: 'etd-subjects')
+    end
+    parts << pdf_link
+    safe_join(parts.compact)
   end
 
   def pdf_link(css = 'etd-pdf-link')

@@ -13,9 +13,7 @@ class CatalogController < ApplicationController
     # ---- results list --------------------------------------------------
     config.index.title_field = 'title_tsim'
     config.index.document_component = EtdResultComponent
-    config.add_index_field 'author_tsim', label: 'Author'
-    config.add_index_field 'supervisor_tsim', label: 'Supervisor'
-    config.add_index_field 'institution_ssim', label: 'Institution'
+    # (no index fields: the result line is laid out by EtdResultComponent, Academic Commons style)
 
     # ---- record page ----------------------------------------------------
     config.show.title_field = 'title_tsim'
