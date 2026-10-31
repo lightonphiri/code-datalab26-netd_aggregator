@@ -1,21 +1,37 @@
-<%# Landing page: introduction + one card per participating institution (InvenioRDM "communities" equivalent) %>
-<% inst = @response&.aggregations&.dig('institution_ssim')&.items || [] %>
+<%# Landing page: introduction + every HEA-accredited postgraduate institution with its ETD count %>
+<% counts = (@response&.aggregations&.dig('institution_ssim')&.items || []).to_h { |i| [i.value, i.hits] } %>
 <% total = @response&.total || 0 %>
+<% insts = InstitutionRegistry.all.sort_by { |i| [-(counts[i[:name]] || 0), i[:name]] } %>
 <div class="netd-home">
   <h1 class="h3">Theses and dissertations from Zambian universities, in one place</h1>
   <p class="lead">The Zambia National ETD Portal brings together metadata for <strong><%= number_with_delimiter(total) %></strong>
     electronic theses and dissertations harvested from institutional repositories. Search above, or start with an institution.</p>
-  <div class="row g-3 mt-1">
-    <% inst.each do |item| %>
+  <p>Metadata is meant to be harvested from <strong>all <%= insts.size %> universities and institutions that offer
+    Master's and PhD programmes</strong> accredited by the
+    <a href="https://www.hea.org.zm" target="_blank" rel="noopener">Higher Education Authority (HEA)</a>, as listed in HEA's
+    gazettes of accredited learning programmes. Institutions showing 0 have no public repository yet, no ETD collection,
+    or a repository that cannot currently be harvested.</p>
+  <div class="row g-2 mt-1">
+    <% insts.each do |i| %>
+      <% n = counts[i[:name]] || 0 %>
       <div class="col-md-6">
-        <%= link_to search_action_path(f: { institution_ssim: [item.value] }), class: 'netd-inst-card' do %>
-          <span class="netd-inst-name"><%= item.value %></span>
-          <span class="netd-inst-count"><%= number_with_delimiter(item.hits) %> ETDs</span>
+        <% if n.positive? %>
+          <%= link_to search_action_path(f: { institution_ssim: [i[:name]] }), class: 'netd-inst-card' do %>
+            <span class="netd-inst-name"><%= i[:name] %></span>
+            <span class="netd-inst-count"><%= number_with_delimiter(n) %> ETDs</span>
+          <% end %>
+        <% else %>
+          <div class="netd-inst-card netd-inst-zero" title="<%= InstitutionRegistry::STATUS_LABELS[i[:status]] %>">
+            <span><span class="netd-inst-name"><%= i[:name] %></span>
+              <span class="netd-inst-status"><%= InstitutionRegistry::STATUS_LABELS[i[:status]] %></span></span>
+            <span class="netd-inst-count">0 ETDs</span>
+          </div>
         <% end %>
       </div>
     <% end %>
   </div>
-  <p class="mt-4"><%= link_to 'Browse all ETDs →', search_action_path(search_field: 'all_fields', q: ''), class: 'btn btn-primary' %></p>
-  <p class="text-muted small">This is a beta of the next-generation portal. Supervisor and Department are not yet supplied by the source
-    repositories; DataLab is working on automatic extraction to fill these gaps.</p>
+  <p class="mt-4"><%= link_to 'Browse all ETDs →', search_action_path(search_field: 'all_fields', q: ''), class: 'btn btn-primary' %>
+    <%= link_to 'About the project and publications', about_path, class: 'btn btn-outline-primary ms-2' %></p>
+  <p class="text-muted small">Beta. Supervisor and Department are not yet supplied by the source repositories.
+    Institution list compiled from HEA's accredited learning programmes (Special Gazette No. 61 of 2025; Gazette No. 7965 of 2026).</p>
 </div>

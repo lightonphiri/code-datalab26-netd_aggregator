@@ -1,0 +1,83 @@
+# Single source for the portal's About page and the repository's PUBLICATIONS.md
+# (regenerate the latter with: python3 deploy/gen_publications_md.py)
+project:
+  name: Zambia National ETD Portal
+  url: https://datalab.unza.zm/projects/zambia-national-etd-portal
+  group: DataLab Research Group
+  group_url: https://datalab.unza.zm
+  summary: >-
+    A national aggregator of electronic theses and dissertations (ETDs) produced by Zambian
+    higher education institutions, harvested from institutional repositories using OAI-PMH,
+    with research into metadata quality, completeness and ETD-MS compliance.
+  members: [Lighton Phiri, Elijah Chileshe, Adrian Chisale, Cecilia Kasonde, Angela Banda, Frazer Nyambe,
+            Richard Mufuzi, Nkole Mulenga, Geoffrey Ngoma, Chanda Chilufya, Mainda Chuulu, Kamfwa Chileshe,
+            Memory Phiri, Gift Muwele, Mubanga Chibesa, Robert Msendo, Bertha Chipangila, Eric Liswaniso,
+            Andrew Mawila, Philomena Mwanza, Daisy Nawila]
+
+publications:
+  - type: Poster
+    year: 2024
+    authors: Chileshe, E. & Phiri, L.
+    title: "Zambia National ETD Portal: Implementation of an Interoperable National Electronic Thesis and Dissertation Portal"
+    venue: 27th International Symposium on Electronic Theses and Dissertations (ETD 2024)
+    url: https://docs.google.com/presentation/d/18grbYjU2LdcqHDs4V-cququXvMyJCenFykFJUq8xnBc/edit
+  - type: Dissertation
+    year: 2024
+    authors: Chisale, A.
+    title: Identification of Sources for Missing Electronic Theses and Dissertations Metadata in Higher Education in Zambia (Master of Library and Information Science dissertation)
+    venue: University of Zambia
+    url: https://datalab.unza.zm/sites/default/files/2024-06/etds-datalab24-mlis-dissertation-adrian_chisale.pdf
+  - type: Conference paper
+    year: 2023
+    authors: Chisale, A. & Phiri, L.
+    title: Towards Metadata Completeness in National ETD Portals for Improved Discoverability
+    venue: 26th International Symposium on Electronic Theses and Dissertations (ETD 2023), Gujarat, India
+    url: http://ir.inflibnet.ac.in/handle/1944/2446
+  - type: Conference paper
+    year: 2023
+    authors: Kasonde, C. & Phiri, L.
+    title: Assessing and Promoting Metadata Quality for Electronic Theses and Dissertations in Institutional Repositories Using a Policy-Driven Approach
+    venue: 26th International Symposium on Electronic Theses and Dissertations (ETD 2023), Gujarat, India
+    url: http://ir.inflibnet.ac.in/handle/1944/2412
+  - type: Capstone report
+    year: 2023
+    authors: Chanda, C., Kanfwa, C. & Mainda, C.
+    title: Zambia National ETD Pre-Processing Pipeline (ICT 4014 project report)
+    venue: University of Zambia
+    url: https://datalab.unza.zm/sites/default/files/2023-12/reports-unza23-ict4014-chanda_kanfwa_mainda.pdf
+  - type: Conference paper
+    year: 2022
+    authors: Kasonde, C., Chisale, A. & Phiri, L.
+    title: Empirical Evaluation of ETD-MS Compliance in Institutional Repositories
+    venue: 25th International Symposium on Electronic Theses and Dissertations (ETD 2022), Novi Sad, Serbia
+    url: https://doi.org/10.5281/zenodo.7084847
+  - type: Conference paper
+    year: 2021
+    authors: Chipangila, B., Liswaniso, E., Mawila, A., Mwanza, P., Nawila, D., Msendo, R., Nyirenda, M. & Phiri, L.
+    title: Improved Discoverability of Digital Objects in Institutional Repositories Using Controlled Vocabularies
+    venue: 2021 ACM/IEEE Joint Conference on Digital Libraries (JCDL 2021)
+    url: https://doi.org/10.1109/JCDL52503.2021.00022
+  - type: Journal article
+    year: 2020
+    authors: Phiri, L.
+    title: Automatic Classification of Digital Objects for Improved Metadata Quality of Electronic Theses and Dissertations in Institutional Repositories
+    venue: International Journal of Metadata, Semantics and Ontologies, 14, 234–248
+    url: https://doi.org/10.1504/IJMSO.2020.112804
+  - type: Journal article
+    year: 2019
+    authors: Phiri, L.
+    title: A Multi-Faceted Multi-Stakeholder Approach for Increased Visibility of ETDs in Zambia
+    venue: Cadernos BAD, 2019(1)
+    url: http://hdl.handle.net/20.500.11959/brapci/134563
+  - type: Conference paper
+    year: 2018
+    authors: Phiri, L.
+    title: "Research Visibility in the Global South: Towards Increased Online Visibility of Scholarly Research Output in Zambia"
+    venue: 2nd IEEE International Conference in Information and Communication Technologies (ICICT 2018), Lusaka, Zambia
+    url: http://dspace.unza.zm/handle/123456789/5723
+  - type: Software
+    year: 2011
+    authors: Webley, L., Chipeperekwa, T. & Suleman, H.
+    title: Creating a National Electronic Thesis and Dissertation Portal in South Africa (ETD Portal software used by the current portal)
+    venue: ETD 2011, Cape Town, South Africa
+    url: https://dl.cs.uct.ac.za/projects/etd_portal.html

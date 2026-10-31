@@ -1,0 +1,63 @@
+# Institutions expected to contribute ETDs: every Higher Education Institution with at least one
+# HEA-accredited Master's or Doctoral programme. Shown on the portal home page and in the
+# Institution facet, with 0 where nothing has been harvested yet.
+#
+# Sources (checked October 31, 2026):
+#  - HEA accredited learning programmes data behind https://online.hea.org.zm (1,966 programmes)
+#  - Special Gazette No. 61 of 2025 (Gazette Notice No. 506 of 2025), public HEIs, text-searchable:
+#    https://online.hea.org.zm/resources?doc=Special_Gazette_No._61_of_2025_-_The_Higher_Education_Authority
+#  - Gazette No. 7965 of 2026, Accredited Learning Programmes (scanned PDF; not machine-readable):
+#    https://online.hea.org.zm/resources?doc=HIGHER_EDUCATION_AUTHORITY_-_GAZETTE_NO._7965_OF_2026_-_ACCREDITED_LEARNING_PROGRAMMES
+#
+# name:   exactly as used by HEA (and as the `name` of the matching entry in sources.yml)
+# levels: postgraduate levels with accredited programmes
+# source: id in sources.yml when the institution is harvested
+# status: harvested | no-etd-collection | repository-unreachable | no-repository-known
+# repository: public repository URL, when known
+
+institutions:
+  - {name: Africa Research University, levels: [Masters, PhD], status: no-repository-known}
+  - {name: Berea Theological University, levels: [Masters], status: no-repository-known}
+  - {name: Cavendish University, levels: [Masters, PhD], status: no-repository-known}
+  - {name: Central Africa Baptist University, levels: [Masters], status: no-repository-known}
+  - {name: Chalimbana University, levels: [Masters], status: no-repository-known}
+  - {name: Chreso University, levels: [Masters], status: no-repository-known}
+  - {name: Copperbelt University, levels: [Masters, PhD], status: no-repository-known}
+  - {name: Copperstone University, levels: [Masters], status: no-repository-known}
+  - {name: DMI-St. Eugene University, levels: [Masters, PhD], status: no-repository-known}
+  - {name: Eden University, levels: [Masters], status: no-repository-known}
+  - {name: Gideon Robert University, levels: [Masters, PhD], status: no-repository-known}
+  - {name: Information and Communication University, levels: [Masters], status: no-repository-known}
+  - {name: Justo Mwale University, levels: [Masters], status: no-repository-known}
+  - {name: Kwame Nkrumah University, levels: [Masters, PhD], status: no-repository-known}
+  - {name: Levy Mwanawasa Medical University, levels: [Masters], status: no-repository-known}
+  - {name: Lusaka Apex Medical University, levels: [Masters], status: no-repository-known}
+  - {name: Mukuba University, levels: [Masters], status: no-etd-collection,
+     repository: "http://elibrary.mukuba.edu.zm:8080/jspui/"}
+  - {name: Mulungushi University, levels: [Masters, PhD], status: repository-unreachable,
+     repository: "https://space.mu.ac.zm/xmlui"}
+  - {name: Northrise University, levels: [Masters], status: no-repository-known}
+  - {name: Open Window University, levels: [Masters], status: no-repository-known}
+  - {name: Phoenix Open University, levels: [Masters], status: no-repository-known}
+  - {name: Rockview University, levels: [Masters, PhD], status: no-repository-known}
+  - {name: Rusangu University, levels: [Masters, PhD], status: no-repository-known}
+  - {name: Supershine University, levels: [Masters], status: no-repository-known}
+  - {name: Texila American University, levels: [Masters, PhD], status: no-repository-known}
+  - {name: Unicaf University Zambia, levels: [Masters, PhD], status: no-repository-known}
+  - {name: University of Africa, levels: [Masters], status: no-repository-known}
+  - {name: University of Edenberg, levels: [Masters], status: no-repository-known}
+  - {name: University of Lusaka, levels: [Masters, PhD], status: harvested, source: unilus,
+     repository: "https://research.unilus.ac.zm/home"}
+  - {name: University of Zambia, levels: [Masters, PhD], status: harvested, source: unza,
+     repository: "https://rims.unza.ac.zm/communities/53b4a430-5f0e-4ca8-80df-be55f201cc53"}
+  - {name: ZCAS University, levels: [Masters, PhD], status: harvested, source: zcas,
+     repository: "https://dspace.zcas.edu.zm/home"}
+  - {name: Zambia Catholic University, levels: [Masters], status: no-repository-known}
+  - {name: Zambian Open University, levels: [Masters, PhD], status: no-repository-known}
+  - {name: Zambian Royal Medical University, levels: [Masters], status: no-repository-known}
+
+# Repositories checked but not shown above (no HEA-accredited postgraduate programme found,
+# and no ETD collection in the repository on October 31, 2026):
+other_repositories:
+  - {name: Kapasa Makasa University, repository: "https://repository.kmu.ac.zm/home", status: no-etd-collection}
+  - {name: National Institute of Public Administration (NIPA), repository: "https://dspace.nipa.ac.zm/home", status: no-etd-collection}

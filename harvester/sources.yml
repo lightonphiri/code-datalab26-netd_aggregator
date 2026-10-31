@@ -6,7 +6,7 @@
 
 sources:
   - id: unza
-    name: The University of Zambia
+    name: University of Zambia
     short_name: UNZA
     base_url: https://rims.unza.ac.zm/server/oai/request
     formats: [dim, etdms, oai_dc]
@@ -25,3 +25,12 @@ sources:
     ignore_set_names: ["Theses and Dissertations Collection", "SCHOOL OF POSTGRADUATE STUDIES",
                        "MASTER'S THESES", "PHD/DBA THESES"]
     # UNILUS ETD collections are degree levels, not units; Faculty/Department need text/PDF extraction.
+
+  - id: zcas
+    name: ZCAS University
+    short_name: ZCASU
+    base_url: https://dspace.zcas.edu.zm/server/oai/request
+    formats: [dim, etdms, oai_dc]
+    # DBA Thesis + the four School "Dissertations" collections; Schools are communities (-> Faculty)
+    sets: [col_123456789_12, col_123456789_13, col_123456789_16, col_123456789_19, col_123456789_22]
+    ignore_set_names: ["DBA Thesis", "Dissertations"]

@@ -1,0 +1,18 @@
+<% p = @data['project'] %>
+<% content_for(:page_title) { "About — #{p['name']}" } %>
+<div class="netd-home">
+  <h1 class="h3">About the <%= p['name'] %></h1>
+  <p><%= p['summary'] %></p>
+  <p>Developed by the <%= link_to p['group'], p['group_url'], target: '_blank', rel: 'noopener' %>.
+    Project page: <%= link_to p['url'], p['url'], target: '_blank', rel: 'noopener' %></p>
+  <p class="small text-muted"><strong>Project members:</strong> <%= p['members'].join(', ') %>.</p>
+  <h2 class="h5 mt-4">Publications, dissertations and reports</h2>
+  <ul class="netd-pubs">
+    <% @data['publications'].each do |x| %>
+      <li><span class="etd-badge etd-badge-year"><%= x['year'] %></span> <span class="etd-badge etd-badge-level"><%= x['type'] %></span><br>
+        <%= x['authors'] %> (<%= x['year'] %>). <em><%= x['title'] %></em>. <%= x['venue'] %>.
+        <%= link_to x['url'], x['url'], target: '_blank', rel: 'noopener' %></li>
+    <% end %>
+  </ul>
+  <p class="mt-3"><%= link_to '← Back to search', root_path %></p>
+</div>
