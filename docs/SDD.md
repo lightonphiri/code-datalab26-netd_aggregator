@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SDD, structured per IEEE 1016-2009 (design viewpoints) |
-| Version | 0.20 |
+| Version | 0.21 |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Related | `docs/SRS.md` (requirement IDs referenced below) |
@@ -14,6 +14,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial design: harvester, raw/canonical stores, crosswalk, enrichers, Blacklight portal, deployment |
 | 0.2 | October 30, 2026 | Discipline/degree derivation; Solr analysers; URL-safe record ids; HTTPS |
+| 0.21 | November 1, 2026 | REST API v1 (§5.3, EI-6, FR-42 to FR-46): `Api::V1::` controllers on `ActionController::API`, `ApiRecord` representation, OpenAPI 3 specification `public/api/v1/openapi.yaml`, interactive reference `/developers/api`, export files in `portal/tmp/api_export/` |
 | 0.20 | November 1, 2026 | Admin panel (§5.2, FR-36 to FR-41, NFR-13): `Admin::` controllers, `AdminAuthentication`, `Harvester` model, portal tables `users`, `sessions`, `admin_events` and problem-report resolution columns (§4.1); `harvester/sources.local.yml`; shared `run.lock`; `netd-user.sh` account management; backups include CSV files |
 | 0.19 | November 1, 2026 | `netd.csvload` CSV loader (FR-10), `netd.cli csv-check`, template `portal/public/netd-etd-template.csv`, `deploy.sh` creates `harvester/uploads/` |
 | 0.18 | October 31, 2026 | OAI-PMH data provider (§5.1, EI-4): `OaiController` at `/oai`, read from Solr only; `records.updated_at` now changes only when a record's content changes and is indexed as `updated_dtsi` (datestamp); `netd.cli check` asserts that `Identify` answers; conformance test `tests/oai_conformance.py` |
@@ -30,7 +31,7 @@
 
 ## 1. Introduction
 ### 1.1 Purpose and scope
-This SDD describes how NETD v2 meets the SRS: the system's context, components, information model, interfaces, interaction, state, deployment, and the main design decisions. It covers release 0.20.
+This SDD describes how NETD v2 meets the SRS: the system's context, components, information model, interfaces, interaction, state, deployment, and the main design decisions. It covers release 0.21.
 
 ### 1.2 Stakeholders and concerns
 | Stakeholder | Concerns | Viewpoints |
@@ -301,6 +302,7 @@ classDiagram
 | Solr | JSON `POST /solr/netd/update`; Blacklight queries `/select` (edismax, ETD `qf`) |
 | HTTP | `GET /` (search), `/catalog/<id>` (record), `/catalog.json?q=…` (JSON) |
 | OAI-PMH | `GET`/`POST /oai` (§5.1) |
+| REST API | `GET /api/v1/…` (§5.3), JSON; specification `/api/v1/openapi.yaml` |
 | Admin panel | `/admin` (§5.2), signed-in portal team only |
 | Accounts | `deploy/ops/netd-user.sh add|reset|disable|enable|list` (root on the server; Rake tasks `netd:user:*`) |
 
@@ -399,6 +401,44 @@ sequenceDiagram
 ```
 
 Sources added from the panel are written to `harvester/sources.local.yml` (server only, not in git), which `netd.cli` reads together with `sources.yml`. Moving such a source into `sources.yml` is a normal code change.
+
+### 5.3 REST API v1 (EI-6, FR-42 to FR-46)
+A read-only JSON API inside the Rails portal. Its controllers inherit from `Api::V1::BaseController` (`ActionController::API`: no sessions, cookies or CSRF), which adds CORS headers, the per-address rate limit and JSON error handling. Like the OAI-PMH provider, it reads Solr only. The contract is `portal/public/api/v1/openapi.yaml` (OpenAPI 3.0.3), which Developer Resources renders with Swagger UI at `/developers/api`.
+
+| Endpoint | Controller | Solr use | Requirement |
+|---|---|---|---|
+| `GET /api/v1/records` | `RecordsController#index` | `/select`: `q` with edismax and the portal's `qf`/`pf` (per field through `${title_qf}` etc.), filters as `fq` (`{!term}`, `{!terms}`, ranges), `start`/`rows` | FR-42 |
+| `GET /api/v1/records/{id}` | `RecordsController#show` | `{!term f=id}` | FR-43 |
+| `GET /api/v1/institutions` | `InstitutionsController#index` | facet on `institution_ssim`; joined with `InstitutionRegistry` and `Harvester` (source ids, last runs) | FR-44 |
+| `GET /api/v1/stats` | `StatsController#index` | facets on `source_ssi`, `degree_level_ssim`, `year_isi`, and `source_ssi` once per completeness field with an `fq` for its presence (9 requests, cached 10 minutes) | FR-45 |
+| `GET /api/v1/export.csv`, `.jsonl` | `ExportsController#show` | `cursorMark` over all records, 500 at a time, `sort=id asc` | FR-46 |
+
+```mermaid
+flowchart LR
+  C[API client or browser] -->|GET /api/v1/...| AP[Apache TLS]
+  AP --> B[Api::V1::BaseController<br/>CORS, rate limit, errors]
+  B --> R[RecordsController]
+  B --> I[InstitutionsController]
+  B --> S[StatsController]
+  B --> E[ExportsController]
+  R --> AR[ApiRecord<br/>stable field names]
+  E --> AR
+  R --> SO[(Solr core netd)]
+  I --> SO
+  S --> SO
+  E --> SO
+  I --> REG[InstitutionRegistry<br/>institutions.yml]
+  I --> H[Harvester<br/>sources, last runs]
+  S --> CA[(Rails cache<br/>10 min)]
+  I --> CA
+  E --> F[(tmp/api_export<br/>records.csv / .jsonl)]
+```
+
+- **Representation.** `ApiRecord` maps Solr documents to the public field names (`title`, `authors`, `supervisors`, `degree_level`, `institution {id, name}`, `links {portal, source, pdf, api}`, `files`, `updated_at`), so index changes do not reach clients. Lists are always arrays and missing single values are `null`.
+- **Paging.** `page`/`per_page` up to 10,000 results (Solr `start`/`rows` stay cheap at that depth); the response gives `meta.total`, `meta.pages` and `links.next`/`prev`. Complete copies come from the export or OAI-PMH, which page with `cursorMark`.
+- **Export.** Built on demand into `portal/tmp/api_export/` when the file is missing or more than 6 hours old, under an exclusive lock so concurrent requests wait for one build; written to a temporary file and renamed, then sent with `Last-Modified`.
+- **Limits and errors.** Rails 8 `rate_limit` (cache-store counters, per address and controller): 120 a minute, and 20 an hour for the export. Unknown parameters, bad values and paging beyond the limit give 400 with a specific message; unknown paths 404; Solr unavailable 503.
+- **Versioning.** The version is in the path. Within v1 fields are only added, never renamed or removed; an incompatible change means `/api/v2`, with v1 kept for at least 6 months (EI-6). The older `/catalog.json` view (EI-3) is unchanged and documented as subject to change.
 
 ## 6. Interaction viewpoint
 
@@ -516,6 +556,7 @@ flowchart TB
 | Provenance and confidence on every value | Overwrite in place | Lets the team measure each model's contribution; low-confidence values don't pollute facets |
 | Sub-path `/beta` | New sub-domain | No DNS change needed (constraint C3) |
 | Native systemd services | Docker | Lower memory overhead on a shared 4 GB server |
+| REST API v1 in Rails on `ActionController::API`, own representation and OpenAPI file | Blacklight's `.json` views only; GraphQL; a separate API service | `.json` exposes Solr field names and changes with the interface; GraphQL adds a dependency and is harder to cache and rate-limit; no new service or memory; the OpenAPI file gives clients a contract and generated documentation |
 | Admin panel inside the Rails portal, Rails 8 built-in authentication | A separate admin application; Devise; HTTP basic authentication in Apache | No new service or memory; one gem (`bcrypt`); sessions can be listed, expired and audited, unlike basic authentication; accounts from the command line keep the attack surface small |
 | OAI-PMH provider in Rails, reading Solr | A separate OAI server (e.g. jOAI); serving from the SQLite store | No extra service or memory; Solr already holds every exposed field; stateless tokens survive Puma restarts |
 

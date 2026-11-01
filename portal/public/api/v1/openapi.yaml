@@ -1,0 +1,291 @@
+openapi: 3.0.3
+info:
+  title: Zambia National ETD Portal REST API
+  version: 1.0.0
+  description: |
+    Read-only access to the theses and dissertations aggregated by the Zambia National ETD Portal
+    (https://netd.ac.zm) from Zambian higher education institutions. No key is needed. Responses are JSON
+    (UTF-8); the export is also available as CSV. Each endpoint allows 120 requests a minute from one address
+    (the export, 20 an hour); over the limit, the API answers 429. Field names in this version will not change;
+    additions are backwards compatible. For metadata harvesting, the OAI-PMH interface at
+    https://netd.ac.zm/oai is usually better suited.
+  contact:
+    name: DataLab Research Group
+    email: datalab@unza.zm
+    url: https://datalab.unza.zm/projects/zambia-national-etd-portal
+  license:
+    name: Metadata are provided by the contributing institutions; see each record's rights statement.
+    url: https://netd.ac.zm/about
+servers:
+  - url: https://netd.ac.zm/api/v1
+tags:
+  - name: Records
+  - name: Institutions
+  - name: Statistics
+paths:
+  /records:
+    get:
+      tags: [Records]
+      summary: Search records
+      description: |
+        Keyword search and filters, as on the portal's search page. Without `q`, all records are listed, newest
+        first. At most 10,000 results can be paged through; use `/export.csv` or `/export.jsonl` for everything.
+      operationId: searchRecords
+      parameters:
+        - {name: q, in: query, description: Keywords, schema: {type: string}, example: malaria}
+        - name: field
+          in: query
+          description: Field the keywords are searched in
+          schema: {type: string, enum: [all, title, author, supervisor, subject], default: all}
+        - name: institution
+          in: query
+          description: Institution id(s), comma-separated (see `/institutions`)
+          schema: {type: string}
+          example: unza,unilus
+        - {name: level, in: query, schema: {type: string, enum: [masters, doctoral]}}
+        - {name: year, in: query, description: A year or a range of years, schema: {type: string, pattern: '^\d{4}(-\d{4})?$'}, example: 2020-2024}
+        - {name: full_text, in: query, description: Only records with (true) or without (false) a PDF link, schema: {type: boolean}}
+        - {name: updated_since, in: query, description: 'Records changed in the portal since this date or time (UTC)', schema: {type: string}, example: '2026-11-01'}
+        - {name: faculty, in: query, description: Exact faculty or school name, schema: {type: string}}
+        - {name: department, in: query, description: Exact department name, schema: {type: string}}
+        - {name: discipline, in: query, description: Exact programme or discipline, schema: {type: string}}
+        - {name: degree, in: query, description: 'Exact degree name, e.g. Master of Public Health', schema: {type: string}}
+        - {name: subject_exact, in: query, description: Exact subject term, schema: {type: string}}
+        - {name: supervisor_exact, in: query, description: Exact supervisor name as shown in records, schema: {type: string}}
+        - name: sort
+          in: query
+          description: Default `relevance` with `q`, otherwise `newest`
+          schema: {type: string, enum: [relevance, newest, oldest, title, updated]}
+        - {name: page, in: query, schema: {type: integer, minimum: 1, default: 1}}
+        - {name: per_page, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses:
+        '200':
+          description: One page of records
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta, links]
+                properties:
+                  data: {type: array, items: {$ref: '#/components/schemas/Record'}}
+                  meta:
+                    type: object
+                    required: [total, page, per_page, pages, sort]
+                    properties:
+                      total: {type: integer, description: Number of matching records}
+                      page: {type: integer}
+                      per_page: {type: integer}
+                      pages: {type: integer}
+                      sort: {type: string}
+                  links: {$ref: '#/components/schemas/PageLinks'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
+  /records/{id}:
+    get:
+      tags: [Records]
+      summary: One record
+      operationId: getRecord
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string, pattern: '^[A-Za-z0-9_-]+$'}, example: unza-123456789-9150}
+      responses:
+        '200':
+          description: The record
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Record'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
+  /institutions:
+    get:
+      tags: [Institutions]
+      summary: Institutions
+      description: Every institution with an accredited postgraduate programme listed by the Higher Education Authority, with 0 records where nothing has been harvested yet.
+      operationId: listInstitutions
+      responses:
+        '200':
+          description: All institutions, most records first
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data: {type: array, items: {$ref: '#/components/schemas/Institution'}}
+                  meta:
+                    type: object
+                    properties:
+                      total: {type: integer}
+                      with_records: {type: integer}
+                      source: {type: string}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
+  /stats:
+    get:
+      tags: [Statistics]
+      summary: Counts and field completeness
+      description: Totals by institution, degree level and year, and the share of records that have each field. Recomputed at most every 10 minutes.
+      operationId: getStats
+      responses:
+        '200':
+          description: Statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Stats'}
+                  meta: {type: object, properties: {cached_for_seconds: {type: integer}}}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
+  /export.csv:
+    get:
+      tags: [Records]
+      summary: All records as CSV
+      description: |
+        Every record, one row each, UTF-8 with a header row. Lists are joined with `||`. Rebuilt at most every
+        6 hours (see the Last-Modified header).
+      operationId: exportCsv
+      responses:
+        '200':
+          description: CSV file
+          content:
+            text/csv:
+              schema: {type: string}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
+  /export.jsonl:
+    get:
+      tags: [Records]
+      summary: All records as JSON Lines
+      description: Every record as one JSON object (the Record schema) per line. Rebuilt at most every 6 hours.
+      operationId: exportJsonl
+      responses:
+        '200':
+          description: JSON Lines file
+          content:
+            application/x-ndjson:
+              schema: {type: string}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
+components:
+  responses:
+    BadRequest:
+      description: A parameter is missing, unknown or invalid
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    NotFound:
+      description: No such record
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    TooManyRequests:
+      description: Rate limit exceeded; wait a minute
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  schemas:
+    Record:
+      type: object
+      required: [id, oai_identifier, title, authors, supervisors, faculty, department, subjects, institution, links, files]
+      properties:
+        id: {type: string, example: unza-123456789-9150}
+        oai_identifier: {type: string, example: 'oai:netd.ac.zm:unza-123456789-9150'}
+        title: {type: string, nullable: true}
+        authors: {type: array, items: {type: string}, description: 'Surname, Given names'}
+        supervisors: {type: array, items: {type: string}}
+        abstract: {type: string, nullable: true}
+        year: {type: integer, nullable: true}
+        degree: {type: string, nullable: true, example: Master of Public Health}
+        degree_level: {type: string, nullable: true, enum: [Masters, Doctoral, null]}
+        discipline: {type: string, nullable: true}
+        faculty: {type: array, items: {type: string}}
+        department: {type: array, items: {type: string}}
+        subjects: {type: array, items: {type: string}}
+        language: {type: string, nullable: true, example: en}
+        type: {type: string, nullable: true}
+        rights: {type: string, nullable: true}
+        institution:
+          type: object
+          required: [id, name]
+          properties:
+            id: {type: string, example: unza}
+            name: {type: string, nullable: true, example: University of Zambia}
+        links:
+          type: object
+          required: [portal, api]
+          properties:
+            portal: {type: string, format: uri, description: Record page on the portal}
+            source: {type: string, nullable: true, format: uri, description: Record page at the institution}
+            pdf: {type: string, nullable: true, format: uri, description: Full text}
+            api: {type: string, format: uri}
+        files:
+          type: array
+          items:
+            type: object
+            properties:
+              url: {type: string, format: uri}
+              name: {type: string, nullable: true}
+              mime_type: {type: string, nullable: true}
+              size: {type: integer, nullable: true, description: Bytes}
+        updated_at: {type: string, nullable: true, format: date-time, description: Last change in the portal}
+    Institution:
+      type: object
+      required: [name, records, status, postgraduate_levels]
+      properties:
+        id: {type: string, nullable: true, description: Use with the `institution` parameter; null if not harvested}
+        name: {type: string}
+        short_name: {type: string, nullable: true}
+        postgraduate_levels: {type: array, items: {type: string}}
+        records: {type: integer}
+        status: {type: string, enum: [harvested, no-etd-collection, repository-unreachable, no-repository-known]}
+        repository: {type: string, nullable: true}
+        harvest_method: {type: string, nullable: true, enum: [oai-pmh, dspace7-rest, dspace6-mets, csv, null]}
+        last_harvest: {type: string, nullable: true, format: date-time}
+        records_url: {type: string, nullable: true, format: uri}
+    Stats:
+      type: object
+      required: [total_records, by_institution, by_degree_level, by_year, completeness]
+      properties:
+        total_records: {type: integer}
+        institutions_with_records: {type: integer}
+        institutions_listed: {type: integer}
+        by_institution:
+          type: array
+          items:
+            type: object
+            properties:
+              id: {type: string}
+              name: {type: string}
+              records: {type: integer}
+              completeness: {$ref: '#/components/schemas/Completeness'}
+        by_degree_level:
+          type: object
+          properties:
+            masters: {type: integer}
+            doctoral: {type: integer}
+            unknown: {type: integer}
+        by_year:
+          type: array
+          items: {type: object, properties: {year: {type: integer}, records: {type: integer}}}
+        completeness: {$ref: '#/components/schemas/Completeness'}
+        generated_at: {type: string, format: date-time}
+    Completeness:
+      type: object
+      description: Percentage of records with each field
+      additionalProperties: {type: number}
+      example: {supervisor: 0, subject: 84.2, faculty: 97.1, department: 0, degree: 17.6, degree_level: 40.0, abstract: 95.3, full_text: 97.8}
+    PageLinks:
+      type: object
+      properties:
+        self: {type: string, format: uri}
+        first: {type: string, format: uri}
+        last: {type: string, format: uri}
+        prev: {type: string, nullable: true, format: uri}
+        next: {type: string, nullable: true, format: uri}
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [status, title, detail]
+          properties:
+            status: {type: integer}
+            title: {type: string}
+            detail: {type: string}

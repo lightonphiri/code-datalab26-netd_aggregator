@@ -1,5 +1,18 @@
 Rails.application.routes.draw do
   match 'oai', to: 'oai#index', via: [:get, :post], as: :oai  # OAI-PMH data provider (SRS EI-4)
+  # Public REST API v1 (SRS EI-6, FR-42 to FR-46); specification in public/api/v1/openapi.yaml
+  scope 'api/v1', module: 'api/v1', as: 'api_v1', defaults: { format: 'json' } do
+    get 'records', to: 'records#index', as: :records
+    get 'records/:id', to: 'records#show', as: :record, constraints: { id: /[A-Za-z0-9_-]+/ }
+    get 'institutions', to: 'institutions#index', as: :institutions
+    get 'stats', to: 'stats#index', as: :stats
+    get 'export.:format', to: 'exports#show', as: :export, constraints: { format: /csv|jsonl/ }, defaults: { format: nil }
+    match '*path', to: 'base#preflight', via: :options
+    match '*path', to: 'base#not_found', via: :all, format: false
+  end
+  get 'api', to: redirect('/developers/api')
+  get 'api/v1', to: redirect('/developers/api')
+  get 'developers/api', to: 'pages#api_docs', as: :api_docs
   namespace :admin do  # admin panel (SRS FR-36 to FR-41)
     root to: 'dashboard#index'
     get 'sign-in', to: 'sessions#new', as: :sign_in

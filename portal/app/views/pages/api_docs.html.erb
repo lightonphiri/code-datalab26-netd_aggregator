@@ -1,0 +1,20 @@
+<% content_for(:page_title) { "REST API reference — Zambia National ETD Portal" } %>
+<% content_for(:head) do %>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14/swagger-ui.css" crossorigin="anonymous">
+<% end %>
+<div class="netd-page">
+  <h1>REST API reference</h1>
+  <p>Version 1 of the portal's REST API, generated from its
+    <%= link_to 'OpenAPI 3 specification', '/api/v1/openapi.yaml' %>. Choose an endpoint and "Try it out" to send a
+    request to the live portal. See <%= link_to 'Developer Resources', developers_path %> for an overview and the OAI-PMH interface.</p>
+  <div id="swagger-ui"><p>Loading the reference… If it does not appear, read the
+    <%= link_to 'specification', '/api/v1/openapi.yaml' %> directly.</p></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14/swagger-ui-bundle.js" crossorigin="anonymous"></script>
+<script>
+  window.addEventListener('load', function () {
+    if (!window.SwaggerUIBundle) return;
+    window.SwaggerUIBundle({ url: '/api/v1/openapi.yaml', dom_id: '#swagger-ui', deepLinking: true,
+      defaultModelsExpandDepth: 0, docExpansion: 'list', tryItOutEnabled: true });
+  });
+</script>

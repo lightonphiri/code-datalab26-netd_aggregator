@@ -1,26 +1,38 @@
 <% content_for(:page_title) { "Developer Resources — Zambia National ETD Portal" } %>
 <div class="netd-page netd-faq">
   <h1>Developer Resources</h1>
-  <p>The portal's metadata can be reused through a JSON (REST) API and an OAI-PMH interface. The metadata comes from the
+  <p>The portal's metadata can be reused through a REST API, an OAI-PMH interface and bulk downloads. The metadata comes from the
     participating institutional repositories; full texts stay in those repositories.</p>
 
-  <h2>REST API (JSON)</h2>
-  <p>Every search and record page is also available as JSON. No key is needed; please keep to a few requests per second.</p>
+  <h2 id="api">REST API</h2>
+  <p>A read-only JSON API at <code>https://netd.ac.zm/api/v1</code>. No key is needed. Each endpoint allows 120 requests a
+    minute from one address (the export, 20 an hour). Field names in version 1 will not change.
+    <strong><%= link_to 'Interactive reference', api_docs_path %></strong> ·
+    <%= link_to 'OpenAPI 3 specification', '/api/v1/openapi.yaml' %></p>
   <table class="netd-about netd-api">
-    <tr><th>Search</th><td><code>GET https://netd.ac.zm/catalog.json?q=malaria</code></td></tr>
-    <tr><th>Paging</th><td><code>&amp;page=2&amp;per_page=50</code> (10 by default; 20, 50 or 100 per page)</td></tr>
-    <tr><th>Filter</th><td><code>&amp;f[institution_ssim][]=University+of+Zambia&amp;f[degree_level_ssim][]=Doctoral</code></td></tr>
-    <tr><th>Sort</th><td><code>&amp;sort=latest</code> (also <code>relevance</code>, <code>earliest</code>, <code>title_az</code>, <code>title_za</code>)</td></tr>
-    <tr><th>Search a field</th><td><code>&amp;search_field=title</code> (also <code>author</code>, <code>supervisor</code>, <code>subject</code>)</td></tr>
-    <tr><th>Record</th><td><code>GET https://netd.ac.zm/catalog/unza-123456789-9150.json</code></td></tr>
-    <tr><th>Facet values</th><td><code>GET https://netd.ac.zm/catalog/facet/institution_ssim.json</code></td></tr>
+    <tr><th>Search records</th><td><code>GET /api/v1/records?q=malaria&amp;level=doctoral&amp;year=2015-2025</code></td></tr>
+    <tr><th>Filters</th><td><code>institution</code> (ids from <code>/institutions</code>, comma-separated), <code>level</code>
+      (<code>masters</code>, <code>doctoral</code>), <code>year</code> (<code>2024</code> or <code>2015-2025</code>),
+      <code>full_text</code> (<code>true</code>/<code>false</code>), <code>updated_since</code>, and exact <code>faculty</code>,
+      <code>department</code>, <code>discipline</code>, <code>degree</code>, <code>subject_exact</code>, <code>supervisor_exact</code></td></tr>
+    <tr><th>Search one field</th><td><code>&amp;field=title</code> (also <code>author</code>, <code>supervisor</code>, <code>subject</code>)</td></tr>
+    <tr><th>Sort and paging</th><td><code>&amp;sort=newest</code> (also <code>relevance</code>, <code>oldest</code>, <code>title</code>,
+      <code>updated</code>); <code>&amp;page=2&amp;per_page=50</code> (20 by default, at most 100)</td></tr>
+    <tr><th>One record</th><td><code>GET /api/v1/records/unza-123456789-9150</code></td></tr>
+    <tr><th>Institutions</th><td><code>GET /api/v1/institutions</code>: every HEA-listed institution, with record counts and harvest status</td></tr>
+    <tr><th>Statistics</th><td><code>GET /api/v1/stats</code>: counts by institution, degree level and year, and how complete each field is</td></tr>
+    <tr><th>Everything</th><td><code>GET /api/v1/export.csv</code> or <code>/api/v1/export.jsonl</code>: all records in one file, refreshed every 6 hours</td></tr>
   </table>
-  <p>Facet fields: <code>institution_ssim</code>, <code>full_text_ssim</code>, <code>degree_level_ssim</code>,
-    <code>faculty_ssim</code>, <code>department_ssim</code>, <code>discipline_ssim</code>, <code>degree_ssim</code>,
-    <code>supervisor_ssim</code>, <code>subject_ssim</code>, <code>year_ssim</code>.
-    Search responses follow the JSON:API layout (<code>data</code>, <code>meta.pages</code>, <code>links</code>); each record's
-    <code>attributes</code> include the title, authors, institution, year and links to the source record and full text.</p>
-  <pre class="netd-code">curl -s "https://netd.ac.zm/catalog.json?q=malaria&amp;f[degree_level_ssim][]=Doctoral&amp;per_page=5"</pre>
+  <p>Responses have <code>data</code>, and for lists <code>meta</code> (total, page, pages) and <code>links</code>
+    (next, previous). Errors return <code>{"error": {"status", "title", "detail"}}</code> with status 400, 404 or 429.
+    Browsers may call the API from other websites (CORS).</p>
+  <pre class="netd-code">curl -s "https://netd.ac.zm/api/v1/records?q=malaria&amp;level=doctoral&amp;per_page=5"</pre>
+
+  <h3>Search pages as JSON</h3>
+  <p>Every search and record page is also available as JSON by adding <code>.json</code>, for example
+    <code>https://netd.ac.zm/catalog.json?q=malaria</code> or <code>https://netd.ac.zm/catalog/unza-123456789-9150.json</code>.
+    This follows the website's search interface and its internal field names, which may change; use the REST API above for
+    anything that must keep working.</p>
 
   <h2>OAI-PMH</h2>
   <table class="netd-about netd-api">

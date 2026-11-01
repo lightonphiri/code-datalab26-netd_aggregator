@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SRS, structured per ISO/IEC/IEEE 29148:2018 (supersedes IEEE 830-1998) |
-| Version | 0.22 |
+| Version | 0.23 |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Repository | https://github.com/lightonphiri/code-datalab26-netd_aggregator |
@@ -15,6 +15,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial SRS: harvesting (UNZA, UNILUS), cleaning pipeline, Blacklight discovery |
 | 0.2 | October 30, 2026 | Discipline and Degree fields (FR-12, FR-21); institution entry points (FR-26); HTTPS (NFR-9); PDF pilot and onboarding findings (§4) |
+| 0.23 | November 1, 2026 | REST API v1 at https://netd.ac.zm/api/v1: EI-6 (interface, OpenAPI 3 specification, versioning, rate limits, CORS), FR-42 to FR-46 (search, record, institutions, statistics, bulk export); EI-3 now describes the search-page JSON as following the website and subject to change; Developer Resources documents the API with an interactive reference |
 | 0.22 | November 1, 2026 | Admin panel at https://netd.ac.zm/admin: FR-36 sign-in, FR-37 dashboard and harvest on demand, FR-38 problem-report handling, FR-39 CSV upload with checking, FR-40 adding a CSV institution, FR-41 activity log; NFR-13 admin security; portal administrator user class updated |
 | 0.21 | November 1, 2026 | FR-10: CSV loader met, for HEIs without a working repository (file on the server, or a URL the HEI keeps current, read nightly); public template and column guide on Developer Resources; `netd.cli csv-check` |
 | 0.20 | October 31, 2026 | EI-4 raised from C to M and met: OAI-PMH 2.0 data provider at https://netd.ac.zm/oai (all six verbs; `oai_dc` and `etdms` (ETD-MS v1.1); sets `inst:<institution>` and `level:masters`/`level:doctoral`; datestamps are the last change of a record in the portal, at seconds granularity); Developer Resources no longer marks it as in development (FR-35) |
@@ -149,9 +150,10 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 |---|---|---|
 | EI-1 | The harvester shall act as an OAI-PMH 2.0 client supporting `Identify`, `ListMetadataFormats`, `ListSets` and `ListRecords`, with resumption tokens. | M |
 | EI-2 | The portal shall be served over HTTPS at the root of netd.ac.zm through the existing Apache server (reverse proxy), with HTTP redirected to HTTPS and the former `/beta/` and old ETD Portal addresses (`/portal`, `/summary`, `/harvester`) redirected; the HTTPS proxy shall pass `X-Forwarded-Proto: https` so that form posts pass Rails' origin check. | M |
-| EI-3 | The portal shall offer a JSON view of search results and records (Blacklight `.json`). | S |
+| EI-3 | The portal shall offer a JSON view of search results and records (Blacklight `.json`). It follows the website's search interface and internal field names and may change; EI-6 is the stable interface. | S |
 | EI-4 | The system shall expose an OAI-PMH 2.0 data provider of canonical records at https://netd.ac.zm/oai, supporting all six verbs, the formats `oai_dc` and `etdms` (ETD-MS v1.1), one set per institution and per degree level, resumption tokens, and incremental harvesting by the date a record last changed in the portal. | M |
 | EI-5 | The UI shall follow the style of Columbia's Academic Commons [R15]: system UI typography, a navy group bar, a serif wordmark with the search box, a link row (About, Explore), white pages with light cards, one blue for links and actions; facet sidebar and result list with badges on search pages. | M |
+| EI-6 | The system shall offer a read-only REST API at https://netd.ac.zm/api/v1 (FR-42 to FR-46), described by an OpenAPI 3 specification at /api/v1/openapi.yaml with an interactive reference on Developer Resources. It shall need no key, answer in JSON (UTF-8) with errors as `{"error": {status, title, detail}}` (400, 404, 429, 503), allow calls from other websites (CORS), and limit each address to 120 requests a minute per endpoint (export: 20 an hour). Field names within v1 shall not change; incompatible changes shall go into a new version, with the previous one kept for at least 6 months. | M |
 
 ### 3.2 Functional requirements
 
@@ -218,6 +220,11 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | FR-39 | CSV upload in the panel. An administrator shall be able to upload an institution's CSV file (FR-10, at most 50 MB); the system shall first show the result of the CSV check (rows, valid rows, each problem by line) and change nothing until the administrator confirms. On confirmation, the file shall replace the institution's current file (the previous one archived) and be loaded. A file with no valid rows shall not be loadable. | M |
 | FR-40 | Adding a CSV institution. While uploading, an administrator shall be able to choose an HEA-listed institution (FR-29) that has no source yet and give its short name; the system shall register it as a CSV source without editing the configuration files in the repository. | S |
 | FR-41 | Activity log. Every sign-in, failed sign-in attempt and change made through the panel (password changes, harvests started, CSV files checked and loaded, sources added, reports resolved or reopened), and account changes made from the command line, shall be recorded with the time, the account, the subject and the IP address, and shown in the panel. | M |
+| FR-42 | API search. `GET /api/v1/records` shall search records with keywords (all fields or one of title, author, supervisor, subject, using the portal's search weighting) and filters for institution, degree level, year or year range, full text available, changed since a date, and exact faculty, department, discipline, degree, subject and supervisor; sort by relevance, newest, oldest, title or last change; page through at most 10,000 results, 1 to 100 per page (20 by default); and return the records with the total, page count and next/previous links. Unknown or invalid parameters shall be rejected with a message saying what is wrong. | M |
+| FR-43 | API record. `GET /api/v1/records/{id}` shall return one record: identifiers (portal id and OAI-PMH identifier), title, authors, supervisors, abstract, year, degree, degree level, discipline, faculty, department, subjects, language, type, rights, institution (id and name), links (portal page, source page, PDF, API) and files, and when it last changed in the portal. | M |
+| FR-44 | API institutions. `GET /api/v1/institutions` shall list every HEA-listed institution (FR-29) with its id (when harvested), short name, postgraduate levels, record count, status, repository, harvest method and last harvest. | M |
+| FR-45 | API statistics. `GET /api/v1/stats` shall return the total, counts by institution, degree level (including unknown) and year, and for each institution and overall the percentage of records with supervisor, subject, faculty, department, degree, degree level, abstract and full text. | S |
+| FR-46 | Bulk export. `GET /api/v1/export.csv` and `/api/v1/export.jsonl` shall return every record (CSV with a header row and `||` between list values; JSON Lines with one API record per line), rebuilt at most every 6 hours. | S |
 | FR-33 | The landing page shall show a one-line introduction, two prominent buttons — Explore Master's Manuscripts and Explore PhD Manuscripts (degree-level filtered searches) — "stats at a glance" (total ETDs, master's, doctoral, with full-text PDF, institutions contributing of those listed, years covered) and the contributing institutions, with the not-yet-harvested HEA institutions behind a toggle. | M |
 | FR-32 | For every ETD whose repository exposes it, the portal shall link directly to the full-text file (bitstream), preferring the largest PDF, on result cards and record pages, and offer a Full text facet (PDF available / other file / metadata only). Files stay in the source repositories. | M |
 
@@ -256,6 +263,7 @@ The canonical record is a JSON object stored in SQLite (`records.data`):
 | NFR-4, NFR-5 | Inspection of systemd units | `deploy/systemd/*.service` |
 | NFR-11, NFR-12 | Test backup and restore check; test alert (`netd-alert@test`) | October 31, 2026; `docs/OPERATIONS.md` |
 | FR-36–FR-41, NFR-13 | Test: scripted walk through every admin page and action (sign-in, forced password change, dashboard, source page, resolving a report, CSV check and load creating a new source, activity log, sign-out) | November 1, 2026: all passed before deployment; repeated on the live site after deployment |
+| EI-6, FR-42–FR-46 | Test: OpenAPI specification validated; every endpoint called on the live site and each response checked against the specification's schemas; parameter errors, paging links, filters, CORS and export contents checked | November 1, 2026 |
 
 Completeness (October 31, 2026, v0.3):
 
