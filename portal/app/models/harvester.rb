@@ -14,7 +14,7 @@ class Harvester
   UPLOADS = ENV.fetch('NETD_UPLOADS', File.join(HOME, 'uploads'))
   LOGS = ENV.fetch('NETD_LOGS', File.expand_path(File.join(HOME, '..', 'logs')))
   ID_PATTERN = /\A[a-z][a-z0-9]{1,15}\z/
-  CORRECTABLE = %w[degree_level degree discipline supervisor department faculty subject year title author].freeze  # FR-51
+  CORRECTABLE = %w[field_of_study degree_level degree discipline supervisor department faculty subject year title author].freeze  # FR-51
   LEVELS = ['Doctoral', 'Masters', 'Postgraduate Diploma', 'Bachelors'].freeze
 
   class << self

@@ -38,7 +38,7 @@ class OaiController < ActionController::Base
     'GetRecord' => { required: %w[identifier metadataPrefix], optional: [] }
   }.freeze
 
-  FIELDS = %w[id updated_dtsi title_ssm author_ssim supervisor_ssim subject_ssim abstract_tesim year_ssim
+  FIELDS = %w[id updated_dtsi title_ssm author_ssim supervisor_ssim subject_ssim fos_ssm abstract_tesim year_ssim
               degree_ssim degree_level_ssim discipline_ssim faculty_ssim department_ssim institution_ssim
               source_ssi language_ssim type_ssim rights_ssm url_ssm pdf_url_ssm].join(',')
 
@@ -358,6 +358,16 @@ class OaiController < ActionController::Base
     s.empty? ? values(doc, 'discipline_ssim') : s
   end
 
+  # Standard fields of study (OpenAlex Topics, FR-56): [[name, uri], ...]
+  def fields_of_study(doc)
+    values(doc, 'fos_ssm').filter_map do |j|
+      f = JSON.parse(j)
+      [f['name'], "https://openalex.org/#{f['id']}"]
+    rescue JSON::ParserError
+      nil
+    end
+  end
+
   def oai_dc(x, doc)
     x.tag!('oai_dc:dc', 'xmlns:oai_dc' => FORMATS['oai_dc'][:ns], 'xmlns:dc' => 'http://purl.org/dc/elements/1.1/',
                         'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
@@ -365,6 +375,7 @@ class OaiController < ActionController::Base
       values(doc, 'title_ssm').each { |v| x.tag!('dc:title', v) }
       values(doc, 'author_ssim').each { |v| x.tag!('dc:creator', v) }
       subjects(doc).each { |v| x.tag!('dc:subject', v) }
+      fields_of_study(doc).each { |name, uri| x.tag!('dc:subject', name); x.tag!('dc:subject', uri) }
       values(doc, 'abstract_tesim').each { |v| x.tag!('dc:description', v) }
       values(doc, 'institution_ssim').each { |v| x.tag!('dc:publisher', v) }
       values(doc, 'supervisor_ssim').each { |v| x.tag!('dc:contributor', v) }
@@ -384,6 +395,7 @@ class OaiController < ActionController::Base
       values(doc, 'title_ssm').each { |v| x.title v }
       values(doc, 'author_ssim').each { |v| x.creator v }
       subjects(doc).each { |v| x.subject v }
+      fields_of_study(doc).each { |name, _uri| x.subject(name, scheme: 'OpenAlex') }
       values(doc, 'abstract_tesim').each { |v| x.description v }
       values(doc, 'institution_ssim').each { |v| x.publisher v }
       values(doc, 'supervisor_ssim').each { |v| x.contributor(v, role: 'advisor') }

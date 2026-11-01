@@ -22,7 +22,21 @@
       <div class="netd-rec-abstract"><%= simple_format(abs) %></div>
     <% end %>
 
-    <% { 'Subjects' => 'subject_ssim', 'Programme / Discipline' => 'discipline_ssim' }.each do |label, field| %>
+    <% fos = rec_values(d, 'fos_ssm').filter_map { |j| JSON.parse(j) rescue nil } %>
+    <% if fos.any? %>
+      <h2 class="netd-rec-h">Field of study <%= derived_badge(derived, 'field_of_study') %></h2>
+      <div class="netd-tags">
+        <% fos.each do |f| %>
+          <span class="netd-fos">
+            <%= facet_link(f['domain'] || f['name'], 'fos_domain_ssim', f['domain'] || f['name']) %>
+            <% if f['level'] != 'domain' %> › <%= facet_link(f['field'] || f['name'], 'fos_field_ssim', f['field'] || f['name']) %><% end %>
+            <% if f['level'] == 'subfield' %> › <%= facet_link(f['name'], 'fos_subfield_ssim', f['name']) %><% end %>
+          </span>
+        <% end %>
+      </div>
+      <p class="netd-fos-note">Standard field from <a href="https://openalex.org" target="_blank" rel="noopener">OpenAlex Topics</a>, assigned automatically; see the <%= link_to 'FAQ', faq_path %>.</p>
+    <% end %>
+    <% { 'Keywords (from the repository)' => 'subject_ssim', 'Programme / Discipline' => 'discipline_ssim' }.each do |label, field| %>
       <% vals = rec_values(d, field) %>
       <% next if vals.empty? %>
       <h2 class="netd-rec-h"><%= label %> <%= derived_badge(derived, field) %></h2>

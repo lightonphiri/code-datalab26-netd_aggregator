@@ -26,7 +26,7 @@
     <% Harvester::CORRECTABLE.each do |f| %>
       <% c = @corrections[f] %>
       <tr>
-        <th><%= f.humanize %></th>
+        <th><%= f.humanize %><% if f == 'field_of_study' %><br><small>OpenAlex ids, one per line, e.g. <code>subfields/2739</code>, <code>fields/27</code> (<a href="https://openalex.org" target="_blank" rel="noopener">openalex.org</a>)</small><% end %></th>
         <td><%= Array(r[f]).join(' || ').presence || content_tag(:em, 'empty') %></td>
         <td><small><%= prov[f] %><%= " (#{format('%.2f', conf[f])})" if conf[f] && prov[f].to_s.start_with?('model:') %>
           <% if c %><br>by <%= c['made_by'] %>, <%= admin_time(c['created_at']) %><% end %></small></td>

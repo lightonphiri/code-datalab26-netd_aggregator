@@ -23,6 +23,35 @@ SOLR = {
     "type": ["type_ssim"],
 }
 FACETED = {"supervisor", "faculty", "department", "discipline", "subject"}
+_TAX = {}
+
+
+def fos_docs(ids):
+    """OpenAlex ids -> Solr fields for the hierarchical Field of study facets (FR-55)."""
+    if not _TAX:
+        from .ml.models import fieldofstudy
+        _TAX.update(fieldofstudy.taxonomy())
+    doc = {"fos_domain_ssim": [], "fos_field_ssim": [], "fos_subfield_ssim": [], "fos_ssm": [], "fos_tsim": []}
+    for i in ids:
+        node = _TAX.get(i)
+        if not node:
+            continue
+        chain = {"domain": _TAX.get(node.get("domain", i if node["level"] == "domain" else "")),
+                 "field": _TAX.get(node.get("field", i if node["level"] == "field" else ""))}
+        if node["level"] == "field":
+            chain["field"] = node
+        if node["level"] == "domain":
+            chain["domain"] = node
+        for lvl in ("domain", "field"):
+            if chain[lvl] and chain[lvl]["name"] not in doc["fos_%s_ssim" % lvl]:
+                doc["fos_%s_ssim" % lvl].append(chain[lvl]["name"])
+        if node["level"] == "subfield":
+            doc["fos_subfield_ssim"].append(node["name"])
+        doc["fos_ssm"].append(json.dumps({"id": i, "name": node["name"], "level": node["level"],
+                                          "field": (chain["field"] or {}).get("name"),
+                                          "domain": (chain["domain"] or {}).get("name")}, ensure_ascii=False))
+        doc["fos_tsim"].append(node["name"])
+    return {k: v for k, v in doc.items() if v}
 
 
 def to_solr(rec):
@@ -48,6 +77,8 @@ def to_solr(rec):
         doc["year_ssim"] = rec["year"]
     if rec.get("faculty") and rec.get("department"):
         doc["faculty_department_ssim"] = ["%s|%s" % (rec["faculty"][0], d) for d in rec["department"]]
+    if rec.get("field_of_study"):
+        doc.update(fos_docs(rec["field_of_study"]))
     if rec.get("derived"):  # values filled by a model (SRS FR-50): field, method, confidence
         doc["derived_ssm"] = [json.dumps(dict(v, field=f), ensure_ascii=False) for f, v in sorted(rec["derived"].items())]
     if rec.get("files"):

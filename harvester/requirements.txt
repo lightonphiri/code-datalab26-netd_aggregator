@@ -2,3 +2,4 @@ Sickle==0.7.0
 lxml>=4.9,<6
 PyYAML>=5.4
 pypdf>=3.17,<5  # PDF text for metadata filling (Python 3.8 on the server)
+fastembed>=0.4,<1  # sentence embeddings (ONNX, CPU) for fields of study (FR-55)

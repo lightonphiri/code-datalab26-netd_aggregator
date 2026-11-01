@@ -12,6 +12,7 @@ from . import cache
 
 MODELS = {
     "titlepage-rules": "netd.ml.models.titlepage",
+    "openalex-fos": "netd.ml.models.fieldofstudy",
 }
 
 
@@ -35,20 +36,27 @@ def run(store, source=None, model=None, everything=False):
         # read everything first: in WAL mode a read transaction cannot be upgraded to a write once another
         # writer (e.g. text extraction) has committed, so no read may stay open while predictions are written
         inputs = [(rec["id"], harvested_view(rec, m.USES)) for rec in store.records(source)]
+        todo = []
         for rid, meta in inputs:
             text, th = texts.get(rid, (None, None))
             if text is None and getattr(m, "NEEDS_TEXT", True):
                 continue
-            h = cache.input_hash(th, json.dumps(meta, sort_keys=True), m.VERSION)
+            h = cache.input_hash(th if getattr(m, "NEEDS_TEXT", True) else None,
+                                 json.dumps(meta, sort_keys=True), m.VERSION)
             n += 1
-            if seen.get(rid) == h:
-                continue
-            out = m.predict(meta, text) or {}
-            for f in m.FIELDS:
-                vals, conf, ev = out.get(f, ([], None, None))
-                cache.put_prediction(store, rid, f, m.NAME, m.VERSION, vals, conf, h, ev)
-            changed += 1
-            if changed % 500 == 0:
+            if seen.get(rid) != h:
+                todo.append((rid, meta, text, h))
+        step = 256 if hasattr(m, "predict_batch") else 1  # batch models (e.g. embeddings) predict in chunks
+        for i in range(0, len(todo), step):
+            chunk = todo[i:i + step]
+            outs = (m.predict_batch([c[1] for c in chunk], [c[2] for c in chunk]) if step > 1
+                    else [m.predict(chunk[0][1], chunk[0][2]) or {}])
+            for (rid, meta, text, h), out in zip(chunk, outs):
+                for f in m.FIELDS:
+                    vals, conf, ev = (out or {}).get(f, ([], None, None))
+                    cache.put_prediction(store, rid, f, m.NAME, m.VERSION, vals, conf, h, ev)
+                changed += 1
+            if step > 1 or changed % 500 == 0:
                 store.commit()
         store.commit()
         print("predict %s-%s: %d records with input, %d (re)predicted" % (m.NAME, m.VERSION, n, changed))

@@ -30,6 +30,9 @@ module Admin
 
       values = params[:values].to_s.split(/\r?\n/).map(&:strip).reject(&:empty?).uniq
       values = values.first(1) if %w[degree_level degree year title _scope].include?(field)
+      if field == 'field_of_study' && values.any? { |v| !v.match?(%r{\A(domains|fields|subfields)/\d+\z}) }
+        return redirect_to(admin_record_path(@id), alert: 'Field of study: use OpenAlex ids such as subfields/2739.')
+      end
       if field == 'degree_level' && values.any? && !Harvester::LEVELS.include?(values.first)
         return redirect_to(admin_record_path(@id), alert: 'Unknown degree level.')
       end

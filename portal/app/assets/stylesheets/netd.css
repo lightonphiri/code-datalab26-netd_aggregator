@@ -233,3 +233,7 @@ footer.netd-footer { padding: 0; background: #fff; }
 .netd-correct textarea, .netd-correct select { min-width: 16rem; flex: 2; }
 .netd-correct input[name=note] { flex: 1; min-width: 8rem; }
 .netd-admin-lookup input[type=text] { font-size: .85rem; padding: .1rem .3rem; }
+
+/* Field of study (OpenAlex Topics, FR-55) */
+.netd-fos { display: inline-block; margin: 0 .6rem .3rem 0; }
+.netd-fos-note { font-size: .8rem; color: #666; margin-top: .2rem; }

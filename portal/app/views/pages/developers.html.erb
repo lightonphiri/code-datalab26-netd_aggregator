@@ -34,6 +34,21 @@
     This follows the website's search interface and its internal field names, which may change; use the REST API above for
     anything that must keep working.</p>
 
+  <h2 id="fields-of-study">Fields of study (OpenAlex Topics)</h2>
+  <p>Every record carries standard fields of study from <a href="https://openalex.org" target="_blank" rel="noopener">OpenAlex
+    Topics</a> (CC0): 4 domains, 26 fields and 252 subfields, taxonomy as published by OpenAlex in November 2026. They are
+    assigned by the portal's model <code>openalex-fos</code> (version 1) from each record's title and abstract: a sentence
+    embedding (<code>sentence-transformers/all-MiniLM-L6-v2</code>) and a classifier trained on OpenAlex works labelled with their primary
+    topic's subfield. When no subfield is likely enough, the broader field or domain is given, so every record has a value.
+    Values are identified by their OpenAlex ids and URIs (for example <code>https://openalex.org/subfields/2739</code>).</p>
+  <table class="netd-about netd-api">
+    <tr><th>REST API</th><td><code>fields_of_study</code>: list of <code>{id, uri, name, level, field, domain, confidence}</code>;
+      also listed under <code>derived</code> as <code>field_of_study</code></td></tr>
+    <tr><th>OAI-PMH <code>etdms</code></th><td><code>&lt;subject scheme="OpenAlex"&gt;name&lt;/subject&gt;</code></td></tr>
+    <tr><th>OAI-PMH <code>oai_dc</code></th><td>two <code>dc:subject</code> values per field: the name and its OpenAlex URI</td></tr>
+    <tr><th>Repository subjects</th><td>kept unchanged as <code>subjects</code> (API) and plain <code>subject</code>/<code>dc:subject</code> (OAI-PMH)</td></tr>
+  </table>
+
   <h2>OAI-PMH</h2>
   <table class="netd-about netd-api">
     <tr><th>Base URL</th><td><code>https://netd.ac.zm/oai</code></td></tr>

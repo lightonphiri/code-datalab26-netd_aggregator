@@ -4,7 +4,8 @@ module Api
   module V1
     # GET /api/v1/stats (FR-45): counts by institution, degree level and year, and field completeness per institution.
     class StatsController < BaseController
-      COMPLETENESS = { 'supervisor' => 'supervisor_tsim:*', 'subject' => 'subject_tsim:*', 'faculty' => 'faculty_tsim:*',
+      COMPLETENESS = { 'supervisor' => 'supervisor_tsim:*', 'subject' => 'subject_tsim:*',
+                       'field_of_study' => 'fos_domain_ssim:*', 'faculty' => 'faculty_tsim:*',
                        'department' => 'department_tsim:*', 'degree' => 'degree_ssim:*', 'degree_level' => 'degree_level_ssim:*',
                        'abstract' => 'abstract_tesim:*', 'full_text' => 'full_text_ssim:"PDF available"' }.freeze
 

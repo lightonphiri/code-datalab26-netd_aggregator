@@ -19,6 +19,7 @@ class Overlay:
         self.preds = cache.predictions(store)
         self.corr = cache.corrections(store)
         self.show = float(cfg.get("show_threshold", 0.8))
+        self.thresholds = {k: float(v) for k, v in (cfg.get("thresholds") or {}).items()}  # per-field overrides
         self.auto_exclude = float(cfg.get("level_auto_exclude", 0.95))
         self.review_min = float(cfg.get("level_review_min", 0.6))
         self.min_conf = float(cfg.get("min_confidence", 0.6))
@@ -44,7 +45,7 @@ class Overlay:
                     if conf >= self.review_min and "_scope" not in corr:
                         self.review.append((rid, value[0], conf, method, evidence))
                     continue
-            elif conf < self.show:
+            elif conf < self.thresholds.get(field, self.show):
                 continue
             rec[field] = value
             rec["provenance"][field] = method

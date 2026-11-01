@@ -29,8 +29,21 @@
     repository, since the portal updates from there.</p>
 
   <h2>Why do some records have no supervisor, department or degree level?</h2>
-  <p>Many repositories do not record these details. The portal shows what each repository provides; work on filling these gaps
-    automatically is under way.</p>
+  <p>Many repositories do not record these details. Where a repository leaves them out, the portal reads them from the thesis
+    itself (the title, approval and acknowledgements pages) and shows them with a <span class="netd-derived">derived</span>
+    label when it is confident enough. Values that cannot be read reliably are left empty.</p>
+
+  <h2>What is "Field of study", and how is it assigned?</h2>
+  <p>Institutions describe their theses with their own subject headings, which differ from one repository to another and are
+    often missing, so they cannot be browsed consistently. The portal therefore gives every thesis one or more standard fields
+    of study from <a href="https://openalex.org" target="_blank" rel="noopener">OpenAlex Topics</a>, an open (CC0) scheme
+    with 4 domains, 26 fields and 252 subfields used across the world's research literature. You can browse by
+    <em>Research domain</em>, <em>Field of study</em> and <em>Subfield</em>.</p>
+  <p>Fields of study are assigned automatically by a machine-learning model that reads each thesis's title and abstract. When
+    the model is not confident about a subfield it gives the broader field or domain instead. Each value carries a confidence
+    score and the <span class="netd-derived">derived</span> label, and can be corrected by the portal team: use "Report a
+    problem" on the record's page. The institution's own subject headings remain visible and searchable as "Keywords (from
+    the repository)".</p>
 
   <h2>Can I use the portal's data in my own work?</h2>
   <p>Yes. See <%= link_to 'Developer Resources', developers_path %> for the JSON API and the OAI-PMH interface.</p>

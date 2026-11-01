@@ -29,7 +29,7 @@ class CatalogController < ApplicationController
     config.add_show_field 'degree_ssim', label: 'Degree', link_to_facet: true
     config.add_show_field 'discipline_tsim', label: 'Programme / Discipline', link_to_facet: 'discipline_ssim'
     config.add_show_field 'year_ssim', label: 'Year', link_to_facet: true
-    config.add_show_field 'subject_tsim', label: 'Subjects', link_to_facet: 'subject_ssim', separator_options: { words_connector: '; ', last_word_connector: '; ', two_words_connector: '; ' }
+    config.add_show_field 'subject_tsim', label: 'Keywords (from the repository)', link_to_facet: 'subject_ssim', separator_options: { words_connector: '; ', last_word_connector: '; ', two_words_connector: '; ' }
     config.add_show_field 'language_ssim', label: 'Language'
     config.add_show_field 'abstract_tesim', label: 'Abstract'
 
@@ -38,12 +38,16 @@ class CatalogController < ApplicationController
                                               component: InstitutionFacetComponent
     config.add_facet_field 'full_text_ssim', label: 'Full text', collapse: false
     config.add_facet_field 'degree_level_ssim', label: 'Degree level', collapse: false
+    # Field of study: OpenAlex Topics, assigned to every record (FR-55); the main subject facets
+    config.add_facet_field 'fos_domain_ssim', label: 'Research domain', limit: 4, collapse: false
+    config.add_facet_field 'fos_field_ssim', label: 'Field of study', limit: 10, collapse: false
+    config.add_facet_field 'fos_subfield_ssim', label: 'Subfield', limit: 10
     config.add_facet_field 'faculty_ssim', label: 'Faculty / School', limit: 10
     config.add_facet_field 'department_ssim', label: 'Department', limit: 10
     config.add_facet_field 'discipline_ssim', label: 'Programme / Discipline', limit: 10
     config.add_facet_field 'degree_ssim', label: 'Degree', limit: 10
     config.add_facet_field 'supervisor_ssim', label: 'Supervisor', limit: 10
-    config.add_facet_field 'subject_ssim', label: 'Subject', limit: 15
+    config.add_facet_field 'subject_ssim', label: 'Keywords (from the repository)', limit: 15
     config.add_facet_field 'year_ssim', label: 'Year', limit: 200, sort: 'index', component: YearFacetComponent
     config.add_facet_field 'author_ssim', label: 'Author', show: false
     config.add_facet_fields_to_solr_request!

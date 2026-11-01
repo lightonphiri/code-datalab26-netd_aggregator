@@ -5,9 +5,9 @@ module ApiRecord
   BASE = 'https://netd.ac.zm'
   FIELDS = %w[id updated_dtsi title_ssm author_ssim supervisor_ssim subject_ssim abstract_tesim year_isi degree_ssim
               degree_level_ssim discipline_ssim faculty_ssim department_ssim institution_ssim source_ssi language_ssim
-              type_ssim rights_ssm url_ssm pdf_url_ssm files_ssm derived_ssm].join(',')
+              type_ssim rights_ssm url_ssm pdf_url_ssm files_ssm derived_ssm fos_ssm].join(',')
   CSV_COLUMNS = %w[id title authors supervisors year degree degree_level discipline faculty department subjects abstract
-                   institution institution_id language rights portal_url source_url pdf_url updated_at].freeze
+                   institution institution_id language rights portal_url source_url pdf_url updated_at fields_of_study].freeze
 
   # canonical field -> API field, for the "derived" object (FR-50)
   API_NAMES = { 'supervisor' => 'supervisors', 'subject' => 'subjects', 'author' => 'authors' }.freeze
@@ -36,6 +36,18 @@ module ApiRecord
     end
   end
 
+  # OpenAlex fields of study (FR-55, FR-56): id, name, level, field, domain, OpenAlex URI and confidence
+  def fields_of_study(doc)
+    conf = derived(doc).dig('field_of_study', 'confidence')
+    Array(doc['fos_ssm']).filter_map do |j|
+      f = JSON.parse(j)
+      { 'id' => f['id'], 'uri' => "https://openalex.org/#{f['id']}", 'name' => f['name'], 'level' => f['level'],
+        'field' => f['field'], 'domain' => f['domain'], 'confidence' => conf }
+    rescue JSON::ParserError
+      nil
+    end
+  end
+
   def to_h(doc)
     {
       'id' => doc['id'],
@@ -51,6 +63,7 @@ module ApiRecord
       'faculty' => list(doc, 'faculty_ssim'),
       'department' => list(doc, 'department_ssim'),
       'subjects' => list(doc, 'subject_ssim'),
+      'fields_of_study' => fields_of_study(doc),
       'language' => one(doc, 'language_ssim'),
       'type' => one(doc, 'type_ssim'),
       'rights' => one(doc, 'rights_ssm'),
@@ -69,6 +82,6 @@ module ApiRecord
     [h['id'], h['title'], j[h['authors']], j[h['supervisors']], h['year'], h['degree'], h['degree_level'],
      h['discipline'], j[h['faculty']], j[h['department']], j[h['subjects']], h['abstract'], h['institution']['name'],
      h['institution']['id'], h['language'], h['rights'], h['links']['portal'], h['links']['source'], h['links']['pdf'],
-     h['updated_at']]
+     h['updated_at'], j[h['fields_of_study'].map { |f| f['name'] }]]
   end
 end

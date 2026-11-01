@@ -39,6 +39,7 @@
           author_tsim^3
           supervisor_tsim^2
           subject_tsim^2
+          fos_tsim^2
           faculty_tsim
           department_tsim
           discipline_tsim
@@ -63,6 +64,7 @@
        </str>
        <str name="subject_qf">
           subject_tsim
+          fos_tsim
        </str>
        <str name="supervisor_qf">
           supervisor_tsim

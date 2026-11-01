@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Zambia National ETD Portal REST API
-  version: 1.1.0
+  version: 1.2.0
   description: |
     Read-only access to the theses and dissertations aggregated by the Zambia National ETD Portal
     (https://netd.ac.zm) from Zambian higher education institutions: postgraduate diploma, master's and doctoral work. No key is needed. Responses are JSON
@@ -223,6 +223,21 @@ components:
               name: {type: string, nullable: true}
               mime_type: {type: string, nullable: true}
               size: {type: integer, nullable: true, description: Bytes}
+        fields_of_study:
+          type: array
+          description: >-
+            Standard fields of study from OpenAlex Topics (CC0), assigned automatically from title and abstract; the
+            most specific level the model is confident about (subfield, else field, else domain). Added in API 1.2.0.
+          items:
+            type: object
+            properties:
+              id: {type: string, example: "subfields/2739"}
+              uri: {type: string, format: uri, example: "https://openalex.org/subfields/2739"}
+              name: {type: string}
+              level: {type: string, enum: [subfield, field, domain]}
+              field: {type: string, nullable: true}
+              domain: {type: string, nullable: true}
+              confidence: {type: number, nullable: true, minimum: 0, maximum: 1}
         derived:
           type: object
           description: >-
