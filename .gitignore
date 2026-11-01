@@ -15,3 +15,6 @@ portal/config/master.key
 harvester/uploads/
 harvester/sources.local.yml
 harvester/run.lock
+
+# notebook working files
+notebooks/netd-notebook-work/

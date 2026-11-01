@@ -13,7 +13,7 @@ import re
 from ... import crosswalk
 
 NAME = "titlepage-rules"
-VERSION = "3"
+VERSION = "4"
 FIELDS = ("degree_level", "degree", "discipline", "supervisor", "department", "faculty")
 USES = ("title",)
 NEEDS_TEXT = True
@@ -52,7 +52,7 @@ SUPERVISOR = [
     (re.compile(PERSON + r",?\s+" + MY_SUP), 0.82),          # "... Prof. X, my supervisor, for ..."
     (re.compile(PERSON + r"\s*\(?\s*(?i:(?:main\s+|co-?\s?)?supervisor)\)?\b"), 0.75),
 ]
-NOT_NAMES = re.compile(r"\b(supervisors?|co|visiting|senior|head|who|whose|for|from|signature|signed|date|name|department|university|school|examiner|candidate|dean|"
+NOT_NAMES = re.compile(r"\b(unza|zou|cbu|unilus|zcas|mu|zambia|supervisors?|co|visiting|senior|head|who|whose|for|from|signature|signed|date|name|department|university|school|examiner|candidate|dean|"
                        r"declaration|approval|head|chairperson|lecturer|the|of)\b", re.I)
 UNIT = re.compile(r"\b(department|school|faculty|institute|college)\s+of\s+(?=[A-Z])", re.I)
 UNIT_STOP = re.compile(r"\s*(?:,|\.|;|:|\(|\bat\b|\bthe\b|\buniversity\b|\blusaka\b|\bzambia\b|\bin\s+partial\b|"
@@ -134,6 +134,7 @@ def _clean_person(p):
     p = re.sub(r"\s+", " ", p).strip(" .,")
     p = DEGREES.sub("", p)
     p = re.sub(r"-\s+", "-", p)
+    p = re.sub(r"\b([A-Za-z]{2,})\.", r"\1", p)       # "AUSTIN. CHEYEKA" -> "AUSTIN CHEYEKA" (initials keep their dots)
     p = re.sub(r"^" + TITLE_WORDS + r"\s*(?=[A-Z])", "", p)
     if p.isupper() and len(p) > 4:
         p = " ".join(w if re.fullmatch(r"(?:[A-Z]\.)+", w) else w.capitalize() for w in p.split())

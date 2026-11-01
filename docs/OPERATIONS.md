@@ -80,6 +80,8 @@ Ubuntu 20.04 stopped receiving standard security updates in May 2025. The path i
 5. For NETD only: `systemctl restart netd-solr netd-portal`, then run `netd.cli check`. Ruby and Solr under `/opt/netd` do not change. If the system's Python moves, rebuild the harvester venv with `deploy/deploy.sh` (uv provides its own Python 3.12).
 
 ## Metadata filling (FR-14, FR-48 to FR-53)
+A step-by-step, runnable explanation of everything below is in `notebooks/netd26-03-ml_metadata_filling-walkthrough.ipynb`.
+
 All commands run in `/opt/netd/harvester` as `netd` (`sudo -u netd .venv/bin/python -m netd.cli ...`). Anything that writes many rows runs under the harvest lock: prefix `flock -w 7200 run.lock`.
 
 - **Status:** `text-report` (PDF text per source and status), `export-predictions /opt/netd/logs/predictions.csv`.
