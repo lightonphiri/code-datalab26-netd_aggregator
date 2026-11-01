@@ -1,0 +1,5 @@
+<p class="netd-qlegend">
+  <% QualityReport::GROUPS.each do |g, (l, d)| %>
+    <span><span class="netd-qkey netd-q-<%= g %>"></span><strong><%= l %></strong> — <%= d[0].downcase + d[1..] %></span>
+  <% end %>
+</p>

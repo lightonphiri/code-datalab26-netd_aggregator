@@ -32,6 +32,7 @@ Rails.application.routes.draw do
     delete 'records/:id/corrections/:field', to: 'records#uncorrect', as: :uncorrect_record,
                                               constraints: { id: /[A-Za-z0-9_-]+/, field: /_?[a-z_]+/ }
     post 'records/:id/apply', to: 'records#apply', as: :apply_record, constraints: { id: /[A-Za-z0-9_-]+/ }
+    get 'quality', to: 'quality#index', as: :quality   # per-institution metadata quality (FR-28)
     get 'review', to: 'reviews#index', as: :reviews
     post 'review/:id', to: 'reviews#decide', as: :decide_review, constraints: { id: /[A-Za-z0-9_-]+/ }
   end
