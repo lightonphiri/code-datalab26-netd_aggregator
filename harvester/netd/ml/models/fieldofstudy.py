@@ -18,7 +18,9 @@ import os
 import numpy as np
 
 NAME = "openalex-fos"
-VERSION = "3"  # v2: thresholds tuned on held-out works; v3: subfield priors adapted to the portal (label shift)
+VERSION = "4"  # v2: thresholds tuned on held-out works; v3: portal priors by EM (withdrawn: amplified confusions);
+#               v4 = v2 behaviour (no prior adaptation)
+ADAPT_PRIORS = False  # EM label-shift priors (tools/fos_priors.py) are kept for research but not used, see the report
 FIELDS = ("field_of_study",)
 USES = ("title", "abstract")
 NEEDS_TEXT = False
@@ -56,7 +58,7 @@ def _load():
         w = np.load(WEIGHTS, allow_pickle=False)
         classes = [str(c) for c in w["classes"]]
         prior = np.ones(len(classes))
-        if os.path.exists(PRIORS):  # label-shift adaptation: P(c|x) * pi_portal(c) / pi_train(c), training uniform
+        if ADAPT_PRIORS and os.path.exists(PRIORS):  # label-shift adaptation: P(c|x) * pi_portal(c) / pi_train(c), training uniform
             pri = json.load(open(PRIORS))["priors"]
             prior = np.array([pri.get(c, 1.0 / len(classes)) for c in classes]) * len(classes)
         _state["clf"] = (w["W"], w["b"], classes)

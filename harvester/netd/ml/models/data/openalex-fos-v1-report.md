@@ -28,3 +28,7 @@ Held-out works, C = 10 (C = 50 and 200 lowered top-1 accuracy to 0.498 and 0.475
 | **0.30** | **0.40** | **78% / 0.622** | **13% / 0.630** | **10%** (chosen) |
 | 0.25 | 0.40 | 85% / 0.591 | 7% / 0.611 | 7% |
 | 0.20 | 0.40 | 91% / 0.567 | 3% / 0.556 | 5% |
+
+## Label-shift adaptation (version 3, withdrawn the same day)
+
+`tools/fos_priors.py` re-estimated subfield priors on the portal's 5,921 records with EM (Saerens, Latinne & Decaestecker 2002, https://doi.org/10.1162/089976602753284446; smoothing 0.1). Estimated most common subfields: Political Science and International Relations 0.126, Education 0.100, Safety Research 0.093, General Health Professions 0.077. Applied to the portal, Education rose from 231 to 847 records, but Safety Research rose to 627 and Political Science to 923, which is implausible for Zambian theses: EM assumes pure label shift, while theses also differ from journal papers in style (concept shift), so the classifier's systematic confusions were amplified. Version 4 returns to version 2 behaviour. Next: in-domain labels (discipline names mapped to subfields, an annotated sample of portal records) to retrain or calibrate.
