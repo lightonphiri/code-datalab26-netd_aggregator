@@ -7,7 +7,8 @@ For every record in the portal and every element, the value's provenance (crossw
   portal      - filled by the portal (models reading the PDF, admin corrections)
   missing     - no value
 "ETD-MS compliance" is the mean share of the ETD-MS 1.1 elements below that the repository supplies in their own
-element. Written as JSON for the public quality page; computed after every scheduled run.
+element. Faculty and department are not ETD-MS elements; for them the collection hierarchy counts as the repository's
+own place. Written as JSON for the public quality page; computed after every scheduled run.
 """
 import datetime
 import json
@@ -42,7 +43,7 @@ def origin(rec, field):
         return "missing"
     p = (rec.get("provenance") or {}).get(field, "harvested")
     kind = p.split(":", 1)[0]
-    if kind in ("harvested", "rule"):
+    if kind in ("harvested", "rule") or (kind == "set" and field in ("faculty", "department")):
         return "repository"
     if kind in ("set", "text"):
         return "elsewhere"
@@ -73,7 +74,8 @@ def compute(rows, names):
             "etdms_compliance": round(sum(e["repository"] for e in etd) / len(etd), 1),
             "complete_after_portal": round(sum(100 - e["missing"] for e in el) / len(el), 1),
             "elements": el,
-            "to_improve": [e["advice"] for e in el if e["repository"] < 50][:6] if key != "_all" else [],
+            "to_improve": [e["advice"] for e in el if e["repository"] < 50 and e["repository"] + e["elsewhere"] < 90]
+                          if key != "_all" else [],
         })
     out.sort(key=lambda r: (r["id"] is None, -r["records"]))
     return out

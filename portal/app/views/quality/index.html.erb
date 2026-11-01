@@ -25,7 +25,7 @@
     <% insts = @report['institutions'].reject { |i| i['id'].nil? } %>
     <p class="netd-qlegend">
       <% groups.each do |g, (l, d)| %>
-        <span><span class="netd-qkey netd-q-<%= g %>"></span><strong><%= l %></strong> — <%= d.downcase %></span>
+        <span><span class="netd-qkey netd-q-<%= g %>"></span><strong><%= l %></strong> — <%= d[0].downcase + d[1..] %></span>
       <% end %>
     </p>
 
@@ -71,7 +71,7 @@
         complete in the portal <strong><%= i['complete_after_portal'] %>%</strong>.
         <%= link_to 'Browse its ETDs', search_action_path(f: { institution_ssim: [i['name']] }) %>.</p>
       <% if i['to_improve'].present? %>
-        <p class="mb-1"><strong>Suggested improvements at the repository</strong> (elements supplied in the proper element for fewer than half of the ETDs):</p>
+        <p class="mb-1"><strong>Suggested improvements at the repository</strong> (elements the repository supplies in the proper place for fewer than half of its ETDs):</p>
         <ul><% i['to_improve'].each do |a| %><li><%= a %></li><% end %></ul>
       <% end %>
       <details>
