@@ -13,7 +13,7 @@ import re
 from ... import crosswalk
 
 NAME = "titlepage-rules"
-VERSION = "6"
+VERSION = "7"
 FIELDS = ("degree_level", "degree", "discipline", "supervisor", "department", "faculty")
 USES = ("title",)
 NEEDS_TEXT = True
@@ -44,11 +44,13 @@ TITLE_WORDS = r"(?i:prof(?:essor)?s?|drs?|mr|mrs|ms|rev|eng|assoc\.?\s+prof)\.?"
 TOKEN = r"(?:[A-Z][a-zA-Z'\-]+|(?:[A-Z]\.){1,4})"
 PERSON = r"((?:" + TITLE_WORDS + r"\s*)?" + TOKEN + r"(?:\s*" + TOKEN + r"){1,4})"
 PEOPLE = PERSON[:-1] + r"(?:\s*(?:,|\band\b|&)\s*(?:" + TITLE_WORDS + r"\s*)?" + TOKEN + r"(?:\s*" + TOKEN + r"){1,4})?)"
+_P = r"(?:" + TITLE_WORDS + r"\s*)?" + TOKEN + r"(?:\s*" + TOKEN + r"){1,4}"
+PEOPLE3 = r"(" + _P + r"(?:\s*(?:,|\b(?i:and)\b|&)?\s*" + _P + r"){0,2})"   # up to three people
 MY_SUP = r"\b(?i:my\s+(?:study\s+|research\s+|main\s+|principal\s+|academic\s+)?(?:co-?\s?)?supervisors?)"
 SUPERVISOR = [
-    (re.compile(r"\b(?i:(?:main\s+|principal\s+|co-?\s?)?supervisors?)\s*[:\-–]\s*" + PERSON), 0.92),
-    (re.compile(r"\b(?i:supervised\s+by)\s*[:\-–]?\s*" + PERSON), 0.9),
-    (re.compile(r"\b(?i:under\s+the\s+(?:able\s+)?(?:supervision|guidance)\s+of)\s+" + PERSON), 0.88),
+    (re.compile(r"\b(?i:(?:main\s+|principal\s+|co-?\s?)?supervisors?)\s*[:\-–]\s*" + PEOPLE3), 0.92),
+    (re.compile(r"\b(?i:supervised\s+by)\s*[:\-–]?\s*" + PEOPLE3), 0.9),
+    (re.compile(r"\b(?i:under\s+the\s+(?:able\s+)?(?:supervision|guidance)\s+of)\s+" + PEOPLE3), 0.88),
     (re.compile(MY_SUP + r",?\s+" + PEOPLE), 0.86),          # acknowledgements: "my supervisor, Dr X, for ..."
     (re.compile(PERSON + r",?\s+" + MY_SUP), 0.82),          # "... Prof. X, my supervisor, for ..."
     (re.compile(PERSON + r"\s*\(?\s*(?i:(?:main\s+|co-?\s?)?supervisor)\)?\b"), 0.75),
@@ -147,6 +149,15 @@ from collections import Counter
 CORPUS_VOCAB = Counter()
 
 
+class _Counts:
+    """Corpus counts plus this document's counts, without copying the corpus table for every record."""
+    def __init__(self, corpus, doc):
+        self.corpus, self.doc = corpus, doc
+
+    def get(self, w, default=0):
+        return self.corpus.get(w, 0) + self.doc.get(w, 0) or default
+
+
 def prepare(texts):
     """Called once per run with every cached text: word counts across the corpus, used to rejoin words that text
     extraction split ("Eco nomics")."""
@@ -157,7 +168,7 @@ def prepare(texts):
 
 def predict(meta, text):
     pages = [_flat(p) for p in text.split("\f")]
-    vocab = CORPUS_VOCAB + Counter(w.lower() for w in re.findall(r"[A-Za-z]{2,}", " ".join(pages)))
+    vocab = _Counts(CORPUS_VOCAB, Counter(w.lower() for w in re.findall(r"[A-Za-z]{2,}", " ".join(pages))))
     head = " ".join(pages[:3])
     allt = " ".join(pages)
     out = {}
@@ -192,7 +203,7 @@ def predict(meta, text):
     for rx, conf in SUPERVISOR:
         for m in rx.finditer(allt):
             # several people: separated by commas, "and", "&", or a title in the middle ("X Y Dr Z W")
-            for name in re.split(r"\s*(?:,|\band\b|&)\s*|\s+(?=(?:Prof(?:essor)?|Dr|Mr|Mrs|Ms)\.?\s+[A-Z])", m.group(1)):
+            for name in re.split(r"\s*(?:,|\b(?i:and)\b|&)\s*|\s+(?=(?i:prof(?:essor)?|dr|mr|mrs|ms)\.?\s+[A-Z])", m.group(1)):
                 name = _clean_person(name)
                 cut = NOT_NAMES.search(name)
                 if cut:
@@ -211,6 +222,8 @@ def predict(meta, text):
         if sups:
             break
     if sups:
+        sups = [" ".join(w if re.fullmatch(r"(?:[A-Z]\.)+", w) else w.capitalize() for w in n.split())
+                if n.isupper() else n for n in sups]
         out["supervisor"] = (sups[:3], best, ev)
 
     # units: one title-page line each ("SCHOOL OF MEDICINE" / "DEPARTMENT OF PUBLIC HEALTH"), so the thesis
