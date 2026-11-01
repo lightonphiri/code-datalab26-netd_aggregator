@@ -79,6 +79,18 @@ Ubuntu 20.04 stopped receiving standard security updates in May 2025. The path i
 4. Upgrade 22.04 → 24.04 the same way.
 5. For NETD only: `systemctl restart netd-solr netd-portal`, then run `netd.cli check`. Ruby and Solr under `/opt/netd` do not change. If the system's Python moves, rebuild the harvester venv with `deploy/deploy.sh` (uv provides its own Python 3.12).
 
+## Excluding records
+
+The portal holds postgraduate work only (SRS FR-47). Records identified as below postgraduate level are left out automatically when processing. To leave out one record (for example a bachelor's report deposited in an ETD collection), add it to its source in `harvester/sources.yml` with a reason, release, and process and index that source (or wait for the nightly run):
+
+```yaml
+    exclude_records:
+      - oai_id: "oai:rims.unza.ac.zm:123456789/8053"
+        reason: "Bachelor of Laws dissertation deposited in the Theses and Dissertations community"
+```
+
+`netd.cli report` and the admin panel's source page list every excluded record and why. To bring a record back, remove its entry; the harvested metadata was never deleted.
+
 ## REST API
 
 https://netd.ac.zm/api/v1 (SRS EI-6, FR-42 to FR-46; SDD §5.3; specification `portal/public/api/v1/openapi.yaml`). It reads Solr only, so it shows whatever the nightly index holds. `/api/v1/stats` and `/api/v1/institutions` are cached for 10 minutes. The export files are built in `portal/tmp/api_export/` when first requested and rebuilt when more than 6 hours old; deleting them is safe. Rate limits (120 requests a minute per address per endpoint, 20 exports an hour) are counted in the Rails cache and reset when the portal restarts. Any change to the API's fields must be made in the specification too.

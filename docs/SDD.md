@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SDD, structured per IEEE 1016-2009 (design viewpoints) |
-| Version | 0.21 |
+| Version | 0.22 |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Related | `docs/SRS.md` (requirement IDs referenced below) |
@@ -14,6 +14,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial design: harvester, raw/canonical stores, crosswalk, enrichers, Blacklight portal, deployment |
 | 0.2 | October 30, 2026 | Discipline/degree derivation; Solr analysers; URL-safe record ids; HTTPS |
+| 0.22 | November 1, 2026 | Postgraduate scope (FR-47): `scope.degree_levels` and per-source `exclude_records` in `sources.yml`; `cli.exclusion()` in processing; table `excluded`; `index.ids()` so indexing removes from Solr every document the store no longer holds; Postgraduate Diploma in `DEGREE_PAT`, repository-supplied levels normalised; level set `level:postgraduate-diploma` and API level `postgraduate_diploma` |
 | 0.21 | November 1, 2026 | REST API v1 (§5.3, EI-6, FR-42 to FR-46): `Api::V1::` controllers on `ActionController::API`, `ApiRecord` representation, OpenAPI 3 specification `public/api/v1/openapi.yaml`, interactive reference `/developers/api`, export files in `portal/tmp/api_export/` |
 | 0.20 | November 1, 2026 | Admin panel (§5.2, FR-36 to FR-41, NFR-13): `Admin::` controllers, `AdminAuthentication`, `Harvester` model, portal tables `users`, `sessions`, `admin_events` and problem-report resolution columns (§4.1); `harvester/sources.local.yml`; shared `run.lock`; `netd-user.sh` account management; backups include CSV files |
 | 0.19 | November 1, 2026 | `netd.csvload` CSV loader (FR-10), `netd.cli csv-check`, template `portal/public/netd-etd-template.csv`, `deploy.sh` creates `harvester/uploads/` |
@@ -31,7 +32,7 @@
 
 ## 1. Introduction
 ### 1.1 Purpose and scope
-This SDD describes how NETD v2 meets the SRS: the system's context, components, information model, interfaces, interaction, state, deployment, and the main design decisions. It covers release 0.21.
+This SDD describes how NETD v2 meets the SRS: the system's context, components, information model, interfaces, interaction, state, deployment, and the main design decisions. It covers release 0.22.
 
 ### 1.2 Stakeholders and concerns
 | Stakeholder | Concerns | Viewpoints |
@@ -177,7 +178,16 @@ erDiagram
     text status
     text message
   }
+  EXCLUDED {
+    text id PK
+    text source
+    text oai_id
+    text title
+    text reason
+    real excluded_at
+  }
   RAW_RECORDS ||--o| RECORDS : "processed into"
+  RAW_RECORDS ||--o| EXCLUDED : "or left out (FR-47)"
   SET_NAMES ||--o{ RAW_RECORDS : "names setSpecs of"
   HARVEST_RUNS }o--|| RAW_RECORDS : "writes"
 ```
@@ -227,6 +237,8 @@ erDiagram
   USERS ||--o{ ADMIN_EVENTS : "performs"
   USERS ||--o{ PROBLEM_REPORTS : "resolves"
 ```
+
+Postgraduate scope (FR-47). After the crosswalk and the enrichers, `cli.exclusion()` decides whether a record enters `records`: it is left out if its source lists its `oai_id` under `exclude_records` (with a reason), or if its `degree_level` is identified and not in `scope.degree_levels` (default Doctoral, Masters, Postgraduate Diploma). Records of unknown level are kept. Excluded records go to `excluded` with the reason (rebuilt for a source on every processing run) and are shown by `netd.cli report` and on the admin source page; `raw_records` is untouched, so an exclusion is undone by removing it from `sources.yml`. Indexing then deletes from Solr every document of the source that `records` no longer holds (`index.ids()`), which also covers records deleted at the source. Levels come from the repository's own value, normalised, or from `DEGREE_PAT` over the degree name, type, description and collection names, postgraduate levels first; the ML models (FR-14) will fill the unknown levels later through the same field.
 
 ### 4.2 Canonical record (class view)
 ```mermaid
