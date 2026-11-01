@@ -13,7 +13,7 @@ import re
 from ... import crosswalk
 
 NAME = "titlepage-rules"
-VERSION = "7"
+VERSION = "8"
 FIELDS = ("degree_level", "degree", "discipline", "supervisor", "department", "faculty")
 USES = ("title",)
 NEEDS_TEXT = True
@@ -112,16 +112,16 @@ def _degree(stmt):
     pg = re.match(r"(?i)^post-?\s?graduate\s+diploma\s+(?:in|of)\s+(.+)$", stmt)
     if pg:
         disc = crosswalk._tc(pg.group(1))
-        return "Postgraduate Diploma in " + disc, disc, "Postgraduate Diploma"
+        return "Postgraduate Diploma", disc, "Postgraduate Diploma"
     if m:
         disc = crosswalk._tc(m.group(2))
         head = m.group(1).capitalize()
-        deg = {"Master": "Master's", "Bachelor": "Bachelor's"}.get(head, "Doctorate") + " in " + disc
+        deg = {"Master": "Master's", "Bachelor": "Bachelor's"}.get(head, "Doctorate")
         return deg, disc, crosswalk.degree_level([head])
     deg, disc = crosswalk.degree_from_text(stmt)
     if not deg:
         return None, None, None
-    return deg + (" in " + disc if disc else ""), disc, crosswalk.degree_level([deg])
+    return deg, disc, crosswalk.degree_level([deg])  # ETD-MS: degree name and discipline are separate
 
 
 DEGREES = re.compile(r"(?:\s+|,\s*)(?:MBBS|MBChB|MD|PhD|Ph\.D|MSc|BSc|MA|BA|MPH|FRSH|FRCS|FCS|MMed|DPhil)\b.*$")
