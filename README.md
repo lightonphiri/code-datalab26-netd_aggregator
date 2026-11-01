@@ -74,3 +74,6 @@ ENV
 sudo systemctl restart netd-portal
 ```
 List reports: `cd /opt/netd/portal && sudo -u netd env PATH=/opt/netd/ruby/bin:$PATH RAILS_ENV=production $(sudo cat /opt/netd/portal.env) bin/rails netd:reports`
+
+## Research
+The metadata-filling work feeds a paper; the plan, compute approach and evidence log are in [`docs/PAPER-PLAN.md`](docs/PAPER-PLAN.md). Drafting the paper is the project's final step.
