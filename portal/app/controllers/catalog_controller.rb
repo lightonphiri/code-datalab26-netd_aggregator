@@ -65,6 +65,7 @@ class CatalogController < ApplicationController
     # Sort control next to the result count (the default tools were dropped when this file was rewritten)
     config.add_results_collection_tool(:sort_widget)
     config.add_results_collection_tool(:per_page_widget)
+    config.add_results_collection_tool(:follow_search, partial: 'follow_search_link')  # feeds for a search (FR-60)
 
     # Sort options as on Columbia's Academic Commons (FR-22)
     config.add_sort_field 'relevance', sort: 'score desc, year_isi desc, title_ssort asc', label: 'Best Match'
@@ -72,6 +73,7 @@ class CatalogController < ApplicationController
     config.add_sort_field 'earliest', sort: 'year_isi asc, title_ssort asc', label: 'Published Earliest'
     config.add_sort_field 'title_az', sort: 'title_ssort asc, year_isi desc', label: 'Title A-Z'
     config.add_sort_field 'title_za', sort: 'title_ssort desc, year_isi desc', label: 'Title Z-A'
+    config.add_sort_field 'added', sort: 'added_dtsi desc, title_ssort asc', label: 'Newest Additions'  # FR-60
 
     config.spell_max = 5
     config.autocomplete_enabled = false

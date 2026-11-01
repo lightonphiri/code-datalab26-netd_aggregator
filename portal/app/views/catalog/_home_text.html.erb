@@ -44,6 +44,8 @@
         <% if years.any? %><tr><td><%= years.min %>–<%= years.max %></td><td>years covered</td></tr><% end %>
       </table>
       <p class="netd-note"><%= fmt.(total - lvl.values.sum) %> ETDs do not yet state their degree level in the source repository.</p>
+      <p class="netd-note"><%= link_to 'Newest additions', search_action_path(sort: 'added') %> ·
+        <%= link_to follow_path, title: 'Feeds of new additions, for a feed reader or email' do %><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.2"/></svg> follow new additions<% end %></p>
     </div>
     <div class="col-lg-8">
       <h2 class="netd-kicker">Contributing institutions</h2>

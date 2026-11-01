@@ -1,0 +1,31 @@
+<% content_for(:page_title) { "Follow a search — Zambia National ETD Portal" } %>
+<div class="netd-page netd-faq">
+  <h1>Follow a search</h1>
+  <p>Be told when new theses and dissertations matching this search are added to the portal. No account is needed.</p>
+  <table class="netd-about netd-api">
+    <tr><th>Search</th><td><%= @query['q'].presence ? "“#{@query['q']}”" : 'All theses and dissertations' %>
+      <% if @filters.any? %><br><%= @filters.join(' · ') %><% end %>
+      <br><%= link_to 'See the newest matches', @results %></td></tr>
+    <tr><th>Atom feed</th><td><code class="netd-feed-url"><%= @atom %></code></td></tr>
+    <tr><th>RSS feed</th><td><code class="netd-feed-url"><%= @rss %></code></td></tr>
+  </table>
+
+  <h2>In a feed reader</h2>
+  <p>Copy one of the feed addresses above into a feed reader (for example Feedly, Inoreader, NetNewsWire or Thunderbird).
+    New additions appear as they are harvested, usually the morning after an institution adds them to its repository.
+    Each item links to the thesis or dissertation on the portal.</p>
+
+  <h2>By email</h2>
+  <p>Feed-to-email services (for example Blogtrottr or Feedrabbit, or IFTTT and Zapier) can send you new items from the
+    feed by email, as each item arrives or as a daily or weekly digest: paste the feed address into the service.
+    These services are run by others and have their own terms. Email alerts from the portal itself are planned.</p>
+
+  <h2>Other ways to follow</h2>
+  <ul>
+    <li>Everything newly added: <%= link_to 'newest additions', search_action_path(sort: 'added') %>
+      (<%= link_to 'Atom', search_action_url(sort: 'added', per_page: 20, format: 'atom') %>,
+      <%= link_to 'RSS', search_action_url(sort: 'added', per_page: 20, format: 'rss') %>).</li>
+    <li>Developers can use the REST API with <code>sort=added</code> or <code>updated_since</code>, or harvest the portal over
+      OAI-PMH: see <%= link_to 'Developer Resources', developers_path %>.</li>
+  </ul>
+</div>

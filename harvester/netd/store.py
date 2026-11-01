@@ -33,6 +33,9 @@ CREATE TABLE IF NOT EXISTS bitstreams (
 CREATE TABLE IF NOT EXISTS excluded (       -- records left out of the portal when processing (SRS FR-47)
     id TEXT PRIMARY KEY, source TEXT NOT NULL, oai_id TEXT, title TEXT, reason TEXT, excluded_at REAL
 );
+CREATE TABLE IF NOT EXISTS first_seen (     -- when a record first appeared in the portal ("date added", FR-60)
+    id TEXT PRIMARY KEY, first_seen REAL NOT NULL
+);
 CREATE TABLE IF NOT EXISTS harvest_runs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     source TEXT, started_at REAL, finished_at REAL,
@@ -47,7 +50,12 @@ class Store:
         self.db = sqlite3.connect(path, timeout=120)
         self.db.execute("PRAGMA journal_mode=WAL")
         self.db.row_factory = sqlite3.Row
+        new = not self.db.execute("SELECT 1 FROM sqlite_master WHERE name='first_seen'").fetchone()
         self.db.executescript(SCHEMA)
+        if new:  # records already in the portal count as added at their source's first harvest (initial load)
+            self.db.execute("""INSERT OR IGNORE INTO first_seen SELECT r.id, coalesce(
+                (SELECT min(started_at) FROM harvest_runs h WHERE h.source = r.source), r.updated_at) FROM records r""")
+            self.db.commit()
 
     # --- raw layer -------------------------------------------------------
     def put_raw(self, source, oai_id, datestamp, set_specs, deleted, prefix, xml):
@@ -84,6 +92,7 @@ class Store:
         """Store a canonical record. updated_at changes only when the record's content changes, so it can
         serve as the OAI-PMH datestamp of the portal's own data provider (incremental harvesting)."""
         data = json.dumps(rec, ensure_ascii=False)
+        self.db.execute("INSERT OR IGNORE INTO first_seen VALUES (?,?)", (rec["id"], time.time()))
         old = self.db.execute("SELECT data FROM records WHERE id=?", (rec["id"],)).fetchone()
         if old is not None and old["data"] == data:
             return
@@ -108,11 +117,14 @@ class Store:
         return {r["id"] for r in self.db.execute("SELECT id FROM records WHERE source=?", (source,))}
 
     def records(self, source=None):
-        """Canonical records; each carries "_updated_at" (epoch seconds of its last content change)."""
-        q = "SELECT data, updated_at FROM records" + (" WHERE source=?" if source else "")
+        """Canonical records; each carries "_updated_at" (epoch seconds of its last content change) and
+        "_added_at" (when it first appeared in the portal)."""
+        q = ("SELECT data, updated_at, f.first_seen FROM records LEFT JOIN first_seen f USING (id)"
+             + (" WHERE source=?" if source else ""))
         for r in self.db.execute(q, (source,) if source else ()):
             rec = json.loads(r["data"])
             rec["_updated_at"] = r["updated_at"]
+            rec["_added_at"] = r["first_seen"] or r["updated_at"]
             yield rec
 
     # --- harvest bookkeeping ---------------------------------------------

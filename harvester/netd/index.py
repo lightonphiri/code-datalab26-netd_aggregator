@@ -68,6 +68,8 @@ def to_solr(rec):
             if t.endswith("_ssim") and f in FACETED and not ok.get(f, True):
                 continue  # low-confidence value: searchable, not facetable
             doc[t] = vals
+    if rec.get("_added_at"):  # first appearance in the portal: "Newest additions" sort and feeds (FR-60)
+        doc["added_dtsi"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(rec["_added_at"]))
     if rec.get("_updated_at"):  # last content change in the portal: OAI-PMH datestamp (UTC, seconds)
         doc["updated_dtsi"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(rec["_updated_at"]))
     if rec.get("title"):

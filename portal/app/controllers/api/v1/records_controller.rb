@@ -11,7 +11,7 @@ module Api
       SORTS = {
         'relevance' => 'score desc, year_isi desc, id asc', 'newest' => 'year_isi desc, title_ssort asc, id asc',
         'oldest' => 'year_isi asc, title_ssort asc, id asc', 'title' => 'title_ssort asc, id asc',
-        'updated' => 'updated_dtsi desc, id asc'
+        'updated' => 'updated_dtsi desc, id asc', 'added' => 'added_dtsi desc, id asc'
       }.freeze
       EXACT = { 'faculty' => 'faculty_ssim', 'department' => 'department_ssim', 'discipline' => 'discipline_ssim',
                 'degree' => 'degree_ssim', 'subject_exact' => 'subject_ssim', 'supervisor_exact' => 'supervisor_ssim' }.freeze

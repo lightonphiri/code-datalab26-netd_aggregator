@@ -1,0 +1,7 @@
+<%# "Follow this search": feeds of new additions for the current search and filters (FR-60) %>
+<% q = params.permit(:q, :search_field, f: {}).to_h %>
+<%= link_to follow_path(q), class: 'btn btn-outline-secondary btn-sm netd-follow', rel: 'nofollow',
+            title: 'Get new theses and dissertations matching this search in a feed reader or by email' do %>
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.2"/></svg>
+  Follow this search
+<% end %>
