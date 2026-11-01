@@ -29,6 +29,8 @@ Keep this table up to date in every session; the paper is written from it.
 | Date | Experiment / run | Data (n, institutions) | Hardware, time | Result (P/R/F1, coverage) | Where (commit, file) |
 |---|---|---|---|---|---|
 | November 1, 2026 | `titlepage-rules` v2 on first 171 UNZA texts (coverage only, no gold yet) | 171 UNZA | server CPU, about 3 s | coverage: degree level 64%, degree 63%, supervisor 36%, department 11%, faculty 16% | `titlepage.py` version 2 |
+| November 1, 2026 | PDF text extraction backlog (text layer) | 5,925 records | server, 2 download threads, about 1 hour | text: UNZA 3,721, ZCAS 107, UNILUS 51, MU 11; scans: UNZA 1,455 (OCR ~18 s each on 2 shared CPUs); repository errors: UNZA 431, UNILUS 11 | `text-report` |
+| November 1, 2026 | `titlepage-rules` v7 applied to the portal (threshold 0.8) | 3,905 texts | server CPU, about 8 minutes per full prediction run (before the word-count speed-up) | completeness, all sources: supervisor 0% → 34.7%, degree 17% → 62.3%, degree level 40% → 71.2%, department 0% → 4.7%; 3,366 records gained values; 2 records excluded as Bachelor's (both correct); 12/12 sampled new Doctoral labels correct; spot checks of 30 random values per version: about 27–28/30 correct at v4–v6 | `deploy/ops/netd-ml-apply.sh`, `/api/v1/stats` |
 | November 1, 2026 | PDF text extraction backlog started | all records with PDFs | server, 2 threads, ~1.6 PDFs/s | about two-thirds of early UNZA PDFs are scans; ~15% of UNZA PDF links return HTTP 500 | `text-report` |
 
 ## Evaluation
