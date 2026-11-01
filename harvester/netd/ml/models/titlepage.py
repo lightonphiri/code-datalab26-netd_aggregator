@@ -13,7 +13,7 @@ import re
 from ... import crosswalk
 
 NAME = "titlepage-rules"
-VERSION = "4"
+VERSION = "5"
 FIELDS = ("degree_level", "degree", "discipline", "supervisor", "department", "faculty")
 USES = ("title",)
 NEEDS_TEXT = True
@@ -36,6 +36,7 @@ ABBREV = [  # case-sensitive: "bed space" must not read as B.Ed
 ]
 STOP = re.compile(r"\s+(?:in\s+(?:the\s+)?(?:school|faculty|department|institute|college|multidisciplinary)|has|have|or|"
                   r"for any|chairperson|signature|computer|student|candidate|examiner|name|date|declaration|"
+                  r"notice|copy\s?w?right|word|abstract|dedication|approval|about|i|ii|iii|iv|"
                   r"dr|prof|mr|mrs|ms|at|of the|from|to|by|submitted|presented|in the|lusaka|zambia|university|copyright|"
                   r"school|faculty|department|institute|college|supervisor|the)\b.*$", re.I)
 
@@ -52,7 +53,7 @@ SUPERVISOR = [
     (re.compile(PERSON + r",?\s+" + MY_SUP), 0.82),          # "... Prof. X, my supervisor, for ..."
     (re.compile(PERSON + r"\s*\(?\s*(?i:(?:main\s+|co-?\s?)?supervisor)\)?\b"), 0.75),
 ]
-NOT_NAMES = re.compile(r"\b(unza|zou|cbu|unilus|zcas|mu|zambia|supervisors?|co|visiting|senior|head|who|whose|for|from|signature|signed|date|name|department|university|school|examiner|candidate|dean|"
+NOT_NAMES = re.compile(r"\b(word|count|abstract|page|chapter|copyright|unza|zou|cbu|unilus|zcas|mu|zambia|supervisors?|co|visiting|senior|head|who|whose|for|from|signature|signed|date|name|department|university|school|examiner|candidate|dean|"
                        r"declaration|approval|head|chairperson|lecturer|the|of)\b", re.I)
 UNIT = re.compile(r"\b(department|school|faculty|institute|college)\s+of\s+(?=[A-Z])", re.I)
 UNIT_STOP = re.compile(r"\s*(?:,|\.|;|:|\(|\bat\b|\bthe\b|\buniversity\b|\blusaka\b|\bzambia\b|\bin\s+partial\b|"
@@ -171,7 +172,10 @@ def predict(meta, text):
                 out["degree"] = ([deg], conf, ev)
                 out["degree_level"] = ([level], conf, ev)
                 if disc:
-                    out["discipline"] = ([disc], conf - 0.05, ev)
+                    long_ = len(disc.split()) > 8  # probably ran into the next line: keep, but do not display
+                    out["discipline"] = ([disc], 0.7 if long_ else conf - 0.05, ev)
+                    if long_:
+                        out["degree"] = (out["degree"][0], 0.7, ev)
                 break
     if "degree_level" not in out:
         for rx, level, deg in ABBREV:
@@ -222,6 +226,8 @@ def predict(meta, text):
             name = UNIT_STOP.sub("", ln[m.end(): m.end() + 90]).strip(" )(,.;:")
             if re.search(r"\b(and|of|&|in|for|the)$", name, re.I):
                 continue  # name cut off by a line break
+            if re.search(r"\b(?:post)?\s?graduate studies\b|\bresearch and graduate\b", name, re.I):
+                continue  # a directorate of graduate studies, not the candidate's faculty
             if 3 <= len(name) <= 70 and not re.search(r"\d", name):
                 unit = "%s of %s" % (kind.capitalize(), crosswalk._tc(_rejoin(name, vocab)))
                 out[field] = ([unit], 0.88 if i < first else 0.78, ln[:160])
