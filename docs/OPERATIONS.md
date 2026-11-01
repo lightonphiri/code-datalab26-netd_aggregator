@@ -77,3 +77,21 @@ Ubuntu 20.04 stopped receiving standard security updates in May 2025. The path i
 3. Upgrade 20.04 → 22.04. Then reinstall PHP from the ondrej PPA for jammy (with `php8.1-intl`) and remove the hand-built `intl.so`. Check OJS, ZNRP, EMI and NETD.
 4. Upgrade 22.04 → 24.04 the same way.
 5. For NETD only: `systemctl restart netd-solr netd-portal`, then run `netd.cli check`. Ruby and Solr under `/opt/netd` do not change. If the system's Python moves, rebuild the harvester venv with `deploy/deploy.sh` (uv provides its own Python 3.12).
+
+## Adding an institution that sends a CSV file
+
+1. Check the file: `cd /opt/netd/harvester && sudo -u netd .venv/bin/python -m netd.cli csv-check FILE`. Send the listed problems back to the institution; rows with problems are skipped when loading.
+2. Add a source to `harvester/sources.yml`, with `name` exactly as in `harvester/institutions.yml`:
+   ```yaml
+   - id: cbu
+     name: Copperbelt University
+     short_name: CBU
+     loader: csv
+     # either a file or folder on the server (default /opt/netd/harvester/uploads/<id>/) ...
+     csv_path: /opt/netd/harvester/uploads/cbu
+     # ... or a link the institution keeps current, read every night
+     # csv_url: https://docs.google.com/spreadsheets/d/e/.../pub?output=csv
+   ```
+3. In `harvester/institutions.yml`, set the institution's `status: harvested` and `source: <id>`.
+4. Release, then put the file in place (`sudo -u netd cp FILE /opt/netd/harvester/uploads/<id>/`) and run `netd.cli run --source <id>`. The nightly run picks up later changes to the file or link.
+

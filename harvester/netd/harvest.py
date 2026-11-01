@@ -74,10 +74,11 @@ def harvest_files(store, sickle, src, from_date, log=print):
 def harvest_source(store, src, full=False, limit=None, log=print):
     """Harvest one source. Incremental (from= last successful run) unless full=True."""
     started = time.time()
-    if src.get("loader") in ("dspace7-rest", "dspace6-mets"):  # fallbacks when OAI-PMH is empty/off (FR-10)
+    if src.get("loader") in ("dspace7-rest", "dspace6-mets", "csv"):  # fallbacks without working OAI-PMH (FR-10)
+        from .csvload import harvest_csv
         from .mets import harvest_mets
         from .rest import harvest_rest
-        fn = harvest_rest if src["loader"] == "dspace7-rest" else harvest_mets
+        fn = {"dspace7-rest": harvest_rest, "dspace6-mets": harvest_mets, "csv": harvest_csv}[src["loader"]]
         status, message, n = "ok", "", 0
         try:
             n = fn(store, src, log=log, limit=limit)

@@ -2,7 +2,7 @@
 # (Re)deploy NETD v2 (https://netd.ac.zm/) on the server from /opt/netd (run as root after syncing the code).
 set -euo pipefail
 N=/opt/netd
-mkdir -p $N/logs/solr && chown -R netd:netd $N/logs
+mkdir -p $N/logs/solr $N/harvester/uploads && chown -R netd:netd $N/logs $N/harvester/uploads
 
 # Solr core "netd" from the project's configset (core discovery)
 mkdir -p $N/solr-home/netd && rm -rf $N/solr-home/netd/conf && cp -r $N/solr/netd/conf $N/solr-home/netd/conf

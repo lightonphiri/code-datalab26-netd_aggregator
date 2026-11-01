@@ -5,6 +5,7 @@
   index    [--source ID]                        push canonical records to Solr
   run      [--source ID] [--full]               harvest + process + index (scheduled job)
   report                                        field completeness per institution
+  csv-check FILE                                list problems in an HEI's CSV file before it is loaded (FR-10)
   check    [--max-age-hours H]                  health check after the scheduled run, incl. OAI-PMH Identify (exit 1 = problem)
 """
 import argparse
@@ -133,7 +134,8 @@ def do_check(store, srcs, solr, max_age_hours):
 
 def main(argv=None):
     p = argparse.ArgumentParser(prog="netd")
-    p.add_argument("command", choices=["harvest", "process", "index", "run", "report", "check"])
+    p.add_argument("command", choices=["harvest", "process", "index", "run", "report", "check", "csv-check"])
+    p.add_argument("file", nargs="?", help="CSV file (csv-check)")
     p.add_argument("--source")
     p.add_argument("--full", action="store_true")
     p.add_argument("--limit", type=int)
@@ -141,6 +143,11 @@ def main(argv=None):
     p.add_argument("--db", default=os.environ.get("NETD_DB", os.path.join(HERE, "netd.sqlite3")))
     p.add_argument("--solr", default=os.environ.get("NETD_SOLR", "http://127.0.0.1:8983/solr/netd"))
     a = p.parse_args(argv)
+    if a.command == "csv-check":
+        from .csvload import check_file
+        if not a.file:
+            sys.exit("usage: netd.cli csv-check FILE")
+        sys.exit(1 if check_file(a.file) else 0)
     sources = cfg_load("sources.yml").get("sources", [])
     srcs = selected(sources, a.source)
     if not srcs and a.command != "report":

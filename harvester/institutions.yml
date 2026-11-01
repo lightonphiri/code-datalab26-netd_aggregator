@@ -12,7 +12,7 @@
 # name:   exactly as used by HEA (and as the `name` of the matching entry in sources.yml)
 # levels: postgraduate levels with accredited programmes
 # source: id in sources.yml when the institution is harvested
-# status: harvested | no-etd-collection | repository-unreachable | no-repository-known
+# status: harvested (OAI-PMH, a fallback loader, or a CSV file: loader csv in sources.yml) | no-etd-collection | repository-unreachable | no-repository-known
 # repository: public repository URL, when known
 
 institutions:

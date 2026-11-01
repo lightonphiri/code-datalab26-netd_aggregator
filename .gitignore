@@ -12,3 +12,4 @@ portal/public/assets/
 portal/vendor/bundle/
 portal/.bundle/
 portal/config/master.key
+harvester/uploads/

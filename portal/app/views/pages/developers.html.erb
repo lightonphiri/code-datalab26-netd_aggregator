@@ -35,6 +35,24 @@
   </table>
   <pre class="netd-code">https://netd.ac.zm/oai?verb=ListRecords&amp;metadataPrefix=etdms&amp;set=inst:unza</pre>
 
+  <h2>Contributing records by CSV</h2>
+  <p>An institution without a repository that supports OAI-PMH can contribute its theses and dissertations as a CSV file,
+    one row per thesis or dissertation. Start from the
+    <%= link_to 'CSV template', '/netd-etd-template.csv' %>, which has one example row, and send the file to
+    <a href="mailto:datalab@unza.zm">datalab@unza.zm</a>. You can also publish it at a stable link, for example a Google
+    Sheet published to the web as CSV, so that the portal reads the latest version every night. Records that are removed
+    from the file are removed from the portal.</p>
+  <table class="netd-about netd-api">
+    <tr><th>Required columns</th><td><code>identifier</code> (unique within your institution; letters, digits, <code>-</code> and <code>_</code>),
+      <code>title</code>, <code>author</code>, <code>year</code> (four digits), <code>degree_level</code> (<code>Masters</code> or <code>Doctoral</code>)</td></tr>
+    <tr><th>Optional columns</th><td><code>degree</code>, <code>supervisor</code>, <code>faculty</code>, <code>department</code>,
+      <code>discipline</code>, <code>subject</code>, <code>abstract</code>, <code>language</code> (e.g. <code>en</code>),
+      <code>url</code> (the record's page at your institution), <code>pdf_url</code> (a public link to the full text), <code>rights</code></td></tr>
+    <tr><th>Several values</th><td>Separate them with <code>||</code> in <code>author</code>, <code>supervisor</code> and <code>subject</code>,
+      e.g. <code>Phiri, Chanda||Mumba, Natasha</code>. Write names as Surname, Given names.</td></tr>
+    <tr><th>File format</th><td>UTF-8 is preferred; files saved from Excel are also accepted. Commas or semicolons may separate columns.</td></tr>
+  </table>
+
   <h2>Source code and contact</h2>
   <p>The portal is open source:
     <%= link_to 'github.com/lightonphiri/code-datalab26-netd_aggregator', 'https://github.com/lightonphiri/code-datalab26-netd_aggregator', target: '_blank', rel: 'noopener' %>.
