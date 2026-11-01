@@ -10,6 +10,7 @@ module Admin
       @running = Harvester.running?
       @open_reports = ProblemReport.where(status: 'open').count
       @events = AdminEvent.includes(:user).order(created_at: :desc).limit(15)
+      @repo_check = Harvester.repository_check
     end
 
     def run

@@ -11,6 +11,7 @@ class PagesController < ApplicationController
   def about; end
   def faq; end
   def developers; end
+  def contribute; end
   def api_docs; end
 
   def credits

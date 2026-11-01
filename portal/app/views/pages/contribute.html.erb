@@ -1,0 +1,74 @@
+<% content_for(:page_title) { "For Institutions — Zambia National ETD Portal" } %>
+<div class="netd-page netd-faq">
+  <h1>For Institutions: adding your theses and dissertations</h1>
+  <p>This guide is for librarians and repository managers at Zambian higher education institutions. The portal aims to list the
+    postgraduate theses and dissertations of every institution with a Master's or Doctoral programme accredited by the Higher
+    Education Authority. Taking part costs nothing: the portal holds only the descriptions (metadata) and links to the full text,
+    which stays in your institution's repository or on your website.</p>
+
+  <h2>What the portal includes</h2>
+  <ul>
+    <li>Master's dissertations and theses, doctoral theses and Postgraduate Diploma reports. Undergraduate projects are left out.</li>
+    <li>For each one: title, author, year and degree level as a minimum; ideally also degree, supervisor(s), faculty or school,
+      department, abstract, keywords and a public link to the PDF.</li>
+    <li>Missing supervisor, degree and department details are filled from the PDF's title and approval pages where possible,
+      and are marked as "derived" on the record page.</li>
+  </ul>
+
+  <h2>Route 1: your institution has a repository (DSpace or similar)</h2>
+  <p>The portal harvests repositories automatically every night through OAI-PMH, the standard interface built into DSpace,
+    EPrints and most repository software. Please check the following, in this order:</p>
+  <ol>
+    <li><strong>The repository is reachable from outside your campus.</strong> Open it from a mobile phone on mobile data. A
+      repository that only works on the campus network, or that sits on an address such as <code>192.168.x.x</code> or
+      <code>localhost</code>, cannot be harvested; nor can one whose firewall answers outside visitors with "403 Forbidden".</li>
+    <li><strong>OAI-PMH is switched on.</strong> On DSpace 7 or later, opening
+      <code>https://&lt;your repository&gt;/server/oai/request?verb=Identify</code> should show your repository's name;
+      on DSpace 6 and earlier, <code>/oai/request?verb=Identify</code>.</li>
+    <li><strong>The OAI-PMH index is kept up to date.</strong> DSpace answers OAI-PMH from a separate index that is <em>not</em>
+      updated when items are added or moved unless a scheduled task does it. Ask your system administrator to schedule
+      <code>[dspace]/bin/dspace oai import</code> (for example nightly), and run <code>dspace oai import -c</code> once after
+      moving collections. If <code>?verb=ListRecords&amp;metadataPrefix=oai_dc</code> returns "No matches" or an error while
+      your repository shows items, the index needs rebuilding.</li>
+    <li><strong>Theses and dissertations are in their own collection(s)</strong>, separate from journal articles, books, past
+      papers and undergraduate projects, so the portal can harvest just those collections. One collection per school or
+      faculty is ideal: the portal uses the collection names to show the faculty.</li>
+    <li><strong>Each item has a public PDF</strong> (or at least the title and approval pages), so readers can reach the full
+      text and missing details can be filled.</li>
+    <li><strong>Useful fields are filled in</strong>, using qualified Dublin Core where your software allows:
+      <code>dc.contributor.advisor</code> (supervisor), <code>dc.type</code> (Thesis), and degree name and level
+      (<code>thesis.degree.name</code> and <code>thesis.degree.level</code>, or a description such as "A dissertation submitted
+      in partial fulfilment of the requirements for the degree of Master of …").</li>
+  </ol>
+  <p>Then send the repository's address to <a href="mailto:datalab@unza.zm">datalab@unza.zm</a>. We check the records,
+    agree with you which collections to include, and add the repository to the nightly harvest.</p>
+
+  <h2>Route 2: no repository yet — send a spreadsheet</h2>
+  <p>An institution without a repository, or whose repository cannot be harvested yet, can contribute a CSV file with one
+    row per thesis or dissertation.</p>
+  <ol>
+    <li>Download the <%= link_to 'CSV template', '/netd-etd-template.csv' %>. It opens in Excel, LibreOffice or Google Sheets
+      and has one example row; replace it with your own rows and keep the first row (the column names) unchanged.</li>
+    <li>Fill in at least <code>identifier</code> (your own unique number for the thesis, e.g. its accession or call number),
+      <code>title</code>, <code>author</code>, <code>year</code> and <code>degree_level</code> (<code>Masters</code>,
+      <code>Doctoral</code> or <code>Postgraduate Diploma</code>). Write names as "Surname, Given names" and separate several
+      authors, supervisors or keywords with <code>||</code>.</li>
+    <li>If the full text is online (for example on your website or in a shared Google Drive folder set to "Anyone with the
+      link"), put its link in <code>pdf_url</code>. Rows without a link are still listed, with the library as the place to
+      find the thesis.</li>
+    <li>Save as CSV (UTF-8) and email it to <a href="mailto:datalab@unza.zm">datalab@unza.zm</a>. Better still, keep it as a
+      Google Sheet and publish it to the web as CSV (File → Share → Publish to web → CSV): the portal then reads the latest
+      version every night, so you only maintain the sheet. Rows you delete are removed from the portal.</li>
+  </ol>
+  <p>Every file is checked before it is loaded, and you will get the list of any rows that need correcting. The full list of
+    columns is on <%= link_to 'Developer Resources', developers_path(anchor: 'csv') %>.</p>
+
+  <h2>After your records are added</h2>
+  <ul>
+    <li>Your institution appears under "Contributing institutions" on the home page, with its own filter and OAI-PMH set,
+      and its records are shared onwards through the portal's OAI-PMH interface and API.</li>
+    <li>Records are updated every night. Corrections are best made in your repository or sheet; the portal follows them.</li>
+    <li>Readers can report a problem with any record from its page, and we pass reports about metadata on to you.</li>
+  </ul>
+  <p>Questions: <a href="mailto:datalab@unza.zm">datalab@unza.zm</a>. The portal is run by the DataLab Research Group.</p>
+</div>

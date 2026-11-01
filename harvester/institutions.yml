@@ -12,28 +12,51 @@
 # name:   exactly as used by HEA (and as the `name` of the matching entry in sources.yml)
 # levels: postgraduate levels with accredited programmes
 # source: id in sources.yml when the institution is harvested
-# status: harvested (OAI-PMH, a fallback loader, or a CSV file: loader csv in sources.yml) | no-etd-collection | repository-unreachable | no-repository-known
+# status: harvested (OAI-PMH, a fallback loader, or a CSV file: loader csv in sources.yml) | no-etds-yet (ETD collection
+#         exists but holds no postgraduate theses) | no-etd-collection | repository-unreachable (not reachable from the
+#         portal's server, or OAI-PMH not usable) | no-repository-known
 # repository: public repository URL, when known
+# oai, etd_sets: OAI-PMH base URL and the sets holding ETDs; checked weekly by `netd.cli check-repositories` (FR-58)
+# checked, note: date of the last manual check and what was found (session 04 survey: November 1, 2026,
+#   starting from the ten DSpace repositories listed by Chisale (2024), SRS [R6], and probing likely host names)
 
 institutions:
   - {name: Africa Research University, levels: [Masters, PhD], status: no-repository-known}
   - {name: Berea Theological University, levels: [Masters], status: no-repository-known}
-  - {name: Cavendish University, levels: [Masters, PhD], status: no-repository-known}
+  - {name: Cavendish University, levels: [Masters, PhD], status: repository-unreachable,
+     repository: "https://dspace.cavendishza.org/", checked: "2026-11-01",
+     note: "DSpace (Chisale 2024); every path answers 403 Forbidden to outside visitors"}
   - {name: Central Africa Baptist University, levels: [Masters], status: no-repository-known}
-  - {name: Chalimbana University, levels: [Masters], status: no-repository-known}
-  - {name: Chreso University, levels: [Masters], status: no-repository-known}
-  - {name: Copperbelt University, levels: [Masters, PhD], status: no-repository-known}
+  - {name: Chalimbana University, levels: [Masters], status: repository-unreachable,
+     repository: "http://dspace.chau.ac.zm:8080/xmlui/", oai: "http://dspace.chau.ac.zm:8080/oai/request", checked: "2026-11-01",
+     note: "DSpace linked from chau.ac.zm; connections from the portal server time out. Chisale (2024) found 10 ETDs in October 2022"}
+  - {name: Chreso University, levels: [Masters], status: no-repository-known, checked: "2026-11-01",
+     note: "Website page Research Reports/Thesis (https://chresouniversity.edu.zm/research-reports-thesis-3/) has no list; CSV route"}
+  - {name: Copperbelt University, levels: [Masters, PhD], status: repository-unreachable,
+     repository: "https://dspace.cbu.ac.zm/home", oai: "https://dspace.cbu.ac.zm/server/oai/request", checked: "2026-11-01",
+     note: "DSpace 7 linked from the CBU Library site; user interface 502 Bad Gateway, REST API and OAI-PMH 404"}
   - {name: Copperstone University, levels: [Masters], status: no-repository-known}
   - {name: DMI-St. Eugene University, levels: [Masters, PhD], status: no-repository-known}
-  - {name: Eden University, levels: [Masters], status: no-repository-known}
+  - {name: Eden University, levels: [Masters], status: no-etds-yet,
+     repository: "https://dspace.edenuniversity.edu.zm/home", oai: "https://dspace.edenuniversity.edu.zm/server/oai/request",
+     etd_sets: [com_123456789_8], checked: "2026-11-01",
+     note: "DSpace 7 with OAI-PMH, set up October 31, 2026; the Dissertation and Thesis community holds one journal article"}
   - {name: Gideon Robert University, levels: [Masters, PhD], status: no-repository-known}
-  - {name: Information and Communication University, levels: [Masters], status: no-repository-known}
+  - {name: Information and Communication University, levels: [Masters], status: no-repository-known, checked: "2026-11-01",
+     note: "Chisale (2024) lists a DSpace repository; no public address found"}
   - {name: Justo Mwale University, levels: [Masters], status: no-repository-known}
-  - {name: Kwame Nkrumah University, levels: [Masters, PhD], status: no-repository-known}
-  - {name: Levy Mwanawasa Medical University, levels: [Masters], status: no-repository-known}
-  - {name: Lusaka Apex Medical University, levels: [Masters], status: no-repository-known}
+  - {name: Kwame Nkrumah University, levels: [Masters, PhD], status: no-repository-known, checked: "2026-11-01",
+     note: "Chisale (2024) lists a DSpace repository; no public address found"}
+  - {name: Levy Mwanawasa Medical University, levels: [Masters], status: repository-unreachable,
+     repository: "https://dspace.lmmu.ac.zm/", checked: "2026-11-01",
+     note: "dspace.lmmu.ac.zm resolves but does not answer from the portal server"}
+  - {name: Lusaka Apex Medical University, levels: [Masters], status: repository-unreachable,
+     repository: "http://41.173.41.146:8080/jspui/", oai: "http://41.173.41.146:8080/oai/request",
+     etd_sets: [com_123456789_2890], checked: "2026-11-01",
+     note: "DSpace (JSPUI) linked from lamu.edu.zm. OAI-PMH index stale and corrupt: 2,727 identifiers of the form oai:oai:mydspace.org::..., GetRecord fails for 84 of 88 tried, ListRecords HTTP 500, sets empty. Theses and Dissertations holds 2 MPH theses. Needs dspace oai import -c"}
   - {name: Mukuba University, levels: [Masters], status: no-etd-collection,
-     repository: "http://elibrary.mukuba.edu.zm:8080/jspui/"}
+     repository: "http://elibrary.mukuba.edu.zm:8080/jspui/", oai: "http://elibrary.mukuba.edu.zm:8080/oai/request", checked: "2026-11-01",
+     note: "DSpace 6 (JSPUI); collections hold reading resources, videos and books, no theses; OAI-PMH index empty"}
   - {name: Mulungushi University, levels: [Masters, PhD], status: harvested, source: mu,
      repository: "https://space.mu.ac.zm/xmlui/handle/123456789/56"}
   - {name: Northrise University, levels: [Masters], status: no-repository-known}
@@ -57,7 +80,10 @@ institutions:
   - {name: Zambian Royal Medical University, levels: [Masters], status: no-repository-known}
 
 # Repositories checked but not shown above (no HEA-accredited postgraduate programme found,
-# and no ETD collection in the repository on October 31, 2026):
+# and no ETD collection in the repository on October 31, 2026; re-checked November 1, 2026):
 other_repositories:
-  - {name: Kapasa Makasa University, repository: "https://repository.kmu.ac.zm/home", status: no-etd-collection}
-  - {name: National Institute of Public Administration (NIPA), repository: "https://dspace.nipa.ac.zm/home", status: no-etd-collection}
+  - {name: Kapasa Makasa University, repository: "https://repository.kmu.ac.zm/home", status: no-etd-collection,
+     oai: "https://repository.kmu.ac.zm/server/oai/request", checked: "2026-11-01",
+     note: "Undergraduate Project Reports collections only (out of scope)"}
+  - {name: National Institute of Public Administration (NIPA), repository: "https://dspace.nipa.ac.zm/home", status: no-etd-collection,
+     oai: "https://dspace.nipa.ac.zm/server/oai/request", checked: "2026-11-01"}

@@ -40,6 +40,7 @@ Rails.application.routes.draw do
   get "about", to: "pages#about", as: :about
   get "faq", to: "pages#faq", as: :faq
   get "developers", to: "pages#developers", as: :developers
+  get "contribute", to: "pages#contribute", as: :contribute   # guide for institutions (FR-59)
   get "credits", to: "pages#credits", as: :credits
   post "report-problem", to: "problem_reports#create", as: :problem_reports
   concern :searchable, Blacklight::Routes::Searchable.new

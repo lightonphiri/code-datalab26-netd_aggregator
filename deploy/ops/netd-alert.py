@@ -35,6 +35,21 @@ def sh(*cmd):
         return "(%s)" % ex
 
 
+def repo_check():
+    """Summary of the weekly repository check (netd.cli check-repositories, SRS FR-58)."""
+    try:
+        d = json.load(open("/opt/netd/logs/repository-check.json"))
+    except Exception as ex:  # noqa: BLE001
+        return "(no repository check: %s)" % ex
+    rows = d.get("repositories", [])
+    up = [r["name"] for r in rows if r.get("reachable")]
+    lines = ["Checked %s: %d of %d not-yet-harvested repositories reachable." % (d.get("checked_at"), len(up), len(rows))]
+    lines += ["CHANGE: " + c for c in d.get("changes", [])] or ["No changes since the previous check."]
+    lines += ["  %s: OAI-PMH records %s, in ETD sets %s" % (r["name"], r.get("records"), r.get("etd_records"))
+              for r in rows if r.get("oai_ok")]
+    return "\n".join(lines)
+
+
 def send(subject, body):
     e = env()
     m = EmailMessage()
@@ -65,6 +80,7 @@ def main():
             "Services:", sh("systemctl", "is-active", "netd-solr", "netd-portal", "apache2"), "",
             "Latest harvest check:", sh("journalctl", "-u", "netd-harvest", "-n", "8", "--no-pager", "-o", "cat"), "",
             "Backups (last 7 lines of /var/log/netd-backup.log):", sh("tail", "-7", "/var/log/netd-backup.log"), "",
+            "Institution repositories (weekly check):", repo_check(), "",
             "Disk: " + sh("df", "-h", "/").splitlines()[-1],
             "OS: " + sh("lsb_release", "-ds"),
         ])

@@ -5,8 +5,9 @@
 class InstitutionRegistry
   STATUS_LABELS = {
     'harvested' => 'Harvested',
+    'no-etds-yet' => 'Repository has no theses yet',
     'no-etd-collection' => 'Repository has no ETD collection',
-    'repository-unreachable' => 'Repository not reachable over OAI-PMH',
+    'repository-unreachable' => 'Repository not reachable or not harvestable',
     'no-repository-known' => 'No public repository known'
   }.freeze
 

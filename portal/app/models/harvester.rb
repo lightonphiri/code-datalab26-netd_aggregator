@@ -28,6 +28,13 @@ class Harvester
     end
 
     def source(id) = sources.find { |s| s['id'] == id }
+
+    # Latest weekly repository check (netd.cli check-repositories, FR-58), or nil.
+    def repository_check
+      JSON.parse(File.read(File.join(LOGS, 'repository-check.json')))
+    rescue Errno::ENOENT, JSON::ParserError
+      nil
+    end
     def csv_sources = sources.select { |s| s['loader'] == 'csv' }
 
     def store

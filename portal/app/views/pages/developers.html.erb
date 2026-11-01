@@ -62,13 +62,13 @@
   </table>
   <pre class="netd-code">https://netd.ac.zm/oai?verb=ListRecords&amp;metadataPrefix=etdms&amp;set=inst:unza</pre>
 
-  <h2>Contributing records by CSV</h2>
+  <h2 id="csv">Contributing records by CSV</h2>
   <p>An institution without a repository that supports OAI-PMH can contribute its theses and dissertations as a CSV file,
     one row per thesis or dissertation. Start from the
     <%= link_to 'CSV template', '/netd-etd-template.csv' %>, which has one example row, and send the file to
     <a href="mailto:datalab@unza.zm">datalab@unza.zm</a>. You can also publish it at a stable link, for example a Google
     Sheet published to the web as CSV, so that the portal reads the latest version every night. Records that are removed
-    from the file are removed from the portal.</p>
+    from the file are removed from the portal. Librarians: see the step-by-step <%= link_to 'guide for institutions', contribute_path %>.</p>
   <table class="netd-about netd-api">
     <tr><th>Required columns</th><td><code>identifier</code> (unique within your institution; letters, digits, <code>-</code> and <code>_</code>),
       <code>title</code>, <code>author</code>, <code>year</code> (four digits), <code>degree_level</code> (<code>Masters</code>, <code>Doctoral</code> or <code>Postgraduate Diploma</code>)</td></tr>

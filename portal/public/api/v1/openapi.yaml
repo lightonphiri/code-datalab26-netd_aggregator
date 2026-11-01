@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Zambia National ETD Portal REST API
-  version: 1.2.0
+  version: 1.3.0
   description: |
     Read-only access to the theses and dissertations aggregated by the Zambia National ETD Portal
     (https://netd.ac.zm) from Zambian higher education institutions: postgraduate diploma, master's and doctoral work. No key is needed. Responses are JSON
@@ -259,7 +259,7 @@ components:
         short_name: {type: string, nullable: true}
         postgraduate_levels: {type: array, items: {type: string}}
         records: {type: integer}
-        status: {type: string, enum: [harvested, no-etd-collection, repository-unreachable, no-repository-known]}
+        status: {type: string, enum: [harvested, no-etds-yet, no-etd-collection, repository-unreachable, no-repository-known], description: "no-etds-yet added in API 1.3.0"}
         repository: {type: string, nullable: true}
         harvest_method: {type: string, nullable: true, enum: [oai-pmh, dspace7-rest, dspace6-mets, csv, null]}
         last_harvest: {type: string, nullable: true, format: date-time}

@@ -28,6 +28,31 @@
   </table>
   <p class="netd-admin-help">The nightly harvest of all sources runs at 04:30 (Lusaka time). "Run now" harvests one source;
     only one harvest runs at a time.</p>
+  <h2>Institutions not yet harvested</h2>
+  <% if @repo_check %>
+    <p class="netd-admin-help">Weekly check of the repositories in <code>harvester/institutions.yml</code> (FR-58), last run
+      <%= admin_time(Time.parse(@repo_check['checked_at']).to_i) rescue @repo_check['checked_at'] %>.
+      <% if @repo_check['changes'].present? %><strong>Changes since the previous check:</strong> <%= @repo_check['changes'].join('; ') %><% end %></p>
+    <table class="table table-sm netd-admin-table">
+      <thead><tr><th>Institution</th><th>Registry status</th><th>Repository</th><th>Reachable</th><th class="text-end">OAI-PMH records</th><th class="text-end">In ETD sets</th></tr></thead>
+      <tbody>
+      <% @repo_check['repositories'].each do |r| %>
+        <tr>
+          <td><%= r['name'] %></td>
+          <td><%= InstitutionRegistry::STATUS_LABELS[r['status']] || r['status'] %></td>
+          <td><%= link_to (r['repository'] || r['oai']).to_s.truncate(50), r['repository'] || r['oai'], target: '_blank', rel: 'noopener' %></td>
+          <td><%= r['reachable'] ? tag.span('yes', class: 'badge text-bg-success') : tag.span('no', class: 'badge text-bg-danger') %></td>
+          <td class="text-end"><%= r['records'] || '–' %></td>
+          <td class="text-end"><%= r['etd_sets'].present? ? (r['etd_records'] || '–') : '' %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="netd-admin-help">No repository check yet (<code>netd.cli check-repositories</code> runs weekly).</p>
+  <% end %>
+  <p class="netd-admin-help">Institutions without a repository can contribute by CSV (Upload CSV) — see the
+    <%= link_to 'guide for institutions', contribute_path %>.</p>
   <h2>Recent activity</h2>
   <%= render 'admin/events/table', events: @events %>
   <p><%= link_to 'Full activity log', admin_events_path %></p>

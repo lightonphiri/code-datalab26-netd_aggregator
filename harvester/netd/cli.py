@@ -8,6 +8,7 @@
   report                                        field completeness per institution
   csv-check FILE                                list problems in an HEI's CSV file before it is loaded (FR-10)
   check    [--max-age-hours H]                  health check after the scheduled run, incl. OAI-PMH Identify (exit 1 = problem)
+  check-repositories [--out FILE]               weekly check of the not-yet-harvested repositories in institutions.yml (FR-58)
 
 Metadata filling (SRS FR-14, FR-48 to FR-52):
   extract-text [--source ID] [--limit N] [--retry-failed]   cache text of the first pages of each PDF
@@ -180,7 +181,7 @@ def do_check(store, srcs, solr, max_age_hours):
 
 def main(argv=None):
     p = argparse.ArgumentParser(prog="netd")
-    p.add_argument("command", choices=["harvest", "process", "index", "run", "reprocess", "report", "check", "csv-check",
+    p.add_argument("command", choices=["harvest", "process", "index", "run", "reprocess", "report", "check", "csv-check", "check-repositories",
                                        "extract-text", "ocr-text", "text-report", "predict", "load-predictions",
                                        "export-predictions", "correct", "uncorrect", "gold-sample", "evaluate"])
     p.add_argument("args", nargs="*", help="file (csv-check, load/export-predictions, gold-sample, evaluate) or "
@@ -196,6 +197,8 @@ def main(argv=None):
     p.add_argument("--full", action="store_true")
     p.add_argument("--limit", type=int)
     p.add_argument("--max-age-hours", type=float, default=30)
+    p.add_argument("--out", default=os.path.join(os.environ.get("NETD_LOGS", os.path.join(HERE, "..", "logs")),
+                                                 "repository-check.json"))
     p.add_argument("--db", default=os.environ.get("NETD_DB", os.path.join(HERE, "netd.sqlite3")))
     p.add_argument("--solr", default=os.environ.get("NETD_SOLR", "http://127.0.0.1:8983/solr/netd"))
     a = p.parse_args(argv)
@@ -205,6 +208,10 @@ def main(argv=None):
         if not a.file:
             sys.exit("usage: netd.cli csv-check FILE")
         sys.exit(1 if check_file(a.file) else 0)
+    if a.command == "check-repositories":
+        from .repocheck import run as check_repositories
+        check_repositories(os.environ.get("NETD_INSTITUTIONS", os.path.join(HERE, "institutions.yml")), a.out)
+        return
     scfg = cfg_load("sources.yml")
     sources = scfg.get("sources", [])
     # sources added from the admin panel (CSV institutions), kept on the server only

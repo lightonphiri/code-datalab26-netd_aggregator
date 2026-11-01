@@ -61,6 +61,7 @@
           <li><span><%= i[:name] %><small><%= InstitutionRegistry::STATUS_LABELS[i[:status]] %></small></span><span>0</span></li>
         <% end %>
       </ul>
+      <p class="netd-note">Is your institution listed with 0? <%= link_to 'Here is how to add its theses and dissertations', contribute_path %>.</p>
     </div>
   </div>
 </div>
