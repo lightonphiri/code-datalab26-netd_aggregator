@@ -135,6 +135,12 @@ Give the one-time password to the person directly (not by email). They must chan
 Restarting the portal (`systemctl restart netd-portal`, or a deployment) stops a harvest that was started from the panel; start it again, or leave it to the nightly run.
 
 
+## Onboarding an institution with a repository
+
+1. Look at the admin dashboard's "Institutions not yet harvested" table (or `sudo -u netd .venv/bin/python -m netd.cli check-repositories` in `/opt/netd/harvester`; the same check runs every Monday before the weekly email, which lists any changes).
+2. When a repository is reachable and its ETD sets list records: check `?verb=ListSets`, a sample of `?verb=ListRecords&metadataPrefix=dim&set=<set>` (degree level, postgraduate only, PDF links via `ore`), then add a source to `harvester/sources.yml` with `sets` limited to the ETD collections and `name` exactly as in `institutions.yml`; set `status: harvested` and `source:` there; release; `netd.cli run --source <id>` under `flock -w 7200 run.lock`. Record the result in the SRS verification table.
+3. Common repository-side problems (seen November 1, 2026) and what to ask the institution: OAI-PMH answers "noRecordsMatch" or HTTP 500 while the repository shows items → run `[dspace]/bin/dspace oai import -c` and schedule `dspace oai import` nightly; 403 or no answer from outside the campus → open the repository to the internet; theses mixed with articles and undergraduate projects → move them to dedicated collections. The public guide `https://netd.ac.zm/contribute` says the same for librarians.
+
 ## Adding an institution that sends a CSV file
 
 Normally this is done in the admin panel: **Upload CSV**, choose the institution (or a new HEA institution and its short name), check the file, then load it. The panel registers a new institution in `harvester/sources.local.yml` and keeps the file in `harvester/uploads/<id>/records.csv` (earlier files in `archive/`). The steps below do the same from the command line.

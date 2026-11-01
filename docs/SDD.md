@@ -4,8 +4,8 @@
 | Item | Value |
 |---|---|
 | Document | SDD, structured per IEEE 1016-2009 (design viewpoints) |
-| Version | 0.24 |
-| Date | October 31, 2026 |
+| Version | 0.25 |
+| Date | November 1, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Related | `docs/SRS.md` (requirement IDs referenced below) |
 
@@ -15,6 +15,7 @@
 | 0.1 | October 30, 2026 | Initial design: harvester, raw/canonical stores, crosswalk, enrichers, Blacklight portal, deployment |
 | 0.2 | October 30, 2026 | Discipline/degree derivation; Solr analysers; URL-safe record ids; HTTPS |
 | 0.24 | November 1, 2026 | Fields of study (FR-54 to FR-57): model `openalex-fos` (`netd/ml/models/fieldofstudy.py`, data in `netd/ml/models/data/`), batch prediction in `predict.run`, per-field display thresholds in the overlay, Solr fields `fos_domain_ssim`, `fos_field_ssim`, `fos_subfield_ssim`, `fos_ssm`, `fos_tsim`, facets and record page, API `fields_of_study` (1.2.0), OAI-PMH subject scheme, training scripts in `harvester/tools/` |
+| 0.25 | November 1, 2026 | Repository watch (FR-58): `netd/repocheck.py`, `netd.cli check-repositories`, result in `/opt/netd/logs/repository-check.json`, run by `netd-weekly.service` (ExecStartPre) before the weekly email, admin dashboard section via `Harvester.repository_check`; registry keys `oai`, `etd_sets`, `checked`, `note` and status `no-etds-yet` (API 1.3.0); `/contribute` page (FR-59) |
 | 0.23 | November 1, 2026 | Metadata filling (FR-14, FR-48 to FR-53): package `netd.ml` (text cache with OCR, prediction cache, overlay, predict runner, evaluation, baseline model `titlepage-rules`); overlay step in processing; `derived_ssm` in Solr; record-page badges; API `derived` (1.1.0); admin record corrections and degree-level review; `netd.cli reprocess`; store in WAL mode (NFR-14); backup reads the store as `netd`; OCR packages on the server; documented walkthrough notebook `notebooks/netd26-03-ml_metadata_filling-walkthrough.ipynb` (runs every step on a sample from the public API, locally or in Colab) |
 | 0.22 | November 1, 2026 | Postgraduate scope (FR-47): `scope.degree_levels` and per-source `exclude_records` in `sources.yml`; `cli.exclusion()` in processing; table `excluded`; `index.ids()` so indexing removes from Solr every document the store no longer holds; Postgraduate Diploma in `DEGREE_PAT`, repository-supplied levels normalised; level set `level:postgraduate-diploma` and API level `postgraduate_diploma` |
 | 0.21 | November 1, 2026 | REST API v1 (§5.3, EI-6, FR-42 to FR-46): `Api::V1::` controllers on `ActionController::API`, `ApiRecord` representation, OpenAPI 3 specification `public/api/v1/openapi.yaml`, interactive reference `/developers/api`, export files in `portal/tmp/api_export/` |
@@ -133,7 +134,8 @@ flowchart LR
 | `netd.mets` | Fallback loader: DSpace 6 XMLUI collection browse pages → item handles → `/metadata/handle/<h>/mets.xml` → embedded `dim` stored in the raw layer | FR-10 |
 | `netd.csvload` | Fallback loader for HEIs without a repository: CSV from `csv_url` (fetched each run, at most 50 MB) or `csv_path` (file or folder; default `/opt/netd/harvester/uploads/<id>/`). Delimiter sniffed (`,` `;` tab); UTF-8 or cp1252. Valid rows become `dim` XML in the raw layer with oai_id `csv:<id>:<identifier>`; `pdf_url` becomes a bitstream; rows missing from the CSV are marked deleted; invalid or duplicate rows are skipped and logged. A source with no valid rows fails the run instead of deleting its records | FR-10 |
 | `netd.cli` | `harvest`, `process`, `index`, `run`, `report` | FR-9, FR-27 |
-| `institutions.yml` + `InstitutionRegistry` | All HEA-accredited postgraduate HEIs with harvest status | FR-29 |
+| `institutions.yml` + `InstitutionRegistry` | All HEA-accredited postgraduate HEIs with harvest status; for those not yet harvested, the repository's `oai` endpoint, `etd_sets`, last manual check and a note | FR-29 |
+| `netd/repocheck.py` (`check-repositories`) | Weekly check of not-yet-harvested repositories: page status, OAI-PMH Identify, `ListIdentifiers` counts overall and per ETD set (one request at a time, 30–90 s timeouts); writes `logs/repository-check.json` with changes since the previous run; read by the admin dashboard and `netd-alert.py --weekly` | FR-58 |
 | `InstitutionFacetComponent` | Institution facet listing registry institutions with no records as 0 (hidden once an institution is selected) | FR-29 |
 | `NetdHeaderComponent` | Group bar, wordmark, search box, link row (About, Explore, Master's, PhD) | EI-5 |
 | Home page (`catalog/_home_text`) | Intro line; Explore Master's/PhD cards; stats at a glance; contributing institutions with the HEA list behind a toggle | FR-26, FR-30, FR-33 |
