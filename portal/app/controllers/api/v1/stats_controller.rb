@@ -29,7 +29,7 @@ module Api
               'completeness' => COMPLETENESS.keys.to_h { |f| [f, (100.0 * (filled[f][id] || 0) / n).round(1)] } }
           end,
           'by_degree_level' => { 'masters' => levels['Masters'] || 0, 'doctoral' => levels['Doctoral'] || 0,
-                                 'unknown' => total - (levels['Masters'] || 0) - (levels['Doctoral'] || 0) },
+                                 'bachelors' => levels['Bachelors'] || 0, 'unknown' => total - levels.values.sum },
           'by_year' => years.sort_by { |y, _| -y.to_i }.map { |y, n| { 'year' => y.to_i, 'records' => n } },
           'completeness' => COMPLETENESS.keys.to_h { |f| [f, total.zero? ? 0 : (100.0 * filled[f].values.sum / total).round(1)] },
           'generated_at' => Time.now.utc.iso8601
