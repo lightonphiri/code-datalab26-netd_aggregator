@@ -1,0 +1,7 @@
+<% content_for(:page_title) { 'Activity log · Admin' } %>
+<div class="netd-admin">
+  <%= render 'admin/nav' %>
+  <h1>Activity log</h1>
+  <p class="netd-admin-help">Every sign-in (including failed attempts) and every change made in the admin panel; the latest 500.</p>
+  <%= render 'admin/events/table', events: @events %>
+</div>

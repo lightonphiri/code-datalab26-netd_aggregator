@@ -1,0 +1,32 @@
+<% content_for(:page_title) { "#{@source['name']} · Admin" } %>
+<div class="netd-admin">
+  <%= render 'admin/nav' %>
+  <h1><%= @source['name'] %></h1>
+  <table class="netd-about">
+    <tr><th>Source id</th><td><code><%= @source['id'] %></code><%= ' (added from the admin panel)' if @source['local'] %></td></tr>
+    <tr><th>Loader</th><td><%= @source['loader'] || 'OAI-PMH' %></td></tr>
+    <% if @source['base_url'] %><tr><th>OAI-PMH base URL</th><td><code><%= @source['base_url'] %></code></td></tr><% end %>
+    <% if @source['csv_url'] || @source['csv_path'] %><tr><th>CSV</th><td><code><%= @source['csv_url'] || @source['csv_path'] %></code></td></tr><% end %>
+  </table>
+  <p>
+    <%= button_to 'Run now', admin_run_source_path(@source['id']), class: 'btn btn-outline-primary', disabled: @running, form_class: 'd-inline' %>
+    <% if @source['loader'] == 'csv' %><%= link_to 'Upload a new CSV file', new_admin_csv_upload_path(source_id: @source['id']), class: 'btn btn-outline-secondary' %><% end %>
+    <% if @running %><span class="badge text-bg-warning">A harvest is running now</span><% end %>
+  </p>
+  <h2>Recent harvests</h2>
+  <table class="table table-sm netd-admin-table">
+    <thead><tr><th>Started</th><th>Finished</th><th>Status</th><th class="text-end">Records</th><th class="text-end">Deleted</th><th>Message</th></tr></thead>
+    <tbody>
+    <% @runs.each do |r| %>
+      <tr><td><%= admin_time(r['started_at']) %></td><td><%= admin_time(r['finished_at']) %></td><td><%= run_badge(r['status']) %></td>
+        <td class="text-end"><%= number_with_delimiter(r['records'].to_i) %></td><td class="text-end"><%= r['deleted'].to_i %></td>
+        <td><small><%= r['message'] %></small></td></tr>
+    <% end %>
+    <% if @runs.empty? %><tr><td colspan="6">Not harvested yet.</td></tr><% end %>
+    </tbody>
+  </table>
+  <% if @log %>
+    <h2>Output of the last run started here</h2>
+    <pre class="netd-code netd-admin-log"><%= @log %></pre>
+  <% end %>
+</div>

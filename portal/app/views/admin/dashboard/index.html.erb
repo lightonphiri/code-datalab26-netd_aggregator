@@ -1,0 +1,34 @@
+<% content_for(:page_title) { 'Dashboard · Admin' } %>
+<div class="netd-admin">
+  <%= render 'admin/nav' %>
+  <h1>Dashboard</h1>
+  <% if @status[:error] %><div class="alert alert-danger">Staging store not readable: <%= @status[:error] %></div><% end %>
+  <p>
+    <%= @running ? tag.span('A harvest is running now', class: 'badge text-bg-warning') : tag.span('No harvest running', class: 'badge text-bg-light') %>
+    · Records in the search index: <strong><%= number_with_delimiter(@indexed.values.sum) %></strong>
+    · <%= link_to pluralize(@open_reports, 'open problem report'), admin_problem_reports_path %>
+  </p>
+  <h2>Sources</h2>
+  <table class="table table-sm netd-admin-table">
+    <thead><tr><th>Source</th><th>Loader</th><th>Last harvest</th><th>Status</th><th class="text-end">In store</th><th class="text-end">Indexed</th><th></th></tr></thead>
+    <tbody>
+    <% @sources.each do |s| run = @status[:runs][s['id']] %>
+      <tr>
+        <td><%= link_to s['name'], admin_source_path(s['id']) %> <small class="text-muted"><%= s['short_name'] %></small></td>
+        <td><%= s['loader'] || 'oai-pmh' %></td>
+        <td><%= admin_time(run && run['started_at']) %></td>
+        <td><%= run_badge(run && run['status']) %> <small class="text-muted"><%= run && run['message'].to_s.truncate(80) %></small></td>
+        <td class="text-end"><%= number_with_delimiter(@status[:counts][s['id']] || 0) %></td>
+        <td class="text-end"><%= number_with_delimiter(@indexed[s['id']] || 0) %></td>
+        <td class="text-end"><%= button_to 'Run now', admin_run_source_path(s['id']), class: 'btn btn-sm btn-outline-primary', disabled: @running,
+                                 form: { data: { turbo_confirm: "Harvest #{s['name']} now?" } } %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  <p class="netd-admin-help">The nightly harvest of all sources runs at 04:30 (Lusaka time). "Run now" harvests one source;
+    only one harvest runs at a time.</p>
+  <h2>Recent activity</h2>
+  <%= render 'admin/events/table', events: @events %>
+  <p><%= link_to 'Full activity log', admin_events_path %></p>
+</div>

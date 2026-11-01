@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SDD, structured per IEEE 1016-2009 (design viewpoints) |
-| Version | 0.19 |
+| Version | 0.20 |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Related | `docs/SRS.md` (requirement IDs referenced below) |
@@ -14,6 +14,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial design: harvester, raw/canonical stores, crosswalk, enrichers, Blacklight portal, deployment |
 | 0.2 | October 30, 2026 | Discipline/degree derivation; Solr analysers; URL-safe record ids; HTTPS |
+| 0.20 | November 1, 2026 | Admin panel (§5.2, FR-36 to FR-41, NFR-13): `Admin::` controllers, `AdminAuthentication`, `Harvester` model, portal tables `users`, `sessions`, `admin_events` and problem-report resolution columns (§4.1); `harvester/sources.local.yml`; shared `run.lock`; `netd-user.sh` account management; backups include CSV files |
 | 0.19 | November 1, 2026 | `netd.csvload` CSV loader (FR-10), `netd.cli csv-check`, template `portal/public/netd-etd-template.csv`, `deploy.sh` creates `harvester/uploads/` |
 | 0.18 | October 31, 2026 | OAI-PMH data provider (§5.1, EI-4): `OaiController` at `/oai`, read from Solr only; `records.updated_at` now changes only when a record's content changes and is indexed as `updated_dtsi` (datestamp); `netd.cli check` asserts that `Identify` answers; conformance test `tests/oai_conformance.py` |
 | 0.17 | October 31, 2026 | Operations (§8): `netd.cli check`; `deploy/ops/` backup, Drive upload, alert and probe scripts; `netd-backup`, `netd-probe`, `netd-weekly` timers and `netd-alert@` template with `OnFailure=` on every unit |
@@ -29,7 +30,7 @@
 
 ## 1. Introduction
 ### 1.1 Purpose and scope
-This SDD describes how NETD v2 meets the SRS: the system's context, components, information model, interfaces, interaction, state, deployment, and the main design decisions. It covers release 0.19.
+This SDD describes how NETD v2 meets the SRS: the system's context, components, information model, interfaces, interaction, state, deployment, and the main design decisions. It covers release 0.20.
 
 ### 1.2 Stakeholders and concerns
 | Stakeholder | Concerns | Viewpoints |
@@ -180,6 +181,52 @@ erDiagram
   HARVEST_RUNS }o--|| RAW_RECORDS : "writes"
 ```
 
+Portal database (`portal/storage/production.sqlite3`, Rails migrations), besides Blacklight's `searches` and `bookmarks`:
+```mermaid
+erDiagram
+  USERS {
+    int id PK
+    string email_address UK
+    string name
+    string password_digest "bcrypt"
+    bool active
+    bool must_change_password
+    datetime last_sign_in_at
+  }
+  SESSIONS {
+    int id PK
+    int user_id FK
+    string ip_address
+    string user_agent
+    datetime created_at
+    datetime updated_at "last activity"
+  }
+  ADMIN_EVENTS {
+    int id PK
+    int user_id FK "null for command-line actions and failed sign-ins"
+    string action
+    string subject
+    text detail
+    string ip_address
+    datetime created_at
+  }
+  PROBLEM_REPORTS {
+    int id PK
+    string problem
+    text message
+    string email
+    string record_url
+    bool emailed
+    string status "open | resolved"
+    datetime resolved_at
+    int resolved_by_id FK
+    text admin_note
+  }
+  USERS ||--o{ SESSIONS : "signs in with"
+  USERS ||--o{ ADMIN_EVENTS : "performs"
+  USERS ||--o{ PROBLEM_REPORTS : "resolves"
+```
+
 ### 4.2 Canonical record (class view)
 ```mermaid
 classDiagram
@@ -254,6 +301,8 @@ classDiagram
 | Solr | JSON `POST /solr/netd/update`; Blacklight queries `/select` (edismax, ETD `qf`) |
 | HTTP | `GET /` (search), `/catalog/<id>` (record), `/catalog.json?q=…` (JSON) |
 | OAI-PMH | `GET`/`POST /oai` (§5.1) |
+| Admin panel | `/admin` (§5.2), signed-in portal team only |
+| Accounts | `deploy/ops/netd-user.sh add|reset|disable|enable|list` (root on the server; Rake tasks `netd:user:*`) |
 
 ### 5.1 OAI-PMH data provider (EI-4)
 `OaiController` (`portal/app/controllers/oai_controller.rb`) answers OAI-PMH 2.0 at https://netd.ac.zm/oai. It reads Solr only, so the harvester's SQLite store is never touched by web requests, and it needs no new service.
@@ -272,6 +321,84 @@ classDiagram
 | Verification | `tests/oai_conformance.py` (Sickle and lxml): validates responses against the OAI-PMH and `oai_dc` schemas, checks ETD-MS element order, harvests every record in each format through resumption tokens, and exercises sets, dates, `GetRecord` and every error condition |
 
 ---
+
+### 5.2 Admin panel (FR-36 to FR-41)
+The panel is part of the Rails portal (no new service). Every admin controller inherits from `Admin::BaseController`, which includes `AdminAuthentication`; public controllers never do.
+
+| Page | Route | Controller | Requirement |
+|---|---|---|---|
+| Sign in / out | `GET`/`POST /admin/sign-in`, `DELETE /admin/sign-out` | `Admin::SessionsController` (rate-limited) | FR-36 |
+| Change password | `/admin/password/edit` | `Admin::PasswordsController` (forced while `must_change_password`) | FR-36 |
+| Dashboard | `/admin` | `Admin::DashboardController#index` | FR-37 |
+| Source page, Run now | `/admin/sources/<id>`, `POST /admin/sources/<id>/run` | `Admin::DashboardController#source`, `#run` | FR-37 |
+| Problem reports | `/admin/reports`, `/admin/reports/<id>` | `Admin::ProblemReportsController` | FR-38 |
+| Upload CSV (check, then load) | `/admin/csv/new`, `POST /admin/csv`, `POST /admin/csv/load` | `Admin::CsvUploadsController` | FR-39, FR-40 |
+| Activity log | `/admin/log` | `Admin::EventsController` | FR-41 |
+
+```mermaid
+classDiagram
+  class AdminBaseController {
+    +require_admin()
+    +require_password_change()
+    +no_store()
+    +audit(action, subject, detail)
+  }
+  class AdminAuthentication {
+    <<concern>>
+    +resume_session()
+    +start_session(user)
+    +end_session()
+  }
+  class Harvester {
+    <<model>>
+    +sources() sources.yml + sources.local.yml
+    +status() runs and counts (read-only SQLite)
+    +running() bool (run.lock)
+    +csv_check(path) netd.cli csv-check
+    +start_run(id) netd.cli run --source, under run.lock
+    +install_csv(id, path)
+    +add_csv_source(id, name, short_name)
+  }
+  class User { +has_secure_password }
+  class Session { +expired() }
+  class AdminEvent { +record() }
+  AdminBaseController ..|> AdminAuthentication
+  AdminAuthentication --> Session
+  Session --> User
+  AdminBaseController --> AdminEvent
+  AdminBaseController <|-- DashboardController
+  AdminBaseController <|-- CsvUploadsController
+  AdminBaseController <|-- ProblemReportsController
+  DashboardController --> Harvester
+  CsvUploadsController --> Harvester
+```
+
+Sign-in and session (FR-36, NFR-13): `SessionsController#create` checks the bcrypt hash, creates a `sessions` row and sets the signed, HTTP-only, `Secure`, `SameSite=Lax` cookie `netd_admin_session` holding its id. Each request looks the session up, rejects it if the account is disabled or the session has been idle for 2 hours or is 12 hours old, and refreshes its `updated_at` at most once a minute. A one-time password (from `netd-user.sh add` or `reset`) sends the user to the password page until it is changed; changing it signs out the account's other sessions. Admin responses carry `Cache-Control: no-store` and `X-Robots-Tag: noindex`, and `robots.txt` disallows `/admin`.
+
+The panel and the harvester (FR-37, FR-39, FR-40): the portal reads the staging store read-only and never writes to it. Anything that changes data runs `netd.cli` as a background process, as the same `netd` user, under `flock` on `harvester/run.lock`; the nightly `netd-harvest.service` takes the same lock (waiting up to 2 hours), so harvests never overlap. CSV upload has two steps:
+
+```mermaid
+sequenceDiagram
+  actor A as Administrator
+  participant P as CsvUploadsController
+  participant H as Harvester
+  participant C as netd.cli
+  A->>P: POST /admin/csv (institution, file)
+  P->>P: save tmp/csv_uploads/<random token>.csv
+  P->>C: csv-check file
+  C-->>P: problems by line, rows/valid counts
+  P-->>A: check page (nothing changed yet)
+  A->>P: POST /admin/csv/load (token)
+  opt new institution
+    P->>H: add_csv_source → harvester/sources.local.yml
+  end
+  P->>H: install_csv → uploads/<id>/records.csv (previous one to archive/)
+  P->>H: start_run(id)
+  H->>C: flock -n run.lock netd.cli run --source <id> (background)
+  P-->>A: source page (follow the run)
+```
+
+Sources added from the panel are written to `harvester/sources.local.yml` (server only, not in git), which `netd.cli` reads together with `sources.yml`. Moving such a source into `sources.yml` is a normal code change.
 
 ## 6. Interaction viewpoint
 
@@ -371,6 +498,7 @@ flowchart TB
 ```
 
 - All NETD services run as the unprivileged user `netd` (NFR-5) and are installed under `/opt/netd`.
+- Admin panel state on the server: accounts, sessions and the activity log in the portal database; CSV files in `harvester/uploads/<id>/` (current `records.csv`, earlier ones in `archive/`); panel-added sources in `harvester/sources.local.yml`. The nightly backup includes all three (`csv-sources.tgz` holds the files). A harvest started from the panel runs inside the Puma service's process group, so restarting the portal (for example during a deployment) stops it; the next run finishes the job.
 - No Docker and no apt changes (C1). Python comes via `uv`; Ruby is compiled with `ruby-build`.
 - Apache sites for netd.ac.zm live in `deploy/apache/` and are installed by `deploy.sh`, which backs up the previous files in `/opt/netd/`. Rollback: restore those backups and restart Apache.
 - Operations (NFR-11, NFR-12): every NETD unit has `OnFailure=netd-alert@%n.service`, which emails the unit's status and log. The harvest service ends with `netd.cli check`, which fails if a source's latest run failed or is stale, or if Solr per-source counts fall below 90% of the store. `netd-backup.sh` writes a dated folder only when every step succeeds, and `netd-backup-to-gdrive.sh` copies and verifies it with rclone. The Solr index is not backed up because it is rebuilt from the store. Details and the restore procedure are in `docs/OPERATIONS.md`.
@@ -388,6 +516,7 @@ flowchart TB
 | Provenance and confidence on every value | Overwrite in place | Lets the team measure each model's contribution; low-confidence values don't pollute facets |
 | Sub-path `/beta` | New sub-domain | No DNS change needed (constraint C3) |
 | Native systemd services | Docker | Lower memory overhead on a shared 4 GB server |
+| Admin panel inside the Rails portal, Rails 8 built-in authentication | A separate admin application; Devise; HTTP basic authentication in Apache | No new service or memory; one gem (`bcrypt`); sessions can be listed, expired and audited, unlike basic authentication; accounts from the command line keep the attack surface small |
 | OAI-PMH provider in Rails, reading Solr | A separate OAI server (e.g. jOAI); serving from the SQLite store | No extra service or memory; Solr already holds every exposed field; stateless tokens survive Puma restarts |
 
 ## 10. Known limitations (v0.8)

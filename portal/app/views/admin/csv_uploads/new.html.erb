@@ -1,0 +1,28 @@
+<% content_for(:page_title) { 'Upload CSV · Admin' } %>
+<div class="netd-admin">
+  <%= render 'admin/nav' %>
+  <h1>Upload an institution's CSV file</h1>
+  <p>The file must follow the <%= link_to 'CSV template', '/netd-etd-template.csv' %> (columns are described on
+    <%= link_to 'Developer Resources', developers_path %>). It is checked first; nothing changes until you confirm on the next page.
+    The new file replaces the institution's current one, so it must contain all of the institution's records:
+    records missing from it are removed from the portal.</p>
+  <%= form_with url: admin_csv_uploads_path, multipart: true do |f| %>
+    <div class="mb-3">
+      <%= f.label :source_id, 'Institution already sending CSV files', class: 'form-label' %>
+      <%= f.select :source_id, options_for_select(@csv_sources.map { |s| [s['name'], s['id']] }, params[:source_id]),
+                   { include_blank: @csv_sources.any? ? '— none: a new institution (below) —' : '— none yet —' }, class: 'form-select' %>
+    </div>
+    <fieldset class="mb-3 netd-admin-box">
+      <legend>…or a new institution</legend>
+      <div class="row g-2">
+        <div class="col-md-8"><%= f.label :institution, 'HEA institution', class: 'form-label' %>
+          <%= f.select :institution, options_for_select(@new_institutions), { include_blank: '— choose —' }, class: 'form-select' %></div>
+        <div class="col-md-4"><%= f.label :short_name, 'Short name (e.g. CBU)', class: 'form-label' %>
+          <%= f.text_field :short_name, maxlength: 16, class: 'form-control' %></div>
+      </div>
+    </fieldset>
+    <div class="mb-3"><%= f.label :file, 'CSV file (at most 50 MB)', class: 'form-label' %>
+      <%= f.file_field :file, accept: '.csv,text/csv', required: true, class: 'form-control' %></div>
+    <%= f.submit 'Check file', class: 'btn btn-primary' %>
+  <% end %>
+</div>

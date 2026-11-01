@@ -10,6 +10,9 @@ class ProblemReport < ApplicationRecord
     'Other'
   ].freeze
 
+  STATUSES = %w[open resolved].freeze
+  belongs_to :resolved_by, class_name: 'User', optional: true
+  validates :status, inclusion: { in: STATUSES }
   validates :problem, inclusion: { in: PROBLEMS }
   validates :message, presence: true, length: { maximum: 5000 }
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }

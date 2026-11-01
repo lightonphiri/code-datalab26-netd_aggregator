@@ -32,7 +32,8 @@ Test the alert path at any time with `sudo systemctl start netd-alert@test.servi
 `deploy/ops/netd-backup.sh` writes `/var/backups/netd/YYYY-MM-DD/`. If any step fails, the folder from the previous night is left untouched. It contains:
 
 - `netd.sqlite3.gz`: the staging store, holding the untouched OAI-PMH XML and the canonical records. This is the system of record.
-- `portal.sqlite3.gz`: the portal database, which holds the problem reports.
+- `portal.sqlite3.gz`: the portal database: problem reports, admin accounts and the admin activity log.
+- `csv-sources.tgz`: CSV files received from institutions (`harvester/uploads/`) and `harvester/sources.local.yml`. Restore it into `/opt/netd/harvester/` (`tar xzf csv-sources.tgz -C /opt/netd/harvester`).
 - `solr-conf.tgz`: the Solr configset in use.
 - `MANIFEST.txt`: record counts per source, the Solr document count and the deployed version.
 - `SHA256SUMS`: checksums of the files above.
@@ -78,7 +79,27 @@ Ubuntu 20.04 stopped receiving standard security updates in May 2025. The path i
 4. Upgrade 22.04 → 24.04 the same way.
 5. For NETD only: `systemctl restart netd-solr netd-portal`, then run `netd.cli check`. Ruby and Solr under `/opt/netd` do not change. If the system's Python moves, rebuild the harvester venv with `deploy/deploy.sh` (uv provides its own Python 3.12).
 
+## Admin panel
+
+https://netd.ac.zm/admin, for the portal team (SRS FR-36 to FR-41; design in SDD §5.2). It shows every source's latest harvest and record counts, starts a harvest of one source ("Run now"), lists problem reports so they can be marked resolved with a note, takes CSV uploads (checked first, loaded only on confirmation), and keeps an activity log of every sign-in and change.
+
+Accounts are managed on the server only, as root:
+
+```
+bash /opt/netd/deploy/ops/netd-user.sh add EMAIL=jane@unza.zm NAME="Jane Banda"   # prints a one-time password
+bash /opt/netd/deploy/ops/netd-user.sh reset EMAIL=jane@unza.zm                   # new one-time password; signs out everywhere
+bash /opt/netd/deploy/ops/netd-user.sh disable EMAIL=jane@unza.zm                 # or enable
+bash /opt/netd/deploy/ops/netd-user.sh list
+```
+
+Give the one-time password to the person directly (not by email). They must change it when they first sign in. Sessions end after 2 hours of inactivity or 12 hours in total.
+
+Restarting the portal (`systemctl restart netd-portal`, or a deployment) stops a harvest that was started from the panel; start it again, or leave it to the nightly run.
+
+
 ## Adding an institution that sends a CSV file
+
+Normally this is done in the admin panel: **Upload CSV**, choose the institution (or a new HEA institution and its short name), check the file, then load it. The panel registers a new institution in `harvester/sources.local.yml` and keeps the file in `harvester/uploads/<id>/records.csv` (earlier files in `archive/`). The steps below do the same from the command line.
 
 1. Check the file: `cd /opt/netd/harvester && sudo -u netd .venv/bin/python -m netd.cli csv-check FILE`. Send the listed problems back to the institution; rows with problems are skipped when loading.
 2. Add a source to `harvester/sources.yml`, with `name` exactly as in `harvester/institutions.yml`:

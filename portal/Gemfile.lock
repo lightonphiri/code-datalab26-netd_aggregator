@@ -73,6 +73,7 @@ GEM
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
     base64 (0.3.0)
+    bcrypt (3.1.22)
     benchmark (0.5.0)
     bigdecimal (4.1.3)
     blacklight (9.2.1)
@@ -285,6 +286,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  bcrypt (~> 3.1.7)
   blacklight (~> 9.0)
   bootsnap
   debug
@@ -313,6 +315,7 @@ CHECKSUMS
   activestorage (8.0.5.1) sha256=239742932b2fdcf0ead175e0889dbd385a36da2168fd7bde023aaad88ef745f2
   activesupport (8.0.5.1) sha256=329a4280c4fbcfcf338ae2cb9df28b0b14527929dba105e10b3604516d998710
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
+  bcrypt (3.1.22) sha256=1f0072e88c2d705d94aff7f2c5cb02eb3f1ec4b8368671e19112527489f29032
   benchmark (0.5.0) sha256=465df122341aedcb81a2a24b4d3bd19b6c67c1530713fd533f3ff034e419236c
   bigdecimal (4.1.3) sha256=61ebe1e5e559bdc3cc6f2c0ee7f427321fc838f59611c294356eb04d6e21cf66
   blacklight (9.2.1) sha256=8c657a2180a86e38e426042a9ac1224a90659008da396094cb9836fb0acb526d

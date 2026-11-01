@@ -209,3 +209,17 @@ footer.netd-footer { padding: 0; background: #fff; }
 .etd-subjects a { color: #6b7280; font-size: .98rem; }
 .etd-subjects a:hover { color: var(--netd-blue); }
 @media (max-width: 600px) { .document .index_title, .document .index_title a { font-size: 1.25rem; } }
+
+/* ---------- admin panel (SRS FR-36 to FR-41) ---------- */
+.netd-admin { padding: 1rem 0 2rem; }
+.netd-admin h1 { font-size: 1.6rem; margin: .6rem 0 1rem; }
+.netd-admin h2 { font-size: 1.15rem; margin: 1.6rem 0 .6rem; }
+.netd-admin-narrow { max-width: 30rem; }
+.netd-admin-nav { display: flex; flex-wrap: wrap; gap: 1.2rem; align-items: baseline; padding: .6rem 0; margin-bottom: 1rem;
+  border-bottom: 1px solid var(--netd-line); font-size: .95rem; }
+.netd-admin-user { margin-left: auto; color: var(--netd-muted); }
+.netd-admin-table td, .netd-admin-table th { font-size: .9rem; vertical-align: top; }
+.netd-admin-help { color: var(--netd-muted); font-size: .88rem; }
+.netd-admin-log { max-height: 24rem; overflow: auto; white-space: pre-wrap; font-size: .82rem; }
+.netd-admin-box { border: 1px solid var(--netd-line); border-radius: .4rem; padding: .6rem 1rem 1rem; }
+.netd-admin-box legend { font-size: .95rem; float: none; width: auto; padding: 0 .3rem; margin: 0; }

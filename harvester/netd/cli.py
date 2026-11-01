@@ -149,6 +149,11 @@ def main(argv=None):
             sys.exit("usage: netd.cli csv-check FILE")
         sys.exit(1 if check_file(a.file) else 0)
     sources = cfg_load("sources.yml").get("sources", [])
+    # sources added from the admin panel (CSV institutions), kept on the server only
+    local = os.environ.get("NETD_SOURCES_LOCAL", os.path.join(HERE, "sources.local.yml"))
+    if os.path.exists(local):
+        with open(local) as fh:
+            sources += (yaml.safe_load(fh) or {}).get("sources", [])
     srcs = selected(sources, a.source)
     if not srcs and a.command != "report":
         sys.exit("unknown source %r" % a.source)

@@ -13,3 +13,5 @@ portal/vendor/bundle/
 portal/.bundle/
 portal/config/master.key
 harvester/uploads/
+harvester/sources.local.yml
+harvester/run.lock

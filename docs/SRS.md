@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SRS, structured per ISO/IEC/IEEE 29148:2018 (supersedes IEEE 830-1998) |
-| Version | 0.21 |
+| Version | 0.22 |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Repository | https://github.com/lightonphiri/code-datalab26-netd_aggregator |
@@ -15,6 +15,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial SRS: harvesting (UNZA, UNILUS), cleaning pipeline, Blacklight discovery |
 | 0.2 | October 30, 2026 | Discipline and Degree fields (FR-12, FR-21); institution entry points (FR-26); HTTPS (NFR-9); PDF pilot and onboarding findings (§4) |
+| 0.22 | November 1, 2026 | Admin panel at https://netd.ac.zm/admin: FR-36 sign-in, FR-37 dashboard and harvest on demand, FR-38 problem-report handling, FR-39 CSV upload with checking, FR-40 adding a CSV institution, FR-41 activity log; NFR-13 admin security; portal administrator user class updated |
 | 0.21 | November 1, 2026 | FR-10: CSV loader met, for HEIs without a working repository (file on the server, or a URL the HEI keeps current, read nightly); public template and column guide on Developer Resources; `netd.cli csv-check` |
 | 0.20 | October 31, 2026 | EI-4 raised from C to M and met: OAI-PMH 2.0 data provider at https://netd.ac.zm/oai (all six verbs; `oai_dc` and `etdms` (ETD-MS v1.1); sets `inst:<institution>` and `level:masters`/`level:doctoral`; datestamps are the last change of a record in the portal, at seconds granularity); Developer Resources no longer marks it as in development (FR-35) |
 | 0.19 | October 31, 2026 | FR-23: abstract snippet (up to three lines) restored under the YEAR · DEGREE · INSTITUTION line; FR-22: 10 results per page by default (as on Google Scholar), with a "Show" menu for 20, 50 or 100 |
@@ -115,7 +116,7 @@ flowchart LR
 |---|---|---|
 | Researcher / student (public) | Searches for ETDs nationally | Fast search; facets by institution, faculty, department, supervisor, subject, year; link to full text |
 | HEI repository manager | Librarian responsible for an IR | Confirm their ETDs are harvested; see completeness gaps |
-| Portal administrator (DataLab) | Runs the service | Add sources, schedule harvests, re-run cleaning, monitor |
+| Portal administrator (DataLab) | Runs the service; signs in to the admin panel (FR-36 to FR-41) | Add sources, run harvests, load CSV files, handle problem reports, monitor |
 | Data scientist (DataLab) | Builds cleaning/ML models | Plug models in without changing platform code; compare model versions |
 | Oversight body (HEA) | Reviews national ETD output | Aggregate counts and quality indicators |
 
@@ -211,6 +212,12 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | FR-31 | The portal (About page) and the repository (`PUBLICATIONS.md`) shall list the project details [R14], the project members with their roles as on the DataLab people page (the PI marked Principal Investigator), and the publications, dissertations and capstone reports based on the Zambia National ETD Portal project, with a short explanation of how they relate to the portal, from one source file (`portal/config/publications.yml`). | M |
 | FR-35 | Every page shall have a footer, as on Academic Commons [R15], with links to About, FAQ, Developer Resources and Credits, the contact address datalab@unza.zm, and a line crediting the DataLab Research Group (development) and ZAMREN (hosting). The About page shall credit both, with their logos. Developer Resources shall document the JSON (REST) API and the OAI-PMH interface (EI-4). Credits shall name DataLab and ZAMREN, the Core Team (Lighton Phiri, Lead Developer and Principal Investigator; Elijah Chileshe, Assistant Programmer/Analyst), and as Contributors and Former Team Members the students listed on the project page [R14]. | M |
 | FR-34 | Record pages shall offer a "Report a problem" popup form (problem type, message, name, email address, record URL). Each report shall be stored in the portal database and emailed to lighton.phiri@unza.ac.zm and datalab@unza.zm (subject "(Zambia National ETD Portal) <problem>: <title>", reply-to the reporter) through an authenticated SMTP account; the form shall have a spam trap and a rate limit. | M |
+| FR-36 | Admin sign-in. The system shall provide an admin panel at /admin for the portal team only. Access shall require an email address and password; accounts shall be created, reset and disabled from the server's command line only (no self-registration). A new or reset account shall get a one-time password that must be changed at first sign-in (at least 12 characters). Sessions shall end after 2 hours of inactivity or 12 hours in total, and on sign-out. | M |
+| FR-37 | Admin dashboard. The panel shall show every source with its loader, latest harvest (time, status, message), records in the staging store and in the search index, whether a harvest is running, and the number of open problem reports; a source page shall list its recent harvests. An administrator shall be able to start a harvest of one source ("Run now"); it shall never run at the same time as another harvest, including the nightly one. | M |
+| FR-38 | Problem reports in the panel. Reports received through FR-34 shall be listed (open or resolved), shown in full, and marked resolved or reopened with a note recording what was done; the panel shall record who resolved a report and when. | M |
+| FR-39 | CSV upload in the panel. An administrator shall be able to upload an institution's CSV file (FR-10, at most 50 MB); the system shall first show the result of the CSV check (rows, valid rows, each problem by line) and change nothing until the administrator confirms. On confirmation, the file shall replace the institution's current file (the previous one archived) and be loaded. A file with no valid rows shall not be loadable. | M |
+| FR-40 | Adding a CSV institution. While uploading, an administrator shall be able to choose an HEA-listed institution (FR-29) that has no source yet and give its short name; the system shall register it as a CSV source without editing the configuration files in the repository. | S |
+| FR-41 | Activity log. Every sign-in, failed sign-in attempt and change made through the panel (password changes, harvests started, CSV files checked and loaded, sources added, reports resolved or reopened), and account changes made from the command line, shall be recorded with the time, the account, the subject and the IP address, and shown in the panel. | M |
 | FR-33 | The landing page shall show a one-line introduction, two prominent buttons — Explore Master's Manuscripts and Explore PhD Manuscripts (degree-level filtered searches) — "stats at a glance" (total ETDs, master's, doctoral, with full-text PDF, institutions contributing of those listed, years covered) and the contributing institutions, with the not-yet-harvested HEA institutions behind a toggle. | M |
 | FR-32 | For every ETD whose repository exposes it, the portal shall link directly to the full-text file (bitstream), preferring the largest PDF, on result cards and record pages, and offer a Full text facet (PDF available / other file / metadata only). Files stay in the source repositories. | M |
 
@@ -229,6 +236,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | NFR-10 | Politeness | At most one concurrent request per source. | M |
 | NFR-11 | Recoverability | The staging store and portal database shall be backed up nightly, verified by checksum, kept 14 days on the server and about 60 days off the server (Google Drive); a restore procedure shall be documented and tested. | M |
 | NFR-12 | Monitoring | The maintainer shall be emailed when a scheduled job or service fails, when a source's latest harvest failed or is more than 30 hours old, when the index disagrees with the store, and when the public site stops serving results (once per outage, plus recovery); a weekly status email shall confirm the alert path works. | M |
+| NFR-13 | Admin security | The admin panel shall be served over HTTPS only, with passwords stored as bcrypt hashes, a signed HTTP-only session cookie, CSRF protection on every form, at most 10 sign-in attempts per 3 minutes from one address, no caching of admin pages, and admin pages excluded from search engines. | M |
 
 ### 3.4 Data requirements
 The canonical record is a JSON object stored in SQLite (`records.data`):
@@ -247,6 +255,7 @@ The canonical record is a JSON object stored in SQLite (`records.data`):
 | NFR-1, NFR-3 | Measurement (`curl -w`, `ps`) | Recorded at deployment |
 | NFR-4, NFR-5 | Inspection of systemd units | `deploy/systemd/*.service` |
 | NFR-11, NFR-12 | Test backup and restore check; test alert (`netd-alert@test`) | October 31, 2026; `docs/OPERATIONS.md` |
+| FR-36–FR-41, NFR-13 | Test: scripted walk through every admin page and action (sign-in, forced password change, dashboard, source page, resolving a report, CSV check and load creating a new source, activity log, sign-out) | November 1, 2026: all passed before deployment; repeated on the live site after deployment |
 
 Completeness (October 31, 2026, v0.3):
 

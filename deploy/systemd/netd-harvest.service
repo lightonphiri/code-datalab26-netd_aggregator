@@ -7,6 +7,7 @@ After=network-online.target netd-solr.service
 Type=oneshot
 User=netd
 WorkingDirectory=/opt/netd/harvester
-ExecStart=/opt/netd/harvester/.venv/bin/python -m netd.cli run
+# run.lock is shared with harvests started from the admin panel, so two runs never overlap (wait up to 2 h)
+ExecStart=/usr/bin/flock -w 7200 /opt/netd/harvester/run.lock /opt/netd/harvester/.venv/bin/python -m netd.cli run
 # health check: any source failed/stale or index out of step with the store -> unit fails -> alert
 ExecStart=/opt/netd/harvester/.venv/bin/python -m netd.cli check

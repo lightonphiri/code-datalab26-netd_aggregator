@@ -1,5 +1,18 @@
 Rails.application.routes.draw do
   match 'oai', to: 'oai#index', via: [:get, :post], as: :oai  # OAI-PMH data provider (SRS EI-4)
+  namespace :admin do  # admin panel (SRS FR-36 to FR-41)
+    root to: 'dashboard#index'
+    get 'sign-in', to: 'sessions#new', as: :sign_in
+    post 'sign-in', to: 'sessions#create'
+    delete 'sign-out', to: 'sessions#destroy', as: :sign_out
+    resource :password, only: %i[edit update]
+    get 'sources/:id', to: 'dashboard#source', as: :source
+    post 'sources/:id/run', to: 'dashboard#run', as: :run_source
+    resources :problem_reports, only: %i[index show update], path: 'reports'
+    resources :csv_uploads, only: %i[new create], path: 'csv'
+    post 'csv/load', to: 'csv_uploads#load_file', as: :load_csv
+    get 'log', to: 'events#index', as: :events
+  end
   mount Blacklight::Engine => '/'
   root to: "catalog#index"
   get "about", to: "pages#about", as: :about
