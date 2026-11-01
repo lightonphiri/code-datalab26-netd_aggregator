@@ -28,6 +28,8 @@ def run(store, source=None, model=None, everything=False):
              store.db.execute("SELECT record_id, text, text_hash FROM pdf_text WHERE status IN ('ok', 'ocr')")}
     for name in names:
         m = importlib.import_module(MODELS[name])
+        if hasattr(m, "prepare"):  # corpus-level preparation, e.g. a vocabulary
+            m.prepare(t for t, _ in texts.values())
         seen = {} if everything else cache.known_hashes(store, m.NAME)
         n = changed = 0
         for rec in store.records(source):

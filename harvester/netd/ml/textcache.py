@@ -6,6 +6,7 @@ Only the first `pages` pages are kept. A PDF is fetched again only when the reco
 previous attempt failed and `retry_failed` is set.
 """
 import hashlib
+import re
 import sys
 import tempfile
 import time
@@ -17,7 +18,7 @@ UA = "NETD metadata enrichment (+https://netd.ac.zm)"
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS pdf_text (
     record_id  TEXT PRIMARY KEY,
-    url        TEXT NOT NULL,
+    url        TEXT NOT NULL,      -- the PDFs read, space-separated, front matter first
     status     TEXT NOT NULL,      -- ok | ocr (text from OCR) | no_text (scanned, not yet OCRed) | ocr_failed
                                    -- | too_large | error
     pages      INTEGER,            -- pages in the PDF
@@ -60,12 +61,54 @@ def fetch_one(url, pages, max_mb, timeout):
     return "ok", n, text, None
 
 
+FRONT = re.compile(r"cover|prelim|title|front|abstract|declaration|approval|certificat", re.I)
+
+
+def front_urls(rec, most=3):
+    """The PDFs to read for a record, front matter first. Some repositories split a thesis into several files
+    ("Cover page.pdf", "Preliminary pages.pdf", "Main Document.pdf"); the cover and preliminary pages carry the
+    degree statement and supervisors, so they are read before the main document."""
+    pdfs = list(rec.get("pdf_url") or [])
+    if len(pdfs) < 2:
+        return pdfs
+    names = {f.get("url"): f.get("name") or "" for f in rec.get("files") or []}
+    rank = lambda u: (0 if re.search(r"cover|title", names.get(u, ""), re.I) else
+                      1 if FRONT.search(names.get(u, "")) else 2)
+    ordered = sorted(pdfs, key=lambda u: (rank(u), pdfs.index(u)))
+    if rank(ordered[0]) == 2:
+        return ordered[:1]  # no front-matter file: the first PDF holds the whole thesis
+    return ordered[:most]
+
+
+def fetch_text(urls, pages, max_mb, timeout):
+    """Read each PDF in turn (front matter first); pages of different files are separated by form feeds."""
+    texts, notes, statuses, n_pages = [], [], [], 0
+    for url in urls.split():
+        try:
+            status, n, text, msg = fetch_one(url, pages, max_mb, timeout)
+        except Exception as e:  # network errors, broken PDFs
+            status, n, text, msg = "error", None, None, str(e)[:200]
+        statuses.append(status)
+        n_pages += n or 0
+        if text and status == "ok":
+            texts.append(text)
+        if msg:
+            notes.append(msg)
+    if texts:
+        return "ok", n_pages, "\f".join(texts), "; ".join(notes) or None
+    for st in ("no_text", "too_large", "error"):
+        if st in statuses:
+            return st, n_pages or None, None, "; ".join(notes)[:300]
+    return "error", None, None, "no PDF"
+
+
 def pending(store, source=None, retry_failed=False, limit=None):
-    """(record_id, url) for records whose PDF text is missing, out of date, or (optionally) failed before."""
+    """(record_id, urls) for records whose PDF text is missing, out of date, or (optionally) failed before.
+    The url column holds the PDFs read, space-separated, so a change in the record's files triggers a re-read."""
     have = {r["record_id"]: (r["url"], r["status"]) for r in store.db.execute("SELECT record_id, url, status FROM pdf_text")}
     out = []
     for rec in store.records(source):
-        url = (rec.get("pdf_url") or [None])[0]
+        url = " ".join(front_urls(rec))
         if not url:
             continue
         old = have.get(rec["id"])
@@ -82,10 +125,7 @@ def run(store, source=None, pages=8, max_mb=60, timeout=180, workers=2, pause=1.
 
     def work(item):
         rid, url = item
-        try:
-            status, n, text, msg = fetch_one(url, pages, max_mb, timeout)
-        except Exception as e:  # network errors, broken PDFs
-            status, n, text, msg = "error", None, None, str(e)[:300]
+        status, n, text, msg = fetch_text(url, pages, max_mb, timeout)
         time.sleep(pause)
         return rid, url, status, n, text, msg
 
@@ -142,7 +182,7 @@ def run_ocr(store, source=None, pages=5, max_mb=150, timeout=300, limit=None):
     done = ok = 0
     for r in todo:
         try:
-            status, text, msg = ocr_one(r["url"], pages, max_mb, timeout)
+            status, text, msg = ocr_one(r["url"].split()[0], pages, max_mb, timeout)
         except Exception as e:
             status, text, msg = "ocr_failed", None, str(e)[:300]
         h = hashlib.sha256(text.encode("utf-8")).hexdigest() if text else None

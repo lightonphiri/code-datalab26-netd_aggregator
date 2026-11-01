@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SDD, structured per IEEE 1016-2009 (design viewpoints) |
-| Version | 0.22 |
+| Version | 0.23 |
 | Date | October 31, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Related | `docs/SRS.md` (requirement IDs referenced below) |
@@ -14,6 +14,7 @@
 |---|---|---|
 | 0.1 | October 30, 2026 | Initial design: harvester, raw/canonical stores, crosswalk, enrichers, Blacklight portal, deployment |
 | 0.2 | October 30, 2026 | Discipline/degree derivation; Solr analysers; URL-safe record ids; HTTPS |
+| 0.23 | November 1, 2026 | Metadata filling (FR-14, FR-48 to FR-53): package `netd.ml` (text cache with OCR, prediction cache, overlay, predict runner, evaluation, baseline model `titlepage-rules`); overlay step in processing; `derived_ssm` in Solr; record-page badges; API `derived` (1.1.0); admin record corrections and degree-level review; `netd.cli reprocess`; store in WAL mode (NFR-14); backup reads the store as `netd`; OCR packages on the server |
 | 0.22 | November 1, 2026 | Postgraduate scope (FR-47): `scope.degree_levels` and per-source `exclude_records` in `sources.yml`; `cli.exclusion()` in processing; table `excluded`; `index.ids()` so indexing removes from Solr every document the store no longer holds; Postgraduate Diploma in `DEGREE_PAT`, repository-supplied levels normalised; level set `level:postgraduate-diploma` and API level `postgraduate_diploma` |
 | 0.21 | November 1, 2026 | REST API v1 (§5.3, EI-6, FR-42 to FR-46): `Api::V1::` controllers on `ActionController::API`, `ApiRecord` representation, OpenAPI 3 specification `public/api/v1/openapi.yaml`, interactive reference `/developers/api`, export files in `portal/tmp/api_export/` |
 | 0.20 | November 1, 2026 | Admin panel (§5.2, FR-36 to FR-41, NFR-13): `Admin::` controllers, `AdminAuthentication`, `Harvester` model, portal tables `users`, `sessions`, `admin_events` and problem-report resolution columns (§4.1); `harvester/sources.local.yml`; shared `run.lock`; `netd-user.sh` account management; backups include CSV files |
@@ -240,6 +241,34 @@ erDiagram
 
 Postgraduate scope (FR-47). After the crosswalk and the enrichers, `cli.exclusion()` decides whether a record enters `records`: it is left out if its source lists its `oai_id` under `exclude_records` (with a reason), or if its `degree_level` is identified and not in `scope.degree_levels` (default Doctoral, Masters, Postgraduate Diploma). Records of unknown level are kept. Excluded records go to `excluded` with the reason (rebuilt for a source on every processing run) and are shown by `netd.cli report` and on the admin source page; `raw_records` is untouched, so an exclusion is undone by removing it from `sources.yml`. Indexing then deletes from Solr every document of the source that `records` no longer holds (`index.ids()`), which also covers records deleted at the source. Levels come from the repository's own value, normalised, or from `DEGREE_PAT` over the degree name, type, description and collection names, postgraduate levels first; the ML models (FR-14) will fill the unknown levels later through the same field.
 
+#### 4.1.1 Metadata filling (FR-14, FR-48 to FR-53)
+Package `harvester/netd/ml`. Models never write to `records`; they write to a cache that processing reads.
+
+```mermaid
+flowchart LR
+  R[(records)] -->|pdf_url, files| T[textcache<br/>extract-text, ocr-text]
+  T -->|first pages, front matter first| PT[(pdf_text)]
+  PT --> P[predict runner]
+  R -->|harvested values only| P
+  M[models/titlepage.py<br/>NAME, VERSION, FIELDS, USES,<br/>prepare(texts), predict(meta, text)] --> P
+  C[Colab / elsewhere] -->|JSON Lines| L[load-predictions]
+  P --> PR[(predictions)]
+  L --> PR
+  A[Admin panel] -->|netd.cli correct| CO[(corrections)]
+  PR --> O[overlay.apply]
+  CO --> O
+  O -->|after enrichers, before FR-47| X[cli.exclusion]
+  O --> LR[(level_review)]
+  X --> R
+```
+
+- **Text cache** (`textcache.py`, FR-48). `front_urls()` orders a record's PDFs so files named cover/title come first, then other front-matter names (prelim, abstract, declaration, approval, certificate), then the rest; with no front-matter file only the first PDF is read; at most 3. `extract-text` downloads each file (≤ 60 MB, 2 threads fetching, SQLite written from the main thread only), keeps the first 8 pages with `pypdf`, and stores status `ok`, `no_text` (no text layer), `too_large` or `error`. `ocr-text` takes the `no_text` rows one at a time: `pdftoppm` at 200 dpi, greyscale, first 5 pages, then `tesseract` (English), both under `nice 19`; status `ocr` or `ocr_failed`. The `url` column holds the files read, so a change in the record's files makes it pending again. Both commands run under `run.lock` in batches (500 PDFs, 50 OCRs), so a nightly harvest waits at most one batch.
+- **Prediction cache** (`cache.py`, FR-49). `predictions` is keyed by (record, field, model) and holds version, value list, confidence, input hash and evidence. `predict.run()` builds each record's input from its PDF text and the harvested values of the fields the model `USES` (values with provenance `model:` or `corrected:` are removed, so models never learn from each other), hashes it with the model version, and calls `predict()` only when the hash changed; fields a model covers but finds nothing for are stored as `[]`, so they are not recomputed. `prepare(texts)` gives a model corpus-level state (the baseline's word counts). `load-predictions` accepts JSON Lines from other environments.
+- **Overlay** (`overlay.py`, FR-14, FR-50 to FR-52), called by `do_process` after the enrichers and before `cli.exclusion()`. A record with neither predictions nor corrections is returned untouched (byte-identical, so OAI-PMH datestamps do not move). Otherwise, for each predicted field that is empty and not corrected, the best prediction is applied if its confidence ≥ `ml.show_threshold`; it sets the value, `provenance[field] = model:<name>-<version>`, `confidence[field]` and `derived[field]`. A predicted level below postgraduate is applied only at ≥ `ml.level_auto_exclude` (FR-47 then excludes the record, naming the model); between `ml.level_review_min` and that it goes to `level_review` instead. Corrections then overwrite (or clear) fields with `provenance = corrected:<e-mail>`. A `_scope` correction is returned to `cli.exclusion()`, where `include` keeps the record whatever FR-47's level rule says and `exclude` removes it with the administrator's note. `save_review()` rebuilds the pending rows for the processed sources; decided rows stay.
+- **Baseline model** `titlepage-rules` (`models/titlepage.py`). Degree statement: a statement keyword (fulfilment, requirement, submitted, award) followed within 200 characters by a degree head (Master/Doctor/Bachelor/Postgraduate Diploma of/in), parsed into degree, discipline and level (0.96); otherwise a degree name on the first three pages (0.82); otherwise an abbreviation such as MSc or PhD (0.70, level only). Supervisors: labelled lines "Supervisor:" (0.92), "supervised by" (0.90), "under the supervision of" (0.88), acknowledgements "my supervisor(s), Dr X and Prof Y" (0.86) and "Dr X, my supervisor" (0.82), "X (Supervisor)" (0.75); names lose titles, all-caps names are title-cased. Units: "Department of …" → department, "School of …"/"Faculty of …" → faculty, from the first three pages (0.88 on page one, else 0.78). Text extraction often splits words ("M aster", "Eco nomics"); degree keywords are matched letter by letter with optional spaces, and other words are rejoined when the joined word is more frequent in the corpus than the rarer fragment.
+- **Evaluation** (`evaluate.py`, FR-53). `gold-sample` writes a CSV stratified by institution (proportional, at least 20 each) with harvested values and empty `gold_*` columns; `evaluate` normalises values (case, accents, titles, unit words; people by surname and first initial) and prints coverage, precision, recall and F1 per model, version and field at thresholds 0, 0.8 and 0.95. Corrections are a second source of labels.
+- **Configuration** (`enrichers.yml`, key `ml`): `show_threshold` 0.8, `level_auto_exclude` 0.95, `level_review_min` 0.6.
+
 ### 4.2 Canonical record (class view)
 ```mermaid
 classDiagram
@@ -302,14 +331,15 @@ classDiagram
 | url | `dc.identifier.uri` | — |
 
 ### 4.4 Solr document
-`id, title_tsim/ssm/ssort, author_tsim/ssim, supervisor_tsim/ssim, subject_tsim/ssim, faculty_tsim/ssim, department_tsim/ssim, faculty_department_ssim ("Faculty|Dept"), discipline_tsim/ssim, degree_ssim, degree_level_ssim, year_isi/ssim, abstract_tesim, url_ssm, pdf_url_ssm, rights_ssm, language_ssim, type_ssim, institution_ssim, institution_short_ssim, source_ssi, oai_id_ssi, datestamp_ssi (source datestamp), updated_dtsi (last content change in the portal; OAI-PMH datestamp), provenance_ssm, completeness_isi`. A facet (`*_ssim`) value is omitted when its field is not `facetable` (FR-17).
+`id, title_tsim/ssm/ssort, author_tsim/ssim, supervisor_tsim/ssim, subject_tsim/ssim, faculty_tsim/ssim, department_tsim/ssim, faculty_department_ssim ("Faculty|Dept"), discipline_tsim/ssim, degree_ssim, degree_level_ssim, year_isi/ssim, abstract_tesim, url_ssm, pdf_url_ssm, rights_ssm, language_ssim, type_ssim, institution_ssim, institution_short_ssim, source_ssi, oai_id_ssi, datestamp_ssi (source datestamp), updated_dtsi (last content change in the portal; OAI-PMH datestamp), provenance_ssm, derived_ssm (FR-50), completeness_isi`. A facet (`*_ssim`) value is omitted when its field is not `facetable` (FR-17).
 
 ---
 
 ## 5. Interface viewpoint
 | Interface | Description |
 |---|---|
-| CLI | `python -m netd.cli {harvest|process|index|run|report|check|csv-check FILE} [--source ID] [--full] [--limit N] [--db PATH] [--solr URL]`; env `NETD_DB`, `NETD_SOLR`, `NETD_SOURCES`, `NETD_ENRICHERS` |
+| CLI | `python -m netd.cli {harvest|process|index|run|reprocess|report|check|csv-check FILE} [--source ID] [--full] [--limit N] [--db PATH] [--solr URL]`; metadata filling: `extract-text [--limit N] [--retry-failed]`, `ocr-text [--limit N]`, `text-report`, `predict [--model NAME] [--all]`, `load-predictions FILE.jsonl`, `export-predictions FILE.csv`, `correct RECORD FIELD [VALUE ...] --by EMAIL [--note TEXT]`, `uncorrect RECORD FIELD`, `gold-sample FILE.csv [--n N] [--seed S]`, `evaluate GOLD.csv`; env `NETD_DB`, `NETD_SOLR`, `NETD_SOURCES`, `NETD_ENRICHERS` |
+| Model contract (§4.1.1) | module with `NAME`, `VERSION`, `FIELDS`, `USES`, `NEEDS_TEXT`, optional `prepare(texts)`, and `predict(meta, text) -> {field: (values, confidence, evidence)}`; registered in `netd/ml/predict.py` `MODELS` |
 | Enricher contract | `def enrich(record: dict) -> dict`; set `record["provenance"][field] = "model:<name>-<version>"` and optionally `record["confidence"][field] = float` |
 | Solr | JSON `POST /solr/netd/update`; Blacklight queries `/select` (edismax, ETD `qf`) |
 | HTTP | `GET /` (search), `/catalog/<id>` (record), `/catalog.json?q=…` (JSON) |
@@ -348,6 +378,10 @@ The panel is part of the Rails portal (no new service). Every admin controller i
 | Problem reports | `/admin/reports`, `/admin/reports/<id>` | `Admin::ProblemReportsController` | FR-38 |
 | Upload CSV (check, then load) | `/admin/csv/new`, `POST /admin/csv`, `POST /admin/csv/load` | `Admin::CsvUploadsController` | FR-39, FR-40 |
 | Activity log | `/admin/log` | `Admin::EventsController` | FR-41 |
+| Correct a record (lookup box in the admin bar; record page with values, provenance, corrections and predictions; Apply now) | `GET /admin/records?id=`, `/admin/records/<id>`, `POST /admin/records/<id>/corrections`, `DELETE /admin/records/<id>/corrections/<field>`, `POST /admin/records/<id>/apply` | `Admin::RecordsController` | FR-51 |
+| Degree-level review (waiting / decided) | `/admin/review`, `POST /admin/review/<id>` (`decision=exclude\|include`) | `Admin::ReviewsController` | FR-52 |
+
+Corrections and review decisions are written by `netd.cli correct` / `uncorrect` (the panel opens the staging store read-only, as for CSV loading) and logged as `record_corrected`, `correction_removed`, `level_review_excluded`, `level_review_kept` and `reprocess_started`. "Apply now" runs `netd.cli reprocess --source <id>` (process and index, no harvest) under the harvest lock; when the lock is held, the change waits for the next run.
 
 ```mermaid
 classDiagram
@@ -415,6 +449,8 @@ sequenceDiagram
 Sources added from the panel are written to `harvester/sources.local.yml` (server only, not in git), which `netd.cli` reads together with `sources.yml`. Moving such a source into `sources.yml` is a normal code change.
 
 ### 5.3 REST API v1 (EI-6, FR-42 to FR-46)
+Since API 1.1.0 each record carries `derived` (FR-50), built by `ApiRecord.derived` from the Solr field `derived_ssm` (one JSON object per derived field: field, method, confidence); field names follow the API (`supervisors`, `subjects`). The addition changes no existing field (EI-6).
+
 A read-only JSON API inside the Rails portal. Its controllers inherit from `Api::V1::BaseController` (`ActionController::API`: no sessions, cookies or CSRF), which adds CORS headers, the per-address rate limit and JSON error handling. Like the OAI-PMH provider, it reads Solr only. The contract is `portal/public/api/v1/openapi.yaml` (OpenAPI 3.0.3), which Developer Resources renders with Swagger UI at `/developers/api`.
 
 | Endpoint | Controller | Solr use | Requirement |
@@ -551,7 +587,9 @@ flowchart TB
 
 - All NETD services run as the unprivileged user `netd` (NFR-5) and are installed under `/opt/netd`.
 - Admin panel state on the server: accounts, sessions and the activity log in the portal database; CSV files in `harvester/uploads/<id>/` (current `records.csv`, earlier ones in `archive/`); panel-added sources in `harvester/sources.local.yml`. The nightly backup includes all three (`csv-sources.tgz` holds the files). A harvest started from the panel runs inside the Puma service's process group, so restarting the portal (for example during a deployment) stops it; the next run finishes the job.
-- No Docker and no apt changes (C1). Python comes via `uv`; Ruby is compiled with `ruby-build`.
+- No Docker (C1). Python comes via `uv`; Ruby is compiled with `ruby-build`. System packages are not upgraded or removed; the only additions are `tesseract-ocr`, `tesseract-ocr-eng` and `poppler-utils` for OCR (FR-48, November 1, 2026).
+- The staging store is in WAL mode with a 120 s busy timeout (NFR-14). Only `netd` opens it (the backup runs `sqlite3 .backup` as `netd` through `runuser`), so no root-owned `-wal`/`-shm` files can block the harvester.
+- PDF text extraction and OCR run as transient units (`systemd-run --unit=netd-mltext --uid=netd --nice=10`) or by hand, in batches under `run.lock`; see `docs/OPERATIONS.md`.
 - Apache sites for netd.ac.zm live in `deploy/apache/` and are installed by `deploy.sh`, which backs up the previous files in `/opt/netd/`. Rollback: restore those backups and restart Apache.
 - Operations (NFR-11, NFR-12): every NETD unit has `OnFailure=netd-alert@%n.service`, which emails the unit's status and log. The harvest service ends with `netd.cli check`, which fails if a source's latest run failed or is stale, or if Solr per-source counts fall below 90% of the store. `netd-backup.sh` writes a dated folder only when every step succeeds, and `netd-backup-to-gdrive.sh` copies and verifies it with rclone. The Solr index is not backed up because it is rebuilt from the store. Details and the restore procedure are in `docs/OPERATIONS.md`.
 - The earlier ETD Portal (Tomcat :8080) is no longer proxied; Tomcat keeps running because it hosts other applications.
@@ -573,7 +611,7 @@ flowchart TB
 | OAI-PMH provider in Rails, reading Solr | A separate OAI server (e.g. jOAI); serving from the SQLite store | No extra service or memory; Solr already holds every exposed field; stateless tokens survive Puma restarts |
 
 ## 10. Known limitations (v0.8)
-- Supervisor and Department are empty for all harvested sources: the IRs don't expose them. ML/PDF extraction is deferred until the portal is complete.
+- Supervisor and Department are empty in every source's harvested metadata; they are now filled from PDF front matter by the baseline model where its confidence reaches 0.8 (FR-14). Older UNZA ETDs are scanned and depend on OCR; about 15% of UNZA PDF links return HTTP 500 from the repository. UNILUS PDF links point to an internal address the portal cannot reach.
 - 30 of the 34 HEA-listed institutions show 0 (no reachable ETD repository).
 - HTTPS for netd.ac.zm is in place (NFR-9); HTTP redirects to HTTPS since v0.8.
 - The old portal's OAI-PMH endpoint (/OAI-PMH) is retired with it; NETD v2's own provider at /oai (EI-4) replaces it from release 0.18.

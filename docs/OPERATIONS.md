@@ -79,6 +79,20 @@ Ubuntu 20.04 stopped receiving standard security updates in May 2025. The path i
 4. Upgrade 22.04 → 24.04 the same way.
 5. For NETD only: `systemctl restart netd-solr netd-portal`, then run `netd.cli check`. Ruby and Solr under `/opt/netd` do not change. If the system's Python moves, rebuild the harvester venv with `deploy/deploy.sh` (uv provides its own Python 3.12).
 
+## Metadata filling (FR-14, FR-48 to FR-53)
+All commands run in `/opt/netd/harvester` as `netd` (`sudo -u netd .venv/bin/python -m netd.cli ...`). Anything that writes many rows runs under the harvest lock: prefix `flock -w 7200 run.lock`.
+
+- **Status:** `text-report` (PDF text per source and status), `export-predictions /opt/netd/logs/predictions.csv`.
+- **Extract PDF text** (new or changed records only): `extract-text --limit 500`; scanned PDFs: `ocr-text --limit 50` (about 20 s each at low priority). For the whole backlog, run batches as a transient unit so a disconnect does not stop them and the nightly harvest waits at most one batch:
+  `sudo systemd-run --unit=netd-mltext --uid=netd --gid=netd --working-directory=/opt/netd/harvester --nice=10 /bin/bash -c 'for i in $(seq 1 15); do flock -w 7200 run.lock .venv/bin/python -m netd.cli extract-text --limit 500 || exit 1; done; for i in $(seq 1 80); do flock -w 7200 run.lock .venv/bin/python -m netd.cli ocr-text --limit 50 || exit 1; done'`
+  Follow it with `journalctl -u netd-mltext -f`; stop it with `sudo systemctl stop netd-mltext`. Retry repository errors later with `extract-text --retry-failed`.
+- **Predict, then apply:** `predict` (only records whose input changed; `--all` to recompute), then `reprocess` (process and index every source, no harvest). Always dry-run first on a copy: `sqlite3 netd.sqlite3 ".backup /opt/netd/logs/dry.sqlite3"`, then `process --db /opt/netd/logs/dry.sqlite3` and compare `report`.
+- **Predictions from elsewhere** (e.g. a Colab notebook): JSON Lines with `record_id, field, model, version, value, confidence` (optional `evidence`, `input_hash`); `load-predictions FILE.jsonl`, then `reprocess`.
+- **Thresholds:** `enrichers.yml` → `ml.show_threshold` (0.8), `ml.level_auto_exclude` (0.95), `ml.level_review_min` (0.6). After changing them, `reprocess`.
+- **Gold standard and evaluation:** `gold-sample /opt/netd/logs/gold.csv --n 300` gives a stratified sample; annotators fill the `gold_*` columns from the PDFs (several values separated by `||`, `-` when the PDF does not say); `evaluate gold.csv` prints coverage, precision, recall and F1 per model and field.
+- **Corrections from the shell** (the admin panel is the normal way): `correct unza-123456789-1000 supervisor "Henry J. Msango" --by lighton.phiri@unza.ac.zm --note "from acknowledgements"`; `correct <id> _scope exclude --by ... --note ...`; `uncorrect <id> <field>`.
+- **The store is in WAL mode.** Open it only as `netd` (never as root): a root-owned `netd.sqlite3-wal` or `-shm` would stop the harvester. If that ever happens: stop writers, then `chown netd:netd /opt/netd/harvester/netd.sqlite3*`.
+
 ## Excluding records
 
 The portal holds postgraduate work only (SRS FR-47). Records identified as below postgraduate level are left out automatically when processing. To leave out one record (for example a bachelor's report deposited in an ETD collection), add it to its source in `harvester/sources.yml` with a reason, release, and process and index that source (or wait for the nightly run):

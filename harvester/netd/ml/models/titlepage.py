@@ -13,15 +13,20 @@ import re
 from ... import crosswalk
 
 NAME = "titlepage-rules"
-VERSION = "1"
+VERSION = "2"
 FIELDS = ("degree_level", "degree", "discipline", "supervisor", "department", "faculty")
 USES = ("title",)
 NEEDS_TEXT = True
 
-DEG_HEAD = r"(?:master(?:'?s)?|doctor|bachelor(?:'?s)?|post-?\s?graduate diploma)\s+(?:of|in)\s+"
-STATEMENT = re.compile(
-    r"(?:fulfil+ment|requirements?|award|submitted|presented|dissertation|thesis|report)[^.]{0,160}?"
-    r"(?:degree|award|diploma)\s+(?:of\s+)?(?:the\s+)?(" + DEG_HEAD + r"[A-Za-z ,&()'\-]{3,120})", re.I)
+def fz(word):
+    """Regex for a word that PDF text extraction may have split with stray spaces ("M aster", "Zambi a")."""
+    return r"\s?".join(re.escape(c) for c in word)
+
+
+DEG_HEAD = (r"(?:" + fz("master") + r"(?:'?s)?|" + fz("doctor") + r"|" + fz("bachelor") + r"(?:'?s)?|post-?\s?"
+            + fz("graduate") + r"\s+" + fz("diploma") + r")\s+(?:of|in)\s+")
+STATEMENT = re.compile(r"(?:" + fz("fulfil") + r"|" + fz("requirement") + r"|" + fz("submitted") + r"|award)"
+                       r"[^.]{0,200}?\b(" + DEG_HEAD + r"[A-Za-z ,&()'\-]{3,120})", re.I)
 DEG_ANY = re.compile(r"\b(" + DEG_HEAD + r"[A-Za-z ,&()'\-]{3,100})", re.I)
 ABBREV = [
     (re.compile(r"\b(ph\.?\s?d\.?|d\.?\s?phil)\b", re.I), "Doctoral", "Doctor of Philosophy"),
@@ -29,18 +34,25 @@ ABBREV = [
     (re.compile(r"\b(pgd|pg\.?\s?dip)\b", re.I), "Postgraduate Diploma", None),
     (re.compile(r"\b(b\.?\s?sc|ll\.?b|b\.?\s?ed)\b\.?", re.I), "Bachelors", None),
 ]
-STOP = re.compile(r"\s+(?:at|of the|from|to|by|submitted|presented|in the|lusaka|zambia|university|copyright|"
+STOP = re.compile(r"\s+(?:in\s+(?:the\s+)?(?:school|faculty|department|institute|college|multidisciplinary)|has|have|or|"
+                  r"for any|chairperson|signature|computer|student|candidate|examiner|name|date|declaration|"
+                  r"dr|prof|mr|mrs|ms|at|of the|from|to|by|submitted|presented|in the|lusaka|zambia|university|copyright|"
                   r"school|faculty|department|institute|college|supervisor|the)\b.*$", re.I)
 
-TITLE_WORDS = r"(?i:prof(?:essor)?|dr|mr|mrs|ms|rev|eng|assoc\.?\s+prof)\.?"
-PERSON = r"((?:" + TITLE_WORDS + r"\s+)?(?:[A-Z][a-zA-Z'\-]+|[A-Z]\.)(?:\s+(?:[A-Z][a-zA-Z'\-]+|[A-Z]\.)){1,4})"
+TITLE_WORDS = r"(?i:prof(?:essor)?s?|drs?|mr|mrs|ms|rev|eng|assoc\.?\s+prof)\.?"
+TOKEN = r"(?:[A-Z][a-zA-Z'\-]+|(?:[A-Z]\.){1,4})"
+PERSON = r"((?:" + TITLE_WORDS + r"\s*)?" + TOKEN + r"(?:\s*" + TOKEN + r"){1,4})"
+PEOPLE = PERSON[:-1] + r"(?:\s*(?:,|\band\b|&)\s*(?:" + TITLE_WORDS + r"\s*)?" + TOKEN + r"(?:\s*" + TOKEN + r"){1,4})?)"
+MY_SUP = r"\b(?i:my\s+(?:study\s+|research\s+|main\s+|principal\s+|academic\s+)?(?:co-?\s?)?supervisors?)"
 SUPERVISOR = [
     (re.compile(r"\b(?i:(?:main\s+|principal\s+|co-?\s?)?supervisors?)\s*[:\-–]\s*" + PERSON), 0.92),
     (re.compile(r"\b(?i:supervised\s+by)\s*[:\-–]?\s*" + PERSON), 0.9),
     (re.compile(r"\b(?i:under\s+the\s+(?:able\s+)?(?:supervision|guidance)\s+of)\s+" + PERSON), 0.88),
+    (re.compile(MY_SUP + r",?\s+" + PEOPLE), 0.86),          # acknowledgements: "my supervisor, Dr X, for ..."
+    (re.compile(PERSON + r",?\s+" + MY_SUP), 0.82),          # "... Prof. X, my supervisor, for ..."
     (re.compile(PERSON + r"\s*\(?\s*(?i:(?:main\s+|co-?\s?)?supervisor)\)?\b"), 0.75),
 ]
-NOT_NAMES = re.compile(r"\b(signature|signed|date|name|department|university|school|examiner|candidate|dean|"
+NOT_NAMES = re.compile(r"\b(supervisors?|co|signature|signed|date|name|department|university|school|examiner|candidate|dean|"
                        r"declaration|approval|head|chairperson|lecturer|the|of)\b", re.I)
 UNIT = re.compile(r"\b(department|school|faculty|institute|college)\s+of\s+(?=[A-Z])", re.I)
 UNIT_STOP = re.compile(r"\s*(?:,|\.|;|:|\(|\bat\b|\bthe\b|\buniversity\b|\blusaka\b|\bzambia\b|\bin\s+partial\b|"
@@ -50,26 +62,90 @@ UNIT_STOP = re.compile(r"\s*(?:,|\.|;|:|\(|\bat\b|\bthe\b|\buniversity\b|\blusak
 
 
 def _flat(page):
+    page = page.replace("\u2019", "'").replace("\u2018", "'").replace("/g3", " ")
     return re.sub(r"\s+", " ", page.replace("-\n", "")).strip()
 
 
+def _unsplit(t):
+    """Join words split by stray spaces in the degree statement, using the words that matter here."""
+    for w in ("master", "masters", "doctor", "bachelor", "postgraduate", "graduate", "diploma", "philosophy",
+              "science", "arts", "education", "administration", "management", "integrated", "communication"):
+        t = re.sub(r"\b" + fz(w) + r"\b", w, t, flags=re.I)
+    return t
+
+
+def _rejoin(t, vocab):
+    """'Li Brary and Information Studies' -> 'Library and Information Studies' when 'library' occurs intact more
+    often (vocab: word counts) than the rarer of its two fragments."""
+    toks = t.split()
+    out = []
+    i = 0
+    while i < len(toks):
+        if i + 1 < len(toks):
+            a, b = toks[i], toks[i + 1]
+            merged = (a + b).lower()
+            if a.isalpha() and b.isalpha() and vocab.get(merged, 0) > min(vocab.get(a.lower(), 0), vocab.get(b.lower(), 0)):
+                out.append(a + b.lower())
+                i += 2
+                continue
+        out.append(toks[i])
+        i += 1
+    return " ".join(out)
+
+
+def _tidy(t):
+    t = re.sub(r"\s*\([A-Z]{2,10}\)", "", t)          # "(IWRM)"
+    t = re.sub(r"(\s+[A-Za-z])+$", "", t.strip())      # stray trailing letters
+    return t.strip(" ,.;-")
+
+
 def _degree(stmt):
-    stmt = STOP.sub("", stmt.strip(" ,.;-"))
+    """'Master of Science in Computer Science at the University ...' -> ('Master of Science in Computer Science',
+    'Computer Science', 'Masters'); also 'Masters in X', 'Postgraduate Diploma in X', 'Master of Science (Physics)'."""
+    stmt = _tidy(STOP.sub("", _unsplit(re.sub(r"\s+", " ", stmt)).strip(" ,.;-")))
+    stmt = re.sub(r"(?i)\s+degree\b|\s+\(?m\.?\s?sc\.?\)?(?=\s+in\b)", "", stmt)  # "... Degree in", "Science Msc in" 
+    stmt = re.sub(r"\s*\(\s*([A-Za-z][A-Za-z ,&'\-]+)\s*\)\s*$", r" in \1", stmt)  # "(Physics)" -> "in Physics"
+    m = re.match(r"(?i)^(master|doctor|bachelor)(?:'?s)?\s+in\s+(.+)$", stmt)
+    pg = re.match(r"(?i)^post-?\s?graduate\s+diploma\s+(?:in|of)\s+(.+)$", stmt)
+    if pg:
+        disc = crosswalk._tc(pg.group(1))
+        return "Postgraduate Diploma in " + disc, disc, "Postgraduate Diploma"
+    if m:
+        disc = crosswalk._tc(m.group(2))
+        head = m.group(1).capitalize()
+        deg = {"Master": "Master's", "Bachelor": "Bachelor's"}.get(head, "Doctorate") + " in " + disc
+        return deg, disc, crosswalk.degree_level([head])
     deg, disc = crosswalk.degree_from_text(stmt)
     if not deg:
         return None, None, None
-    level = crosswalk.degree_level([deg])
-    return deg, disc, level
+    return deg + (" in " + disc if disc else ""), disc, crosswalk.degree_level([deg])
 
 
 def _clean_person(p):
     p = re.sub(r"\s+", " ", p).strip(" .,")
-    p = re.sub(r"^" + TITLE_WORDS + r"\s+", "", p, flags=re.I)
-    return p
+    p = re.sub(r"-\s+", "-", p)
+    p = re.sub(r"^" + TITLE_WORDS + r"\s*(?=[A-Z])", "", p)
+    if p.isupper() and len(p) > 4:
+        p = " ".join(w if re.fullmatch(r"(?:[A-Z]\.)+", w) else w.capitalize() for w in p.split())
+    return p.strip(" .,")
+
+
+from collections import Counter
+
+CORPUS_VOCAB = Counter()
+
+
+def prepare(texts):
+    """Called once per run with every cached text: word counts across the corpus, used to rejoin words that text
+    extraction split ("Eco nomics")."""
+    CORPUS_VOCAB.clear()
+    for t in texts:
+        CORPUS_VOCAB.update(w.lower() for w in re.findall(r"[A-Za-z]{2,}", t or ""))
 
 
 def predict(meta, text):
     pages = [_flat(p) for p in text.split("\f")]
+    vocab = CORPUS_VOCAB + Counter(w.lower() for w in re.findall(r"[A-Za-z]{2,}", " ".join(pages)))
     head = " ".join(pages[:3])
     allt = " ".join(pages)
     out = {}
@@ -78,10 +154,10 @@ def predict(meta, text):
     for rx, conf, scope in ((STATEMENT, 0.96, allt), (DEG_ANY, 0.82, head)):
         m = rx.search(scope)
         if m:
-            deg, disc, level = _degree(m.group(1))
+            deg, disc, level = _degree(_rejoin(m.group(1), vocab))
             if deg and level:
                 ev = scope[max(0, m.start() - 60): m.end() + 20]
-                out["degree"] = ([deg + (" in " + disc if disc else "")], conf, ev)
+                out["degree"] = ([deg], conf, ev)
                 out["degree_level"] = ([level], conf, ev)
                 if disc:
                     out["discipline"] = ([disc], conf - 0.05, ev)
@@ -100,17 +176,16 @@ def predict(meta, text):
     best, ev = 0.0, None
     for rx, conf in SUPERVISOR:
         for m in rx.finditer(allt):
-            name = _clean_person(m.group(1))
-            cut = NOT_NAMES.search(name)
-            if cut:
-                name = name[:cut.start()].strip(" .,")
-            if len(name.split()) < 2 or len(name) < 5 or name in sups:
-                continue
-            if any(a.lower() in name.lower() for a in (meta.get("title") or [])):
-                continue
-            sups.append(name)
-            if conf > best:
-                best, ev = conf, allt[max(0, m.start() - 20): m.end() + 20]
+            for name in re.split(r"\s*(?:,|\band\b|&)\s*", m.group(1)):
+                name = _clean_person(name)
+                cut = NOT_NAMES.search(name)
+                if cut:
+                    name = name[:cut.start()].strip(" .,")
+                if len(name.replace(".", ". ").split()) < 2 or len(name) < 5 or name in sups:
+                    continue
+                sups.append(name)
+                if conf > best:
+                    best, ev = conf, allt[max(0, m.start() - 20): m.end() + 20]
         if sups:
             break
     if sups:
