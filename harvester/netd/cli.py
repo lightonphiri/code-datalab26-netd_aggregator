@@ -7,6 +7,17 @@
   report                                        field completeness per institution
   csv-check FILE                                list problems in an HEI's CSV file before it is loaded (FR-10)
   check    [--max-age-hours H]                  health check after the scheduled run, incl. OAI-PMH Identify (exit 1 = problem)
+
+Metadata filling (SRS FR-14, FR-48 to FR-52):
+  extract-text [--source ID] [--limit N] [--retry-failed]   cache text of the first pages of each PDF
+  text-report                                    PDF text cache status per source
+  predict  [--source ID] [--model NAME] [--all]  run models over cached text (only new or changed input unless --all)
+  load-predictions FILE.jsonl                    load predictions computed elsewhere (e.g. Colab)
+  export-predictions FILE.csv                    all cached predictions, for checking
+  correct  RECORD_ID FIELD [VALUE ...] --by EMAIL [--note TEXT]   manual correction ("_scope include|exclude")
+  uncorrect RECORD_ID FIELD                      remove a manual correction
+  gold-sample FILE.csv [--n N] [--seed S]        stratified sample of records for manual annotation
+  evaluate GOLD.csv                              precision, recall and F1 per field and model against GOLD.csv
 """
 import argparse
 import os
@@ -32,8 +43,14 @@ def selected(sources, sid):
     return [s for s in sources if not sid or s["id"] == sid]
 
 
-def exclusion(rec, src, scope):
-    """Reason to leave a record out of the portal (SRS FR-47), or None. The raw record is kept either way."""
+def exclusion(rec, src, scope, decision=None):
+    """Reason to leave a record out of the portal (SRS FR-47), or None. The raw record is kept either way.
+    decision: an admin's "_scope" correction (FR-52), which overrides everything else."""
+    if decision and decision["value"]:
+        if decision["value"][0] == "include":
+            return None
+        return "excluded in the admin panel by %s%s" % (decision["by"] or "admin",
+                                                        ": " + decision["note"] if decision.get("note") else "")
     for e in src.get("exclude_records") or []:
         if e.get("oai_id") == rec["oai_id"]:
             return "listed in sources.yml: %s" % (e.get("reason") or "excluded by the portal team")
@@ -46,8 +63,10 @@ def exclusion(rec, src, scope):
 
 
 def do_process(store, srcs, ecfg, scope=None):
+    from .ml.overlay import Overlay
     fns = enrich.load(ecfg.get("enrichers"))
     minc = float(ecfg.get("min_confidence", 0.0))
+    ov = Overlay(store, dict(ecfg.get("ml") or {}, min_confidence=minc))
     n = x = 0
     for src in srcs:
         names = store.set_names(src["id"])
@@ -60,7 +79,8 @@ def do_process(store, srcs, ecfg, scope=None):
                 store.delete_record(rid)
                 continue
             rec = enrich.run(rec, fns, minc)
-            why = exclusion(rec, src, scope or {})
+            rec, decision = ov.apply(rec)
+            why = exclusion(rec, src, scope or {}, decision)
             if why:
                 store.delete_record(rid)
                 store.put_excluded(rid, src["id"], row["oai_id"], (rec.get("title") or [""])[0], why)
@@ -68,8 +88,9 @@ def do_process(store, srcs, ecfg, scope=None):
                 continue
             store.put_record(rec)
             n += 1
+    q = ov.save_review([s["id"] for s in srcs])
     store.commit()
-    print("processed %d records; %d excluded (see netd.cli report)" % (n, x))
+    print("processed %d records; %d excluded (see netd.cli report); %d degree levels to review" % (n, x, q))
 
 
 def do_index(store, srcs, solr):
@@ -157,8 +178,18 @@ def do_check(store, srcs, solr, max_age_hours):
 
 def main(argv=None):
     p = argparse.ArgumentParser(prog="netd")
-    p.add_argument("command", choices=["harvest", "process", "index", "run", "report", "check", "csv-check"])
-    p.add_argument("file", nargs="?", help="CSV file (csv-check)")
+    p.add_argument("command", choices=["harvest", "process", "index", "run", "report", "check", "csv-check",
+                                       "extract-text", "text-report", "predict", "load-predictions",
+                                       "export-predictions", "correct", "uncorrect", "gold-sample", "evaluate"])
+    p.add_argument("args", nargs="*", help="file (csv-check, load/export-predictions, gold-sample, evaluate) or "
+                                           "RECORD_ID FIELD [VALUE ...] (correct, uncorrect)")
+    p.add_argument("--model")
+    p.add_argument("--all", action="store_true")
+    p.add_argument("--retry-failed", action="store_true")
+    p.add_argument("--by")
+    p.add_argument("--note")
+    p.add_argument("--n", type=int, default=300)
+    p.add_argument("--seed", type=int, default=2026)
     p.add_argument("--source")
     p.add_argument("--full", action="store_true")
     p.add_argument("--limit", type=int)
@@ -166,6 +197,7 @@ def main(argv=None):
     p.add_argument("--db", default=os.environ.get("NETD_DB", os.path.join(HERE, "netd.sqlite3")))
     p.add_argument("--solr", default=os.environ.get("NETD_SOLR", "http://127.0.0.1:8983/solr/netd"))
     a = p.parse_args(argv)
+    a.file = a.args[0] if a.args else None
     if a.command == "csv-check":
         from .csvload import check_file
         if not a.file:
@@ -193,6 +225,42 @@ def main(argv=None):
         do_report(store)
     if a.command == "check":
         do_check(store, srcs, a.solr, a.max_age_hours)
+    if a.command in ML_COMMANDS:
+        ML_COMMANDS[a.command](store, a)
+
+
+def _ml(name):
+    def run(store, a):
+        from .ml import cache, evaluate, predict, textcache
+        cache.init(store)
+        if name == "extract-text":
+            textcache.run(store, a.source, limit=a.limit, retry_failed=a.retry_failed)
+        elif name == "text-report":
+            textcache.summary(store)
+        elif name == "predict":
+            predict.run(store, a.source, a.model, everything=a.all)
+        elif name == "load-predictions":
+            cache.load_batch(store, a.file)
+        elif name == "export-predictions":
+            cache.export_predictions(store, a.file)
+        elif name in ("correct", "uncorrect"):
+            if len(a.args) < 2 or (name == "correct" and not a.by):
+                sys.exit("usage: netd.cli correct RECORD_ID FIELD [VALUE ...] --by EMAIL [--note TEXT]")
+            if name == "correct":
+                cache.put_correction(store, a.args[0], a.args[1], a.args[2:], a.by, a.note)
+            else:
+                cache.delete_correction(store, a.args[0], a.args[1])
+            store.commit()
+            print("%s %s %s" % (name, a.args[0], a.args[1]))
+        elif name == "gold-sample":
+            evaluate.sample(store, a.file, a.n, a.seed)
+        elif name == "evaluate":
+            evaluate.evaluate(store, a.file)
+    return run
+
+
+ML_COMMANDS = {c: _ml(c) for c in ("extract-text", "text-report", "predict", "load-predictions", "export-predictions",
+                                   "correct", "uncorrect", "gold-sample", "evaluate")}
 
 
 if __name__ == "__main__":

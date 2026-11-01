@@ -7,3 +7,9 @@ enrichers: []
 
 # Values whose record["confidence"][field] is below this are searchable but not faceted.
 min_confidence: 0.6
+
+# Metadata filling from cached predictions (SRS FR-14, FR-49 to FR-52; netd/ml/overlay.py).
+ml:
+  show_threshold: 0.8        # predicted values below this are not shown at all
+  level_auto_exclude: 0.95   # predicted below-postgraduate level at or above this: record excluded (FR-47)
+  level_review_min: 0.6      # ... between this and level_auto_exclude: queued for review in the admin panel
