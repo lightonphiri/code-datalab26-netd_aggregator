@@ -1,0 +1,104 @@
+<% content_for(:page_title) { "Metadata Quality — Zambia National ETD Portal" } %>
+<% groups = QualityController::GROUPS %>
+<% bar = lambda do |e, compact = false| %>
+  <% capture do %>
+    <span class="netd-qbar<%= ' netd-qbar-sm' if compact %>" role="img"
+          aria-label="<%= groups.map { |g, (l, _)| "#{l} #{e[g]}%" }.join(', ') %>">
+      <% groups.each do |g, (l, _)| %>
+        <% next unless e[g].to_f.positive? %>
+        <span class="netd-qseg netd-q-<%= g %>" style="flex-basis: <%= e[g] %>%" data-bs-toggle="tooltip"
+              title="<%= "#{e['label'] || ''}#{': ' if e['label']}#{l} #{e[g]}%" %>"></span>
+      <% end %>
+    </span>
+  <% end %>
+<% end %>
+<div class="netd-page netd-faq netd-quality">
+  <h1>Metadata Quality</h1>
+  <p>How complete the metadata of each contributing institution is, element by element, and how much of it comes from the
+    institution's own repository. Measured against the <a href="https://ndltd.org/wp-content/uploads/2021/04/etd-ms-v1.1.html"
+    target="_blank" rel="noopener">ETD-MS 1.1</a> metadata standard for theses and dissertations used by NDLTD, plus faculty,
+    department and full text.</p>
+  <% if @report.nil? %>
+    <p class="netd-note">The quality report has not been computed yet. It is refreshed after every nightly harvest.</p>
+  <% else %>
+    <% all = @report['institutions'].find { |i| i['id'].nil? } %>
+    <% insts = @report['institutions'].reject { |i| i['id'].nil? } %>
+    <p class="netd-qlegend">
+      <% groups.each do |g, (l, d)| %>
+        <span><span class="netd-qkey netd-q-<%= g %>"></span><strong><%= l %></strong> — <%= d.downcase %></span>
+      <% end %>
+    </p>
+
+    <h2>Summary</h2>
+    <table class="netd-about netd-api netd-qtable">
+      <thead><tr><th>Institution</th><th class="text-end">ETDs</th>
+        <th class="text-end" title="Mean share of the 12 ETD-MS elements that the repository supplies in the proper element">ETD-MS compliance at source</th>
+        <th class="text-end" title="Mean share of all 15 elements with a value, after the portal's filling">Complete in the portal</th>
+        <th>All elements</th></tr></thead>
+      <tbody>
+      <% (insts + [all]).compact.each do |i| %>
+        <% tot = groups.keys.to_h { |g| [g, (i['elements'].sum { |e| e[g] } / i['elements'].size).round(1)] } %>
+        <tr class="<%= 'netd-qtotal' if i['id'].nil? %>">
+          <td><%= i['id'] ? link_to(i['name'], "#q-#{i['id']}") : i['name'] %></td>
+          <td class="text-end"><%= number_with_delimiter(i['records']) %></td>
+          <td class="text-end"><strong><%= i['etdms_compliance'] %>%</strong></td>
+          <td class="text-end"><%= i['complete_after_portal'] %>%</td>
+          <td><%= bar.call(tot.merge('label' => i['name']), true) %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+
+    <h2>By element</h2>
+    <p>Share of each institution's ETDs, by where the value comes from. Hover over a bar for the figures.</p>
+    <table class="netd-about netd-api netd-qtable netd-qmatrix">
+      <thead><tr><th>Element <small>(ETD-MS)</small></th>
+        <% insts.each do |i| %><th><%= i['name'] %></th><% end %></tr></thead>
+      <tbody>
+      <% insts.first['elements'].each_with_index do |e0, k| %>
+        <tr><td><%= e0['label'] %><% if e0['etdms'] %><br><small><code><%= e0['etdms'] %></code></small><% end %></td>
+          <% insts.each do |i| e = i['elements'][k] %>
+            <td><%= bar.call(e.merge('label' => "#{i['name']}, #{e['label']}"), true) %>
+              <small class="netd-qnum"><%= e['repository'] %>% at source · <%= (100 - e['missing']).round(1) %>% filled</small></td>
+          <% end %></tr>
+      <% end %>
+      </tbody>
+    </table>
+
+    <% insts.each do |i| %>
+      <h2 id="q-<%= i['id'] %>"><%= i['name'] %></h2>
+      <p><%= number_with_delimiter(i['records']) %> ETDs. ETD-MS compliance at source <strong><%= i['etdms_compliance'] %>%</strong>;
+        complete in the portal <strong><%= i['complete_after_portal'] %>%</strong>.
+        <%= link_to 'Browse its ETDs', search_action_path(f: { institution_ssim: [i['name']] }) %>.</p>
+      <% if i['to_improve'].present? %>
+        <p class="mb-1"><strong>Suggested improvements at the repository</strong> (elements supplied in the proper element for fewer than half of the ETDs):</p>
+        <ul><% i['to_improve'].each do |a| %><li><%= a %></li><% end %></ul>
+      <% end %>
+      <details>
+        <summary>Figures by element</summary>
+        <table class="netd-about netd-api netd-qtable">
+          <thead><tr><th>Element</th><% groups.each_value do |(l, _)| %><th class="text-end"><%= l %></th><% end %></tr></thead>
+          <tbody><% i['elements'].each do |e| %>
+            <tr><td><%= e['label'] %></td><% groups.each_key do |g| %><td class="text-end"><%= e[g] %>%</td><% end %></tr>
+          <% end %></tbody>
+        </table>
+      </details>
+    <% end %>
+
+    <h2>About these figures</h2>
+    <ul>
+      <li>Computed after every nightly harvest; last computed <%= Time.parse(@report['generated_at']).in_time_zone('Africa/Lusaka').strftime('%B %-d, %Y, %H:%M') %> (Lusaka time).
+        Download: <%= link_to 'CSV', quality_path(format: :csv) %> · <%= link_to 'JSON', quality_path(format: :json) %>.</li>
+      <li>"At source" counts only values the repository supplies in the proper metadata element. Values the portal reads from
+        collection names or free text, or fills from the PDF (shown with a "derived" badge on record pages), make the portal
+        more complete but do not help other services that harvest the repository directly.</li>
+      <li>Only institutions whose ETDs are harvested are shown. Institutions not yet contributing are listed on the
+        <%= link_to 'home page', root_path %>; the <%= link_to 'guide for institutions', contribute_path %> explains how to take part.</li>
+    </ul>
+  <% end %>
+</div>
+<script>
+  document.querySelectorAll('.netd-quality [data-bs-toggle="tooltip"]').forEach(function (el) {
+    if (window.bootstrap && bootstrap.Tooltip) { new bootstrap.Tooltip(el); }
+  });
+</script>

@@ -237,3 +237,22 @@ footer.netd-footer { padding: 0; background: #fff; }
 /* Field of study (OpenAlex Topics, FR-55) */
 .netd-fos { display: inline-block; margin: 0 .6rem .3rem 0; }
 .netd-fos-note { font-size: .8rem; color: #666; margin-top: .2rem; }
+
+/* Metadata quality dashboard (FR-28): stacked bars by origin of each value; ordinal blue ramp validated
+   (dataviz validator, light surface): repository #104281, elsewhere #256abf, portal #86b6ef; missing neutral grey. */
+.netd-quality .netd-q-repository { background: #104281; }
+.netd-quality .netd-q-elsewhere { background: #256abf; }
+.netd-quality .netd-q-portal { background: #86b6ef; }
+.netd-quality .netd-q-missing { background: #d6d5d0; }
+.netd-qbar { display: flex; gap: 2px; width: 100%; min-width: 120px; height: 14px; }
+.netd-qbar-sm { height: 10px; }
+.netd-qseg { display: block; flex-grow: 0; flex-shrink: 1; min-width: 2px; }
+.netd-qseg:first-child { border-radius: 4px 0 0 4px; }
+.netd-qseg:last-child { border-radius: 0 4px 4px 0; }
+.netd-qseg:only-child { border-radius: 4px; }
+.netd-qlegend { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; font-size: .9rem; }
+.netd-qkey { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: .35rem; vertical-align: -1px; }
+.netd-qtable td, .netd-qtable th { vertical-align: middle; }
+.netd-qtotal td { font-weight: 600; border-top: 2px solid #ccc; }
+.netd-qmatrix td { min-width: 150px; }
+.netd-qnum { display: block; color: #555; margin-top: 2px; }

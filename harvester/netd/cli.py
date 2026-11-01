@@ -8,6 +8,7 @@
   report                                        field completeness per institution
   csv-check FILE                                list problems in an HEI's CSV file before it is loaded (FR-10)
   check    [--max-age-hours H]                  health check after the scheduled run, incl. OAI-PMH Identify (exit 1 = problem)
+  quality-report                                metadata quality per institution for the public quality page (FR-28)
   check-repositories [--out FILE]               weekly check of the not-yet-harvested repositories in institutions.yml (FR-58)
 
 Metadata filling (SRS FR-14, FR-48 to FR-52):
@@ -181,7 +182,7 @@ def do_check(store, srcs, solr, max_age_hours):
 
 def main(argv=None):
     p = argparse.ArgumentParser(prog="netd")
-    p.add_argument("command", choices=["harvest", "process", "index", "run", "reprocess", "report", "check", "csv-check", "check-repositories",
+    p.add_argument("command", choices=["harvest", "process", "index", "run", "reprocess", "report", "check", "csv-check", "check-repositories", "quality-report",
                                        "extract-text", "ocr-text", "text-report", "predict", "load-predictions",
                                        "export-predictions", "correct", "uncorrect", "gold-sample", "evaluate"])
     p.add_argument("args", nargs="*", help="file (csv-check, load/export-predictions, gold-sample, evaluate) or "
@@ -232,6 +233,12 @@ def main(argv=None):
         do_process(store, srcs, cfg_load("enrichers.yml"), scfg.get("scope"))
     if a.command in ("index", "run", "reprocess"):
         do_index(store, srcs, a.solr)
+    if a.command in ("run", "reprocess", "quality-report"):
+        try:  # all sources, whatever --source was given; never breaks the scheduled run
+            from .quality import run as quality_report
+            quality_report(store, sources, os.path.join(os.path.dirname(a.out), "quality.json"))
+        except Exception as e:  # noqa: BLE001
+            print("quality report skipped: %s" % e, file=sys.stderr)
     if a.command == "report":
         do_report(store)
     if a.command == "check":
