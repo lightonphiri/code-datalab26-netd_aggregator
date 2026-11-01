@@ -12,7 +12,7 @@
   <table class="netd-about netd-api">
     <tr><th>Search records</th><td><code>GET /api/v1/records?q=malaria&amp;level=doctoral&amp;year=2015-2025</code></td></tr>
     <tr><th>Filters</th><td><code>institution</code> (ids from <code>/institutions</code>, comma-separated), <code>level</code>
-      (<code>masters</code>, <code>doctoral</code>, <code>bachelors</code>), <code>year</code> (<code>2024</code> or <code>2015-2025</code>),
+      (<code>masters</code>, <code>doctoral</code>, <code>postgraduate_diploma</code>), <code>year</code> (<code>2024</code> or <code>2015-2025</code>),
       <code>full_text</code> (<code>true</code>/<code>false</code>), <code>updated_since</code>, and exact <code>faculty</code>,
       <code>department</code>, <code>discipline</code>, <code>degree</code>, <code>subject_exact</code>, <code>supervisor_exact</code></td></tr>
     <tr><th>Search one field</th><td><code>&amp;field=title</code> (also <code>author</code>, <code>supervisor</code>, <code>subject</code>)</td></tr>
@@ -40,7 +40,7 @@
     <tr><th>Protocol</th><td>OAI-PMH 2.0; all six verbs (<code>Identify</code>, <code>ListMetadataFormats</code>, <code>ListSets</code>,
       <code>ListIdentifiers</code>, <code>ListRecords</code>, <code>GetRecord</code>)</td></tr>
     <tr><th>Metadata formats</th><td><code>oai_dc</code> (Dublin Core) and <code>etdms</code> (ETD-MS v1.1, for NDLTD)</td></tr>
-    <tr><th>Sets</th><td>One per institution (for example <code>inst:unza</code>) and per degree level (<code>level:doctoral</code>, <code>level:masters</code>)</td></tr>
+    <tr><th>Sets</th><td>One per institution (for example <code>inst:unza</code>) and per degree level (<code>level:doctoral</code>, <code>level:masters</code>, <code>level:postgraduate-diploma</code>)</td></tr>
     <tr><th>Datestamps</th><td>When the record last changed in the portal (UTC, <code>YYYY-MM-DDThh:mm:ssZ</code>); use <code>from</code> and <code>until</code> for incremental harvesting</td></tr>
     <tr><th>Paging</th><td>100 records per response, with resumption tokens valid for 24 hours</td></tr>
     <tr><th>Identifiers</th><td><code>oai:netd.ac.zm:&lt;record id&gt;</code>, e.g. <code>oai:netd.ac.zm:unza-123456789-9150</code></td></tr>
@@ -56,7 +56,7 @@
     from the file are removed from the portal.</p>
   <table class="netd-about netd-api">
     <tr><th>Required columns</th><td><code>identifier</code> (unique within your institution; letters, digits, <code>-</code> and <code>_</code>),
-      <code>title</code>, <code>author</code>, <code>year</code> (four digits), <code>degree_level</code> (<code>Masters</code> or <code>Doctoral</code>)</td></tr>
+      <code>title</code>, <code>author</code>, <code>year</code> (four digits), <code>degree_level</code> (<code>Masters</code>, <code>Doctoral</code> or <code>Postgraduate Diploma</code>)</td></tr>
     <tr><th>Optional columns</th><td><code>degree</code>, <code>supervisor</code>, <code>faculty</code>, <code>department</code>,
       <code>discipline</code>, <code>subject</code>, <code>abstract</code>, <code>language</code> (e.g. <code>en</code>),
       <code>url</code> (the record's page at your institution), <code>pdf_url</code> (a public link to the full text), <code>rights</code></td></tr>

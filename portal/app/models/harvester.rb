@@ -54,6 +54,15 @@ class Harvester
       db&.close
     end
 
+    def excluded(source)
+      db = store
+      db.execute('SELECT * FROM excluded WHERE source=? ORDER BY id', [source])
+    rescue SQLite3::Exception
+      []
+    ensure
+      db&.close
+    end
+
     def running?
       File.open(LOCK, File::RDWR | File::CREAT, 0o644) { |f| !f.flock(File::LOCK_EX | File::LOCK_NB) }
     rescue SystemCallError

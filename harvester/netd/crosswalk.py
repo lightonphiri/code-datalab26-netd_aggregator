@@ -74,8 +74,11 @@ MAP = {
 DEGREE_PAT = [
     (r"\b(ph\.?\s?d|doctor of philosophy|doctoral|d\.?b\.?a|doctor of)\b", "Doctoral"),
     (r"\b(master|m\.?\s?sc|m\.?\s?a\b|m\.?\s?ed|mba|m\.?\s?phil|mph|mmed|llm|mlis)", "Masters"),
+    (r"\b(post-?\s?graduate diploma|pg\.?\s?dip(loma)?|pgdip)\b", "Postgraduate Diploma"),
     (r"\b(bachelor|b\.?\s?sc|honours|undergraduate)\b", "Bachelors"),
 ]
+# Levels in scope (SRS FR-47): records identified as any other level are excluded when processing.
+POSTGRADUATE = ("Doctoral", "Masters", "Postgraduate Diploma")
 FAC_PAT = re.compile(r"\b(school|faculty|college|institute)\s+of\b", re.I)
 DEPT_TXT = re.compile(r"department of ([A-Z][\w ,&\-]+?)(?:[.,;]| in | at | of the|$)", re.I)
 
@@ -209,6 +212,11 @@ def to_canonical(row, src, set_names, files=None):
             if deg:
                 break
 
+    # Degree level supplied by the repository: normalise to Doctoral / Masters / Postgraduate Diploma / Bachelors
+    if rec.get("degree_level"):
+        lvl = degree_level(rec["degree_level"])
+        if lvl:
+            rec["degree_level"] = [lvl]
     # Degree level from degree name / type / description text
     if not rec.get("degree_level"):
         texts = rec.get("degree", []) + rec.get("type", []) + flat.get("dc.description", []) + all_names

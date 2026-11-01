@@ -27,6 +27,7 @@ module Admin
     def source
       @source = Harvester.source(params[:id]) or return redirect_to(admin_root_path, alert: 'Unknown source.')
       @runs = Harvester.recent_runs(@source['id'])
+      @excluded = Harvester.excluded(@source['id'])
       @log = Harvester.run_log(@source['id'])
       @running = Harvester.running?
     end

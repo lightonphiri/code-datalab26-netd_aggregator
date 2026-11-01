@@ -100,10 +100,10 @@ def validate(row):
         p.append("year %r is not a four-digit year" % row["year"])
     if row.get("degree_level"):
         lvl = degree_level([row["degree_level"]])
-        if lvl in ("Masters", "Doctoral"):  # postgraduate ETDs only
+        if lvl in ("Masters", "Doctoral", "Postgraduate Diploma"):  # postgraduate ETDs only (FR-47)
             row["degree_level"] = lvl
         else:
-            p.append("degree_level %r: use Masters or Doctoral" % row["degree_level"])
+            p.append("degree_level %r: use Masters, Doctoral or Postgraduate Diploma" % row["degree_level"])
     for col in ("url", "pdf_url"):
         if row.get(col) and not URL_PAT.match(row[col]):
             p.append("%s %r is not an http(s) link" % (col, row[col]))

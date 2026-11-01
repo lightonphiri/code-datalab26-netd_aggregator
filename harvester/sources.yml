@@ -4,6 +4,14 @@
 # `ignore_set_names` are community/collection names that are containers, not
 # faculties/departments, so they are not used when deriving Faculty/Department.
 
+# Scope (SRS FR-47): the portal holds postgraduate work only. A record whose degree level is identified
+# (from the repository or from its degree, type or description text) as anything else is left out when
+# processing; records whose level cannot be identified are kept. The raw harvested record is never deleted,
+# and every exclusion is listed by `netd.cli report` and on the admin panel's source page.
+# Individual records can also be excluded per source with `exclude_records` (oai_id and reason).
+scope:
+  degree_levels: [Doctoral, Masters, Postgraduate Diploma]
+
 sources:
   - id: unza
     name: University of Zambia
@@ -15,6 +23,9 @@ sources:
                        "African Digital Health Library (ADHL) - Zambia"]
     # RIMS ETD collections are the Schools (e.g. "Natural Sciences"), so map them to Faculty.
     collections_are: faculty
+    exclude_records:
+      - oai_id: "oai:rims.unza.ac.zm:123456789/8053"
+        reason: "Bachelor of Laws dissertation deposited in the Theses and Dissertations community (checked by L. Phiri, November 1, 2026)"
 
   - id: unilus
     name: University of Lusaka

@@ -30,6 +30,9 @@ CREATE TABLE IF NOT EXISTS bitstreams (
     mime TEXT, name TEXT, size INTEGER,
     PRIMARY KEY (source, oai_id, url)
 );
+CREATE TABLE IF NOT EXISTS excluded (       -- records left out of the portal when processing (SRS FR-47)
+    id TEXT PRIMARY KEY, source TEXT NOT NULL, oai_id TEXT, title TEXT, reason TEXT, excluded_at REAL
+);
 CREATE TABLE IF NOT EXISTS harvest_runs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     source TEXT, started_at REAL, finished_at REAL,
@@ -87,6 +90,20 @@ class Store:
 
     def delete_record(self, rec_id):
         self.db.execute("DELETE FROM records WHERE id=?", (rec_id,))
+
+    def clear_excluded(self, source):
+        self.db.execute("DELETE FROM excluded WHERE source=?", (source,))
+
+    def put_excluded(self, rec_id, source, oai_id, title, reason):
+        self.db.execute("INSERT OR REPLACE INTO excluded VALUES (?,?,?,?,?,?)",
+                        (rec_id, source, oai_id, title, reason, time.time()))
+
+    def excluded(self, source=None):
+        q = "SELECT * FROM excluded" + (" WHERE source=?" if source else "") + " ORDER BY source, id"
+        return self.db.execute(q, (source,) if source else ()).fetchall()
+
+    def record_ids(self, source):
+        return {r["id"] for r in self.db.execute("SELECT id FROM records WHERE source=?", (source,))}
 
     def records(self, source=None):
         """Canonical records; each carries "_updated_at" (epoch seconds of its last content change)."""

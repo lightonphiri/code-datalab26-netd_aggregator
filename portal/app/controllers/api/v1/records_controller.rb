@@ -15,7 +15,7 @@ module Api
       }.freeze
       EXACT = { 'faculty' => 'faculty_ssim', 'department' => 'department_ssim', 'discipline' => 'discipline_ssim',
                 'degree' => 'degree_ssim', 'subject_exact' => 'subject_ssim', 'supervisor_exact' => 'supervisor_ssim' }.freeze
-      LEVELS = { 'masters' => 'Masters', 'doctoral' => 'Doctoral', 'bachelors' => 'Bachelors' }.freeze
+      LEVELS = { 'masters' => 'Masters', 'doctoral' => 'Doctoral', 'postgraduate_diploma' => 'Postgraduate Diploma' }.freeze
       KNOWN = %w[q field institution level year full_text updated_since sort page per_page] + EXACT.keys
 
       def index
@@ -83,7 +83,7 @@ module Api
           fq << "{!terms f=source_ssi}#{ids.join(',')}"
         end
         if params[:level].present?
-          raise ArgumentError, 'level must be masters, doctoral or bachelors' unless LEVELS.key?(params[:level])
+          raise ArgumentError, 'level must be masters, doctoral or postgraduate_diploma' unless LEVELS.key?(params[:level])
 
           fq << "{!term f=degree_level_ssim}#{LEVELS[params[:level]]}"
         end

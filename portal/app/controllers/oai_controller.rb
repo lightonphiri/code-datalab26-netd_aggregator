@@ -18,8 +18,9 @@ class OaiController < ActionController::Base
   PAGE_SIZE = 100
   TOKEN_TTL = 24 * 3600
   PORTAL_RECORD_URL = 'https://netd.ac.zm/catalog/'
-  LEVELS = { 'masters' => 'Masters', 'doctoral' => 'Doctoral' }.freeze
-  LEVEL_NAMES = { 'masters' => "Master's theses and dissertations", 'doctoral' => 'Doctoral theses' }.freeze
+  LEVELS = { 'masters' => 'Masters', 'doctoral' => 'Doctoral', 'postgraduate-diploma' => 'Postgraduate Diploma' }.freeze
+  LEVEL_NAMES = { 'masters' => "Master's theses and dissertations", 'doctoral' => 'Doctoral theses',
+                  'postgraduate-diploma' => 'Postgraduate diploma reports and dissertations' }.freeze
 
   FORMATS = {
     'oai_dc' => { schema: 'http://www.openarchives.org/OAI/2.0/oai_dc.xsd',

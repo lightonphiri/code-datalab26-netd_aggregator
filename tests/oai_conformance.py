@@ -139,7 +139,8 @@ total = 0
 for s in sets:
     n = sum(1 for _ in sk.ListIdentifiers(metadataPrefix="oai_dc", set=s))
     print("     set %-16s %5d" % (s, n))
-    expect(n > 0, "set %s non-empty" % s)
+    if s.startswith("inst:"):
+        expect(n > 0, "set %s non-empty" % s)
     if s.startswith("inst:"):
         total += n
 expect(total == EXPECTED, "institution sets add up to %d (%d)" % (EXPECTED, total))

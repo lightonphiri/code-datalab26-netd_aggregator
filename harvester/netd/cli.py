@@ -32,23 +32,44 @@ def selected(sources, sid):
     return [s for s in sources if not sid or s["id"] == sid]
 
 
-def do_process(store, srcs, ecfg):
+def exclusion(rec, src, scope):
+    """Reason to leave a record out of the portal (SRS FR-47), or None. The raw record is kept either way."""
+    for e in src.get("exclude_records") or []:
+        if e.get("oai_id") == rec["oai_id"]:
+            return "listed in sources.yml: %s" % (e.get("reason") or "excluded by the portal team")
+    levels = scope.get("degree_levels") or list(crosswalk.POSTGRADUATE)
+    lvl = (rec.get("degree_level") or [None])[0]
+    if lvl and lvl not in levels:  # unknown level: kept (ETD collections are postgraduate)
+        return "degree level %s is out of scope (%s from %s)" % (
+            lvl, "only " + ", ".join(levels), rec.get("provenance", {}).get("degree_level", "?"))
+    return None
+
+
+def do_process(store, srcs, ecfg, scope=None):
     fns = enrich.load(ecfg.get("enrichers"))
     minc = float(ecfg.get("min_confidence", 0.0))
-    n = 0
+    n = x = 0
     for src in srcs:
         names = store.set_names(src["id"])
         files = store.bitstreams(src["id"])
+        store.clear_excluded(src["id"])
         for row in store.raw_records(src["id"]):
             rec = crosswalk.to_canonical(row, src, names, files.get(row["oai_id"]))
             rid = crosswalk.record_id(src["id"], row["oai_id"])
             if rec is None:
                 store.delete_record(rid)
                 continue
-            store.put_record(enrich.run(rec, fns, minc))
+            rec = enrich.run(rec, fns, minc)
+            why = exclusion(rec, src, scope or {})
+            if why:
+                store.delete_record(rid)
+                store.put_excluded(rid, src["id"], row["oai_id"], (rec.get("title") or [""])[0], why)
+                x += 1
+                continue
+            store.put_record(rec)
             n += 1
     store.commit()
-    print("processed %d records" % n)
+    print("processed %d records; %d excluded (see netd.cli report)" % (n, x))
 
 
 def do_index(store, srcs, solr):
@@ -61,8 +82,8 @@ def do_index(store, srcs, solr):
                 batch = []
         if batch:
             index.post(solr, batch)
-        gone = [crosswalk.record_id(src["id"], r["oai_id"]) for r in store.raw_records(src["id"]) if r["deleted"]]
-        index.delete_ids(solr, gone)
+        # remove from Solr whatever the store no longer holds (deleted at source, excluded, or renamed)
+        index.delete_ids(solr, sorted(index.ids(solr, src["id"]) - store.record_ids(src["id"])))
     index.post(solr, [], commit=True)
     print("indexed into %s" % solr)
 
@@ -77,6 +98,8 @@ def do_report(store):
         for f in fields:
             s[f] += bool(rec.get(f))
     print("institution  records  " + "  ".join(fields))
+    for r in store.excluded():
+        print("excluded: %s  %s  (%s)" % (r["id"], (r["title"] or "")[:70], r["reason"]))
     for inst, s in sorted(stats.items()):
         print("%-11s %8d  " % (inst, s["n"]) + "  ".join(
             "%*.0f%%" % (len(f) - 1, 100.0 * s[f] / max(s["n"], 1)) for f in fields))
@@ -148,7 +171,8 @@ def main(argv=None):
         if not a.file:
             sys.exit("usage: netd.cli csv-check FILE")
         sys.exit(1 if check_file(a.file) else 0)
-    sources = cfg_load("sources.yml").get("sources", [])
+    scfg = cfg_load("sources.yml")
+    sources = scfg.get("sources", [])
     # sources added from the admin panel (CSV institutions), kept on the server only
     local = os.environ.get("NETD_SOURCES_LOCAL", os.path.join(HERE, "sources.local.yml"))
     if os.path.exists(local):
@@ -162,7 +186,7 @@ def main(argv=None):
         for s in srcs:
             harvest.harvest_source(store, s, full=a.full, limit=a.limit)
     if a.command in ("process", "run"):
-        do_process(store, srcs, cfg_load("enrichers.yml"))
+        do_process(store, srcs, cfg_load("enrichers.yml"), scfg.get("scope"))
     if a.command in ("index", "run"):
         do_index(store, srcs, a.solr)
     if a.command == "report":

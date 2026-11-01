@@ -25,6 +25,18 @@
     <% if @runs.empty? %><tr><td colspan="6">Not harvested yet.</td></tr><% end %>
     </tbody>
   </table>
+  <h2>Excluded records (<%= @excluded.size %>)</h2>
+  <p class="netd-admin-help">Harvested but left out of the portal: outside the postgraduate scope, or listed under
+    <code>exclude_records</code> in <code>harvester/sources.yml</code> (SRS FR-47). The harvested metadata is kept.</p>
+  <table class="table table-sm netd-admin-table">
+    <thead><tr><th>Record</th><th>Title</th><th>Reason</th></tr></thead>
+    <tbody>
+    <% @excluded.each do |r| %>
+      <tr><td><code><%= r['oai_id'] %></code></td><td><%= r['title'] %></td><td><small><%= r['reason'] %></small></td></tr>
+    <% end %>
+    <% if @excluded.empty? %><tr><td colspan="3">None.</td></tr><% end %>
+    </tbody>
+  </table>
   <% if @log %>
     <h2>Output of the last run started here</h2>
     <pre class="netd-code netd-admin-log"><%= @log %></pre>

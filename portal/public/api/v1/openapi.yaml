@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: |
     Read-only access to the theses and dissertations aggregated by the Zambia National ETD Portal
-    (https://netd.ac.zm) from Zambian higher education institutions. No key is needed. Responses are JSON
+    (https://netd.ac.zm) from Zambian higher education institutions: postgraduate diploma, master's and doctoral work. No key is needed. Responses are JSON
     (UTF-8); the export is also available as CSV. Each endpoint allows 120 requests a minute from one address
     (the export, 20 an hour); over the limit, the API answers 429. Field names in this version will not change;
     additions are backwards compatible. For metadata harvesting, the OAI-PMH interface at
@@ -42,7 +42,7 @@ paths:
           description: Institution id(s), comma-separated (see `/institutions`)
           schema: {type: string}
           example: unza,unilus
-        - {name: level, in: query, description: 'Degree level (a few records in ETD collections are at bachelor''s level)', schema: {type: string, enum: [masters, doctoral, bachelors]}}
+        - {name: level, in: query, description: Degree level, schema: {type: string, enum: [masters, doctoral, postgraduate_diploma]}}
         - {name: year, in: query, description: A year or a range of years, schema: {type: string, pattern: '^\d{4}(-\d{4})?$'}, example: 2020-2024}
         - {name: full_text, in: query, description: Only records with (true) or without (false) a PDF link, schema: {type: boolean}}
         - {name: updated_since, in: query, description: 'Records changed in the portal since this date or time (UTC)', schema: {type: string}, example: '2026-11-01'}
@@ -192,7 +192,7 @@ components:
         abstract: {type: string, nullable: true}
         year: {type: integer, nullable: true}
         degree: {type: string, nullable: true, example: Master of Public Health}
-        degree_level: {type: string, nullable: true, enum: [Masters, Doctoral, Bachelors, null]}
+        degree_level: {type: string, nullable: true, enum: [Masters, Doctoral, Postgraduate Diploma, null]}
         discipline: {type: string, nullable: true}
         faculty: {type: array, items: {type: string}}
         department: {type: array, items: {type: string}}
@@ -259,7 +259,7 @@ components:
           properties:
             masters: {type: integer}
             doctoral: {type: integer}
-            bachelors: {type: integer}
+            postgraduate_diploma: {type: integer}
             unknown: {type: integer}
         by_year:
           type: array

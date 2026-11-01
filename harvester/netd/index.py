@@ -64,6 +64,13 @@ def post(solr_url, docs, commit=False):
     urllib.request.urlopen(req, timeout=300).read()
 
 
+def ids(solr_url, source):
+    """Ids of the source's documents currently in Solr."""
+    url = solr_url.rstrip("/") + "/select?q=*:*&fq=source_ssi:%s&fl=id&rows=1000000&wt=json" % source
+    with urllib.request.urlopen(url, timeout=300) as r:
+        return {d["id"] for d in json.load(r)["response"]["docs"]}
+
+
 def delete_ids(solr_url, ids):
     if ids:
         post(solr_url, {"delete": ids})
