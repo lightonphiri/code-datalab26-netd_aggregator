@@ -173,18 +173,35 @@ def ocr_one(url, pages, max_mb, timeout, dpi=200):
     return "ocr", text, None
 
 
-def run_ocr(store, source=None, pages=5, max_mb=150, timeout=300, limit=None):
+def _network_error(e):
+    """True for failures that say nothing about the PDF itself (timeouts, DNS, refused, HTTP 5xx), so it is retried."""
+    import socket
+    import urllib.error
+    if isinstance(e, urllib.error.HTTPError):
+        return e.code >= 500
+    return isinstance(e, (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError))
+
+
+def run_ocr(store, source=None, pages=5, max_mb=150, timeout=60, limit=None):
     """OCR the PDFs that have no text layer (status no_text), one at a time at low priority (FR-48)."""
     store.db.executescript(SCHEMA)
     q = "SELECT record_id, url FROM pdf_text WHERE status='no_text'" + (" AND record_id LIKE ?" if source else "")
     todo = store.db.execute(q, (source + "-%",) if source else ()).fetchall()[:limit or None]
     print("ocr-text: %d PDFs to OCR" % len(todo), flush=True)
-    done = ok = 0
+    done = ok = down = 0
     for r in todo:
         try:
             status, text, msg = ocr_one(r["url"].split()[0], pages, max_mb, timeout)
         except Exception as e:
+            if _network_error(e):  # repository unreachable: keep the PDF queued, stop after 3 in a row
+                down += 1
+                print("ocr-text: repository not reachable (%s)" % str(e)[:120], flush=True)
+                if down >= 3:
+                    print("ocr-text: stopping: 3 network failures in a row; queued PDFs stay queued", flush=True)
+                    break
+                continue
             status, text, msg = "ocr_failed", None, str(e)[:300]
+        down = 0
         h = hashlib.sha256(text.encode("utf-8")).hexdigest() if text else None
         store.db.execute("UPDATE pdf_text SET status=?, text=coalesce(?, text), text_hash=coalesce(?, text_hash), "
                          "message=?, fetched_at=? WHERE record_id=?", (status, text, h, msg, time.time(), r["record_id"]))
