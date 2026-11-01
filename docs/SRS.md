@@ -289,6 +289,9 @@ Metadata-filling tables in the same store: `pdf_text` (record, files read, statu
 | FR-51, FR-52 (panel) | Test: scripted requests against a local copy of the portal (sign-in, record page, correction saved and logged, review decision) | November 1, 2026: all passed before deployment |
 | FR-53 | Demonstration: walkthrough notebook (§13) runs `gold-sample` and `evaluate` | November 1, 2026: harness works; production evaluation waits for the gold standard |
 | NFR-14 | Test: readers during long writes (extraction, OCR, prediction, admin panel) | November 1, 2026: no lock errors after switching to WAL; one earlier "disk I/O error" under the rollback journal (store intact) |
+| FR-54, FR-55 | Test: `openalex-fos` over all records; `/api/v1/stats` | November 1, 2026: field of study 100% of 5,923 records (any subject 83.4% before); model version 4 (version 3, EM prior adaptation, withdrawn the same day after implausible counts) |
+| FR-56 | Inspection: facets, record page (`zcas-123456789-301`), `/api/v1/records/{id}` `fields_of_study`, OAI-PMH `etdms` `<subject scheme="OpenAlex">` and `oai_dc` URI, FAQ and Developer Resources | November 1, 2026: all present |
+| FR-57 | Test: held-out OpenAlex works (4,127); threshold tuning table in `netd/ml/models/data/openalex-fos-v1-report.md` | Subfield top-1 0.530, top-3 0.753; field 0.707; domain 0.852; with back-off (subfield ≥ 0.30, field ≥ 0.40) subfield for 78% at precision 0.622. Evaluation on annotated portal records still to do |
 
 Completeness (October 31, 2026, v0.3):
 
