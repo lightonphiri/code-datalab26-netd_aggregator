@@ -15,7 +15,9 @@ mkdir -p "$B"; chmod 700 "$B"
 T=$(mktemp -d "$B/.tmp-$D-XXXX")
 trap 'echo "$(date -Is) backup FAILED (line $LINENO)" >>$LOG; rm -rf "$T"; exit 1' ERR
 
-sqlite3 "$N/harvester/netd.sqlite3" ".backup '$T/netd.sqlite3'"
+# read the store as netd: it is in WAL mode, and root must not leave root-owned -wal/-shm files behind
+runuser -u netd -- sqlite3 "$N/harvester/netd.sqlite3" ".backup '$N/logs/.netd-backup.sqlite3'"
+mv "$N/logs/.netd-backup.sqlite3" "$T/netd.sqlite3"
 [ "$(sqlite3 "$T/netd.sqlite3" 'PRAGMA integrity_check')" = ok ]
 sqlite3 "$N/portal/storage/production.sqlite3" ".backup '$T/portal.sqlite3'"
 [ "$(sqlite3 "$T/portal.sqlite3" 'PRAGMA integrity_check')" = ok ]

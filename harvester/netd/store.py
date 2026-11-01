@@ -43,7 +43,9 @@ CREATE TABLE IF NOT EXISTS harvest_runs (
 
 class Store:
     def __init__(self, path):
-        self.db = sqlite3.connect(path)
+        # WAL lets readers (admin panel, reports) work while a harvest or text extraction writes; wait for locks
+        self.db = sqlite3.connect(path, timeout=120)
+        self.db.execute("PRAGMA journal_mode=WAL")
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
 
