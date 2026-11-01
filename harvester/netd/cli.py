@@ -10,6 +10,7 @@
 
 Metadata filling (SRS FR-14, FR-48 to FR-52):
   extract-text [--source ID] [--limit N] [--retry-failed]   cache text of the first pages of each PDF
+  ocr-text [--source ID] [--limit N]             OCR scanned PDFs (no text layer) at low priority
   text-report                                    PDF text cache status per source
   predict  [--source ID] [--model NAME] [--all]  run models over cached text (only new or changed input unless --all)
   load-predictions FILE.jsonl                    load predictions computed elsewhere (e.g. Colab)
@@ -179,7 +180,7 @@ def do_check(store, srcs, solr, max_age_hours):
 def main(argv=None):
     p = argparse.ArgumentParser(prog="netd")
     p.add_argument("command", choices=["harvest", "process", "index", "run", "report", "check", "csv-check",
-                                       "extract-text", "text-report", "predict", "load-predictions",
+                                       "extract-text", "ocr-text", "text-report", "predict", "load-predictions",
                                        "export-predictions", "correct", "uncorrect", "gold-sample", "evaluate"])
     p.add_argument("args", nargs="*", help="file (csv-check, load/export-predictions, gold-sample, evaluate) or "
                                            "RECORD_ID FIELD [VALUE ...] (correct, uncorrect)")
@@ -235,6 +236,8 @@ def _ml(name):
         cache.init(store)
         if name == "extract-text":
             textcache.run(store, a.source, limit=a.limit, retry_failed=a.retry_failed)
+        elif name == "ocr-text":
+            textcache.run_ocr(store, a.source, limit=a.limit)
         elif name == "text-report":
             textcache.summary(store)
         elif name == "predict":
@@ -259,8 +262,8 @@ def _ml(name):
     return run
 
 
-ML_COMMANDS = {c: _ml(c) for c in ("extract-text", "text-report", "predict", "load-predictions", "export-predictions",
-                                   "correct", "uncorrect", "gold-sample", "evaluate")}
+ML_COMMANDS = {c: _ml(c) for c in ("extract-text", "ocr-text", "text-report", "predict", "load-predictions",
+                                   "export-predictions", "correct", "uncorrect", "gold-sample", "evaluate")}
 
 
 if __name__ == "__main__":

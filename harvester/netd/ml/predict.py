@@ -25,7 +25,7 @@ def harvested_view(rec, fields):
 def run(store, source=None, model=None, everything=False):
     names = [model] if model else list(MODELS)
     texts = {r["record_id"]: (r["text"], r["text_hash"]) for r in
-             store.db.execute("SELECT record_id, text, text_hash FROM pdf_text WHERE status='ok'")}
+             store.db.execute("SELECT record_id, text, text_hash FROM pdf_text WHERE status IN ('ok', 'ocr')")}
     for name in names:
         m = importlib.import_module(MODELS[name])
         seen = {} if everything else cache.known_hashes(store, m.NAME)
