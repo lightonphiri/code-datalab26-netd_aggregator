@@ -13,7 +13,7 @@ import re
 from ... import crosswalk
 
 NAME = "titlepage-rules"
-VERSION = "5"
+VERSION = "6"
 FIELDS = ("degree_level", "degree", "discipline", "supervisor", "department", "faculty")
 USES = ("title",)
 NEEDS_TEXT = True
@@ -36,7 +36,7 @@ ABBREV = [  # case-sensitive: "bed space" must not read as B.Ed
 ]
 STOP = re.compile(r"\s+(?:in\s+(?:the\s+)?(?:school|faculty|department|institute|college|multidisciplinary)|has|have|or|"
                   r"for any|chairperson|signature|computer|student|candidate|examiner|name|date|declaration|"
-                  r"notice|copy\s?w?right|word|abstract|dedication|approval|about|i|ii|iii|iv|"
+                  r"notice|copy\s?w?right|word|abstract|dedication|approval|about|i|ii|iii|iv|unza|zambia|"
                   r"dr|prof|mr|mrs|ms|at|of the|from|to|by|submitted|presented|in the|lusaka|zambia|university|copyright|"
                   r"school|faculty|department|institute|college|supervisor|the)\b.*$", re.I)
 
@@ -191,7 +191,8 @@ def predict(meta, text):
     best, ev = 0.0, None
     for rx, conf in SUPERVISOR:
         for m in rx.finditer(allt):
-            for name in re.split(r"\s*(?:,|\band\b|&)\s*", m.group(1)):
+            # several people: separated by commas, "and", "&", or a title in the middle ("X Y Dr Z W")
+            for name in re.split(r"\s*(?:,|\band\b|&)\s*|\s+(?=(?:Prof(?:essor)?|Dr|Mr|Mrs|Ms)\.?\s+[A-Z])", m.group(1)):
                 name = _clean_person(name)
                 cut = NOT_NAMES.search(name)
                 if cut:
