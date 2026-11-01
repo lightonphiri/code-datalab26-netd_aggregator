@@ -8,7 +8,6 @@ previous attempt failed and `retry_failed` is set.
 import hashlib
 import sys
 import tempfile
-import threading
 import time
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -78,8 +77,7 @@ def run(store, source=None, pages=8, max_mb=60, timeout=180, workers=2, pause=1.
     store.db.executescript(SCHEMA)
     todo = pending(store, source, retry_failed, limit)
     print("extract-text: %d PDFs to fetch" % len(todo), flush=True)
-    lock = threading.Lock()
-    done = {"n": 0, "ok": 0}
+    done = ok = 0
 
     def work(item):
         rid, url = item
@@ -87,21 +85,21 @@ def run(store, source=None, pages=8, max_mb=60, timeout=180, workers=2, pause=1.
             status, n, text, msg = fetch_one(url, pages, max_mb, timeout)
         except Exception as e:  # network errors, broken PDFs
             status, n, text, msg = "error", None, None, str(e)[:300]
-        h = hashlib.sha256(text.encode("utf-8")).hexdigest() if text else None
-        with lock:
+        time.sleep(pause)
+        return rid, url, status, n, text, msg
+
+    with ThreadPoolExecutor(max_workers=workers) as ex:  # threads only fetch; SQLite is written here
+        for rid, url, status, n, text, msg in ex.map(work, todo):
+            h = hashlib.sha256(text.encode("utf-8")).hexdigest() if text else None
             store.db.execute("INSERT OR REPLACE INTO pdf_text VALUES (?,?,?,?,?,?,?,?)",
                              (rid, url, status, n, text, h, msg, time.time()))
-            done["n"] += 1
-            done["ok"] += status == "ok"
-            if done["n"] % 25 == 0:
+            done += 1
+            ok += status == "ok"
+            if done % 25 == 0:
                 store.commit()
-                print("extract-text: %d/%d (%d with text)" % (done["n"], len(todo), done["ok"]), flush=True)
-        time.sleep(pause)
-
-    with ThreadPoolExecutor(max_workers=workers) as ex:
-        list(ex.map(work, todo))
+                print("extract-text: %d/%d (%d with text)" % (done, len(todo), ok), flush=True)
     store.commit()
-    print("extract-text: finished %d (%d with text)" % (done["n"], done["ok"]), flush=True)
+    print("extract-text: finished %d (%d with text)" % (done, ok), flush=True)
 
 
 def summary(store):
