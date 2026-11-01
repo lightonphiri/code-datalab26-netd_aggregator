@@ -18,7 +18,7 @@ import os
 import numpy as np
 
 NAME = "openalex-fos"
-VERSION = "2"  # v2: thresholds tuned on held-out OpenAlex works (weights unchanged)
+VERSION = "3"  # v2: thresholds tuned on held-out works; v3: subfield priors adapted to the portal (label shift)
 FIELDS = ("field_of_study",)
 USES = ("title", "abstract")
 NEEDS_TEXT = False
@@ -26,6 +26,7 @@ NEEDS_TEXT = False
 HERE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 TAXONOMY = os.path.join(HERE, "openalex-taxonomy.json")
 WEIGHTS = os.path.join(HERE, "openalex-fos-v1.npz")
+PRIORS = os.path.join(HERE, "openalex-fos-priors.json")  # tools/fos_priors.py: subfield frequencies in the portal
 EMBEDDER = "sentence-transformers/all-MiniLM-L6-v2"
 # harvester/models (downloaded embedding model; not in git)
 CACHE = os.environ.get("NETD_MODELS", os.path.join(HERE, "..", "..", "..", "..", "models"))
@@ -53,7 +54,13 @@ def _load():
     if "clf" not in _state:
         from fastembed import TextEmbedding
         w = np.load(WEIGHTS, allow_pickle=False)
-        _state["clf"] = (w["W"], w["b"], [str(c) for c in w["classes"]])
+        classes = [str(c) for c in w["classes"]]
+        prior = np.ones(len(classes))
+        if os.path.exists(PRIORS):  # label-shift adaptation: P(c|x) * pi_portal(c) / pi_train(c), training uniform
+            pri = json.load(open(PRIORS))["priors"]
+            prior = np.array([pri.get(c, 1.0 / len(classes)) for c in classes]) * len(classes)
+        _state["clf"] = (w["W"], w["b"], classes)
+        _state["prior"] = prior
         _state["emb"] = TextEmbedding(EMBEDDER, cache_dir=os.path.join(CACHE, "fastembed"), threads=2)
     return _state["clf"], _state["emb"]
 
@@ -77,19 +84,29 @@ def decide(p, classes):
     return [d], pd, "domain p=%.2f (best field %s p=%.2f)" % (pd, f, pf)
 
 
-def predict_batch(metas, texts=None):
+def probabilities(metas, adapt=True):
+    """(rows kept, P) for records with enough text; P adapted to portal priors unless adapt=False."""
     (W, b, classes), emb = _load()
     docs = [text_of(m) for m in metas]
     keep = [i for i, d in enumerate(docs) if len(d) > 20]
-    out = [{} for _ in metas]
     if not keep:
-        return out
+        return keep, np.zeros((0, len(classes)))
     X = np.array(list(emb.embed([docs[i] for i in keep], batch_size=32)), dtype=np.float32)
     X /= np.linalg.norm(X, axis=1, keepdims=True) + 1e-9
     z = X @ W.T + b
     z -= z.max(axis=1, keepdims=True)
     P = np.exp(z)
     P /= P.sum(axis=1, keepdims=True)
+    if adapt:
+        P = P * _state["prior"]
+        P /= P.sum(axis=1, keepdims=True)
+    return keep, P
+
+
+def predict_batch(metas, texts=None):
+    (_, _, classes), _ = _load()
+    out = [{} for _ in metas]
+    keep, P = probabilities(metas)
     for row, i in enumerate(keep):
         ids, conf, ev = decide(P[row], classes)
         out[i] = {"field_of_study": (ids, round(conf, 3), ev)}
