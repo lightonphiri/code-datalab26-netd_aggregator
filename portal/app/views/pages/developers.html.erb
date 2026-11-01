@@ -37,7 +37,7 @@
   <h2 id="fields-of-study">Fields of study (OpenAlex Topics)</h2>
   <p>Every record carries standard fields of study from <a href="https://openalex.org" target="_blank" rel="noopener">OpenAlex
     Topics</a> (CC0): 4 domains, 26 fields and 252 subfields, taxonomy as published by OpenAlex in November 2026. They are
-    assigned by the portal's model <code>openalex-fos</code> (version 1) from each record's title and abstract: a sentence
+    assigned by the portal's model <code>openalex-fos</code> (version 2) from each record's title and abstract: a sentence
     embedding (<code>sentence-transformers/all-MiniLM-L6-v2</code>) and a classifier trained on OpenAlex works labelled with their primary
     topic's subfield. When no subfield is likely enough, the broader field or domain is given, so every record has a value.
     Values are identified by their OpenAlex ids and URIs (for example <code>https://openalex.org/subfields/2739</code>).</p>

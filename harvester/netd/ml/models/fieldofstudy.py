@@ -18,7 +18,7 @@ import os
 import numpy as np
 
 NAME = "openalex-fos"
-VERSION = "1"
+VERSION = "2"  # v2: thresholds tuned on held-out OpenAlex works (weights unchanged)
 FIELDS = ("field_of_study",)
 USES = ("title", "abstract")
 NEEDS_TEXT = False
@@ -29,7 +29,7 @@ WEIGHTS = os.path.join(HERE, "openalex-fos-v1.npz")
 EMBEDDER = "sentence-transformers/all-MiniLM-L6-v2"
 # harvester/models (downloaded embedding model; not in git)
 CACHE = os.environ.get("NETD_MODELS", os.path.join(HERE, "..", "..", "..", "..", "models"))
-SUBFIELD_MIN, SECOND_MIN, FIELD_MIN = 0.40, 0.30, 0.50
+SUBFIELD_MIN, SECOND_MIN, FIELD_MIN = 0.30, 0.30, 0.40
 MAX_CHARS = 1000  # title + start of the abstract: most of the topical signal, and fast on CPU
 
 _state = {}

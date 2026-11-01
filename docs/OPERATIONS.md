@@ -96,6 +96,11 @@ All commands run in `/opt/netd/harvester` as `netd` (`sudo -u netd .venv/bin/pyt
 - **Corrections from the shell** (the admin panel is the normal way): `correct unza-123456789-1000 supervisor "Henry J. Msango" --by lighton.phiri@unza.ac.zm --note "from acknowledgements"`; `correct <id> _scope exclude --by ... --note ...`; `uncorrect <id> <field>`.
 - **The store is in WAL mode.** Open it only as `netd` (never as root): a root-owned `netd.sqlite3-wal` or `-shm` would stop the harvester. If that ever happens: stop writers, then `chown netd:netd /opt/netd/harvester/netd.sqlite3*`.
 
+## Fields of study (OpenAlex Topics, FR-54 to FR-57)
+- The model `openalex-fos` runs with the other models (`predict`, nightly); its embedding model is downloaded once to `/opt/netd/harvester/models/fastembed` (about 90 MB).
+- **Rebuild the model** (e.g. a new OpenAlex taxonomy): on the server, `sudo -u netd .venv/bin/python tools/openalex_training.py /opt/netd/harvester/models/openalex --per-subfield 120 --mailto lighton.phiri@unza.ac.zm` (OpenAlex allows a small anonymous daily budget per address; with a free key add `--api-key`); copy `taxonomy.json` and `works.jsonl` to a machine with spare CPU and run `python tools/train_fieldofstudy.py DATA_DIR netd/ml/models/data/openalex-fos-v<N>.npz --report ...` (about 25 minutes on 2 CPUs; embeddings are cached for later runs); bump `VERSION` and the file names in `netd/ml/models/fieldofstudy.py`, copy the taxonomy to `netd/ml/models/data/openalex-taxonomy.json`, release, then run `deploy/ops/netd-ml-apply.sh`.
+- Thresholds: `SUBFIELD_MIN`, `SECOND_MIN`, `FIELD_MIN` in `fieldofstudy.py` (a change needs a new `VERSION`).
+
 ## Excluding records
 
 The portal holds postgraduate work only (SRS FR-47). Records identified as below postgraduate level are left out automatically when processing. To leave out one record (for example a bachelor's report deposited in an ETD collection), add it to its source in `harvester/sources.yml` with a reason, release, and process and index that source (or wait for the nightly run):
