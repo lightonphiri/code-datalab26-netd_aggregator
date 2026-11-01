@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Zambia National ETD Portal REST API
-  version: 1.0.0
+  version: 1.1.0
   description: |
     Read-only access to the theses and dissertations aggregated by the Zambia National ETD Portal
     (https://netd.ac.zm) from Zambian higher education institutions: postgraduate diploma, master's and doctoral work. No key is needed. Responses are JSON
@@ -223,6 +223,17 @@ components:
               name: {type: string, nullable: true}
               mime_type: {type: string, nullable: true}
               size: {type: integer, nullable: true, description: Bytes}
+        derived:
+          type: object
+          description: >-
+            Fields whose value was not in the repository's record but was filled automatically from the thesis PDF
+            by a metadata-filling model, keyed by field name (e.g. degree_level, supervisors, department). Absent
+            fields were harvested or corrected by the portal team. Added in API 1.1.0.
+          additionalProperties:
+            type: object
+            properties:
+              method: {type: string, example: "model:titlepage-rules-1"}
+              confidence: {type: number, minimum: 0, maximum: 1}
         updated_at: {type: string, nullable: true, format: date-time, description: Last change in the portal}
     Institution:
       type: object

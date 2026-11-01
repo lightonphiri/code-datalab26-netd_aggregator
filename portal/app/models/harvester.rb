@@ -14,6 +14,8 @@ class Harvester
   UPLOADS = ENV.fetch('NETD_UPLOADS', File.join(HOME, 'uploads'))
   LOGS = ENV.fetch('NETD_LOGS', File.expand_path(File.join(HOME, '..', 'logs')))
   ID_PATTERN = /\A[a-z][a-z0-9]{1,15}\z/
+  CORRECTABLE = %w[degree_level degree discipline supervisor department faculty subject year title author].freeze  # FR-51
+  LEVELS = ['Doctoral', 'Masters', 'Postgraduate Diploma', 'Bachelors'].freeze
 
   class << self
     def db_path = ENV.fetch('NETD_DB', File.join(HOME, 'netd.sqlite3'))
@@ -61,6 +63,61 @@ class Harvester
       []
     ensure
       db&.close
+    end
+
+    # --- metadata filling (FR-14, FR-49 to FR-52) ---------------------------------------------------------------
+    def query(sql, binds = [])
+      db = store
+      db.execute(sql, binds)
+    rescue SQLite3::Exception
+      []
+    ensure
+      db&.close
+    end
+
+    # A record as the store holds it (after cleaning, predictions and corrections), or nil.
+    def record(id)
+      row = query('SELECT data FROM records WHERE id=?', [id]).first
+      row ||= query("SELECT json_object('id', id, 'source', source, 'title', json_array(title), " \
+                    "'excluded', reason) data FROM excluded WHERE id=?", [id]).first
+      row && JSON.parse(row['data'])
+    end
+
+    def predictions(id) = query('SELECT * FROM predictions WHERE record_id=? ORDER BY field, confidence DESC', [id])
+    def corrections(id) = query('SELECT * FROM corrections WHERE record_id=? ORDER BY field', [id])
+    def text_status(id) = query('SELECT status, pages, message, fetched_at FROM pdf_text WHERE record_id=?', [id]).first
+
+    def level_review(status = 'pending')
+      query('SELECT l.*, json_extract(r.data, "$.title[0]") title, json_extract(r.data, "$.pdf_url[0]") pdf, ' \
+            'json_extract(r.data, "$.institution_short") inst FROM level_review l LEFT JOIN records r ON r.id = l.record_id ' \
+            'WHERE l.status=? ORDER BY l.confidence DESC, l.record_id', [status])
+    end
+
+    def corrections_count = query('SELECT count(*) n FROM corrections').first&.fetch('n', 0).to_i
+    def review_count = query("SELECT count(*) n FROM level_review WHERE status='pending'").first&.fetch('n', 0).to_i
+
+    # `netd.cli correct RECORD FIELD VALUE... --by EMAIL --note NOTE` -> [ok?, output]
+    def correct(id, field, values, by:, note: nil)
+      args = [PYTHON, '-m', 'netd.cli', 'correct', id, field, *values, '--by', by]
+      args += ['--note', note] if note.present?
+      out, status = Open3.capture2e(*args, chdir: HOME)
+      [status.success?, out]
+    end
+
+    def uncorrect(id, field)
+      out, status = Open3.capture2e(PYTHON, '-m', 'netd.cli', 'uncorrect', id, field, chdir: HOME)
+      [status.success?, out]
+    end
+
+    # Process and index one source again (no harvest), so corrections show at once; false if a run is going.
+    def start_reprocess(id)
+      return false if running?
+
+      FileUtils.mkdir_p(LOGS)
+      pid = Process.spawn('flock', '-n', LOCK, PYTHON, '-m', 'netd.cli', 'reprocess', '--source', id,
+                          chdir: HOME, out: [File.join(LOGS, "admin-run-#{id}.log"), 'w'], err: [:child, :out], pgroup: true)
+      Process.detach(pid)
+      true
     end
 
     def running?

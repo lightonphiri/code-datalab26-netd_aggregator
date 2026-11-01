@@ -48,6 +48,8 @@ def to_solr(rec):
         doc["year_ssim"] = rec["year"]
     if rec.get("faculty") and rec.get("department"):
         doc["faculty_department_ssim"] = ["%s|%s" % (rec["faculty"][0], d) for d in rec["department"]]
+    if rec.get("derived"):  # values filled by a model (SRS FR-50): field, method, confidence
+        doc["derived_ssm"] = [json.dumps(dict(v, field=f), ensure_ascii=False) for f, v in sorted(rec["derived"].items())]
     if rec.get("files"):
         doc["files_ssm"] = [json.dumps(f, ensure_ascii=False) for f in rec["files"]]
     doc["full_text_ssim"] = ["PDF available" if rec.get("pdf_url") else

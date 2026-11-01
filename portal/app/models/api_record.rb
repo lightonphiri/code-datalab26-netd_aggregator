@@ -5,11 +5,24 @@ module ApiRecord
   BASE = 'https://netd.ac.zm'
   FIELDS = %w[id updated_dtsi title_ssm author_ssim supervisor_ssim subject_ssim abstract_tesim year_isi degree_ssim
               degree_level_ssim discipline_ssim faculty_ssim department_ssim institution_ssim source_ssi language_ssim
-              type_ssim rights_ssm url_ssm pdf_url_ssm files_ssm].join(',')
+              type_ssim rights_ssm url_ssm pdf_url_ssm files_ssm derived_ssm].join(',')
   CSV_COLUMNS = %w[id title authors supervisors year degree degree_level discipline faculty department subjects abstract
                    institution institution_id language rights portal_url source_url pdf_url updated_at].freeze
 
+  # canonical field -> API field, for the "derived" object (FR-50)
+  API_NAMES = { 'supervisor' => 'supervisors', 'subject' => 'subjects', 'author' => 'authors' }.freeze
+
   module_function
+
+  # { "degree_level" => { "method" => "model:titlepage-rules-1", "confidence" => 0.96 } } for values filled by a model
+  def derived(doc)
+    Array(doc['derived_ssm']).each_with_object({}) do |j, h|
+      d = JSON.parse(j)
+      h[API_NAMES.fetch(d['field'], d['field'])] = { 'method' => d['method'], 'confidence' => d['confidence'] }
+    rescue JSON::ParserError
+      next
+    end
+  end
 
   def list(doc, f) = Array(doc[f]).map { |v| v.to_s.strip }.reject(&:empty?).uniq
   def one(doc, f) = list(doc, f).first
@@ -45,6 +58,7 @@ module ApiRecord
       'links' => { 'portal' => "#{BASE}/catalog/#{doc['id']}", 'source' => one(doc, 'url_ssm'),
                    'pdf' => one(doc, 'pdf_url_ssm'), 'api' => "#{BASE}/api/v1/records/#{doc['id']}" },
       'files' => files(doc),
+      'derived' => derived(doc),
       'updated_at' => doc['updated_dtsi']
     }
   end

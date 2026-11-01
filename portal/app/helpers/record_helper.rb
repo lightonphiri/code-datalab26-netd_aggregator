@@ -8,6 +8,20 @@ module RecordHelper
     rec_values(doc, 'files_ssm').filter_map { |j| JSON.parse(j) rescue nil }
   end
 
+  # Values filled automatically by a metadata-filling model (SRS FR-50): { 'degree_level' => {'method'=>..., 'confidence'=>...} }
+  def rec_derived(doc)
+    rec_values(doc, 'derived_ssm').filter_map { |j| JSON.parse(j) rescue nil }.to_h { |h| [h['field'], h] }
+  end
+
+  def derived_badge(derived, solr_field)
+    info = derived[solr_field.sub(/_(ssim|tsim|ssm)\z/, '')]
+    return ''.html_safe unless info
+
+    tip = "Not in the repository record: filled automatically from the thesis PDF by #{info['method'].delete_prefix('model:')} " \
+          "(confidence #{format('%.2f', info['confidence'].to_f)}). It may be wrong; use Report a problem to correct it."
+    tag.span('derived', class: 'netd-derived', title: tip, tabindex: 0, 'aria-label': tip)
+  end
+
   def facet_link(label, field, value)
     link_to label, search_action_path(f: { field => [value] })
   end

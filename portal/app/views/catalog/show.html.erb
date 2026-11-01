@@ -7,6 +7,7 @@
 <% files = rec_files(d) %>
 <% pdf = rec_values(d, 'pdf_url_ssm').first || files.first&.dig('url') %>
 <% handle = rec_values(d, 'url_ssm').first %>
+<% derived = rec_derived(d) %>
 <%= render presenter.view_config.document_header_component.new(document: d, search_context: @search_context, search_session: search_session) %>
 <div class="row g-5 netd-record" id="document">
   <div class="col-lg-8">
@@ -24,7 +25,7 @@
     <% { 'Subjects' => 'subject_ssim', 'Programme / Discipline' => 'discipline_ssim' }.each do |label, field| %>
       <% vals = rec_values(d, field) %>
       <% next if vals.empty? %>
-      <h2 class="netd-rec-h"><%= label %></h2>
+      <h2 class="netd-rec-h"><%= label %> <%= derived_badge(derived, field) %></h2>
       <div class="netd-tags"><% vals.each do |v| %><%= facet_link(v, field, v) %><% end %></div>
     <% end %>
 
@@ -61,7 +62,11 @@
           <% vals = rec_values(d, field) %>
           <% next if vals.empty? %>
           <tr><th><%= label %></th>
-            <td><%= safe_join(vals.map { |v| facet ? facet_link(v, field, v) : v }, '; ') %></td></tr>
+            <td><%= safe_join(vals.map { |v| facet ? facet_link(v, field, v) : v }, '; ') %> <%= derived_badge(derived, field) %></td></tr>
+        <% end %>
+        <% if derived.any? %>
+          <tr><td colspan="2" class="netd-derived-note"><span class="netd-derived">derived</span> values were not in the
+            repository's record; they were read automatically from the thesis PDF and may contain errors.</td></tr>
         <% end %>
         <% if handle %>
           <tr><th>Source Record</th><td><%= link_to handle, handle, target: '_blank', rel: 'noopener' %></td></tr>

@@ -3,7 +3,13 @@
   <%= link_to 'Dashboard', admin_root_path %>
   <%= link_to 'Problem reports', admin_problem_reports_path %>
   <%= link_to 'Upload CSV', new_admin_csv_upload_path %>
+  <% rc = Harvester.review_count %>
+  <%= link_to "Level review#{" (#{rc})" if rc.positive?}", admin_reviews_path %>
   <%= link_to 'Activity log', admin_events_path %>
+  <%= form_with url: admin_record_lookup_path, method: :get, local: true, class: 'netd-admin-lookup d-inline' do %>
+    <%= text_field_tag :id, nil, placeholder: 'Record id or URL', 'aria-label': 'Correct a record: record id or portal address', size: 22 %>
+    <%= submit_tag 'Correct', class: 'btn btn-sm btn-outline-secondary', name: nil %>
+  <% end %>
   <span class="netd-admin-user"><%= current_admin.name %> ·
     <%= link_to 'Change password', edit_admin_password_path %> ·
     <%= button_to 'Sign out', admin_sign_out_path, method: :delete, form_class: 'd-inline', class: 'btn btn-link p-0 align-baseline' %></span>

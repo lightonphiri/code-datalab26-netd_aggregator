@@ -4,6 +4,7 @@
   process  [--source ID]                        crosswalk + enrichers -> canonical records
   index    [--source ID]                        push canonical records to Solr
   run      [--source ID] [--full]               harvest + process + index (scheduled job)
+  reprocess [--source ID]                       process + index, without harvesting (applies corrections)
   report                                        field completeness per institution
   csv-check FILE                                list problems in an HEI's CSV file before it is loaded (FR-10)
   check    [--max-age-hours H]                  health check after the scheduled run, incl. OAI-PMH Identify (exit 1 = problem)
@@ -179,7 +180,7 @@ def do_check(store, srcs, solr, max_age_hours):
 
 def main(argv=None):
     p = argparse.ArgumentParser(prog="netd")
-    p.add_argument("command", choices=["harvest", "process", "index", "run", "report", "check", "csv-check",
+    p.add_argument("command", choices=["harvest", "process", "index", "run", "reprocess", "report", "check", "csv-check",
                                        "extract-text", "ocr-text", "text-report", "predict", "load-predictions",
                                        "export-predictions", "correct", "uncorrect", "gold-sample", "evaluate"])
     p.add_argument("args", nargs="*", help="file (csv-check, load/export-predictions, gold-sample, evaluate) or "
@@ -218,9 +219,9 @@ def main(argv=None):
     if a.command in ("harvest", "run"):
         for s in srcs:
             harvest.harvest_source(store, s, full=a.full, limit=a.limit)
-    if a.command in ("process", "run"):
+    if a.command in ("process", "run", "reprocess"):
         do_process(store, srcs, cfg_load("enrichers.yml"), scfg.get("scope"))
-    if a.command in ("index", "run"):
+    if a.command in ("index", "run", "reprocess"):
         do_index(store, srcs, a.solr)
     if a.command == "report":
         do_report(store)

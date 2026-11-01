@@ -223,3 +223,13 @@ footer.netd-footer { padding: 0; background: #fff; }
 .netd-admin-log { max-height: 24rem; overflow: auto; white-space: pre-wrap; font-size: .82rem; }
 .netd-admin-box { border: 1px solid var(--netd-line); border-radius: .4rem; padding: .6rem 1rem 1rem; }
 .netd-admin-box legend { font-size: .95rem; float: none; width: auto; padding: 0 .3rem; margin: 0; }
+
+/* values filled by a metadata-filling model (SRS FR-50) */
+.netd-derived { display: inline-block; margin-left: .35rem; padding: 0 .4rem; border: 1px solid #b7791f; border-radius: .6rem;
+  color: #8a5a12; font-size: .72rem; line-height: 1.25rem; text-transform: lowercase; vertical-align: middle; cursor: help; }
+.netd-derived-note { font-size: .85rem; color: #555; padding-top: .6rem; }
+.netd-derived-note .netd-derived { margin-left: 0; }
+.netd-correct { display: flex; gap: .3rem; align-items: flex-start; flex-wrap: wrap; }
+.netd-correct textarea, .netd-correct select { min-width: 16rem; flex: 2; }
+.netd-correct input[name=note] { flex: 1; min-width: 8rem; }
+.netd-admin-lookup input[type=text] { font-size: .85rem; padding: .1rem .3rem; }

@@ -1,0 +1,68 @@
+<% content_for(:page_title) { "Record #{@id} · Admin" } %>
+<% r = @record; prov = r['provenance'] || {}; conf = r['confidence'] || {} %>
+<div class="netd-admin">
+  <%= render 'admin/nav' %>
+  <h1><%= Array(r['title']).first %></h1>
+  <p>
+    <code><%= @id %></code> · <%= r['institution_short'] %>
+    <% if r['excluded'] %>
+      · <span class="badge text-bg-secondary">Excluded</span> <small><%= r['excluded'] %></small>
+    <% else %>
+      · <%= link_to 'Portal page', solr_document_path(@id), target: '_blank', rel: 'noopener' %>
+    <% end %>
+    <% if (pdf = Array(r['pdf_url']).first) %> · <%= link_to 'PDF', pdf, target: '_blank', rel: 'noopener' %><% end %>
+    · PDF text: <%= @text ? "#{@text['status']}#{" (#{@text['pages']} pages)" if @text['pages']}" : 'not extracted yet' %>
+  </p>
+  <p class="netd-admin-help">Correct a value when the repository's record or a model got it wrong. A correction
+    overrides harvested and derived values, survives re-harvests and is logged (SRS FR-51). Enter one value per line;
+    save an empty box to clear a field. Changes reach the portal when the source is processed again.
+    <%= button_to 'Apply now', admin_apply_record_path(@id), class: 'btn btn-sm btn-outline-primary', form_class: 'd-inline',
+                  disabled: @running || r['excluded'].present? %>
+    <% if @running %><span class="badge text-bg-warning">A run is in progress</span><% end %></p>
+
+  <table class="table table-sm netd-admin-table">
+    <thead><tr><th>Field</th><th>Current value</th><th>Source</th><th>Correct</th></tr></thead>
+    <tbody>
+    <% Harvester::CORRECTABLE.each do |f| %>
+      <% c = @corrections[f] %>
+      <tr>
+        <th><%= f.humanize %></th>
+        <td><%= Array(r[f]).join(' || ').presence || content_tag(:em, 'empty') %></td>
+        <td><small><%= prov[f] %><%= " (#{format('%.2f', conf[f])})" if conf[f] && prov[f].to_s.start_with?('model:') %>
+          <% if c %><br>by <%= c['made_by'] %>, <%= admin_time(c['created_at']) %><% end %></small></td>
+        <td>
+          <%= form_with url: admin_correct_record_path(@id), method: :post, local: true, data: { turbo: false }, class: 'netd-correct' do %>
+            <%= hidden_field_tag :field, f %>
+            <% if f == 'degree_level' %>
+              <%= select_tag :values, options_for_select([['(clear)', '']] + Harvester::LEVELS, Array(r[f]).first), class: 'form-select form-select-sm' %>
+            <% else %>
+              <%= text_area_tag :values, Array(r[f]).join("\n"), rows: [Array(r[f]).size, 1].max, class: 'form-control form-control-sm' %>
+            <% end %>
+            <%= text_field_tag :note, nil, placeholder: 'Note (optional)', class: 'form-control form-control-sm' %>
+            <%= submit_tag 'Save', class: 'btn btn-sm btn-primary' %>
+          <% end %>
+          <% if c %><%= button_to 'Remove correction', admin_uncorrect_record_path(@id, f), method: :delete, class: 'btn btn-link btn-sm p-0' %><% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if (s = @corrections['_scope']) %>
+      <tr><th>Scope</th><td><%= JSON.parse(s['value']).first %></td><td><small>by <%= s['made_by'] %>: <%= s['note'] %></small></td>
+        <td><%= button_to 'Remove decision', admin_uncorrect_record_path(@id, '_scope'), method: :delete, class: 'btn btn-link btn-sm p-0' %></td></tr>
+    <% end %>
+    </tbody>
+  </table>
+
+  <h2>Model predictions (<%= @predictions.count { |p| p['value'] != '[]' } %>)</h2>
+  <p class="netd-admin-help">Every prediction is kept, including those below the display threshold; only the best one
+    above the threshold fills an empty field (SRS FR-49, FR-50).</p>
+  <table class="table table-sm netd-admin-table">
+    <thead><tr><th>Field</th><th>Value</th><th>Model</th><th class="text-end">Confidence</th><th>Evidence</th></tr></thead>
+    <tbody>
+    <% @predictions.reject { |p| p['value'] == '[]' }.each do |p| %>
+      <tr><td><%= p['field'] %></td><td><%= JSON.parse(p['value']).join(' || ') %></td><td><small><%= p['model'] %>-<%= p['version'] %></small></td>
+        <td class="text-end"><%= format('%.2f', p['confidence'].to_f) %></td><td><small><%= p['evidence'] %></small></td></tr>
+    <% end %>
+    <% if @predictions.none? { |p| p['value'] != '[]' } %><tr><td colspan="5">None yet.</td></tr><% end %>
+    </tbody>
+  </table>
+</div>

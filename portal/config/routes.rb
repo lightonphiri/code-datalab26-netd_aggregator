@@ -25,6 +25,15 @@ Rails.application.routes.draw do
     resources :csv_uploads, only: %i[new create], path: 'csv'
     post 'csv/load', to: 'csv_uploads#load_file', as: :load_csv
     get 'log', to: 'events#index', as: :events
+    # metadata filling: manual corrections (FR-51) and degree-level review (FR-52)
+    get 'records', to: 'records#lookup', as: :record_lookup
+    get 'records/:id', to: 'records#show', as: :record, constraints: { id: /[A-Za-z0-9_-]+/ }
+    post 'records/:id/corrections', to: 'records#correct', as: :correct_record, constraints: { id: /[A-Za-z0-9_-]+/ }
+    delete 'records/:id/corrections/:field', to: 'records#uncorrect', as: :uncorrect_record,
+                                              constraints: { id: /[A-Za-z0-9_-]+/, field: /_?[a-z_]+/ }
+    post 'records/:id/apply', to: 'records#apply', as: :apply_record, constraints: { id: /[A-Za-z0-9_-]+/ }
+    get 'review', to: 'reviews#index', as: :reviews
+    post 'review/:id', to: 'reviews#decide', as: :decide_review, constraints: { id: /[A-Za-z0-9_-]+/ }
   end
   mount Blacklight::Engine => '/'
   root to: "catalog#index"
