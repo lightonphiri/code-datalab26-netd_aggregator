@@ -13,7 +13,7 @@ import re
 from ... import crosswalk
 
 NAME = "titlepage-rules"
-VERSION = "2"
+VERSION = "3"
 FIELDS = ("degree_level", "degree", "discipline", "supervisor", "department", "faculty")
 USES = ("title",)
 NEEDS_TEXT = True
@@ -28,11 +28,11 @@ DEG_HEAD = (r"(?:" + fz("master") + r"(?:'?s)?|" + fz("doctor") + r"|" + fz("bac
 STATEMENT = re.compile(r"(?:" + fz("fulfil") + r"|" + fz("requirement") + r"|" + fz("submitted") + r"|award)"
                        r"[^.]{0,200}?\b(" + DEG_HEAD + r"[A-Za-z ,&()'\-]{3,120})", re.I)
 DEG_ANY = re.compile(r"\b(" + DEG_HEAD + r"[A-Za-z ,&()'\-]{3,100})", re.I)
-ABBREV = [
-    (re.compile(r"\b(ph\.?\s?d\.?|d\.?\s?phil)\b", re.I), "Doctoral", "Doctor of Philosophy"),
-    (re.compile(r"\b(m\.?\s?sc|m\.?\s?ed|m\.?\s?phil|mba|mph|mmed|ll\.?m|mlis)\b\.?", re.I), "Masters", None),
-    (re.compile(r"\b(pgd|pg\.?\s?dip)\b", re.I), "Postgraduate Diploma", None),
-    (re.compile(r"\b(b\.?\s?sc|ll\.?b|b\.?\s?ed)\b\.?", re.I), "Bachelors", None),
+ABBREV = [  # case-sensitive: "bed space" must not read as B.Ed
+    (re.compile(r"\b(?:Ph\.?\s?D|PHD|D\.?\s?Phil)\b"), "Doctoral", "Doctor of Philosophy"),
+    (re.compile(r"\b(?:M\.?\s?Sc|MSC|M\.\s?Ed|M\.?\s?Phil|MBA|MPH|MMed|LL\.?M|MLIS)\b"), "Masters", None),
+    (re.compile(r"\b(?:PGD|PG\.?\s?Dip)\b"), "Postgraduate Diploma", None),
+    (re.compile(r"\b(?:B\.?\s?Sc|BSC|LL\.?B|B\.\s?Ed)\b"), "Bachelors", None),
 ]
 STOP = re.compile(r"\s+(?:in\s+(?:the\s+)?(?:school|faculty|department|institute|college|multidisciplinary)|has|have|or|"
                   r"for any|chairperson|signature|computer|student|candidate|examiner|name|date|declaration|"
@@ -52,7 +52,7 @@ SUPERVISOR = [
     (re.compile(PERSON + r",?\s+" + MY_SUP), 0.82),          # "... Prof. X, my supervisor, for ..."
     (re.compile(PERSON + r"\s*\(?\s*(?i:(?:main\s+|co-?\s?)?supervisor)\)?\b"), 0.75),
 ]
-NOT_NAMES = re.compile(r"\b(supervisors?|co|signature|signed|date|name|department|university|school|examiner|candidate|dean|"
+NOT_NAMES = re.compile(r"\b(supervisors?|co|visiting|senior|head|who|whose|for|from|signature|signed|date|name|department|university|school|examiner|candidate|dean|"
                        r"declaration|approval|head|chairperson|lecturer|the|of)\b", re.I)
 UNIT = re.compile(r"\b(department|school|faculty|institute|college)\s+of\s+(?=[A-Z])", re.I)
 UNIT_STOP = re.compile(r"\s*(?:,|\.|;|:|\(|\bat\b|\bthe\b|\buniversity\b|\blusaka\b|\bzambia\b|\bin\s+partial\b|"
@@ -121,8 +121,18 @@ def _degree(stmt):
     return deg + (" in " + disc if disc else ""), disc, crosswalk.degree_level([deg])
 
 
+DEGREES = re.compile(r"(?:\s+|,\s*)(?:MBBS|MBChB|MD|PhD|Ph\.D|MSc|BSc|MA|BA|MPH|FRSH|FRCS|FCS|MMed|DPhil)\b.*$")
+
+
+def _good_name(n):
+    """At least two parts; the surname (last part) a whole word of 4+ letters, not a fragment of a split word."""
+    parts = n.replace(".", ". ").split()
+    return len(parts) >= 2 and len(parts[-1]) >= 4 and parts[-1][0].isupper() and not parts[-1].endswith(".")
+
+
 def _clean_person(p):
     p = re.sub(r"\s+", " ", p).strip(" .,")
+    p = DEGREES.sub("", p)
     p = re.sub(r"-\s+", "-", p)
     p = re.sub(r"^" + TITLE_WORDS + r"\s*(?=[A-Z])", "", p)
     if p.isupper() and len(p) > 4:
@@ -181,7 +191,13 @@ def predict(meta, text):
                 cut = NOT_NAMES.search(name)
                 if cut:
                     name = name[:cut.start()].strip(" .,")
-                if len(name.replace(".", ". ").split()) < 2 or len(name) < 5 or name in sups:
+                if not _good_name(name) or name in sups:
+                    continue
+                sur = name.split()[-1].lower()
+                same = [x for x in sups if x.split()[-1].lower() == sur]
+                if same:  # "Gibson Sijumbila" and "G. Sijumbila": keep the fuller form
+                    if len(name) > len(same[0]):
+                        sups[sups.index(same[0])] = name
                     continue
                 sups.append(name)
                 if conf > best:
@@ -191,16 +207,22 @@ def predict(meta, text):
     if sups:
         out["supervisor"] = (sups[:3], best, ev)
 
+    # units: one title-page line each ("SCHOOL OF MEDICINE" / "DEPARTMENT OF PUBLIC HEALTH"), so the thesis
+    # title on the next line does not run into the name
+    lines = [re.sub(r"\s+", " ", ln).strip() for p in text.split("\f")[:3] for ln in p.split("\n")]
+    first = len(text.split("\f")[0].split("\n"))
     for kind, field in (("department", "department"), ("school", "faculty"), ("faculty", "faculty")):
         if field in out:
             continue
-        for m in UNIT.finditer(head):
-            if m.group(1).lower() != kind:
+        for i, ln in enumerate(lines):
+            m = UNIT.match(ln.replace("\u2019", "'"))  # title-page lines start with the unit; body text does not
+            if not m or m.group(1).lower() != kind or len(ln) > 80:
                 continue
-            name = UNIT_STOP.sub("", head[m.end(): m.end() + 90]).strip()
-            if 3 <= len(name) <= 70:
-                unit = "%s of %s" % (kind.capitalize(), crosswalk._tc(name))
-                first = m.start() < len(pages[0])
-                out[field] = ([unit], 0.88 if first else 0.78, head[max(0, m.start() - 20): m.end() + 10])
+            name = UNIT_STOP.sub("", ln[m.end(): m.end() + 90]).strip(" )(,.;:")
+            if re.search(r"\b(and|of|&|in|for|the)$", name, re.I):
+                continue  # name cut off by a line break
+            if 3 <= len(name) <= 70 and not re.search(r"\d", name):
+                unit = "%s of %s" % (kind.capitalize(), crosswalk._tc(_rejoin(name, vocab)))
+                out[field] = ([unit], 0.88 if i < first else 0.78, ln[:160])
                 break
     return out

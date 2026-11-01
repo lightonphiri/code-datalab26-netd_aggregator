@@ -13,3 +13,6 @@ ml:
   show_threshold: 0.8        # predicted values below this are not shown at all
   level_auto_exclude: 0.95   # predicted below-postgraduate level at or above this: record excluded (FR-47)
   level_review_min: 0.6      # ... between this and level_auto_exclude: queued for review in the admin panel
+  nightly: true              # scheduled run: extract text, OCR and predict for new or changed records first
+  nightly_pdfs: 300          # at most this many PDFs per source per night
+  nightly_ocr: 30            # at most this many OCRs per night (about 20 s each)

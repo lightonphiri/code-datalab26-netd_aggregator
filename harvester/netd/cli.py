@@ -219,6 +219,8 @@ def main(argv=None):
     if a.command in ("harvest", "run"):
         for s in srcs:
             harvest.harvest_source(store, s, full=a.full, limit=a.limit)
+    if a.command == "run":
+        nightly_ml(store, srcs, cfg_load("enrichers.yml").get("ml") or {})
     if a.command in ("process", "run", "reprocess"):
         do_process(store, srcs, cfg_load("enrichers.yml"), scfg.get("scope"))
     if a.command in ("index", "run", "reprocess"):
@@ -229,6 +231,22 @@ def main(argv=None):
         do_check(store, srcs, a.solr, a.max_age_hours)
     if a.command in ML_COMMANDS:
         ML_COMMANDS[a.command](store, a)
+
+
+def nightly_ml(store, srcs, cfg):
+    """Scheduled run (FR-48, FR-49): text for new or changed records, a little OCR, then predictions, before
+    processing. Limits keep the night short; a failure here is reported but never stops the harvest."""
+    if not cfg.get("nightly", True):
+        return
+    try:
+        from .ml import cache, predict, textcache
+        cache.init(store)
+        for s in srcs:
+            textcache.run(store, s["id"], limit=int(cfg.get("nightly_pdfs", 300)))
+        textcache.run_ocr(store, limit=int(cfg.get("nightly_ocr", 30)))
+        predict.run(store)
+    except Exception as e:  # noqa: BLE001 - metadata filling must not break the harvest
+        print("metadata filling skipped: %s" % e, file=sys.stderr)
 
 
 def _ml(name):
