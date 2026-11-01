@@ -35,9 +35,16 @@ def norm_person(v):
 
 
 def _key(field, v):
+    if field == "degree":  # ETD-MS degree name: discipline, abbreviations and plural forms set aside
+        v = re.sub(r"\(.*?\)", " ", v)
+        v = re.split(r"\s+in\s+", v, maxsplit=1, flags=re.I)[0]
+        v = re.sub(r"(?i)\bmasters?'?s?\b", "master", v)
+        return norm(v)
     if field == "supervisor":
         raw = unicodedata.normalize("NFKD", v).encode("ascii", "ignore").decode()
-        raw = TITLES.sub(" ", raw)
+        raw = re.sub(r"(?i)\b(prof(?:essor)?|dr|mr|mrs|ms)\.?(?=[A-Z])", r"\1 ", raw)  # "ProfessorY.Mulla"
+        raw = re.sub(r"(?<=\.)(?=[A-Z][a-z])", " ", raw)                             # "Y.Mulla"
+        raw = TITLES.sub(" ", raw).strip(" ,;.")
         if "," in raw:
             sur, given = raw.split(",", 1)
             return (norm(sur), norm(given)[:1])
@@ -80,7 +87,8 @@ def read_gold(path):
             for f in GOLD_FIELDS:
                 v = (row.get("gold_" + f) or "").strip()
                 if v:
-                    g[f] = [] if v == "-" else [x.strip() for x in v.split("||") if x.strip()]
+                    sep = r"\|\||\s+and\s+|\s*&\s*" if f == "supervisor" else r"\|\|"
+                    g[f] = [] if v == "-" else [x.strip() for x in re.split(sep, v) if x.strip()]
             if g:
                 gold[row["record_id"]] = g
     return gold

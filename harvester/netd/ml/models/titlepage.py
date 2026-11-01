@@ -13,7 +13,7 @@ import re
 from ... import crosswalk
 
 NAME = "titlepage-rules"
-VERSION = "8"
+VERSION = "9"
 FIELDS = ("degree_level", "degree", "discipline", "supervisor", "department", "faculty")
 USES = ("title",)
 NEEDS_TEXT = True
@@ -36,7 +36,7 @@ ABBREV = [  # case-sensitive: "bed space" must not read as B.Ed
 ]
 STOP = re.compile(r"\s+(?:in\s+(?:the\s+)?(?:school|faculty|department|institute|college|multidisciplinary)|has|have|or|"
                   r"for any|chairperson|signature|computer|student|candidate|examiner|name|date|declaration|"
-                  r"notice|copy\s?w?right|word|abstract|dedication|approval|about|i|ii|iii|iv|unza|zambia|"
+                  r"supervisors?|notice|copy\s?w?right|word|abstract|dedication|approval|about|i|ii|iii|iv|unza|zambia|"
                   r"dr|prof|mr|mrs|ms|at|of the|from|to|by|submitted|presented|in the|lusaka|zambia|university|copyright|"
                   r"school|faculty|department|institute|college|supervisor|the)\b.*$", re.I)
 
@@ -66,6 +66,7 @@ UNIT_STOP = re.compile(r"\s*(?:,|\.|;|:|\(|\bat\b|\bthe\b|\buniversity\b|\blusak
 
 def _flat(page):
     page = page.replace("\u2019", "'").replace("\u2018", "'").replace("/g3", " ")
+    page = re.sub(r"(?<=[A-Za-z])\s+-\s*(?=[A-Z])", "-", page)   # "Chama -Chiliba" -> "Chama-Chiliba"
     return re.sub(r"\s+", " ", page.replace("-\n", "")).strip()
 
 
@@ -200,8 +201,9 @@ def predict(meta, text):
 
     sups = []
     best, ev = 0.0, None
+    sup_text = _rejoin(allt, vocab)  # "Wanga W. Chakan ika" -> "Wanga W. Chakanika"
     for rx, conf in SUPERVISOR:
-        for m in rx.finditer(allt):
+        for m in rx.finditer(sup_text):
             # several people: separated by commas, "and", "&", or a title in the middle ("X Y Dr Z W")
             for name in re.split(r"\s*(?:,|\b(?i:and)\b|&)\s*|\s+(?=(?i:prof(?:essor)?|dr|mr|mrs|ms)\.?\s+[A-Z])", m.group(1)):
                 name = _clean_person(name)
@@ -218,7 +220,7 @@ def predict(meta, text):
                     continue
                 sups.append(name)
                 if conf > best:
-                    best, ev = conf, allt[max(0, m.start() - 20): m.end() + 20]
+                    best, ev = conf, sup_text[max(0, m.start() - 20): m.end() + 20]
         if sups:
             break
     if sups:
