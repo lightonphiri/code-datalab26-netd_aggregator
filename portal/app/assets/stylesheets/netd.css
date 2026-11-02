@@ -57,6 +57,7 @@ a:hover { color: var(--netd-blue-dark); text-decoration: underline; }
 .netd-stats td { padding: .5rem 0; border-bottom: 1px solid var(--netd-line); vertical-align: baseline; }
 .netd-stats td:first-child { font-size: 1.22rem; white-space: nowrap; padding-right: 1rem; width: 1%; }
 .netd-note { color: var(--netd-muted); font-size: .9rem; margin-top: .9rem; line-height: 1.6; }
+.netd-as-written { display: block; color: var(--netd-muted); font-size: .85rem; }
 .netd-inst { list-style: none; padding: 0; margin: 0; }
 .netd-inst li { display: flex; justify-content: space-between; gap: 1rem; padding: .5rem 0; border-bottom: 1px solid var(--netd-line); font-size: 1.05rem; }
 .netd-inst li > span:last-child { font-size: 1.1rem; }

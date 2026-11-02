@@ -24,7 +24,7 @@ class CatalogController < ApplicationController
     config.show.title_field = 'title_tsim'
     config.show.document_component = EtdShowComponent
     config.add_show_field 'author_tsim', label: 'Author', link_to_facet: 'author_ssim'
-    config.add_show_field 'supervisor_tsim', label: 'Supervisor', link_to_facet: 'supervisor_ssim'
+    config.add_show_field 'supervisor_ssim', label: 'Supervisor', link_to_facet: 'supervisor_ssim'
     config.add_show_field 'institution_ssim', label: 'Institution', link_to_facet: true
     config.add_show_field 'faculty_tsim', label: 'Faculty / School', link_to_facet: 'faculty_ssim'
     config.add_show_field 'department_tsim', label: 'Department', link_to_facet: 'department_ssim'

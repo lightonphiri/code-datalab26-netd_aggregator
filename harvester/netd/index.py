@@ -82,6 +82,9 @@ def to_solr(rec, dup=None):
         doc["faculty_department_ssim"] = ["%s|%s" % (rec["faculty"][0], d) for d in rec["department"]]
     if rec.get("department_orig"):  # FR-62: the spelling as harvested or predicted, when shown differently
         doc["department_orig_ssm"] = rec["department_orig"]
+    if rec.get("supervisor_orig"):  # FR-64: the spellings as harvested or predicted; still found by a search
+        doc["supervisor_orig_ssm"] = rec["supervisor_orig"]
+        doc["supervisor_tsim"] = list(dict.fromkeys((doc.get("supervisor_tsim") or []) + rec["supervisor_orig"]))
     if rec.get("field_of_study"):
         doc.update(fos_docs(rec["field_of_study"]))
     if rec.get("derived"):  # values filled by a model (SRS FR-50): field, method, confidence

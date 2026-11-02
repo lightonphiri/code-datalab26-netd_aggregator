@@ -103,15 +103,22 @@ def do_index(store, srcs, solr):
     from . import dedup
     dups = dedup.load(store)  # FR-19: "duplicate of" / "other copies" on each record in a group
     from collections import Counter
-    from . import units
+    from . import units, people
     for src in srcs:
+        recs = list(store.records(src["id"]))
         # FR-62: one spelling per department within the institution (display only; the store is not changed)
-        dmap = units.canonical(Counter(d for rec in store.records(src["id"]) for d in rec.get("department") or []))
-        batch = []
-        for rec in store.records(src["id"]):
+        dmap = units.canonical(Counter(d for rec in recs for d in rec.get("department") or []))
+        for rec in recs:
             new = units.apply(rec, dmap)
             if new:
                 rec["department_orig"], rec["department"] = rec["department"], new
+        # FR-64: one spelling per supervisor within the institution (display only), using the departments above
+        smap = people.canonical((r.get("supervisor"), r.get("department"), r.get("faculty")) for r in recs)
+        batch = []
+        for rec in recs:
+            new = people.apply(rec, smap)
+            if new:
+                rec["supervisor_orig"], rec["supervisor"] = rec["supervisor"], new
             batch.append(index.to_solr(rec, dups.get(rec["id"])))
             if len(batch) >= 500:
                 index.post(solr, batch)

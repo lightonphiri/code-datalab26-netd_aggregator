@@ -83,8 +83,13 @@
         <% rows.each do |label, field, facet| %>
           <% vals = rec_values(d, field) %>
           <% next if vals.empty? %>
+          <% orig = { 'department_ssim' => 'department_orig_ssm', 'supervisor_ssim' => 'supervisor_orig_ssm' }[field] %>
+          <% written = orig ? rec_values(d, orig) : [] %>
           <tr><th><%= label %></th>
-            <td><%= safe_join(vals.map { |v| facet ? facet_link(v, field, v) : v }, '; ') %> <%= derived_badge(derived, field) %></td></tr>
+            <td><%= safe_join(vals.map { |v| facet ? facet_link(v, field, v) : v }, '; ') %> <%= derived_badge(derived, field) %>
+              <% if written.any? && written != vals %>
+                <span class="netd-as-written">As written in the record: <%= written.join('; ') %></span>
+              <% end %></td></tr>
         <% end %>
         <% if derived.any? %>
           <tr><td colspan="2" class="netd-derived-note"><span class="netd-derived">derived</span> values were not in the

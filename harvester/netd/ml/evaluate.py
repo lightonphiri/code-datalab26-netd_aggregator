@@ -123,6 +123,13 @@ def _vkey(v):
 
 def _person(v):
     """Surname and the initials of every given name: 'Dr. Ndonyo Likwa' -> ('likwa', {'n'})."""
+    sur, given = person_words(v)
+    return sur, {w[0] for w in given}
+
+
+def person_words(v):
+    """Surname and the given names or initials in order: 'Dr. Ndonyo Likwa' -> ('likwa', ['ndonyo'])
+    (also used by netd.people, FR-64)."""
     v = re.sub(r"\s?['\u2018\u2019\u201b\u201f`]\s?(?=[a-z])", "", v)      # "Ng’andu", "Ng'andu", "Hang ’ombe"
     v = re.sub(r"(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|(?<=\.)(?=[A-Za-z])", " ", v)  # "Dr.BeatriceMatafwali"
     sur, _ = _key("supervisor", v)
@@ -141,7 +148,7 @@ def _person(v):
     if len(given) == 1 and len(given[0]) > 1 and given[0].isalpha() and given[0] == given[0].lower() and \
             re.fullmatch(r"[A-Z]{2,3}", re.sub(r"[^A-Za-z]", "", raw.split()[0]) or ""):
         given = list(given[0])                     # "MM Kabemba": initials run together
-    return sur, {w[0] for w in given}
+    return sur, given
 
 
 def _same_person(a, b):
