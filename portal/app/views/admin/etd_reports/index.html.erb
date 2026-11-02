@@ -1,0 +1,82 @@
+<% content_for(:page_title) { 'ETD reports · Admin' } %>
+<div class="netd-admin netd-reports">
+  <%= render 'admin/nav' %>
+  <h1>ETD reports</h1>
+  <p class="netd-admin-help">Reports for HEA and institutions, as Excel (one sheet per table, with charts) or PDF.
+    Visible to signed-in administrators only. Counts are of distinct theses (other copies of a thesis deposited twice
+    are left out, as in search results); values filled by the portal are marked in the Excel listings. Each report
+    run is written to the activity log.</p>
+
+  <div class="row g-4">
+    <div class="col-xl-6">
+      <div class="card"><div class="card-body">
+        <h2 class="h5">ETDs per institution</h2>
+        <p class="small text-muted">Summary and completeness; theses by year, degree level, year and level, type,
+          faculty, faculty and department, and degree. With "All institutions": every HEA institution, with 0 where
+          nothing has been harvested yet.</p>
+        <%= form_with url: admin_etd_report_path('institution'), method: :get, local: true do %>
+          <%= render 'filters', id: 'i' %>
+          <div class="form-check mt-2"><%= check_box_tag :usage, '1', false, class: 'form-check-input', id: 'usage-i' %>
+            <label class="form-check-label small" for="usage-i">Add usage: record views and PDF downloads by institution,
+              most viewed records, readers by country (counted since November 2, 2026; a lower bound)</label></div>
+          <%= render 'buttons', kind: 'institution' %>
+        <% end %>
+      </div></div>
+    </div>
+
+    <div class="col-xl-6">
+      <div class="card"><div class="card-body">
+        <h2 class="h5">ETDs by supervisor</h2>
+        <p class="small text-muted">Each supervisor name with the number of theses, by degree level, and the first and
+          last year; the Excel and PDF files add every thesis under each supervisor. Names are as written in the
+          repository or on the title page (spelling variants are not merged).</p>
+        <%= form_with url: admin_etd_report_path('supervisors'), method: :get, local: true do %>
+          <%= render 'filters', id: 's' %>
+          <div class="row g-2 mt-0"><div class="col-md-6"><label class="form-label small">Supervisor name contains
+            <%= text_field_tag :supervisor, nil, class: 'form-control form-control-sm', placeholder: 'e.g. Phiri' %></label></div>
+            <div class="col-md-6"><label class="form-label small">List of theses under each supervisor
+              <%= select_tag :list, options_for_select([['Include', '1'], ['Leave out', '0']]), class: 'form-select form-select-sm' %></label></div></div>
+          <%= render 'buttons', kind: 'supervisors' %>
+        <% end %>
+      </div></div>
+    </div>
+
+    <div class="col-12">
+      <div class="card"><div class="card-body">
+        <h2 class="h5">Custom report</h2>
+        <p class="small text-muted">Choose the filters, how to group the theses (one field, or a table of two fields),
+          and the columns of the list of theses.</p>
+        <%= form_with url: admin_etd_report_path('custom'), method: :get, local: true do %>
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <h3 class="h6">Filters</h3>
+              <%= render 'filters', id: 'c', more: true %>
+            </div>
+            <div class="col-lg-6">
+              <h3 class="h6">Grouping</h3>
+              <% groups = [['None', '']] + HeaReport::GROUPS.map { |k, (label, _)| [label, k] } %>
+              <div class="row g-2">
+                <div class="col-md-6"><label class="form-label small">Group by (rows)
+                  <%= select_tag :group, options_for_select(groups, 'year'), class: 'form-select form-select-sm' %></label></div>
+                <div class="col-md-6"><label class="form-label small">Then by (columns)
+                  <%= select_tag :then_by, options_for_select(groups, 'degree_level'), class: 'form-select form-select-sm' %></label></div>
+                <div class="col-12"><label class="form-label small">Report title
+                  <%= text_field_tag :report_title, nil, class: 'form-control form-control-sm', placeholder: 'Custom ETD report', maxlength: 120 %></label></div>
+              </div>
+              <h3 class="h6 mt-3">List of theses</h3>
+              <div class="form-check"><%= check_box_tag :list, '1', true, class: 'form-check-input', id: 'list-c' %>
+                <label class="form-check-label small" for="list-c">Include the list of theses (newest first; up to <%= number_with_delimiter(HeaReport::LIST_MAX) %>)</label></div>
+              <div class="d-flex flex-wrap gap-3 mt-1">
+                <% HeaReport::COLUMNS.each do |key, label| %>
+                  <div class="form-check"><%= check_box_tag 'columns[]', key, HeaReport::DEFAULT_COLUMNS.include?(key), class: 'form-check-input', id: "col-#{key}" %>
+                    <label class="form-check-label small" for="col-<%= key %>"><%= label %></label></div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <%= render 'buttons', kind: 'custom' %>
+        <% end %>
+      </div></div>
+    </div>
+  </div>
+</div>

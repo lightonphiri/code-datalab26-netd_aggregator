@@ -1,0 +1,33 @@
+<% content_for(:page_title) { "#{@report.title} · ETD reports · Admin" } %>
+<% max = Admin::EtdReportsController::PREVIEW_ROWS %>
+<div class="netd-admin netd-reports">
+  <%= render 'admin/nav' %>
+  <p><%= link_to '« ETD reports', admin_etd_reports_path %></p>
+  <h1><%= @report.title %></h1>
+  <p class="netd-admin-help"><%= @report.subtitle %> · preview (up to <%= max %> rows per table) ·
+    download: <%= link_to 'Excel', url_for(request.query_parameters.merge(format: :xlsx)) %> ·
+    <%= link_to 'PDF', url_for(request.query_parameters.merge(format: :pdf)) %></p>
+  <table class="table table-sm w-auto small">
+    <% @report.filters.each do |k, v| %><tr><th><%= k %></th><td><%= v %></td></tr><% end %>
+  </table>
+  <% @report.sections.each do |sec| %>
+    <h2><%= sec.title %> <small class="text-muted">(<%= number_with_delimiter(sec.rows.size) %> rows)</small></h2>
+    <% if sec.note.present? %><p class="netd-admin-help"><%= sec.note %></p><% end %>
+    <% if sec.rows.empty? %><p>None.</p><% else %>
+    <div class="table-responsive" style="max-height: 30rem">
+    <table class="table table-sm table-striped netd-admin-table">
+      <thead><tr><% sec.headers.each do |h| %><th><%= h %></th><% end %></tr></thead>
+      <tbody>
+      <% sec.rows.first(max).each do |row| %>
+        <tr><% row.each do |v| %>
+          <td class="<%= 'text-end' if v.is_a?(Numeric) %>"><% if v.to_s.start_with?('https://netd.ac.zm/') %><%= link_to 'open', v %><% elsif v.is_a?(Integer) %><%= number_with_delimiter(v) %><% else %><%= v %><% end %></td>
+        <% end %></tr>
+      <% end %>
+      </tbody>
+    </table>
+    </div>
+    <% end %>
+  <% end %>
+  <h2>Notes</h2>
+  <ul class="small"><% @report.notes.each do |n| %><li><%= n %></li><% end %></ul>
+</div>

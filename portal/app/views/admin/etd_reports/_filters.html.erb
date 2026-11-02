@@ -1,0 +1,29 @@
+<%# Filters shared by the three report forms (FR-63) %>
+<div class="row g-2">
+  <div class="col-md-6"><label class="form-label small">Institution
+    <%= select_tag :institution, options_for_select([['All institutions', '']] + @institutions.map { |i| [i[:name], i[:source]] }),
+                   class: 'form-select form-select-sm' %></label></div>
+  <div class="col-md-3"><label class="form-label small">Year from
+    <%= number_field_tag :year_from, nil, min: 1960, max: Date.current.year, class: 'form-control form-control-sm' %></label></div>
+  <div class="col-md-3"><label class="form-label small">Year to
+    <%= number_field_tag :year_to, nil, min: 1960, max: Date.current.year, class: 'form-control form-control-sm' %></label></div>
+  <% if local_assigns[:more] %>
+    <div class="col-md-4"><label class="form-label small">Degree level
+      <%= select_tag :degree_level, options_for_select([['Any', '']] + @values['degree_level_ssim']), class: 'form-select form-select-sm' %></label></div>
+    <div class="col-md-4"><label class="form-label small">Type
+      <%= select_tag :type, options_for_select([['Any', '']] + @values['type_ssim']), class: 'form-select form-select-sm' %></label></div>
+    <div class="col-md-4"><label class="form-label small">Field of study
+      <%= select_tag :fos_field, options_for_select([['Any', '']] + @values['fos_field_ssim']), class: 'form-select form-select-sm' %></label></div>
+  <% end %>
+  <div class="col-md-6"><label class="form-label small">Faculty / School
+    <%= select_tag :faculty, options_for_select([['Any', '']] + @values['faculty_ssim']), class: 'form-select form-select-sm' %></label></div>
+  <div class="col-md-6"><label class="form-label small">Department (exact name; type to search the list)
+    <%= text_field_tag :department, nil, list: "netd-departments-#{local_assigns[:id]}", class: 'form-control form-control-sm', autocomplete: 'off' %></label>
+    <datalist id="netd-departments-<%= local_assigns[:id] %>"><% @values['department_ssim'].each do |d| %><option value="<%= d %>"></option><% end %></datalist></div>
+  <% if local_assigns[:more] %>
+    <div class="col-md-6"><label class="form-label small">Supervisor name contains
+      <%= text_field_tag :supervisor, nil, class: 'form-control form-control-sm', placeholder: 'e.g. Phiri' %></label></div>
+    <div class="col-md-6"><label class="form-label small">Words in title or abstract
+      <%= text_field_tag :words, nil, class: 'form-control form-control-sm' %></label></div>
+  <% end %>
+</div>

@@ -37,6 +37,8 @@ Rails.application.routes.draw do
     post 'review/:id', to: 'reviews#decide', as: :decide_review, constraints: { id: /[A-Za-z0-9_-]+/ }
     get 'duplicates', to: 'duplicates#index', as: :duplicates   # FR-19
     get 'usage', to: 'usage#index', as: :usage   # usage analytics (FR-61)
+    get 'etd-reports', to: 'etd_reports#index', as: :etd_reports   # reports for HEA (FR-63): preview, .xlsx, .pdf
+    get 'etd-reports/:kind', to: 'etd_reports#show', as: :etd_report, constraints: { kind: /institution|supervisors|custom/ }
     post 'duplicates/:id', to: 'duplicates#decide', as: :decide_duplicate, constraints: { id: /[A-Za-z0-9_-]+/ }
   end
   mount Blacklight::Engine => '/'
