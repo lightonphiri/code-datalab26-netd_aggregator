@@ -62,6 +62,7 @@ SUPERVISOR = [
     (re.compile(PERSON + SUPERVISED), 0.8),                  # "Dr X for his able supervision"
     (re.compile(PERSON + r"\s*\(?\s*(?i:(?:main|principal|co)?\s?-?\s?supervisor)\)?\b"), 0.75),
 ]
+CUE = re.compile(r"(?i)supervis")
 NOT_NAMES = re.compile(r"\b(word|count|abstract|page|chapter|copyright|unza|zou|cbu|unilus|zcas|mu|zambia|supervisors?|co|visiting|senior|head|who|whose|for|from|signature|signed|date|name|department|university|school|examiner|candidate|dean|"
                        r"declaration|approval|head|chairperson|lecturer|the|of|sign|a?dissertation|thesis|submitted|report|research|"
                        r"project|in|on|to|by|at|is|was|has|public|health|surgery|medicine|ethics|applied|open|studies|science|sciences|"
@@ -215,8 +216,24 @@ def predict(meta, text):
     best, ev = 0.0, None
     sup_text = re.sub(r"(?<=[A-Za-z])\s?['\u201b\u201f`]\s?(?=[a-z]{2})", "'", allt)  # "Hang ’ombe", "Ng‟andu"
     sup_text = _rejoin(sup_text, vocab, names=True)  # "Wanga W. Chakan ika" -> "Wanga W. Chakanika"
+    cues = [c.start() for c in CUE.finditer(sup_text)]
     for rx, conf in SUPERVISOR:
-        for m in rx.finditer(sup_text):
+        if rx.pattern.startswith(PERSON):   # name first: try only just before a cue (unbounded, it backtracked
+            spans, found = set(), []          # for 17-29 s on one OCRed list of acronyms; v10)
+            for c in cues:
+                pos = max(0, c - 120)
+                while True:
+                    m = rx.search(sup_text, pos, c + 60)
+                    if not m:
+                        break
+                    if m.span() not in spans:
+                        spans.add(m.span())
+                        found.append(m)
+                    pos = m.end()
+            found.sort(key=lambda m: m.start())
+        else:
+            found = rx.finditer(sup_text)
+        for m in found:
             # several people: separated by commas, "and", "&", or a title in the middle ("X Y Dr Z W")
             for name in re.split(r"\s*(?:,|;|\b(?i:and)\b|&)\s*|\s+(?=(?i:prof(?:essor)?|d\s?r|mrs|mr|ms)\.?\s+[A-Z])", m.group(1)):
                 name = _clean_person(name)

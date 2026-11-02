@@ -6,7 +6,7 @@
 MAX=${MAX:-10}
 set -e
 cd /opt/netd/harvester
-.venv/bin/python -m netd.cli predict
+flock -w 7200 run.lock .venv/bin/python -m netd.cli predict   # writes the store: never beside an OCR batch (session 08)
 sqlite3 netd.sqlite3 ".backup /opt/netd/logs/dry.sqlite3"
 .venv/bin/python -m netd.cli process --db /opt/netd/logs/dry.sqlite3
 Q="attach 'file:/opt/netd/harvester/netd.sqlite3?mode=ro' as live;"
