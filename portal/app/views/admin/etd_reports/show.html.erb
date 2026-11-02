@@ -5,8 +5,9 @@
   <p><%= link_to '« ETD reports', admin_etd_reports_path %></p>
   <h1><%= @report.title %></h1>
   <p class="netd-admin-help"><%= @report.subtitle %> · preview (up to <%= max %> rows per table) ·
-    download: <%= link_to 'Excel', url_for(request.query_parameters.merge(format: :xlsx)) %> ·
-    <%= link_to 'PDF', url_for(request.query_parameters.merge(format: :pdf)) %></p>
+    <% q = request.query_parameters.symbolize_keys.except(:kind, :format) %>
+    download: <%= link_to 'Excel', admin_etd_report_path(@report.kind, **q, format: :xlsx) %> ·
+    <%= link_to 'PDF', admin_etd_report_path(@report.kind, **q, format: :pdf) %></p>
   <table class="table table-sm w-auto small">
     <% @report.filters.each do |k, v| %><tr><th><%= k %></th><td><%= v %></td></tr><% end %>
   </table>
