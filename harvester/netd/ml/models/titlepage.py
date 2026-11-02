@@ -13,7 +13,7 @@ import re
 from ... import crosswalk
 
 NAME = "titlepage-rules"
-VERSION = "10"
+VERSION = "11"
 FIELDS = ("degree_level", "degree", "discipline", "supervisor", "department", "faculty")
 USES = ("title",)
 NEEDS_TEXT = True
@@ -42,31 +42,36 @@ STOP = re.compile(r"\s+(?:in\s+(?:the\s+)?(?:school|faculty|department|institute
 
 TITLE_WORDS = r"(?i:prof(?:essor)?s?|d\s?rs?|mrs|mr|ms|miss|rev|eng|assoc\.?\s+prof)(?:\s?\.)?"   # "Dr ." too
 # a name part: a word, initials with dots ("K.", "W.W", "K.M"), or a bare initial before another part ("W Chakanika")
-TOKEN = r"(?:[A-Z][a-zA-Z'\-]+|(?:[A-Z]\.){1,4}(?:[A-Z]\b)?|[A-Z]\b(?=\s*[A-Z][a-zA-Z'\-]))"
+NOT_TITLE = r"(?!(?i:dr|drs|prof|professor|mr|mrs|ms|miss|rev)\b)"   # v11: "Mudenda Dr. Marimo" is two people
+TOKEN = (r"(?:" + NOT_TITLE + r"[A-Z][a-zA-Z'\-]+|(?:[A-Z]\.){1,4}(?:[A-Z]\b)?|" + NOT_TITLE
+         + r"[A-Z]\b(?=\s*[A-Z]))")   # v11: bare initials in a row ("C M Kaseba")
 PERSON = r"((?:" + TITLE_WORDS + r"\s*)?" + TOKEN + r"(?:\s*" + TOKEN + r"){1,4})"
 PEOPLE = PERSON[:-1] + r"(?:\s*(?:,|\b(?i:and)\b|&)\s*(?:" + TITLE_WORDS + r"\s*)?" + TOKEN + r"(?:\s*" + TOKEN + r"){1,4})?)"
-_P = r"(?:" + TITLE_WORDS + r"\s*)?" + TOKEN + r"(?:\s*" + TOKEN + r"){1,4}"
+_P = (r"(?:" + TITLE_WORDS + r"\s*" + TOKEN + r"(?:(?:\s*" + TOKEN + r"){1,4}|(?=\s*(?:[,;&(]|(?i:and|for|who|as)\b|$)))|"
+      + TOKEN + r"(?:\s*" + TOKEN + r"){1,4})")   # v11: "Dr. Kusanthan and …": a title and a surname that ends there
 PEOPLE3 = r"(" + _P + r"(?:\s*(?:,|\b(?i:and)\b|&)?\s*" + _P + r"){0,3})"   # up to four people
 # "my supervisor", "my Research Supervisor", "my exemplary supervisor", "my very able supervisors"
 MY_SUP = (r"\b(?i:my)\s+(?:(?:[a-z\-]+|(?i:study|research|main|principal|academic|dissertation|thesis))\s+){0,2}"
           r"(?i:(?:co-?\s?)?supervisors?)\b")
-SUPERVISED = (r",?\s+(?i:for\s+(?:(?:his|her|their)\s+)?(?:[a-z\-]+\s+){0,2}(?:supervision|supervising)\b|"
+SUPERVISED = (r",?\s+(?i:for\s+(?:(?:his|her|their)\s+)?(?:[a-z\-]+,?\s+){0,8}(?:supervision|supervising)\b|"
               r"for\s+accepting\s+to\s+supervise|who\s+supervised)")
 SUPERVISOR = [
     (re.compile(r"\b(?i:(?:main\s+|principal\s+|co-?\s?)?supervisors?)\s*[:\-–]\s*" + PEOPLE3), 0.92),
     (re.compile(r"\b(?i:supervisors?)\s+(?=" + TITLE_WORDS + r"\s*[A-Z])" + PEOPLE3), 0.9),  # "SUPERVISOR DR.D. BANDA"
     (re.compile(r"\b(?i:supervised\s+by)\s*[:\-–]?\s*" + PEOPLE3), 0.9),
     (re.compile(r"\b(?i:under\s+the\s+(?:able\s+)?(?:supervision|guidance)\s+of)\s+" + PEOPLE3), 0.88),
-    (re.compile(MY_SUP + r"(?:\s+(?i:and\s+mentors?))?\s*[,;:]?\s*(?:(?i:namely)\s*,?\s*)?" + PEOPLE3), 0.86),     # acknowledgements: "my supervisor, Dr X, for ..."
+    (re.compile(MY_SUP + r"(?:\s+(?i:and\s+(?:[a-z]+\s+){0,2}mentors?|and\s+co\s?-?\s?supervisors?))?\s*[,;:]?\s*"
+                r"(?:(?i:namely)\s*,?\s*)?" + PEOPLE3), 0.86),     # acknowledgements: "my supervisor, Dr X, for ..."
     (re.compile(PERSON + r"\s*,?\s+" + MY_SUP), 0.82),      # "... Prof. X, my supervisor, for ..." ("X , my")
     (re.compile(PERSON + SUPERVISED), 0.8),                  # "Dr X for his able supervision"
-    (re.compile(PERSON + r"\s*\(?\s*(?i:(?:main|principal|co)?\s?-?\s?supervisor)\)?\b"), 0.75),
+    (re.compile(PERSON + r"\s*\(?\s*(?i:(?:main|principal|co)?\s?-?\s?supervisor)\)?\b"), 0.8),
 ]
 CUE = re.compile(r"(?i)supervis")
 NOT_NAMES = re.compile(r"\b(word|count|abstract|page|chapter|copyright|unza|zou|cbu|unilus|zcas|mu|zambia|supervisors?|co|visiting|senior|head|who|whose|for|from|signature|signed|date|name|department|university|school|examiner|candidate|dean|"
                        r"declaration|approval|head|chairperson|lecturer|the|of|sign|a?dissertation|thesis|submitted|report|research|"
                        r"project|in|on|to|by|at|is|was|has|public|health|surgery|medicine|ethics|applied|open|studies|science|sciences|"
-                       r"education|programme|mmed|bchb|mbchb)\b", re.I)
+                       r"education|programme|mmed|bchb|mbchb|thank|thanks|lusaka|frcsi|frcs|associate|january|february|march|april|"
+                       r"june|july|august|september|october|november|december)\b", re.I)
 UNIT = re.compile(r"\b(department|school|faculty|institute|college)\s+of\s+(?=[A-Z])", re.I)
 UNIT_STOP = re.compile(r"\s*(?:,(?!\s*[A-Za-z]+(?:\s+[A-Za-z]+)?\s+(?i:and)\s)|\.|;|:|\(|\bat\b|\bthe\b|\buniversity\b|\blusaka\b|\bzambia\b|\bin\s+partial\b|"
                        r"\bsubmitted\b|\bpresented\b|\bdepartment\b|\bschool\b|\bfaculty\b|\binstitute\b|"
@@ -236,11 +241,13 @@ def predict(meta, text):
         for m in found:
             # several people: separated by commas, "and", "&", or a title in the middle ("X Y Dr Z W")
             for name in re.split(r"\s*(?:,|;|\b(?i:and)\b|&)\s*|\s+(?=(?i:prof(?:essor)?|d\s?r|mrs|mr|ms)\.?\s+[A-Z])", m.group(1)):
+                titled = re.match(r"\s*" + TITLE_WORDS + r"\s*[A-Z]", name) is not None
                 name = _clean_person(name)
                 cut = NOT_NAMES.search(name)
                 if cut:
                     name = re.sub(r"\s+[A-Z]$", "", name[:cut.start()].strip(" .,"))
-                if not _good_name(name) or name in sups:
+                alone = titled and re.fullmatch(r"[A-Z][a-zA-Z'\-]{3,}", name or "") is not None  # "Dr. Kusanthan"
+                if not (_good_name(name) or alone) or name in sups:
                     continue
                 sur = name.split()[-1].lower()
                 same = [x for x in sups if x.split()[-1].lower() == sur]

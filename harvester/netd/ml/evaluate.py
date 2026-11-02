@@ -132,7 +132,12 @@ def _person(v):
     raw = TITLES.sub(" ", raw)
     if "," in raw:
         raw = raw.split(",", 1)[1]
-    given = [w for w in norm(raw).split() if w != sur]
+    words = norm(raw).split()
+    if len(sur) == 1 and len(words) > 1 and len(words[-1]) == 1:   # "Dr Mapoma C", "Dr. Zyaambo C." (surname first)
+        long_ = [w for w in words if len(w) > 1]
+        if long_:
+            sur = long_[-1]
+    given = [w for w in words if w != sur]
     if len(given) == 1 and len(given[0]) > 1 and given[0].isalpha() and given[0] == given[0].lower() and \
             re.fullmatch(r"[A-Z]{2,3}", re.sub(r"[^A-Za-z]", "", raw.split()[0]) or ""):
         given = list(given[0])                     # "MM Kabemba": initials run together
