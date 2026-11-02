@@ -26,7 +26,7 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 | November 2, 2026 | Usage figures for the paper and for HEA: monthly summary from `/admin/usage.csv` (views and downloads per institution) | Feature (paper) | Counting started November 2, 2026; needs some months of data |
 | November 2, 2026 | Popular search terms without storing what one person searched: count a term only once it has been searched on several days, or keep only the facet values chosen | Feature | Not built: FR-61 stores no search words (privacy) |
 | November 2, 2026 | Department names that are really different units or wrong faculty pairs from the model ("Agricultural Sciences / Department of Public Health", "Education / Department of Community Medicine") | Fix (model output) | Seen on `/browse`; from `titlepage-rules` departments read from title pages. Changes an evaluated component: log in `docs/PAPER-PLAN.md` |
-| November 2, 2026 | Network outage: netd.ac.zm, emi.org.zm and datalab.unza.zm unreachable from outside (HTTPS and SSH time out) from about 10:15 UTC, while UNZA's DNS has been down since November 1 | Note | Upstream (UNZA/ZAMREN network); outside our control. Check reprocessing for FR-62 once reachable |
+| November 2, 2026 | Network outage: netd.ac.zm, emi.org.zm and datalab.unza.zm unreachable from outside (HTTPS and SSH time out) from about 10:15 UTC, while UNZA's DNS has been down since November 1 | Note | Upstream (UNZA/ZAMREN network); outside our control. Still down at 11:27 UTC. Session 08: check the 1da3c26 deploy, then reprocess and reindex UNZA for FR-62 |
 
 ## Done
 
