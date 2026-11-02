@@ -44,7 +44,8 @@ def _key(field, v):
         return norm(v)
     if field == "supervisor":
         raw = unicodedata.normalize("NFKD", v).encode("ascii", "ignore").decode()
-        raw = re.sub(r"(?i)\b(prof(?:essor)?|dr|mr|mrs|ms)\.?(?=[A-Z])", r"\1 ", raw)  # "ProfessorY.Mulla"
+        raw = re.sub(r"\b((?i:prof(?:essor)?|dr|mrs|mr|ms))\.?(?=[A-Z])", r"\1 ", raw)  # "ProfessorY.Mulla" (case-
+        # sensitive lookahead: with a global (?i), "Professor" became "Prof essor" and "Mrs" became "Mr s")
         raw = re.sub(r"(?<=\.)(?=[A-Z][a-z])", " ", raw)                             # "Y.Mulla"
         raw = TITLES.sub(" ", raw).strip(" ,;.")
         if "," in raw:
@@ -104,6 +105,41 @@ def _vkey(v):
     return (0, int(v), "") if str(v).isdigit() else (1, 0, str(v))
 
 
+def _person(v):
+    """Surname and the initials of every given name: 'Dr. Ndonyo Likwa' -> ('likwa', {'n'})."""
+    v = re.sub(r"\s?['\u2018\u2019\u201b\u201f`]\s?(?=[a-z])", "", v)      # "Ng’andu", "Ng'andu", "Hang ’ombe"
+    v = re.sub(r"(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|(?<=\.)(?=[A-Za-z])", " ", v)  # "Dr.BeatriceMatafwali"
+    sur, _ = _key("supervisor", v)
+    raw = unicodedata.normalize("NFKD", v).encode("ascii", "ignore").decode()
+    raw = re.sub(r"\b((?i:prof(?:essor)?|dr|mrs|mr|ms))\.?(?=[A-Z])", r"\1 ", raw)
+    raw = re.sub(r"(?<=\.)(?=[A-Z])", " ", raw)
+    raw = TITLES.sub(" ", raw)
+    if "," in raw:
+        raw = raw.split(",", 1)[1]
+    given = [w for w in norm(raw).split() if w != sur]
+    if len(given) == 1 and len(given[0]) > 1 and given[0].isalpha() and given[0] == given[0].lower() and \
+            re.fullmatch(r"[A-Z]{2,3}", re.sub(r"[^A-Za-z]", "", raw.split()[0]) or ""):
+        given = list(given[0])                     # "MM Kabemba": initials run together
+    return sur, {w[0] for w in given}
+
+
+def _same_person(a, b):
+    """Same surname, and the given names do not contradict: one side has none, or they share an initial. The 2020
+    annotators wrote supervisors with or without given names and in either order ("Prof Siziya", "Ndonyo Likwa")."""
+    return a[0] == b[0] and (not a[1] or not b[1] or bool(a[1] & b[1]))
+
+
+def _people_tp(gv, pv):
+    left, tp = list(pv), 0
+    for g in gv:
+        for p in left:
+            if _same_person(g, p):
+                left.remove(p)
+                tp += 1
+                break
+    return tp
+
+
 def _scores(gold, recs, f, t, ids):
     tp = fp = fn = predicted = n = 0
     for rid in ids:
@@ -111,8 +147,17 @@ def _scores(gold, recs, f, t, ids):
         if f not in g:
             continue
         n += 1
-        gv = {_key(f, v) for v in g[f]}
         pv, conf = recs.get(rid, {}).get(f, ([], 0.0))
+        if f == "supervisor":   # people: one-to-one matching on surname and compatible initials
+            gv = list({(a, frozenset(b)) for a, b in map(_person, g[f]) if a})
+            pv = list({(a, frozenset(b)) for a, b in map(_person, pv) if a}) if pv and conf >= t else []
+            k = _people_tp(gv, pv)
+            predicted += bool(pv)
+            tp += k
+            fp += len(pv) - k
+            fn += len(gv) - k
+            continue
+        gv = {_key(f, v) for v in g[f]}
         pv = {_key(f, v) for v in pv} if pv and conf >= t else set()
         predicted += bool(pv)
         tp += len(pv & gv)
