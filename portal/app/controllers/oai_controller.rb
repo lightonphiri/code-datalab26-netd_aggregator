@@ -51,6 +51,8 @@ class OaiController < ActionController::Base
     end
   end
 
+  after_action { UsageCount.bump('oai', record_id: params[:verb].to_s.first(30)) } # usage analytics, FR-61
+
   def index
     @args = parse_arguments
     @verb = @args['verb']

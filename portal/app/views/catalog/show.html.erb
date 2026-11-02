@@ -60,10 +60,10 @@
               <span class="netd-file-icon" aria-hidden="true">
                 <svg width="22" height="26" viewBox="0 0 22 26" fill="none" stroke="#9aa3ad" stroke-width="1.2"><path d="M1 1h13l7 7v17H1z"/><path d="M14 1v7h7"/></svg>
               </span>
-              <a class="netd-file-name" href="<%= f['url'] %>" target="_blank" rel="noopener"><%= file_label(f, i) %></a>
+              <a class="netd-file-name" href="<%= record_pdf_path(d.id, file: i) %>" target="_blank" rel="noopener"><%= file_label(f, i) %></a>
               <span class="netd-file-meta"><%= f['mime'] %></span>
               <span class="netd-file-meta"><%= human_size(f['size']) %></span>
-              <a class="netd-file-dl" href="<%= f['url'] %>" target="_blank" rel="noopener" aria-label="Download <%= file_label(f, i) %>">
+              <a class="netd-file-dl" href="<%= record_pdf_path(d.id, file: i) %>" target="_blank" rel="noopener" aria-label="Download <%= file_label(f, i) %>">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 7v9M8 12.5l4 4 4-4"/></svg>
               </a>
             </li>
@@ -100,7 +100,7 @@
   <aside class="col-lg-4">
     <div class="netd-side">
       <% if pdf %>
-        <a class="btn btn-primary w-100 netd-dl" href="<%= pdf %>" target="_blank" rel="noopener">Download</a>
+        <a class="btn btn-primary w-100 netd-dl" href="<%= record_pdf_path(d.id) %>" target="_blank" rel="noopener">Download</a>
       <% else %>
         <span class="netd-nofile">No full text available from the repository</span>
       <% end %>

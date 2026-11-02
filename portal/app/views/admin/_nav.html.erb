@@ -8,6 +8,7 @@
   <%= link_to "Duplicates (#{Harvester.duplicate_count})", admin_duplicates_path %>
   <%= link_to 'Activity log', admin_events_path %>
   <%= link_to 'Metadata quality', admin_quality_path %>
+  <%= link_to 'Usage', admin_usage_path %>
   <%= form_with url: admin_record_lookup_path, method: :get, local: true, class: 'netd-admin-lookup d-inline' do %>
     <%= text_field_tag :id, nil, placeholder: 'Record id or URL', 'aria-label': 'Correct a record: record id or portal address', size: 22 %>
     <%= submit_tag 'Correct', class: 'btn btn-sm btn-outline-secondary', name: nil %>

@@ -36,6 +36,7 @@ Rails.application.routes.draw do
     get 'review', to: 'reviews#index', as: :reviews
     post 'review/:id', to: 'reviews#decide', as: :decide_review, constraints: { id: /[A-Za-z0-9_-]+/ }
     get 'duplicates', to: 'duplicates#index', as: :duplicates   # FR-19
+    get 'usage', to: 'usage#index', as: :usage   # usage analytics (FR-61)
     post 'duplicates/:id', to: 'duplicates#decide', as: :decide_duplicate, constraints: { id: /[A-Za-z0-9_-]+/ }
   end
   mount Blacklight::Engine => '/'
@@ -45,6 +46,7 @@ Rails.application.routes.draw do
   get "developers", to: "pages#developers", as: :developers
   get "follow", to: "follow#show", as: :follow   # feeds of new additions for a search (FR-60)
   get "quality", to: "quality#index", as: :quality   # metadata quality dashboard (FR-28)
+  get "catalog/:id/pdf", to: "catalog#pdf", as: :record_pdf, constraints: { id: /[A-Za-z0-9_-]+/ }  # counted download (FR-61)
   get "browse", to: "browse#index", as: :browse      # institution → faculty → department (FR-25)
   get "contribute", to: "pages#contribute", as: :contribute   # guide for institutions (FR-59)
   get "credits", to: "pages#credits", as: :credits

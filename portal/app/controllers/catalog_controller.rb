@@ -4,6 +4,7 @@
 # Field names follow the harvester's Solr mapping (harvester/netd/index.py).
 class CatalogController < ApplicationController
   include Blacklight::Catalog
+  include UsageCounting
 
   configure_blacklight do |config|
     config.header_component = NetdHeaderComponent
@@ -78,4 +79,42 @@ class CatalogController < ApplicationController
     config.spell_max = 5
     config.autocomplete_enabled = false
   end
+
+  # Usage analytics (FR-61): home page visits, searches (first results page only) and record page views.
+  def index
+    super
+    return unless request.format.html? && response.successful?
+
+    if has_search_parameters?
+      count_usage('search') if params[:page].to_i <= 1
+    else
+      count_usage('home')
+    end
+  end
+
+  def show
+    super
+    return unless request.format.html? && response.successful? && @document
+
+    count_usage('record_view', record_id: @document.id, institution: Array(@document['institution_ssim']).first)
+  end
+
+  # GET /catalog/:id/pdf(?file=n): counts the download, then sends the reader to the repository's own copy. Only a
+  # link stored in the record is used (no open redirect).
+  def pdf
+    doc = search_service.fetch(params[:id].to_s)
+    doc = doc.last if doc.is_a?(Array)
+    files = Array(doc['files_ssm']).filter_map { |j| JSON.parse(j) rescue nil }
+    url = if params[:file].present?
+            files[params[:file].to_i]&.dig('url')
+          else
+            Array(doc['pdf_url_ssm']).first.presence || files.first&.dig('url')
+          end
+    return head(:not_found) unless url.to_s.match?(%r{\Ahttps?://}i)
+
+    count_usage('pdf_download', record_id: doc.id, institution: Array(doc['institution_ssim']).first)
+    response.headers['X-Robots-Tag'] = 'noindex'
+    redirect_to url, allow_other_host: true, status: :found
+  end
+
 end

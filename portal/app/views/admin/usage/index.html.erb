@@ -1,0 +1,85 @@
+<% content_for(:page_title) { 'Usage · Admin' } %>
+<% labels = UsageCount::EVENTS %>
+<div class="netd-admin netd-usage">
+  <%= render 'admin/nav' %>
+  <h1>Usage</h1>
+  <p class="netd-admin-help">Counted by the portal itself: no third-party trackers, no cookies for counting, and no IP
+    addresses, browser details or search words are stored, only a count per day (UTC), kind of use, record and
+    institution. Crawlers, link previews and signed-in administrators are not counted; API and OAI-PMH requests are
+    all counted (their users are programs). PDF downloads are counted when the reader uses the portal's Download
+    link; a PDF opened from the repository's own page is not.
+    <% if @first_day %>Counting since <%= @first_day.strftime('%B %-d, %Y') %>.<% end %></p>
+  <p>Period:
+    <% Admin::UsageController::PERIODS.each do |n| %>
+      <% if n == @days %><strong>last <%= n %> days</strong><% else %><%= link_to "last #{n} days", admin_usage_path(days: n) %><% end %> ·
+    <% end %>
+    <%= link_to 'Download CSV', admin_usage_path(days: @days, format: :csv) %></p>
+
+  <% if @totals.empty? %>
+    <p>Nothing counted in this period yet.</p>
+  <% else %>
+    <h2>Totals</h2>
+    <table class="table table-sm netd-admin-table w-auto">
+      <tbody>
+      <% labels.each do |ev, label| %>
+        <tr><td><%= label %></td><td class="text-end"><strong><%= number_with_delimiter(@totals[ev].to_i) %></strong></td></tr>
+      <% end %>
+      </tbody>
+    </table>
+
+    <h2>By day</h2>
+    <% peak = [@dates.map { |d| @daily[[d, 'record_view']].to_i }.max.to_i, 1].max %>
+    <div class="table-responsive" style="max-height: 28rem">
+    <table class="table table-sm netd-admin-table">
+      <thead><tr><th>Day</th><% labels.each_key do |ev| %><th class="text-end"><%= labels[ev].split(' (').first %></th><% end %><th>Record views</th></tr></thead>
+      <tbody>
+      <% @dates.reverse_each do |d| %>
+        <% rv = @daily[[d, 'record_view']].to_i %>
+        <tr><td><%= d.strftime('%B %-d, %Y') %></td>
+          <% labels.each_key do |ev| %><td class="text-end"><%= number_with_delimiter(@daily[[d, ev]].to_i) %></td><% end %>
+          <td style="min-width: 10rem"><span style="display:inline-block;height:.7rem;background:#0071c2;width:<%= (100.0 * rv / peak).round(1) %>%" aria-hidden="true"></span></td></tr>
+      <% end %>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>By institution</h2>
+    <% insts = @by_inst.keys.map(&:first).uniq.sort_by { |i| -@by_inst[[i, 'record_view']].to_i } %>
+    <table class="table table-sm netd-admin-table w-auto">
+      <thead><tr><th>Institution</th><th class="text-end">Record views</th><th class="text-end">PDF downloads</th></tr></thead>
+      <tbody>
+      <% insts.each do |i| %>
+        <tr><td><%= i.presence || '(unknown)' %></td><td class="text-end"><%= number_with_delimiter(@by_inst[[i, 'record_view']].to_i) %></td>
+          <td class="text-end"><%= number_with_delimiter(@by_inst[[i, 'pdf_download']].to_i) %></td></tr>
+      <% end %>
+      </tbody>
+    </table>
+
+    <div class="row">
+      <% [['Most viewed records', @top_views], ['Most downloaded PDFs', @top_pdfs]].each do |heading, rows| %>
+        <div class="col-lg-6">
+          <h2><%= heading %></h2>
+          <% if rows.empty? %><p>None yet.</p><% else %>
+          <ol class="small">
+            <% rows.each do |id, n| %>
+              <li><%= link_to(@titles[id] || id, solr_document_path(id)) %> · <%= number_with_delimiter(n) %></li>
+            <% end %>
+          </ol>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <h2>API and OAI-PMH</h2>
+    <% if @endpoints.empty? %><p>None in this period.</p><% else %>
+    <table class="table table-sm netd-admin-table w-auto">
+      <thead><tr><th>Interface</th><th>Endpoint or verb</th><th class="text-end">Requests</th></tr></thead>
+      <tbody>
+      <% @endpoints.each do |(ev, key), n| %>
+        <tr><td><%= ev == 'api' ? 'API v1' : 'OAI-PMH' %></td><td><code><%= key.presence || '(none)' %></code></td><td class="text-end"><%= number_with_delimiter(n) %></td></tr>
+      <% end %>
+      </tbody>
+    </table>
+    <% end %>
+  <% end %>
+</div>

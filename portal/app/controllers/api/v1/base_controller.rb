@@ -8,6 +8,7 @@ module Api
       rate_limit to: LIMIT, within: 1.minute, with: -> { error(429, 'Too many requests', "At most #{LIMIT} requests a minute; please slow down.") }
 
       before_action :cors
+      after_action { UsageCount.bump('api', record_id: controller_name) if request.get? } # FR-61
       rescue_from ActionController::BadRequest, ArgumentError do |e|
         error(400, 'Bad request', e.message)
       end

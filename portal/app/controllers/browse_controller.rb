@@ -4,11 +4,13 @@
 # One Solr request with two pivots; cached for 10 minutes.
 class BrowseController < ApplicationController
   include Blacklight::Configurable
+  include UsageCounting
   copy_blacklight_config_from(CatalogController)
   layout 'blacklight'
 
   def index
     @tree = Rails.cache.fetch('browse/tree', expires_in: 10.minutes) { tree }
+    count_usage('browse') # FR-61
   end
 
   private
