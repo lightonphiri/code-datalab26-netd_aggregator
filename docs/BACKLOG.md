@@ -35,7 +35,7 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 | November 2, 2026 | Usage analytics (FR-61): own daily counts (no trackers, no IPs or search words), `/admin/usage` with CSV, counted PDF links, FAQ note | e80a8cf, 50829a5 |
 | November 2, 2026 | Blacklight search history pruned to one day nightly (540,539 rows in three days) | 1da3c26 |
 | November 2, 2026 | Department name variants merged per institution at index time (FR-62): UNZA 94 → 80 names | 1da3c26 |
-| November 2, 2026 | UNZA collections that are not Schools: "Library" (80 theses) → Education / Department of Library and Information Studies; journal and project collections → no faculty; Ministry of Health waste plan excluded (`set_units`, `exclude_records`) | 1da3c26 |
+| November 2, 2026 | UNZA collections that are not Schools: journal and project collections → no faculty ("Library" kept: a separate entity at UNZA, Lighton, November 2, 2026); Ministry of Health waste plan excluded (`set_units`, `exclude_records`) | 1da3c26 |
 | November 2, 2026 | EMI Drupal site email works (Google SMTP, own app password) | Server only (`docs/OPERATIONS.md`) |
 | November 2, 2026 | Exposed NETD alert app password revoked; new one per service; test alert received | Server only (`docs/OPERATIONS.md`, "SMTP app passwords") |
 | November 2, 2026 | Browse by faculty and department (FR-25), `/browse` | 0056cf2 |

@@ -23,11 +23,10 @@ sources:
                        "African Digital Health Library (ADHL) - Zambia"]
     # RIMS ETD collections are the Schools (e.g. "Natural Sciences"), so map them to Faculty.
     collections_are: faculty
-    # Collections that are not Schools (FR-62; checked November 2, 2026). "Library" holds the theses of the
-    # Department of Library and Information Studies (School of Education); the other two are single theses filed in
-    # a journal or project collection, so their School is left for the title page to supply.
+    # Collections that are not Schools (FR-62; checked November 2, 2026): single theses filed in a journal or
+    # project collection, so their School is left for the title page to supply. "Library" (col_123456789_99) stays:
+    # the Library is a separate entity at UNZA, not part of a School (Lighton, November 2, 2026).
     set_units:
-      col_123456789_99: {faculty: Education, department: Department of Library and Information Studies}
       col_123456789_5183: {faculty: null}
       col_123456789_297: {faculty: null}
     exclude_records:
