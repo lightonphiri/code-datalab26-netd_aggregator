@@ -122,5 +122,8 @@ Iterated on real text with random spot checks of values and evidence (about 27â€
 ## Evaluation
 Field-level P/R/F1 (normalised matching; people by surname + initial); riskâ€“coverage curves and calibration error; cross-institution generalisation (train UNZA, test ZCAS, MU, UNILUS); born-digital vs scanned; ablations (front matter first, page classification, grounding check, distillation); facet counts before and after (discoverability); cost, time and energy per 1,000 ETDs on free and CPU hardware.
 
+## Freezing the version for the paper
+At the end of the last implementation session: final evaluation on the held-out test half, figures in the evidence log, commit tagged `paper-v1` (tag and date recorded here). The paper describes `paper-v1` only. Two hand-offs follow in parallel: one for the paper session and one for an ongoing features-and-fixes track working from `docs/BACKLOG.md`; changes after `paper-v1` are logged as post-paper changes (Lighton, November 2, 2026).
+
 ## Venue
 To be decided with Lighton when drafting (digital libraries or document-analysis venue).
