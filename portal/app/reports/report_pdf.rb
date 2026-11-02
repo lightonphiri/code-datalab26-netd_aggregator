@@ -12,13 +12,13 @@ module ReportPdf
   ZEBRA = 'F3F8FC'
   SERIES = %w[1F4E79 2E75B6 9DC3E6 BFBFBF].freeze
   FONT_DIR = '/usr/share/fonts/truetype/dejavu'
-  ROW_MAX = 1_500  # rows per table in the PDF; the Excel file has them all
+  ROW_MAX = 1_000  # rows per table in the PDF; the Excel file has them all
   CHART_MAX = 25
 
   module_function
 
   def render(report)
-    pdf = Prawn::Document.new(page_size: 'A4', margin: [56, 40, 48, 40], info: { Title: report.title,
+    pdf = Prawn::Document.new(page_size: 'A4', compress: true, margin: [56, 40, 48, 40], info: { Title: report.title,
                                                                               Creator: 'Zambia National ETD Portal (netd.ac.zm)' })
     fonts(pdf)
     title_band(pdf, report)
@@ -125,7 +125,7 @@ module ReportPdf
     opts[:width] = pdf.bounds.width if sec.headers.size > 3
     opts[:column_widths] = listing_widths(pdf, sec.headers) if sec.kind == :listing
     pdf.table(data, **opts, cell_style: { size: size, padding: [3, 4], border_width: 0.4, border_color: 'BFBFBF',
-                                  overflow: :shrink_to_fit, inline_format: false }) do |t|
+                                  inline_format: false }) do |t|
       t.row(0).background_color = NAVY
       t.row(0).text_color = 'FFFFFF'
       t.row(0).font_style = :bold
