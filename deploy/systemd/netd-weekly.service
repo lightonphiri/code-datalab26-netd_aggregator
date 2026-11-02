@@ -6,5 +6,7 @@ OnFailure=netd-alert@%n.service
 Type=oneshot
 # Check the repositories of institutions not yet harvested (FR-58); a failure here never stops the email
 ExecStartPre=-/usr/sbin/runuser -u netd -- /bin/sh -c 'cd /opt/netd/harvester && .venv/bin/python -m netd.cli check-repositories'
+# Refresh the offline place database for usage counts (FR-61) when a new monthly edition is out; never fatal
+ExecStartPre=-/usr/sbin/runuser -u netd -- /bin/bash /opt/netd/deploy/ops/geoip-update.sh
 TimeoutStartSec=1800
 ExecStart=/usr/bin/python3 /opt/netd/deploy/ops/netd-alert.py --weekly

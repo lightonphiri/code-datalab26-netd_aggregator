@@ -5,7 +5,7 @@
   <h1>Usage</h1>
   <p class="netd-admin-help">Counted by the portal itself: no third-party trackers, no cookies for counting, and no IP
     addresses, browser details or search words are stored, only a count per day (UTC), kind of use, record and
-    institution. Crawlers, link previews and signed-in administrators are not counted; API and OAI-PMH requests are
+    institution, plus counts per country and approximate city and per facet value chosen. Crawlers, link previews and signed-in administrators are not counted; API and OAI-PMH requests are
     all counted (their users are programs). PDF downloads are counted when the reader uses the portal's Download
     link; a PDF opened from the repository's own page is not.
     <% if @first_day %>Counting since <%= @first_day.strftime('%B %-d, %Y') %>.<% end %></p>
@@ -13,7 +13,9 @@
     <% Admin::UsageController::PERIODS.each do |n| %>
       <% if n == @days %><strong>last <%= n %> days</strong><% else %><%= link_to "last #{n} days", admin_usage_path(days: n) %><% end %> ·
     <% end %>
-    <%= link_to 'Download CSV', admin_usage_path(days: @days, format: :csv) %></p>
+    CSV: <%= link_to 'events', admin_usage_path(days: @days, format: :csv) %> ·
+    <%= link_to 'places', admin_usage_path(days: @days, format: :csv, table: 'places') %> ·
+    <%= link_to 'facet values', admin_usage_path(days: @days, format: :csv, table: 'facets') %></p>
 
   <% if @totals.empty? %>
     <p>Nothing counted in this period yet.</p>
@@ -69,6 +71,54 @@
         </div>
       <% end %>
     </div>
+
+    <h2>Where readers are</h2>
+    <p class="netd-admin-help">Looked up offline from the reader's address, which is not kept
+      (<a href="https://db-ip.com" target="_blank" rel="noopener">IP Geolocation by DB-IP</a>, CC BY 4.0). Country is
+      reliable; city is approximate: mobile networks often appear at their Lusaka gateways.
+      <% unless @geo_ready %><strong>The place database is not installed on this server yet.</strong><% end %></p>
+    <% if @countries.empty? %><p>None in this period.</p><% else %>
+    <div class="row">
+      <div class="col-lg-6">
+        <% names = @countries.keys.map(&:first).uniq.sort_by { |c| -@countries[[c, 'record_view']].to_i } %>
+        <table class="table table-sm netd-admin-table w-auto">
+          <thead><tr><th>Country</th><th class="text-end">Record views</th><th class="text-end">PDF downloads</th><th class="text-end">Searches</th></tr></thead>
+          <tbody>
+          <% names.each do |c| %>
+            <tr><td><%= c.presence || '(unknown)' %></td>
+              <% %w[record_view pdf_download search].each do |ev| %><td class="text-end"><%= number_with_delimiter(@countries[[c, ev]].to_i) %></td><% end %></tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-lg-6">
+        <table class="table table-sm netd-admin-table w-auto">
+          <thead><tr><th>City (approximate)</th><th>Country</th><th class="text-end">Views, downloads, searches</th></tr></thead>
+          <tbody>
+          <% @cities.each do |(city, country), n| %>
+            <tr><td><%= city %></td><td><%= country %></td><td class="text-end"><%= number_with_delimiter(n) %></td></tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% end %>
+
+    <h2>Popular searches (facet values chosen)</h2>
+    <p class="netd-admin-help">What readers narrowed their searches by, counted only when the search found records; the
+      words typed in the search box are never stored.</p>
+    <% if @facets.empty? %><p>None in this period.</p><% else %>
+    <div class="row">
+      <% @facets.sort.each do |label, rows| %>
+        <div class="col-md-6 col-xl-4">
+          <h3 class="h6"><%= label %></h3>
+          <ol class="small">
+            <% rows.each do |(_, value), n| %><li><%= value %> · <%= number_with_delimiter(n) %></li><% end %>
+          </ol>
+        </div>
+      <% end %>
+    </div>
+    <% end %>
 
     <h2>API and OAI-PMH</h2>
     <% if @endpoints.empty? %><p>None in this period.</p><% else %>

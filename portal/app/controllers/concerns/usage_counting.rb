@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-# Counts page use for the usage analytics (SRS FR-61) without third-party trackers. Requests from crawlers, link
+# Counts page use for the usage analytics (SRS FR-61) without third-party trackers. The reader's place (country,
+# approximate city) is looked up offline and only the place is counted, never the address. Requests from crawlers, link
 # previews, prefetches, monitors and signed-in administrators are not counted.
 module UsageCounting
   extend ActiveSupport::Concern
@@ -14,6 +15,7 @@ module UsageCounting
     return unless bots || human_visit?
 
     UsageCount.bump(event, record_id: record_id, institution: institution)
+    UsagePlace.bump(event, GeoLookup.place(request.remote_ip)) if UsagePlace::EVENTS.include?(event)
   end
 
   def human_visit?

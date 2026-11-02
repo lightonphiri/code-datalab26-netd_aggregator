@@ -14,7 +14,7 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 | November 1, 2026 | NDLTD and registry registration | Feature | After more HEIs have OAI-PMH providers |
 | November 1, 2026 | Modern metadata models (layout-aware parsing, VLM OCR on Kaggle, grounded LLM extraction, calibration, distillation) | Feature | See `docs/PAPER-PLAN.md` |
 | November 1, 2026 | Field-of-study in-domain labels and retraining (FR-57) | Feature | Discipline names and repository headings mapped to subfields; annotated portal sample |
-| November 1, 2026 | Gold standard for ZCAS, UNILUS and MU (`gold-sample`) | Feature | Needed for cross-institution evaluation |
+| November 1, 2026 | Gold standard for ZCAS, UNILUS and MU: **annotate** the sheet made in session 08 (`/opt/netd/logs/gold-sample-s08-zcas-unilus-mu.csv`, laptop `work/`; 176 theses: ZCAS 103, UNILUS 62, MU 11, all with PDFs; duplicate copies left out) | Feature (paper; needs annotators) | Needed for cross-institution evaluation. Fill the `gold_*` columns from the PDFs ("||" between values, "-" when the PDF does not state the field), as in the 2020 instructions; then `evaluate FILE --strata`. Upload to the project Drive folder through the UNZA account for annotators |
 | November 2, 2026 | LAMU: 2 MPH theses via JSPUI + GetRecord if its OAI index is not rebuilt | Feature | Low value; prefer LAMU running `dspace oai import -c` (via HEA) |
 | November 2, 2026 | Orthanc (custom build of the EMI project) still runs on the focal-library shim after the 26.04 upgrade: rebuild it from source on 26.04 (or move to the packaged Orthanc 1.12 with its plugins), then delete `/opt/compat-focal` and the `orthanc-build` drop-in | Fix (server) | **Separate session: hand-off `handoff-emiz26-01-orthanc_rebuild.zip`** (Lighton, November 2, 2026: radical customisation). 17 of its libraries exist only in `/opt/compat-focal/lib` (OpenSSL 1.1 among them: no security updates). Source tree `/home/emiproject/work_package-2/pacs-orthanc/orthanc/` (mainline of September 1, 2023); see `docs/OPERATIONS.md` |
 | November 2, 2026 | OJS (`/ojs`, 3.4.0-5) now runs on PHP 8.5, beyond what OJS 3.4 supports | Note | Out of scope (Lighton, November 2, 2026); it answered normally after the upgrade, untested beyond that |
@@ -31,9 +31,10 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Date | Item | Commit |
 |---|---|---|
+| November 2, 2026 | `gold-sample`: `--source` with several ids, `--all` (whole institutions), duplicate copies left out, `split_group` and `half` columns (future splits by duplicate group) | 2adbf20 |
 | November 2, 2026 | Error analysis of born-digital supervisor misses (dev half): 480 misses, surname in the text for 406; pattern gaps fixed in `titlepage-rules` v10; evaluator bug fixed (title lookahead made "Professor X" and "Mrs X" unmatchable) and people matched on surname with compatible initials | 3dff120 |
 | November 2, 2026 | Wrong faculty–department pairs: all 18 minority pairs on UNZA read verbatim from title pages; the collection (faculty) is the error, not the model (see open note for HEA). Unit names with comma lists kept whole ("Educational Psychology, Sociology and Special Education") | 3dff120 |
-| November 2, 2026 | `netd-ml-apply.sh` runs `predict` under `run.lock` (a manual apply beside an OCR batch could lock the store) | session 08 release |
+| November 2, 2026 | `netd-ml-apply.sh` runs `predict` under `run.lock` (a manual apply beside an OCR batch could lock the store) | b5f1164 |
 | November 2, 2026 | Crawlers get no search-history row; `robots.txt` keeps them off facet combinations, feeds and data formats (one crawler: 162,594 requests in a morning) | 79ab6e9 |
 | November 2, 2026 | After the unplanned server stop (10:14–13:07 UTC): deploy rerun, OCR job restarted, search history pruned (540,564 → 352,681 rows, then crawlers stopped adding), portal database 115 → 74 MB | 189e2ba |
 | November 2, 2026 | Usage analytics (FR-61): own daily counts (no trackers, no IPs or search words), `/admin/usage` with CSV, counted PDF links, FAQ note | e80a8cf, 50829a5 |

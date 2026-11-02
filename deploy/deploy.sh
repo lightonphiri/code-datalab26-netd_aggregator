@@ -21,6 +21,7 @@ sudo -u netd env PATH=$N/ruby/bin:$PATH RAILS_ENV=production RAILS_RELATIVE_URL_
 
 # Operations: backup/alert scripts, rclone for the off-server copy (docs/OPERATIONS.md)
 chmod 755 $N/deploy/ops/*
+[ -f $N/geoip/city.mmdb ] || runuser -u netd -- /bin/bash $N/deploy/ops/geoip-update.sh || true   # usage places (FR-61)
 command -v rclone >/dev/null || { curl -sSf https://rclone.org/install.sh | bash >/dev/null; }
 
 # systemd units

@@ -36,3 +36,4 @@ gem "json", "< 3.0"
 
 gem "rsolr", ">= 1.0.6", "< 3"
 gem "bcrypt", "~> 3.1.7"  # admin panel passwords (has_secure_password)
+gem "maxmind-db", "~> 1.2"   # offline IP-to-country/city lookup for usage counts (FR-61); no IP stored

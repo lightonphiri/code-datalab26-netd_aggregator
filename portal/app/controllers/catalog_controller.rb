@@ -88,7 +88,10 @@ class CatalogController < ApplicationController
     return unless html_page?
 
     if has_search_parameters?
-      count_usage('search') if params[:page].to_i <= 1
+      if params[:page].to_i <= 1
+        count_usage('search')
+        count_facets
+      end
     else
       count_usage('home')
     end
@@ -99,6 +102,7 @@ class CatalogController < ApplicationController
     return unless html_page? && @document
 
     count_usage('record_view', record_id: @document.id, institution: Array(@document['institution_ssim']).first)
+    @usage = UsageCount.where(record_id: @document.id, event: %w[record_view pdf_download]).group(:event).sum(:hits)
   end
 
   # GET /catalog/:id/pdf(?file=n): counts the download, then sends the reader to the repository's own copy. Only a
@@ -122,6 +126,16 @@ class CatalogController < ApplicationController
 
   private
 
-  def html_page? = response.successful? && response.media_type.to_s == 'text/html'
+    def html_page? = response.successful? && response.media_type.to_s == 'text/html'
+
+  # Popular searches (FR-61): facet values chosen on a first results page that found records. Only configured facet
+  # fields, at most 10 values per search; nothing typed by the reader is stored.
+  def count_facets
+    return unless human_visit? && @response && @response.total.to_i.positive? && params[:f].respond_to?(:to_unsafe_h)
+
+    fields = blacklight_config.facet_fields.keys
+    params[:f].to_unsafe_h.flat_map { |field, vals| fields.include?(field.to_s) ? Array(vals).map { |v| [field, v] } : [] }
+                                   .first(10).each { |field, v| UsageFacet.bump(field, v) }
+  end
 
 end

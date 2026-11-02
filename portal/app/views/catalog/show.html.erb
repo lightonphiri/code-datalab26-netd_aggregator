@@ -104,6 +104,14 @@
       <% else %>
         <span class="netd-nofile">No full text available from the repository</span>
       <% end %>
+      <% if @usage %>
+        <% views = @usage['record_view'].to_i; dls = @usage['pdf_download'].to_i %>
+        <div class="netd-rec-usage" title="Counted by the portal since November 2, 2026, without tracking readers; downloads through this page's Download links only, crawlers not counted">
+          <span><strong><%= number_with_delimiter(views) %></strong> <%= views == 1 ? 'view' : 'views' %></span>
+          <span aria-hidden="true">·</span>
+          <span><strong><%= number_with_delimiter(dls) %></strong> <%= dls == 1 ? 'download' : 'downloads' %></span>
+        </div>
+      <% end %>
       <% if handle %>
         <div class="netd-side-label">Persistent link</div>
         <div class="input-group netd-copy">
