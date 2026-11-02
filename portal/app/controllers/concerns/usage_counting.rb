@@ -7,7 +7,11 @@ module UsageCounting
   extend ActiveSupport::Concern
 
   BOT = /bot|crawl|spider|slurp|archiver|facebookexternalhit|embedly|preview|curl|wget|python|java\/|go-http|
-         httpclient|okhttp|libwww|scrapy|headless|phantom|monitor|uptime|check|scan|feed|validator/xi
+         httpclient|okhttp|libwww|scrapy|headless|phantom|monitor|uptime|check|scan|feed|validator|
+         censys|inspect|zgrab|nmap|masscan|nuclei|httpx|fasthttp|axios|node-fetch|aiohttp|netcraft|expanse/xi
+  # Browsers always name their platform after "Mozilla/5.0"; scanners often send "Mozilla/5.0 AppleWebKit/..." (seen
+  # November 2, 2026). Tests that should not be counted use a user agent with "check" (docs/OPERATIONS.md).
+  NO_PLATFORM = %r{\AMozilla/5\.0 (?!\()}
 
   private
 
@@ -20,7 +24,7 @@ module UsageCounting
 
   def human_visit?
     ua = request.user_agent.to_s
-    return false if ua.blank? || ua.match?(BOT)
+    return false if ua.blank? || ua.match?(BOT) || ua.match?(NO_PLATFORM)
     return false if [request.headers['Sec-Purpose'], request.headers['Purpose'], request.headers['X-Moz']].compact
                                                                                                     .any? { |v| v.to_s.include?('prefetch') }
 
