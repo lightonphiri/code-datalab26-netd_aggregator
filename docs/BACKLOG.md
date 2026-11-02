@@ -17,8 +17,7 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 | November 1, 2026 | Field-of-study in-domain labels and retraining (FR-57) | Feature | Discipline names and repository headings mapped to subfields; annotated portal sample |
 | November 1, 2026 | Gold standard for ZCAS, UNILUS and MU (`gold-sample`) | Feature | Needed for cross-institution evaluation |
 | November 2, 2026 | LAMU: 2 MPH theses via JSPUI + GetRecord if its OAI index is not rebuilt | Feature | Low value; prefer LAMU running `dspace oai import -c` (via HEA) |
-| November 2, 2026 | Orthanc (custom build of the EMI project) still runs on the focal-library shim after the 26.04 upgrade: rebuild it from source on 26.04 (or move to the packaged Orthanc 1.12 with its plugins), then delete `/opt/compat-focal` and the `orthanc-build` drop-in | Fix (server) | 17 of its libraries exist only in `/opt/compat-focal/lib` (OpenSSL 1.1 among them: no security updates). Source tree `/home/emiproject/work_package-2/pacs-orthanc/orthanc/` (mainline of September 1, 2023); see `docs/OPERATIONS.md` |
-| November 2, 2026 | EMI Drupal site: email sending fails (PHP mail with no `sendmail` on the server; SMTP module installed but off) | Fix (EMI site) | Needs a sending account from Lighton (an SMTP account or app password for the site's address); then configure the SMTP module and switch `system.mail` to it (`docs/OPERATIONS.md`, EMI site follow-up) |
+| November 2, 2026 | Orthanc (custom build of the EMI project) still runs on the focal-library shim after the 26.04 upgrade: rebuild it from source on 26.04 (or move to the packaged Orthanc 1.12 with its plugins), then delete `/opt/compat-focal` and the `orthanc-build` drop-in | Fix (server) | **Separate session: hand-off `handoff-emiz26-01-orthanc_rebuild.zip`** (Lighton, November 2, 2026: radical customisation). 17 of its libraries exist only in `/opt/compat-focal/lib` (OpenSSL 1.1 among them: no security updates). Source tree `/home/emiproject/work_package-2/pacs-orthanc/orthanc/` (mainline of September 1, 2023); see `docs/OPERATIONS.md` |
 | November 2, 2026 | OJS (`/ojs`, 3.4.0-5) now runs on PHP 8.5, beyond what OJS 3.4 supports | Note | Out of scope (Lighton, November 2, 2026); it answered normally after the upgrade, untested beyond that |
 | November 2, 2026 | After the next OS change, check `apache2ctl -M` for the PHP module first | Fix (procedure) | In the upgrade checklist (`deploy/ops/upgrade/upgrade-check.sh` prints it) |
 | November 2, 2026 | Duplicate detection across institutions by embeddings (titles in other words, translated titles) | Feature | FR-19 now matches DOI and near-identical titles; no cross-institution duplicate exists yet |
@@ -26,11 +25,14 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 | November 2, 2026 | UNZA faculty values that are not faculties ("Library", "Medical Journal of Zambia", "Ministry of Health", "Students' Projects/Research Reports") | Fix (data) | From UNZA's collection names; check those records (may be out of scope or need `exclude_records`), or ask UNZA via HEA |
 | November 2, 2026 | `www.emi.org.zm` has no DNS record | Note | Outside our control (EMI project's DNS); the site answers on emi.org.zm |
 | November 2, 2026 | Error analysis of born-digital supervisor misses (recall 0.42 with text available) | Feature (paper) | Sample misses where the gold has a supervisor and the text names one; separate pattern gaps from signature-only names |
+| November 2, 2026 | rclone Google Drive access for the backups (NETD and DataLab website servers): check what the remotes actually authenticate with (Lighton has an app password for rclone; Drive remotes normally use an OAuth token) and move to an own OAuth client if they still use rclone's shared one | Fix (late session) | Deferred to one of the last sessions (Lighton, November 2, 2026); backups work today |
 
 ## Done
 
 | Date | Item | Commit |
 |---|---|---|
+| November 2, 2026 | EMI Drupal site email works (Google SMTP, own app password) | Server only (`docs/OPERATIONS.md`) |
+| November 2, 2026 | Exposed NETD alert app password revoked; new one per service; test alert received | Server only (`docs/OPERATIONS.md`, "SMTP app passwords") |
 | November 2, 2026 | Browse by faculty and department (FR-25), `/browse` | 0056cf2 |
 | November 2, 2026 | Duplicate detection (FR-19): listed once, copies linked, admin decisions, API 1.5.0 | a8605f6 |
 | November 2, 2026 | EMI Drupal site: trusted host patterns and private file path; Backup and Migrate works again | Server only (`docs/OPERATIONS.md`, EMI site follow-up) |
