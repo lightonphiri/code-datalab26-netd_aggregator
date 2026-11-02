@@ -114,6 +114,10 @@ Lighton asked for the EMI site (the one other application that must keep working
 - Backup and Migrate's "Daily Schedule" (it actually runs weekly: period 604,800 s; keeps every backup) failed because no private path was set; run by hand after the change: `private/backup_migrate/backup-2026-11-02T11-05-51.mysql.gz` (1.1 MB). These backups stay on the server; the server-wide backup copies are on Drive.
 - Email works again (11:57, November 2, 2026; test received): same route as NETD's alerts, Google SMTP as lighton.phiri@unza.ac.zm with its own app password "EMI site (emi.org.zm)" (Lighton, November 2, 2026). Smtp module on (`smtp.gmail.com`, 587, TLS, from "EMI x Z website" <lighton.phiri@unza.ac.zm>), `system.mail` interface `SMTPMailSystem`; the password is set in `settings.php` (`$config['smtp.settings']['smtp_password']`), not in exported config; laptop copy `access/emi-smtp-app-password.txt`. Before: PHP mail with no `sendmail` on the server, so every message failed.
 
+### Unplanned stop (November 2, 2026)
+- The VM stopped abruptly at 10:14:27 UTC (journal of boot -1 ends mid-request, no shutdown sequence, no out-of-memory messages) during a deploy, and was back at 13:07:47 UTC (about 2 h 53 min). The cause is outside the VM (host or network side; not visible from inside). The 1da3c26 deploy had not landed and was rerun; the transient `netd-mltext` unit was gone and was restarted.
+- After any unplanned reboot: `journalctl --list-boots`, `journalctl -b -1 | tail`, check the portal, Solr and Apache, rerun the last release, and restart transient units (`netd-mltext`).
+
 ## Metadata filling (FR-14, FR-48 to FR-53)
 A step-by-step, runnable explanation of everything below is in `notebooks/netd26-03-ml_metadata_filling-walkthrough.ipynb`.
 
@@ -143,12 +147,14 @@ All commands run in `/opt/netd/harvester` as `netd` (`sudo -u netd .venv/bin/pyt
 - Admin panel → Usage (`/admin/usage`): last 7, 30, 90 or 365 days; "Download CSV" gives the daily counts (day, event, institution, count). Counting started November 2, 2026.
 - Raw counts: `sudo -u netd sqlite3 /opt/netd/portal/storage/production.sqlite3 "select event, sum(hits) from usage_counts group by event"`.
 - Not counted: crawlers (user agent pattern in `portal/app/controllers/concerns/usage_counting.rb`), link previews and prefetches, signed-in administrators, results pages after the first, JSON/RSS formats. API and OAI-PMH requests are all counted. PDFs opened from the repository's own page are not seen by the portal.
-- Blacklight's search history (`searches` table) is pruned to one day before each nightly backup (`netd-backup.service`); it had grown to 540,539 rows in its first three days, mostly crawlers.
+- Blacklight's search history (`searches` table) is pruned to one day before each nightly backup (`netd-backup.service`); it had grown to 540,564 rows in three days, almost all from one crawler (ClaudeBot, 162,594 requests on the morning of November 2, walking facet combinations and RSS/Atom/JSON variants). Since then crawlers get no search-history row (`config.crawler_detector` in `CatalogController`), and `portal/public/robots.txt` disallows facet combinations (two or more `f[...]`), `.rss`/`.atom`/`.json`/`.xml`, the counted PDF links, `/follow` and `/bookmarks` (`Crawl-delay: 2`). Record pages and single-facet pages stay crawlable.
+- The portal database is in WAL mode: a size check right after `VACUUM` can show the old size until the log is checkpointed.
 - Apache's access log (shared by every site on the server, IP addresses included) is rotated daily and kept 14 days by Ubuntu's default `logrotate`; the FAQ says so.
 
 ## Department names (FR-62)
 - Spelling variants are merged when indexing, per institution (`harvester/netd/units.py`). To see what was merged, query Solr for `department_orig_ssm:*` (the original spelling is kept there).
 - A wrong merge by edit distance: tighten `FUZZY_RATIO` or `FUZZY_MAX` in `units.py`, then `netd.cli index` (merges by key, such as plural endings, are not configurable).
+- The setSpec in a record's provenance (`set:<spec>`) is only the first of its collections; check every collection of the record (or dry-run) before mapping one.
 - Collections that are not Schools: `set_units` under the source in `harvester/sources.yml` (collection setSpec → `{faculty: ..., department: ...}`, `null` for none); then `process --source <id>` and `index`.
 
 ## Fields of study (OpenAlex Topics, FR-54 to FR-57)

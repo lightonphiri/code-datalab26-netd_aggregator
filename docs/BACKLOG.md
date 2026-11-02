@@ -26,16 +26,17 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 | November 2, 2026 | Usage figures for the paper and for HEA: monthly summary from `/admin/usage.csv` (views and downloads per institution) | Feature (paper) | Counting started November 2, 2026; needs some months of data |
 | November 2, 2026 | Popular search terms without storing what one person searched: count a term only once it has been searched on several days, or keep only the facet values chosen | Feature | Not built: FR-61 stores no search words (privacy) |
 | November 2, 2026 | Department names that are really different units or wrong faculty pairs from the model ("Agricultural Sciences / Department of Public Health", "Education / Department of Community Medicine") | Fix (model output) | Seen on `/browse`; from `titlepage-rules` departments read from title pages. Changes an evaluated component: log in `docs/PAPER-PLAN.md` |
-| November 2, 2026 | Network outage: netd.ac.zm, emi.org.zm and datalab.unza.zm unreachable from outside (HTTPS and SSH time out) from about 10:15 UTC, while UNZA's DNS has been down since November 1 | Note | Upstream (UNZA/ZAMREN network); outside our control. Still down at 11:27 UTC. Session 08: check the 1da3c26 deploy, then reprocess and reindex UNZA for FR-62 |
 
 ## Done
 
 | Date | Item | Commit |
 |---|---|---|
+| November 2, 2026 | Crawlers get no search-history row; `robots.txt` keeps them off facet combinations, feeds and data formats (one crawler: 162,594 requests in a morning) | 79ab6e9 |
+| November 2, 2026 | After the unplanned server stop (10:14–13:07 UTC): deploy rerun, OCR job restarted, search history pruned (540,564 → 352,681 rows, then crawlers stopped adding), portal database 115 → 74 MB | 189e2ba |
 | November 2, 2026 | Usage analytics (FR-61): own daily counts (no trackers, no IPs or search words), `/admin/usage` with CSV, counted PDF links, FAQ note | e80a8cf, 50829a5 |
 | November 2, 2026 | Blacklight search history pruned to one day nightly (540,539 rows in three days) | 1da3c26 |
-| November 2, 2026 | Department name variants merged per institution at index time (FR-62): UNZA 94 → 80 names | 1da3c26 |
-| November 2, 2026 | UNZA collections that are not Schools: journal and project collections → no faculty ("Library" kept: a separate entity at UNZA, Lighton, November 2, 2026); Ministry of Health waste plan excluded (`set_units`, `exclude_records`) | 1da3c26 |
+| November 2, 2026 | Department name variants merged per institution at index time (FR-62): UNZA 94 → 80 names; live after reprocessing and reindexing | 1da3c26 |
+| November 2, 2026 | UNZA collections that are not Schools: journal (`col_123456789_5183`) and student-projects (`col_123456789_6038`) collections → no faculty ("Library" kept: a separate entity at UNZA, Lighton, November 2, 2026); Ministry of Health waste plan excluded (`set_units`, `exclude_records`) | 1da3c26, 189e2ba, 453bbb0 |
 | November 2, 2026 | EMI Drupal site email works (Google SMTP, own app password) | Server only (`docs/OPERATIONS.md`) |
 | November 2, 2026 | Exposed NETD alert app password revoked; new one per service; test alert received | Server only (`docs/OPERATIONS.md`, "SMTP app passwords") |
 | November 2, 2026 | Browse by faculty and department (FR-25), `/browse` | 0056cf2 |
