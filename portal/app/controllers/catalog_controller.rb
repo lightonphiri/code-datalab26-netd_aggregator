@@ -8,6 +8,8 @@ class CatalogController < ApplicationController
 
   configure_blacklight do |config|
     config.header_component = NetdHeaderComponent
+    # No search-history row for crawlers (one crawler made 162,594 requests in a morning, November 2, 2026)
+    config.crawler_detector = ->(req) { req.user_agent.blank? || req.user_agent.match?(UsageCounting::BOT) }
     # 10 results per page as on Google Scholar; "Show" menu offers 20, 50 and 100
     config.default_solr_params = { rows: 10 }
     config.default_per_page = 10
