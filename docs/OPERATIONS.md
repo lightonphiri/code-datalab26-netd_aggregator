@@ -139,6 +139,18 @@ All commands run in `/opt/netd/harvester` as `netd` (`sudo -u netd .venv/bin/pyt
 - **Corrections from the shell** (the admin panel is the normal way): `correct unza-123456789-1000 supervisor "Henry J. Msango" --by lighton.phiri@unza.ac.zm --note "from acknowledgements"`; `correct <id> _scope exclude --by ... --note ...`; `uncorrect <id> <field>`.
 - **The store is in WAL mode.** Open it only as `netd` (never as root): a root-owned `netd.sqlite3-wal` or `-shm` would stop the harvester. If that ever happens: stop writers, then `chown netd:netd /opt/netd/harvester/netd.sqlite3*`.
 
+## Usage analytics (FR-61)
+- Admin panel → Usage (`/admin/usage`): last 7, 30, 90 or 365 days; "Download CSV" gives the daily counts (day, event, institution, count). Counting started November 2, 2026.
+- Raw counts: `sudo -u netd sqlite3 /opt/netd/portal/storage/production.sqlite3 "select event, sum(hits) from usage_counts group by event"`.
+- Not counted: crawlers (user agent pattern in `portal/app/controllers/concerns/usage_counting.rb`), link previews and prefetches, signed-in administrators, results pages after the first, JSON/RSS formats. API and OAI-PMH requests are all counted. PDFs opened from the repository's own page are not seen by the portal.
+- Blacklight's search history (`searches` table) is pruned to one day before each nightly backup (`netd-backup.service`); it had grown to 540,539 rows in its first three days, mostly crawlers.
+- Apache's access log (shared by every site on the server, IP addresses included) is rotated daily and kept 14 days by Ubuntu's default `logrotate`; the FAQ says so.
+
+## Department names (FR-62)
+- Spelling variants are merged when indexing, per institution (`harvester/netd/units.py`). To see what was merged, query Solr for `department_orig_ssm:*` (the original spelling is kept there).
+- A wrong merge by edit distance: tighten `FUZZY_RATIO` or `FUZZY_MAX` in `units.py`, then `netd.cli index` (merges by key, such as plural endings, are not configurable).
+- Collections that are not Schools: `set_units` under the source in `harvester/sources.yml` (collection setSpec → `{faculty: ..., department: ...}`, `null` for none); then `process --source <id>` and `index`.
+
 ## Fields of study (OpenAlex Topics, FR-54 to FR-57)
 - The model `openalex-fos` runs with the other models (`predict`, nightly); its embedding model is downloaded once to `/opt/netd/harvester/models/fastembed` (about 90 MB).
 - **Rebuild the model** (e.g. a new OpenAlex taxonomy): on the server, `sudo -u netd .venv/bin/python tools/openalex_training.py /opt/netd/harvester/models/openalex --per-subfield 120 --mailto lighton.phiri@unza.ac.zm` (OpenAlex allows a small anonymous daily budget per address; with a free key add `--api-key`); copy `taxonomy.json` and `works.jsonl` to a machine with spare CPU and run `python tools/train_fieldofstudy.py DATA_DIR netd/ml/models/data/openalex-fos-v<N>.npz --report ...` (about 25 minutes on 2 CPUs; embeddings are cached for later runs); bump `VERSION` and the file names in `netd/ml/models/fieldofstudy.py`, copy the taxonomy to `netd/ml/models/data/openalex-taxonomy.json`, release, then run `deploy/ops/netd-ml-apply.sh`.
