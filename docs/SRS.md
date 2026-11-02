@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SRS, structured per ISO/IEC/IEEE 29148:2018 (supersedes IEEE 830-1998) |
-| Version | 0.27 |
+| Version | 0.28 |
 | Date | November 1, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Repository | https://github.com/lightonphiri/code-datalab26-netd_aggregator |
@@ -16,6 +16,7 @@
 | 0.1 | October 30, 2026 | Initial SRS: harvesting (UNZA, UNILUS), cleaning pipeline, Blacklight discovery |
 | 0.2 | October 30, 2026 | Discipline and Degree fields (FR-12, FR-21); institution entry points (FR-26); HTTPS (NFR-9); PDF pilot and onboarding findings (§4) |
 | 0.26 | November 1, 2026 | Standard fields of study: FR-54 scheme (OpenAlex Topics), FR-55 assignment to every record with back-off, FR-56 exposure (portal facets, record page, REST API `fields_of_study` (API 1.2.0), OAI-PMH `etdms` subject scheme and `oai_dc` URIs, FAQ and Developer Resources), FR-57 model, training data and evaluation; repository subjects shown as "Keywords (from the repository)" |
+| 0.28 | November 2, 2026 | Platform: server upgraded Ubuntu 20.04 → 22.04 → 24.04 → 26.04.1 LTS (§ constraints); Ruby 3.3.6 rebuilt against OpenSSL 3.5, harvester venv recreated (uv Python 3.12); no functional requirement changed |
 | 0.27 | November 1, 2026 | Institution onboarding: FR-58 weekly check of the repositories of institutions not yet harvested (admin panel, weekly email); FR-59 public guide for institutions ("For Institutions" page); FR-29 status `no-etds-yet` (API 1.3.0); registry survey of November 1, 2026 recorded in §4; FR-28 met: metadata quality by origin of each value against ETD-MS 1.1, overall on the public page `/quality`, per institution in the admin panel `/admin/quality` (CSV and JSON for both); footer Administration sign-in link; FR-60 following new additions (date added, Newest Additions sort, Follow this search with Atom/RSS feeds, API 1.4.0) |
 | 0.25 | November 1, 2026 | Metadata filling: FR-14 refined (models over PDF text, prediction cache, precedence, threshold); new FR-48 PDF text cache with OCR, FR-49 prediction cache and models, FR-50 derived values marked on the portal and in the API, FR-51 manual corrections, FR-52 degree-level review and exclusion, FR-53 gold-standard evaluation; FR-43 API record gains `derived` (API 1.1.0); staging store in WAL mode (NFR-14) |
 | 0.24 | November 1, 2026 | FR-47 postgraduate scope: records identified as below postgraduate level, or listed per source, are excluded when processing (one UNZA record, a Bachelor of Laws dissertation, excluded); Postgraduate Diploma recognised as a degree level in the cleaning, CSV upload (FR-10), REST API (FR-42, FR-45) and OAI-PMH sets (EI-4) |
@@ -126,7 +127,7 @@ flowchart LR
 | Oversight body (HEA) | Reviews national ETD output | Aggregate counts and quality indicators |
 
 ### 2.4 Operating environment
-- Server `portal` (netd.ac.zm): Ubuntu 20.04.6 LTS, 2 vCPU, 3.8 GiB RAM, 2 GiB swap file, 162 GB free disk. It is shared with other live services: Apache (80/443), Tomcat (current portal, :8080), Orthanc, MySQL and nginx.
+- Server `portal` (netd.ac.zm): Ubuntu 26.04.1 LTS since November 2, 2026 (was 20.04.6; upgraded one LTS at a time, see `docs/OPERATIONS.md`), 2 vCPU, 3.8 GiB RAM, 2 GiB swap file, 162 GB free disk. It is shared with other live services: Apache (80/443), Tomcat (current portal, :8080), Orthanc, MySQL (8.4) and nginx, and the EMI Drupal site (Drupal 11 on PHP 8.5).
 - No Docker. Python 3.12 (standalone, via `uv`), Ruby 3.3 (`ruby-build`), OpenJDK 11, Solr 9.11 (slim), SQLite.
 - Browsers: current Chrome, Firefox, Edge and Safari, including mobile.
 

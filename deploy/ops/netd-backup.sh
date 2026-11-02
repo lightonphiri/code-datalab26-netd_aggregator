@@ -24,6 +24,8 @@ sqlite3 "$N/portal/storage/production.sqlite3" ".backup '$T/portal.sqlite3'"
 tar -czf "$T/solr-conf.tgz" -C "$N/solr-home/netd" conf core.properties
 tar -czf "$T/csv-sources.tgz" -C "$N/harvester" uploads $( [ -f "$N/harvester/sources.local.yml" ] && echo sources.local.yml )
 
+# After a reboot the missed run starts before Solr is ready: wait up to 3 minutes (November 2, 2026)
+for i in $(seq 1 36); do curl -sf -o /dev/null 'http://127.0.0.1:8983/solr/netd/admin/ping' && break; sleep 5; done
 SOLR=$(curl -sf 'http://127.0.0.1:8983/solr/netd/select?q=*:*&rows=0&wt=json' | python3 -c 'import json,sys;print(json.load(sys.stdin)["response"]["numFound"])')
 {
   echo "NETD backup $D (taken $(date -Is) on $(hostname))"

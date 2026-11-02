@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SDD, structured per IEEE 1016-2009 (design viewpoints) |
-| Version | 0.25 |
+| Version | 0.26 |
 | Date | November 1, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Related | `docs/SRS.md` (requirement IDs referenced below) |
@@ -15,6 +15,7 @@
 | 0.1 | October 30, 2026 | Initial design: harvester, raw/canonical stores, crosswalk, enrichers, Blacklight portal, deployment |
 | 0.2 | October 30, 2026 | Discipline/degree derivation; Solr analysers; URL-safe record ids; HTTPS |
 | 0.24 | November 1, 2026 | Fields of study (FR-54 to FR-57): model `openalex-fos` (`netd/ml/models/fieldofstudy.py`, data in `netd/ml/models/data/`), batch prediction in `predict.run`, per-field display thresholds in the overlay, Solr fields `fos_domain_ssim`, `fos_field_ssim`, `fos_subfield_ssim`, `fos_ssm`, `fos_tsim`, facets and record page, API `fields_of_study` (1.2.0), OAI-PMH subject scheme, training scripts in `harvester/tools/` |
+| 0.26 | November 2, 2026 | Deployment view: Ubuntu 26.04.1 LTS (kernel 7.0), MySQL 8.4, PHP 8.5 for the co-hosted sites; NETD unchanged in design: Ruby 3.3.6 rebuilt against OpenSSL 3.5, venv recreated; `netd-backup.sh` waits for Solr after a reboot; `deploy/ops/ocr-resume.sh` and `deploy/ops/upgrade/` (upgrade scripts) added |
 | 0.25 | November 1, 2026 | Repository watch (FR-58): `netd/repocheck.py`, `netd.cli check-repositories`, result in `/opt/netd/logs/repository-check.json`, run by `netd-weekly.service` (ExecStartPre) before the weekly email, admin dashboard section via `Harvester.repository_check`; registry keys `oai`, `etd_sets`, `checked`, `note` and status `no-etds-yet` (API 1.3.0); `/contribute` page (FR-59); metadata quality (FR-28): `netd/quality.py` (`netd.cli quality-report`, also after `run` and `reprocess`) writes `logs/quality.json`, read by `QualityReport`; public `QualityController` at `/quality` shows overall figures only, `Admin::QualityController` at `/admin/quality` the per-institution breakdown (both with `.csv`, `.json`); date added (FR-60): table `first_seen` (written once in `Store.put_record`; backfilled with each source's first harvest), Solr `added_dtsi`, sort `added`, Atom/RSS entry templates `catalog/_document.{atom,rss}.builder` dated by `added_dtsi`, results tool `follow_search_link`, `FollowController` at `/follow`, API `added_at` / `sort=added` (1.4.0) |
 | 0.23 | November 1, 2026 | Metadata filling (FR-14, FR-48 to FR-53): package `netd.ml` (text cache with OCR, prediction cache, overlay, predict runner, evaluation, baseline model `titlepage-rules`); overlay step in processing; `derived_ssm` in Solr; record-page badges; API `derived` (1.1.0); admin record corrections and degree-level review; `netd.cli reprocess`; store in WAL mode (NFR-14); backup reads the store as `netd`; OCR packages on the server; documented walkthrough notebook `notebooks/netd26-03-ml_metadata_filling-walkthrough.ipynb` (runs every step on a sample from the public API, locally or in Colab) |
 | 0.22 | November 1, 2026 | Postgraduate scope (FR-47): `scope.degree_levels` and per-source `exclude_records` in `sources.yml`; `cli.exclusion()` in processing; table `excluded`; `index.ids()` so indexing removes from Solr every document the store no longer holds; Postgraduate Diploma in `DEGREE_PAT`, repository-supplied levels normalised; level set `level:postgraduate-diploma` and API level `postgraduate_diploma` |
@@ -572,7 +573,7 @@ stateDiagram-v2
 ## 8. Deployment viewpoint
 ```mermaid
 flowchart TB
-  subgraph server ["Server portal — netd.ac.zm — Ubuntu 20.04, 2 vCPU, 3.8 GiB + 2 GiB swap"]
+  subgraph server ["Server portal — netd.ac.zm — Ubuntu 26.04.1, 2 vCPU, 3.8 GiB + 2 GiB swap"]
     AP[Apache 2.4 :80/:443<br/>netd.ac.zm: / → Puma; HTTP → HTTPS]
     TC["Tomcat :8080<br/>other applications; old portal no longer proxied"]
     PU[netd-portal.service<br/>Puma 127.0.0.1:3010, 1 worker]
@@ -594,7 +595,7 @@ flowchart TB
 
 - All NETD services run as the unprivileged user `netd` (NFR-5) and are installed under `/opt/netd`.
 - Admin panel state on the server: accounts, sessions and the activity log in the portal database; CSV files in `harvester/uploads/<id>/` (current `records.csv`, earlier ones in `archive/`); panel-added sources in `harvester/sources.local.yml`. The nightly backup includes all three (`csv-sources.tgz` holds the files). A harvest started from the panel runs inside the Puma service's process group, so restarting the portal (for example during a deployment) stops it; the next run finishes the job.
-- No Docker (C1). Python comes via `uv`; Ruby is compiled with `ruby-build`. System packages are not upgraded or removed; the only additions are `tesseract-ocr`, `tesseract-ocr-eng` and `poppler-utils` for OCR (FR-48, November 1, 2026).
+- No Docker (C1). Python comes via `uv`; Ruby is compiled with `ruby-build` (rebuilt in place after an OS release upgrade: `deploy/ops/upgrade/rebuild-ruby.sh`). System packages are not upgraded or removed; the only additions are `tesseract-ocr`, `tesseract-ocr-eng` and `poppler-utils` for OCR (FR-48, November 1, 2026).
 - The staging store is in WAL mode with a 120 s busy timeout (NFR-14). Only `netd` opens it (the backup runs `sqlite3 .backup` as `netd` through `runuser`), so no root-owned `-wal`/`-shm` files can block the harvester.
 - PDF text extraction and OCR run as transient units (`systemd-run --unit=netd-mltext --uid=netd --nice=10`) or by hand, in batches under `run.lock`; see `docs/OPERATIONS.md`.
 - Apache sites for netd.ac.zm live in `deploy/apache/` and are installed by `deploy.sh`, which backs up the previous files in `/opt/netd/`. Rollback: restore those backups and restart Apache.
