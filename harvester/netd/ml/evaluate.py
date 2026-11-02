@@ -6,6 +6,8 @@ from the PDF (several values separated by "||"; "-" when the PDF does not state 
 
 evaluate compares each model's best prediction with the gold values, field by field, and prints coverage,
 precision, recall and F1 at the confidence threshold given (all predictions, and at 0.8 and 0.95 by default).
+With --strata it repeats the table for the newest version of each model by kind of PDF text (born-digital,
+scanned and OCRed, scanned and waiting for OCR, no PDF text), so scanned and born-digital theses are reported apart.
 Manual corrections made in the admin panel are another source of gold labels (table `corrections`).
 """
 import csv
@@ -94,33 +96,70 @@ def read_gold(path):
     return gold
 
 
-def evaluate(store, path, thresholds=(0.0, 0.8, 0.95)):
+STRATA = (("born-digital", ("ok",)), ("scanned, OCRed", ("ocr",)),
+          ("scanned, not yet OCRed", ("no_text", "ocr_failed")), ("no PDF text", ("error", "too_large", None)))
+
+
+def _vkey(v):
+    return (0, int(v), "") if str(v).isdigit() else (1, 0, str(v))
+
+
+def _scores(gold, recs, f, t, ids):
+    tp = fp = fn = predicted = n = 0
+    for rid in ids:
+        g = gold[rid]
+        if f not in g:
+            continue
+        n += 1
+        gv = {_key(f, v) for v in g[f]}
+        pv, conf = recs.get(rid, {}).get(f, ([], 0.0))
+        pv = {_key(f, v) for v in pv} if pv and conf >= t else set()
+        predicted += bool(pv)
+        tp += len(pv & gv)
+        fp += len(pv - gv)
+        fn += len(gv - pv)
+    p = tp / (tp + fp) if tp + fp else 0.0
+    r_ = tp / (tp + fn) if tp + fn else 0.0
+    f1 = 2 * p * r_ / (p + r_) if p + r_ else 0.0
+    return n, predicted, p, r_, f1
+
+
+def _table(gold, preds, ids, thresholds):
+    print("%-24s %-13s %5s  %4s %5s %6s %6s %6s" % ("model", "field", "thr", "n", "cover", "prec", "recall", "F1"))
+    for (model, version), recs in preds:
+        for f in GOLD_FIELDS:
+            if not any(f in r for r in recs.values()):
+                continue
+            for t in thresholds:
+                n, predicted, p, r_, f1 = _scores(gold, recs, f, t, ids)
+                if n:
+                    print("%-24s %-13s %5.2f  %4d %5.0f%% %6.3f %6.3f %6.3f" % (
+                        "%s-%s" % (model, version), f, t, n, 100.0 * predicted / n, p, r_, f1))
+
+
+def evaluate(store, path, thresholds=(0.0, 0.8, 0.95), strata=False):
+    """All gold records, then (strata=True) the newest version of each model by kind of PDF text (FR-53):
+    born-digital, scanned and OCRed, scanned and still waiting for OCR, and records with no PDF text."""
     gold = read_gold(path)
     preds = {}
     for r in store.db.execute("SELECT * FROM predictions"):
         preds.setdefault((r["model"], r["version"]), {}).setdefault(r["record_id"], {})[r["field"]] = (
             json.loads(r["value"]), r["confidence"] or 0.0)
     print("gold records: %d" % len(gold))
-    print("%-24s %-13s %5s  %4s %5s %6s %6s %6s" % ("model", "field", "thr", "n", "cover", "prec", "recall", "F1"))
-    for (model, version), recs in sorted(preds.items()):
-        for f in GOLD_FIELDS:
-            for t in thresholds:
-                tp = fp = fn = predicted = n = 0
-                for rid, g in gold.items():
-                    if f not in g:
-                        continue
-                    n += 1
-                    gv = {_key(f, v) for v in g[f]}
-                    pv, conf = recs.get(rid, {}).get(f, ([], 0.0))
-                    pv = {_key(f, v) for v in pv} if pv and conf >= t else set()
-                    predicted += bool(pv)
-                    tp += len(pv & gv)
-                    fp += len(pv - gv)
-                    fn += len(gv - pv)
-                if not n or not any(f in r for r in recs.values()):
-                    continue
-                p = tp / (tp + fp) if tp + fp else 0.0
-                r_ = tp / (tp + fn) if tp + fn else 0.0
-                f1 = 2 * p * r_ / (p + r_) if p + r_ else 0.0
-                print("%-24s %-13s %5.2f  %4d %5.0f%% %6.3f %6.3f %6.3f" % (
-                    "%s-%s" % (model, version), f, t, n, 100.0 * predicted / n, p, r_, f1))
+    _table(gold, sorted(preds.items()), list(gold), thresholds)
+    if not strata:
+        return
+    status = {}
+    try:
+        status = dict(store.db.execute("SELECT record_id, status FROM pdf_text").fetchall())
+    except Exception:  # noqa: BLE001 - no text cache yet: every record falls in "no PDF text"
+        pass
+    newest = {}
+    for (model, version), recs in preds.items():
+        if model not in newest or _vkey(version) > _vkey(newest[model][0][1]):
+            newest[model] = ((model, version), recs)
+    for name, states in STRATA:
+        ids = [rid for rid in gold if status.get(rid) in states]
+        print("\n== %s: %d gold records ==" % (name, len(ids)))
+        if ids:
+            _table(gold, sorted(newest.values()), ids, thresholds)

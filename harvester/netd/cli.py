@@ -196,6 +196,7 @@ def main(argv=None):
     p.add_argument("--seed", type=int, default=2026)
     p.add_argument("--source")
     p.add_argument("--full", action="store_true")
+    p.add_argument("--strata", action="store_true", help="evaluate: also report by kind of PDF text")
     p.add_argument("--limit", type=int)
     p.add_argument("--max-age-hours", type=float, default=30)
     p.add_argument("--out", default=os.path.join(os.environ.get("NETD_LOGS", os.path.join(HERE, "..", "logs")),
@@ -298,7 +299,7 @@ def _ml(name):
         elif name == "gold-sample":
             evaluate.sample(store, a.file, a.n, a.seed)
         elif name == "evaluate":
-            evaluate.evaluate(store, a.file)
+            evaluate.evaluate(store, a.file, strata=a.strata)
     return run
 
 
