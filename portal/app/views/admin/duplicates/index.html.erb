@@ -1,0 +1,55 @@
+<% content_for(:page_title) { 'Duplicates · Admin' } %>
+<div class="netd-admin">
+  <%= render 'admin/nav' %>
+  <h1>Duplicates</h1>
+  <p class="netd-admin-help">Theses deposited more than once, in one repository or two (SRS FR-19): the same title
+    (or nearly), compatible authors and years at most 2 apart. The portal lists each thesis once, under its
+    <strong>main record</strong> (the copy with a PDF and the most metadata); the other copies keep their pages,
+    which link to it, and stay in OAI-PMH and the API (marked <code>duplicate_of</code>). Use <strong>Not a
+    duplicate</strong> when two different theses were matched, or <strong>Make main</strong> to choose which copy is
+    listed. Decisions are logged, kept across re-harvests, and the source is processed again at once.</p>
+  <% if @running %><p class="alert alert-warning">A harvest or text extraction is running: decisions apply when it ends.</p><% end %>
+  <p><%= @groups.size %> groups, <%= @groups.sum { |g| g['copies'].size } %> records listed under a main record.</p>
+  <table class="table table-sm netd-admin-table">
+    <thead><tr><th>Record</th><th>Title</th><th>Author</th><th>Year</th><th>Match</th><th></th></tr></thead>
+    <tbody>
+    <% @groups.each do |g| %>
+      <% m = g['primary'] %>
+      <tr class="table-light">
+        <td><%= link_to m['id'], solr_document_path(m['id']) %><br><small>main record<%= ' · PDF' if m['pdf'] %></small></td>
+        <td><%= m['title'] %></td><td><%= m['author'] %></td><td><%= m['year'] %></td><td></td>
+        <td class="text-nowrap"><%= button_to 'Not a duplicate', admin_decide_duplicate_path(m['id']), params: { decision: 'distinct' }, class: 'btn btn-sm btn-outline-secondary', form_class: 'd-inline' %></td>
+      </tr>
+      <% g['copies'].each do |c| %>
+        <tr>
+          <td><%= link_to c['id'], solr_document_path(c['id']) %><br><small>copy<%= ' · PDF' if c['pdf'] %></small></td>
+          <td><%= c['title'] %></td><td><%= c['author'] %></td><td><%= c['year'] %></td>
+          <td><small><%= c['method'] %><%= format(' %.2f', c['score'].to_f) if c['score'] %></small></td>
+          <td class="text-nowrap">
+            <%= button_to 'Make main', admin_decide_duplicate_path(c['id']), params: { decision: 'primary' }, class: 'btn btn-sm btn-outline-primary', form_class: 'd-inline' %>
+            <%= button_to 'Not a duplicate', admin_decide_duplicate_path(c['id']), params: { decision: 'distinct' }, class: 'btn btn-sm btn-outline-secondary', form_class: 'd-inline' %>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
+    <% if @groups.empty? %><tr><td colspan="6">No duplicates found.</td></tr><% end %>
+    </tbody>
+  </table>
+  <h2 class="h5 mt-4">Decisions</h2>
+  <table class="table table-sm netd-admin-table">
+    <thead><tr><th>Record</th><th>Title</th><th>Decision</th><th>By</th><th>When</th><th></th></tr></thead>
+    <tbody>
+    <% @decided.each do |c| %>
+      <tr>
+        <td><%= link_to c['record_id'], admin_record_path(c['record_id']) %></td>
+        <td><%= c['title'] %></td>
+        <td><%= (JSON.parse(c['value']).first rescue c['value']) == 'distinct' ? 'Not a duplicate' : 'Main record' %></td>
+        <td><%= c['made_by'] %></td>
+        <td><%= Time.at(c['created_at'].to_f).utc.strftime('%B %-d, %Y %H:%M UTC') %></td>
+        <td><%= button_to 'Remove decision', admin_uncorrect_record_path(c['record_id'], '_duplicate'), method: :delete, class: 'btn btn-link btn-sm p-0' %></td>
+      </tr>
+    <% end %>
+    <% if @decided.empty? %><tr><td colspan="6">No decisions yet.</td></tr><% end %>
+    </tbody>
+  </table>
+</div>

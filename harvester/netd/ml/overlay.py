@@ -52,7 +52,7 @@ class Overlay:
             rec["confidence"][field] = conf
             derived[field] = {"method": method, "confidence": round(conf, 3)}
         for field, c in corr.items():
-            if field == "_scope":
+            if field.startswith("_"):  # decisions, not values: "_scope" (FR-52), "_duplicate" (FR-19)
                 continue
             if c["value"]:
                 rec[field] = c["value"]

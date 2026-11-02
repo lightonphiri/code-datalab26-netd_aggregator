@@ -5,9 +5,9 @@ module ApiRecord
   BASE = 'https://netd.ac.zm'
   FIELDS = %w[id updated_dtsi added_dtsi title_ssm author_ssim supervisor_ssim subject_ssim abstract_tesim year_isi degree_ssim
               degree_level_ssim discipline_ssim faculty_ssim department_ssim institution_ssim source_ssi language_ssim
-              type_ssim rights_ssm url_ssm pdf_url_ssm files_ssm derived_ssm fos_ssm].join(',')
+              type_ssim rights_ssm url_ssm pdf_url_ssm files_ssm derived_ssm fos_ssm duplicate_of_ssi duplicates_ssim].join(',')
   CSV_COLUMNS = %w[id title authors supervisors year degree degree_level discipline faculty department subjects abstract
-                   institution institution_id language rights portal_url source_url pdf_url updated_at fields_of_study added_at].freeze
+                   institution institution_id language rights portal_url source_url pdf_url updated_at fields_of_study added_at duplicate_of].freeze
 
   # canonical field -> API field, for the "derived" object (FR-50)
   API_NAMES = { 'supervisor' => 'supervisors', 'subject' => 'subjects', 'author' => 'authors' }.freeze
@@ -73,7 +73,9 @@ module ApiRecord
       'files' => files(doc),
       'derived' => derived(doc),
       'updated_at' => doc['updated_dtsi'],
-      'added_at' => doc['added_dtsi']
+      'added_at' => doc['added_dtsi'],
+      'duplicate_of' => doc['duplicate_of_ssi'],     # FR-19: id of the main record when this is another copy
+      'other_copies' => list(doc, 'duplicates_ssim')  # FR-19: ids of the other copies of a main record
     }
   end
 
@@ -83,6 +85,6 @@ module ApiRecord
     [h['id'], h['title'], j[h['authors']], j[h['supervisors']], h['year'], h['degree'], h['degree_level'],
      h['discipline'], j[h['faculty']], j[h['department']], j[h['subjects']], h['abstract'], h['institution']['name'],
      h['institution']['id'], h['language'], h['rights'], h['links']['portal'], h['links']['source'], h['links']['pdf'],
-     h['updated_at'], j[h['fields_of_study'].map { |f| f['name'] }], h['added_at']]
+     h['updated_at'], j[h['fields_of_study'].map { |f| f['name'] }], h['added_at'], h['duplicate_of']]
   end
 end

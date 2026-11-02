@@ -37,7 +37,11 @@ module Api
         Blacklight.default_index.connection.get('select', params: defaults.merge(params))
       end
 
+      # Counts are of theses, not copies: duplicates listed under a main record are left out (FR-19).
+      UNIQUE = '-duplicate_of_ssi:[* TO *]'
+
       def facet(field, extra = {})
+        extra = extra.merge(fq: [*extra[:fq], UNIQUE])
         res = solr(extra.merge(q: '*:*', defType: 'lucene', rows: 0, facet: true, 'facet.field': field,
                                'facet.limit': -1, 'facet.mincount': 1))
         [res.dig('facet_counts', 'facet_fields', field).to_a.each_slice(2).to_h, res['response']['numFound']]

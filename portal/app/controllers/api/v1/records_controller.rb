@@ -16,7 +16,7 @@ module Api
       EXACT = { 'faculty' => 'faculty_ssim', 'department' => 'department_ssim', 'discipline' => 'discipline_ssim',
                 'degree' => 'degree_ssim', 'subject_exact' => 'subject_ssim', 'supervisor_exact' => 'supervisor_ssim' }.freeze
       LEVELS = { 'masters' => 'Masters', 'doctoral' => 'Doctoral', 'postgraduate_diploma' => 'Postgraduate Diploma' }.freeze
-      KNOWN = %w[q field institution level year full_text updated_since sort page per_page] + EXACT.keys
+      KNOWN = %w[q field institution level year full_text updated_since duplicates sort page per_page] + EXACT.keys
 
       def index
         unknown = request.query_parameters.keys - KNOWN
@@ -102,6 +102,10 @@ module Api
           fq << "updated_dtsi:[#{t.utc.strftime('%Y-%m-%dT%H:%M:%SZ')} TO *]"
         end
         EXACT.each { |p, f| fq << "{!term f=#{f}}#{params[p]}" if params[p].present? }
+        # FR-19: each thesis once (main records) unless duplicates=include
+        raise ArgumentError, 'duplicates must be include or exclude' if params[:duplicates].present? && !%w[include exclude].include?(params[:duplicates])
+
+        fq << UNIQUE unless params[:duplicates] == 'include'
         fq
       end
 

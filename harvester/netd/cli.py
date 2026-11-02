@@ -95,13 +95,17 @@ def do_process(store, srcs, ecfg, scope=None):
     q = ov.save_review([s["id"] for s in srcs])
     store.commit()
     print("processed %d records; %d excluded (see netd.cli report); %d degree levels to review" % (n, x, q))
+    from . import dedup
+    dedup.run(store)  # FR-19: over the whole store, whichever sources were processed
 
 
 def do_index(store, srcs, solr):
+    from . import dedup
+    dups = dedup.load(store)  # FR-19: "duplicate of" / "other copies" on each record in a group
     for src in srcs:
         batch = []
         for rec in store.records(src["id"]):
-            batch.append(index.to_solr(rec))
+            batch.append(index.to_solr(rec, dups.get(rec["id"])))
             if len(batch) >= 500:
                 index.post(solr, batch)
                 batch = []
@@ -182,7 +186,7 @@ def do_check(store, srcs, solr, max_age_hours):
 
 def main(argv=None):
     p = argparse.ArgumentParser(prog="netd")
-    p.add_argument("command", choices=["harvest", "process", "index", "run", "reprocess", "report", "check", "csv-check", "check-repositories", "quality-report",
+    p.add_argument("command", choices=["harvest", "process", "index", "run", "reprocess", "report", "check", "csv-check", "check-repositories", "quality-report", "dedup",
                                        "extract-text", "ocr-text", "text-report", "predict", "load-predictions",
                                        "export-predictions", "correct", "uncorrect", "gold-sample", "evaluate"])
     p.add_argument("args", nargs="*", help="file (csv-check, load/export-predictions, gold-sample, evaluate) or "
@@ -247,6 +251,9 @@ def main(argv=None):
             quality_report(store, sources, os.path.join(os.path.dirname(a.out), "quality.json"))
         except Exception as e:  # noqa: BLE001
             print("quality report skipped: %s" % e, file=sys.stderr)
+    if a.command == "dedup":
+        from . import dedup
+        dedup.run(store)
     if a.command == "report":
         do_report(store)
     if a.command == "check":

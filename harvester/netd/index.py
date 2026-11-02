@@ -54,7 +54,7 @@ def fos_docs(ids):
     return {k: v for k, v in doc.items() if v}
 
 
-def to_solr(rec):
+def to_solr(rec, dup=None):
     doc = {"id": rec["id"], "institution_ssim": [rec["institution"]],
            "institution_short_ssim": [rec["institution_short"]], "source_ssi": rec["source"],
            "oai_id_ssi": rec["oai_id"], "datestamp_ssi": rec.get("datestamp") or "",
@@ -87,6 +87,10 @@ def to_solr(rec):
         doc["files_ssm"] = [json.dumps(f, ensure_ascii=False) for f in rec["files"]]
     doc["full_text_ssim"] = ["PDF available" if rec.get("pdf_url") else
                              ("Other file available" if rec.get("file_url") else "Metadata only")]
+    if dup and dup.get("duplicate_of"):  # FR-19: listed once in search; this copy links to the main record
+        doc["duplicate_of_ssi"] = dup["duplicate_of"]
+    if dup and dup.get("duplicates"):
+        doc["duplicates_ssim"] = dup["duplicates"]
     doc["completeness_isi"] = sum(1 for f in ("title", "author", "supervisor", "subject", "faculty",
                                               "department") if rec.get(f))
     return doc

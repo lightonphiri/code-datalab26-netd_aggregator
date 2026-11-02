@@ -5,6 +5,7 @@
   <%= link_to 'Upload CSV', new_admin_csv_upload_path %>
   <% rc = Harvester.review_count %>
   <%= link_to "Level review#{" (#{rc})" if rc.positive?}", admin_reviews_path %>
+  <%= link_to "Duplicates (#{Harvester.duplicate_count})", admin_duplicates_path %>
   <%= link_to 'Activity log', admin_events_path %>
   <%= link_to 'Metadata quality', admin_quality_path %>
   <%= form_with url: admin_record_lookup_path, method: :get, local: true, class: 'netd-admin-lookup d-inline' do %>

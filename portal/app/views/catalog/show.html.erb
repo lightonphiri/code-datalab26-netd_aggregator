@@ -11,6 +11,14 @@
 <%= render presenter.view_config.document_header_component.new(document: d, search_context: @search_context, search_session: search_session) %>
 <div class="row g-5 netd-record" id="document">
   <div class="col-lg-8">
+    <% if (main = d['duplicate_of_ssi'].presence) %>
+      <div class="alert alert-secondary netd-dup-note" role="note">This thesis was deposited more than once. The portal
+        lists it once, under its <%= link_to 'main record', solr_document_path(main) %>; this copy is kept as harvested.</div>
+    <% elsif (copies = rec_values(d, 'duplicates_ssim')).any? %>
+      <div class="alert alert-light netd-dup-note" role="note">This thesis was deposited more than once; the portal lists
+        it once. Other <%= copies.size == 1 ? 'copy' : 'copies' %>:
+        <%= safe_join(copies.map { |c| link_to(c, solr_document_path(c)) }, ', ') %>.</div>
+    <% end %>
     <div class="netd-rec-kicker">
       <% (rec_values(d, 'year_ssim') + ['Theses'] + rec_values(d, 'degree_level_ssim')).each do |k| %><span><%= k %></span><% end %>
     </div>

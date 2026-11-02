@@ -100,6 +100,23 @@ class Harvester
             'WHERE l.status=? ORDER BY l.confidence DESC, l.record_id', [status])
     end
 
+    # FR-19: duplicate groups as [{ 'primary' => row, 'copies' => [rows] }]; rows carry id, title, author, year, pdf, method, score.
+    def duplicate_groups
+      rec = 'json_extract(r.data, "$.title[0]") title, json_extract(r.data, "$.author[0]") author, ' \
+            'json_extract(r.data, "$.year[0]") year, json_extract(r.data, "$.pdf_url[0]") pdf, r.source source'
+      rows = query("SELECT d.id, d.primary_id, d.method, d.score, #{rec} FROM duplicates d LEFT JOIN records r ON r.id = d.id " \
+                   'ORDER BY d.primary_id, d.id')
+      mains = query("SELECT r.id, #{rec} FROM records r WHERE r.id IN (SELECT DISTINCT primary_id FROM duplicates)").to_h { |m| [m['id'], m] }
+      rows.group_by { |r| r['primary_id'] }.map { |pid, copies| { 'primary' => mains[pid] || { 'id' => pid }, 'copies' => copies } }
+    end
+
+    def duplicate_decisions
+      query('SELECT c.*, json_extract(r.data, "$.title[0]") title FROM corrections c LEFT JOIN records r ON r.id = c.record_id ' \
+            "WHERE c.field='_duplicate' ORDER BY c.created_at DESC")
+    end
+
+    def duplicate_count = query('SELECT count(DISTINCT primary_id) n FROM duplicates').first&.fetch('n', 0).to_i
+
     def corrections_count = query('SELECT count(*) n FROM corrections').first&.fetch('n', 0).to_i
     def review_count = query("SELECT count(*) n FROM level_review WHERE status='pending'").first&.fetch('n', 0).to_i
 

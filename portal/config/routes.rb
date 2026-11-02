@@ -35,6 +35,8 @@ Rails.application.routes.draw do
     get 'quality', to: 'quality#index', as: :quality   # per-institution metadata quality (FR-28)
     get 'review', to: 'reviews#index', as: :reviews
     post 'review/:id', to: 'reviews#decide', as: :decide_review, constraints: { id: /[A-Za-z0-9_-]+/ }
+    get 'duplicates', to: 'duplicates#index', as: :duplicates   # FR-19
+    post 'duplicates/:id', to: 'duplicates#decide', as: :decide_duplicate, constraints: { id: /[A-Za-z0-9_-]+/ }
   end
   mount Blacklight::Engine => '/'
   root to: "catalog#index"
