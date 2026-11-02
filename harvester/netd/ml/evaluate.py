@@ -55,19 +55,32 @@ def _key(field, v):
     return norm(v)
 
 
-def sample(store, path, n=300, seed=2026):
+def sample(store, path, n=300, seed=2026, source=None, take_all=False):
+    """Stratified sample for annotation (FR-53). source: only these sources (comma-separated ids); take_all: every
+    record instead of a sample (e.g. ZCAS, UNILUS and MU, small enough to annotate whole). Copies of a thesis already
+    in the portal under a main record (FR-19) are left out, and each row carries its duplicate group and the half
+    (dev/test) of that group, so a split keeps all copies of one thesis on the same side (session 08: the 2020 gold
+    standard, split by record id, put 55 pairs on both sides)."""
+    import hashlib
     rng = random.Random(seed)
-    by_src = {}
+    wanted = set(source.split(",")) if source else None
+    copies = {r[0]: r[1] for r in store.db.execute("SELECT id, primary_id FROM duplicates")} \
+        if store.db.execute("SELECT name FROM sqlite_master WHERE name='duplicates'").fetchone() else {}
+    by_src, skipped = {}, 0
     for rec in store.records():
-        if rec.get("pdf_url"):
-            by_src.setdefault(rec["source"], []).append(rec)
+        if not rec.get("pdf_url") or (wanted is not None and rec["source"] not in wanted):
+            continue
+        if rec["id"] in copies:
+            skipped += 1
+            continue
+        by_src.setdefault(rec["source"], []).append(rec)
     total = sum(len(v) for v in by_src.values())
     picks = []
     for src, recs in sorted(by_src.items()):
-        k = min(len(recs), max(20, round(n * len(recs) / total)))
+        k = len(recs) if take_all else min(len(recs), max(20, round(n * len(recs) / total)))
         picks += rng.sample(recs, k)
     rng.shuffle(picks)
-    cols = ["record_id", "institution", "title", "portal_url", "pdf_url"] + \
+    cols = ["record_id", "institution", "title", "portal_url", "pdf_url", "split_group", "half"] + \
            ["harvested_" + f for f in GOLD_FIELDS] + ["gold_" + f for f in GOLD_FIELDS] + ["annotator", "notes"]
     with open(path, "w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
@@ -76,10 +89,13 @@ def sample(store, path, n=300, seed=2026):
             prov = r.get("provenance", {})
             harv = [" || ".join(r.get(f) or []) if str(prov.get(f, "")).startswith(("harvested", "set", "rule"))
                     else "" for f in GOLD_FIELDS]
+            group = r["id"]   # a main record is its own group; its copies were left out above
+            half = "dev" if int(hashlib.sha256(group.encode()).hexdigest(), 16) % 2 == 0 else "test"
             w.writerow([r["id"], r["institution_short"], (r.get("title") or [""])[0],
-                        "https://netd.ac.zm/catalog/" + r["id"], r["pdf_url"][0]] + harv + [""] * (len(GOLD_FIELDS) + 2))
-    print("wrote %d records to %s (%s)" % (len(picks), path, ", ".join(
-        "%s %d" % (s, sum(1 for p in picks if p["source"] == s)) for s in sorted(by_src))))
+                        "https://netd.ac.zm/catalog/" + r["id"], r["pdf_url"][0], group, half] + harv +
+                       [""] * (len(GOLD_FIELDS) + 2))
+    print("wrote %d records to %s (%s); %d duplicate copies left out" % (len(picks), path, ", ".join(
+        "%s %d" % (s, sum(1 for p in picks if p["source"] == s)) for s in sorted(by_src)), skipped))
 
 
 def read_gold(path):

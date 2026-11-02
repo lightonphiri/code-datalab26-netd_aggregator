@@ -20,7 +20,7 @@ Metadata filling (SRS FR-14, FR-48 to FR-52):
   export-predictions FILE.csv                    all cached predictions, for checking
   correct  RECORD_ID FIELD [VALUE ...] --by EMAIL [--note TEXT]   manual correction ("_scope include|exclude")
   uncorrect RECORD_ID FIELD                      remove a manual correction
-  gold-sample FILE.csv [--n N] [--seed S]        stratified sample of records for manual annotation
+  gold-sample FILE.csv [--n N] [--seed S] [--source IDS] [--all]  sample (or all) records for annotation
   evaluate GOLD.csv                              precision, recall and F1 per field and model against GOLD.csv
 """
 import argparse
@@ -44,7 +44,7 @@ def cfg_load(name):
 
 
 def selected(sources, sid):
-    return [s for s in sources if not sid or s["id"] == sid]
+    return [s for s in sources if not sid or s["id"] in sid.split(",")]   # "zcas,unilus,mu" (session 08)
 
 
 def exclusion(rec, src, scope, decision=None):
@@ -311,7 +311,7 @@ def _ml(name):
             store.commit()
             print("%s %s %s" % (name, a.args[0], a.args[1]))
         elif name == "gold-sample":
-            evaluate.sample(store, a.file, a.n, a.seed)
+            evaluate.sample(store, a.file, a.n, a.seed, source=a.source, take_all=a.all)
         elif name == "evaluate":
             evaluate.evaluate(store, a.file, strata=a.strata)
     return run
