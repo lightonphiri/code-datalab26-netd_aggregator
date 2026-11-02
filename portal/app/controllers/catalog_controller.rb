@@ -83,7 +83,7 @@ class CatalogController < ApplicationController
   # Usage analytics (FR-61): home page visits, searches (first results page only) and record page views.
   def index
     super
-    return unless request.format.html? && response.successful?
+    return unless html_page?
 
     if has_search_parameters?
       count_usage('search') if params[:page].to_i <= 1
@@ -94,7 +94,7 @@ class CatalogController < ApplicationController
 
   def show
     super
-    return unless request.format.html? && response.successful? && @document
+    return unless html_page? && @document
 
     count_usage('record_view', record_id: @document.id, institution: Array(@document['institution_ssim']).first)
   end
@@ -116,5 +116,10 @@ class CatalogController < ApplicationController
     response.headers['X-Robots-Tag'] = 'noindex'
     redirect_to url, allow_other_host: true, status: :found
   end
+
+
+  private
+
+  def html_page? = response.successful? && response.media_type.to_s == 'text/html'
 
 end
