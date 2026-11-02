@@ -27,8 +27,8 @@ sources:
     # project collection, so their School is left for the title page to supply. "Library" (col_123456789_99) stays:
     # the Library is a separate entity at UNZA, not part of a School (Lighton, November 2, 2026).
     set_units:
-      col_123456789_5183: {faculty: null}
-      col_123456789_297: {faculty: null}
+      col_123456789_5183: {faculty: null}   # Medical Journal of Zambia
+      col_123456789_6038: {faculty: null}   # Students' Projects/Research Reports
     exclude_records:
       - oai_id: "oai:rims.unza.ac.zm:123456789/8053"
         reason: "Bachelor of Laws dissertation deposited in the Theses and Dissertations community (checked by L. Phiri, November 1, 2026)"
