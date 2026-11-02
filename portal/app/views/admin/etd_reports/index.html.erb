@@ -15,11 +15,11 @@
           faculty, faculty and department, and degree. With "All institutions": every HEA institution, with 0 where
           nothing has been harvested yet.</p>
         <%= form_with url: admin_etd_report_path('institution'), method: :get, local: true do %>
-          <%= render 'filters', id: 'i' %>
+          <%= render 'admin/etd_reports/filters', id: 'i' %>
           <div class="form-check mt-2"><%= check_box_tag :usage, '1', false, class: 'form-check-input', id: 'usage-i' %>
             <label class="form-check-label small" for="usage-i">Add usage: record views and PDF downloads by institution,
               most viewed records, readers by country (counted since November 2, 2026; a lower bound)</label></div>
-          <%= render 'buttons', kind: 'institution' %>
+          <%= render 'admin/etd_reports/buttons', kind: 'institution' %>
         <% end %>
       </div></div>
     </div>
@@ -31,12 +31,12 @@
           last year; the Excel and PDF files add every thesis under each supervisor. Names are as written in the
           repository or on the title page (spelling variants are not merged).</p>
         <%= form_with url: admin_etd_report_path('supervisors'), method: :get, local: true do %>
-          <%= render 'filters', id: 's' %>
+          <%= render 'admin/etd_reports/filters', id: 's' %>
           <div class="row g-2 mt-0"><div class="col-md-6"><label class="form-label small">Supervisor name contains
             <%= text_field_tag :supervisor, nil, class: 'form-control form-control-sm', placeholder: 'e.g. Phiri' %></label></div>
             <div class="col-md-6"><label class="form-label small">List of theses under each supervisor
               <%= select_tag :list, options_for_select([['Include', '1'], ['Leave out', '0']]), class: 'form-select form-select-sm' %></label></div></div>
-          <%= render 'buttons', kind: 'supervisors' %>
+          <%= render 'admin/etd_reports/buttons', kind: 'supervisors' %>
         <% end %>
       </div></div>
     </div>
@@ -50,7 +50,7 @@
           <div class="row g-4">
             <div class="col-lg-6">
               <h3 class="h6">Filters</h3>
-              <%= render 'filters', id: 'c', more: true %>
+              <%= render 'admin/etd_reports/filters', id: 'c', more: true %>
             </div>
             <div class="col-lg-6">
               <h3 class="h6">Grouping</h3>
@@ -74,7 +74,7 @@
               </div>
             </div>
           </div>
-          <%= render 'buttons', kind: 'custom' %>
+          <%= render 'admin/etd_reports/buttons', kind: 'custom' %>
         <% end %>
       </div></div>
     </div>
