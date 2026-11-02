@@ -258,3 +258,12 @@ footer.netd-footer { padding: 0; background: #fff; }
 .netd-qnum { display: block; color: #555; margin-top: 2px; }
 .netd-qheadline { margin: 1rem 0 1.5rem; max-width: 46rem; }
 .netd-qtable .netd-qbar:not(.netd-qbar-sm) { min-width: 220px; }
+
+/* Browse by faculty and department (FR-25) and duplicate notices (FR-19), session 06 */
+.netd-count { color: var(--netd-muted); font-size: .85em; font-weight: 400; margin-left: .25rem; }
+.netd-browse-inst { margin-top: 1.4rem; }
+.netd-browse-list { list-style: none; padding-left: 0; columns: 2 22rem; column-gap: 2.5rem; }
+.netd-browse-list > li { break-inside: avoid; padding: .2rem 0; }
+.netd-browse-list details summary { cursor: pointer; }
+.netd-browse-list details ul { list-style: none; padding-left: 1.1rem; margin: .2rem 0 .4rem; font-size: .93rem; }
+.netd-dup-note { font-size: .92rem; padding: .55rem .8rem; }

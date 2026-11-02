@@ -77,7 +77,8 @@ def to_solr(rec, dup=None):
     if rec.get("year"):
         doc["year_isi"] = int(rec["year"][0])
         doc["year_ssim"] = rec["year"]
-    if rec.get("faculty") and rec.get("department"):
+    if rec.get("faculty") and rec.get("department") and ok.get("faculty", True) and ok.get("department", True):
+        # FR-25 browsing pairs, only where both values are facetable (so the browse links find the theses)
         doc["faculty_department_ssim"] = ["%s|%s" % (rec["faculty"][0], d) for d in rec["department"]]
     if rec.get("field_of_study"):
         doc.update(fos_docs(rec["field_of_study"]))

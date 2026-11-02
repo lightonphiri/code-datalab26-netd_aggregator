@@ -45,6 +45,7 @@ Rails.application.routes.draw do
   get "developers", to: "pages#developers", as: :developers
   get "follow", to: "follow#show", as: :follow   # feeds of new additions for a search (FR-60)
   get "quality", to: "quality#index", as: :quality   # metadata quality dashboard (FR-28)
+  get "browse", to: "browse#index", as: :browse      # institution → faculty → department (FR-25)
   get "contribute", to: "pages#contribute", as: :contribute   # guide for institutions (FR-59)
   get "credits", to: "pages#credits", as: :credits
   post "report-problem", to: "problem_reports#create", as: :problem_reports
