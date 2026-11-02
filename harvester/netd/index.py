@@ -80,6 +80,8 @@ def to_solr(rec, dup=None):
     if rec.get("faculty") and rec.get("department") and ok.get("faculty", True) and ok.get("department", True):
         # FR-25 browsing pairs, only where both values are facetable (so the browse links find the theses)
         doc["faculty_department_ssim"] = ["%s|%s" % (rec["faculty"][0], d) for d in rec["department"]]
+    if rec.get("department_orig"):  # FR-62: the spelling as harvested or predicted, when shown differently
+        doc["department_orig_ssm"] = rec["department_orig"]
     if rec.get("field_of_study"):
         doc.update(fos_docs(rec["field_of_study"]))
     if rec.get("derived"):  # values filled by a model (SRS FR-50): field, method, confidence

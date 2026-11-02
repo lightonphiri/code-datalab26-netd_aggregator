@@ -6,5 +6,8 @@ After=netd-solr.service
 [Service]
 Type=oneshot
 Nice=10
+# Blacklight's search history (table searches: query parameters of every search, crawlers included) is kept one day
+# only: enough for "Back to search" (privacy and size; November 2, 2026)
+ExecStartPre=-/usr/sbin/runuser -u netd -- sqlite3 /opt/netd/portal/storage/production.sqlite3 "DELETE FROM searches WHERE user_id IS NULL AND created_at < datetime('now','-1 day')"
 ExecStart=/opt/netd/deploy/ops/netd-backup.sh
 ExecStart=/opt/netd/deploy/ops/netd-backup-to-gdrive.sh

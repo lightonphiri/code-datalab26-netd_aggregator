@@ -23,9 +23,18 @@ sources:
                        "African Digital Health Library (ADHL) - Zambia"]
     # RIMS ETD collections are the Schools (e.g. "Natural Sciences"), so map them to Faculty.
     collections_are: faculty
+    # Collections that are not Schools (FR-62; checked November 2, 2026). "Library" holds the theses of the
+    # Department of Library and Information Studies (School of Education); the other two are single theses filed in
+    # a journal or project collection, so their School is left for the title page to supply.
+    set_units:
+      col_123456789_99: {faculty: Education, department: Department of Library and Information Studies}
+      col_123456789_5183: {faculty: null}
+      col_123456789_297: {faculty: null}
     exclude_records:
       - oai_id: "oai:rims.unza.ac.zm:123456789/8053"
         reason: "Bachelor of Laws dissertation deposited in the Theses and Dissertations community (checked by L. Phiri, November 1, 2026)"
+      - oai_id: "oai:rims.unza.ac.zm:123456789/5434"
+        reason: "Not a thesis: National Health-Care Waste Management Plan 2015-2019 (Ministry of Health), in the Theses and Dissertations community (checked November 2, 2026)"
 
   - id: unilus
     name: University of Lusaka

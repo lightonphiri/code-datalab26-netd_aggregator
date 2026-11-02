@@ -149,10 +149,17 @@ def to_canonical(row, src, set_names, files=None):
 
     # Faculty/Department from the community/collection hierarchy (setSpecs in the OAI header)
     ignore = set(n.lower() for n in src.get("ignore_set_names", []))
+    set_units = src.get("set_units") or {}  # per-source: collection -> faculty/department (null: none), FR-62
     names, all_names = [], []
     for spec in json.loads(row["set_specs"] or "[]"):
         n = (set_names.get(spec) or "").strip()
         all_names.append(n)
+        if spec in set_units:
+            for f in ("faculty", "department"):
+                if f in set_units[spec] and not rec.get(f):
+                    rec[f] = [set_units[spec][f]] if set_units[spec][f] else []
+                    rec["provenance"][f] = "set_units:" + spec
+            continue
         if n and n.lower() not in ignore and spec not in (src.get("sets") or []):
             names.append((spec, n))
     role = src.get("collections_are")  # per-source override: "faculty" or "department"
