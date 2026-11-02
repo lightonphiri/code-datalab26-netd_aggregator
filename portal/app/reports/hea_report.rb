@@ -38,6 +38,7 @@ class HeaReport
                    'department' => 'department_ssim', 'fos_field' => 'fos_field_ssim' }.freeze
 
   attr_reader :kind, :title, :subtitle, :filters, :sections, :notes, :generated_at
+  attr_accessor :slug
 
   def initialize(kind, title, subtitle, filters)
     @kind = kind
@@ -50,7 +51,7 @@ class HeaReport
   end
 
   def add(**kw) = (@sections << Section.new(**kw)).last
-  def filename(ext) = "netd-report-#{kind}-#{filters.slug}-#{generated_at.strftime('%Y-%m-%d')}.#{ext}"
+  def filename(ext) = "netd-report-#{kind}-#{slug || 'all'}-#{generated_at.strftime('%Y-%m-%d')}.#{ext}"
   def self.date(d) = d.strftime('%B %-d, %Y')
 
   # ---- filters ---------------------------------------------------------------------------------------------------
@@ -195,6 +196,7 @@ class HeaReport
     words = f.words
     r = new('institution', "ETDs: #{f.institution_name || 'all institutions'}",
             'Theses and dissertations by year, type, degree level, faculty and department', f.describe)
+    r.slug = f.slug
     total = count(fq, words)
     r.summary_section(fq, f, words, total)
     r.institutions_section(fq, words) unless f.source
@@ -316,6 +318,7 @@ class HeaReport
     words = f.words
     r = new('supervisors', "ETDs by supervisor: #{f.institution_name || 'all institutions'}",
             'Theses and dissertations supervised, by degree level and years', f.describe(names))
+    r.slug = f.slug
     total = count(fq, words)
     sfq = fq + ['supervisor_ssim:[* TO *]']
     with = count(sfq, words)
@@ -378,6 +381,7 @@ class HeaReport
     r = new('custom', params[:report_title].to_s.strip.first(120).presence || 'Custom ETD report',
             [("Grouped by #{GROUPS[group].first.downcase}" if group), ("then by #{GROUPS[then_by].first.downcase}" if then_by)].compact.join(', ').presence || 'Selected theses',
             f.describe(names))
+    r.slug = f.slug
     total = count(fq, words)
     r.add(title: 'Summary', headers: %w[Measure Value], kind: :summary,
           rows: [['Distinct theses and dissertations matching the filters', total]])
