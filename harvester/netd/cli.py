@@ -226,7 +226,14 @@ def main(argv=None):
     store = Store(a.db)
     if a.command in ("harvest", "run"):
         for s in srcs:
-            harvest.harvest_source(store, s, full=a.full, limit=a.limit)
+            try:  # one unreachable repository must not stop the other sources or the rest of the run
+                harvest.harvest_source(store, s, full=a.full, limit=a.limit)
+            except Exception as e:  # noqa: BLE001
+                import time as _t
+                print("%s: harvest failed: %r" % (s["id"], e), file=sys.stderr)
+                store.log_run(source=s["id"], started_at=_t.time(), finished_at=_t.time(), from_date=None,
+                              records=0, deleted=0, status="error", message=repr(e)[:500])
+                store.commit()
     if a.command == "run":
         nightly_ml(store, srcs, cfg_load("enrichers.yml").get("ml") or {})
     if a.command in ("process", "run", "reprocess"):
