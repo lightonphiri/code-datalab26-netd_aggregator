@@ -42,7 +42,14 @@ Fourteen days are kept on the server. `deploy/ops/netd-backup-to-gdrive.sh` then
 
 The Solr index is not copied, because it can be rebuilt from the staging store in a few minutes. `/opt/netd/portal.env` holds secrets and is deliberately left out; keep its values in your password manager.
 
-The rclone remote uses the `drive.file` scope, so it can only see files it created. Its token is in `/root/.config/rclone/rclone.conf`, which is the same remote used by the DataLab website server. If Google revokes it, run `sudo rclone config reconnect data-gdrive-unza_ac_zm:` on a machine with a browser and copy the resulting `rclone.conf` to both servers.
+The rclone remote uses the `drive.file` scope, so it can only see files it created **with the same OAuth client**. Since November 3, 2026 it uses its own OAuth client instead of rclone's shared one (rclone is retiring the shared client during 2026, and Google throttles it: the DataLab website's upload of November 3, 2026 failed with `rateLimitExceeded`):
+
+- Google Cloud project **DataLab backups** (`datalab-backups-513610`), organisation unza.ac.zm, owner lighton.phiri@unza.ac.zm, no billing; Google Drive API enabled.
+- Consent screen (Google Auth Platform) **Internal**: only unza.ac.zm accounts, no verification, and no 7-day token expiry (which applies to External apps left in Testing).
+- OAuth client **rclone backups (NETD and DataLab website)**, type Desktop app. Client ID and secret: laptop `access/rclone-oauth.txt`; on each server in `/root/.config/rclone/rclone.conf` (root only). The previous configuration is kept as `rclone.conf.shared-client-20261103`.
+- The same client and refresh token are used by this server and the DataLab website server (remote `data-gdrive-unza_ac_zm` on both).
+- Because `drive.file` is per client, the folders written with the shared client were renamed **"NETD portal backups (old rclone client)"** and **"DataLab website backups (old rclone client)"** (backups up to November 3, 2026); the new client cannot see or prune them. Delete them by hand in Drive after January 2, 2027. "Server backups before Ubuntu upgrade" is also from the shared client.
+- If the token is ever revoked (password change, or access removed under Google Account → Security → Third-party connections): open, signed in as lighton.phiri@unza.ac.zm, a consent URL for the client with scope `https://www.googleapis.com/auth/drive.file`, `access_type=offline`, `prompt=consent` and redirect `http://127.0.0.1:53682/`; exchange the returned code at `https://oauth2.googleapis.com/token`; write `{"access_token","token_type":"Bearer","refresh_token","expiry"}` as `token` in both `rclone.conf` files; test with `sudo /opt/netd/deploy/ops/netd-backup-to-gdrive.sh`. (`rclone config reconnect` on a machine with a browser does the same.)
 
 ## Restore
 
@@ -230,6 +237,27 @@ Normally this is done in the admin panel: **Upload CSV**, choose the institution
 3. In `harvester/institutions.yml`, set the institution's `status: harvested` and `source: <id>`.
 4. Release, then put the file in place (`sudo -u netd cp FILE /opt/netd/harvester/uploads/<id>/`) and run `netd.cli run --source <id>`. The nightly run picks up later changes to the file or link.
 
+
+## Handover to HEA: what is still in Lighton's name
+
+Everything below runs today on Lighton Phiri's accounts (UNZA Google account lighton.phiri@unza.ac.zm, GitHub `lightonphiri`) or on access set up for the build. At the handover, HEA takes each over or replaces it; the order below is the suggested order.
+
+| Item | Today | What HEA does |
+|---|---|---|
+| Off-site backups | Google Drive of lighton.phiri@unza.ac.zm, folder "NETD portal backups", through the OAuth client in the Google Cloud project "DataLab backups" (unza.ac.zm organisation; see "Backups") | Add HEA's own destination first, then remove Lighton's (below) |
+| Alert emails | Sent from lighton.phiri@unza.ac.zm with the app password "NETD portal alerts" (`SMTP_*` in `/opt/netd/portal.env`); alerts go to `ALERT_TO` if set, otherwise to `SMTP_USER` | Provide a sending address (HEA or ZAMREN) and recipients; change `portal.env`; test with `sudo systemctl start netd-alert@test`; then Lighton revokes the app password |
+| Source code | GitHub `lightonphiri/code-datalab26-netd_aggregator` | Transfer the repository to an HEA GitHub organisation (GitHub keeps redirects), or fork it; the server deploys from its own checkout, so nothing on the server changes |
+| Server access | Account `claude-ops` (passwordless sudo, SSH key on Lighton's laptop) and the hosting arrangement with ZAMREN | Create accounts for HEA's administrators; remove `claude-ops` and its key from `~claude-ops/.ssh/authorized_keys`; agree the hosting with ZAMREN |
+| Portal accounts | Admin accounts of the project | HEA staff: `netd-user.sh add ... ROLE=viewer` or `ROLE=admin`; remove project accounts that are no longer needed |
+| OpenAlex contact | `--mailto` of the field-of-study rebuild uses Lighton's address | Use an HEA address next time the model is rebuilt |
+
+**Moving the off-site backups to HEA** (needs an HEA Google account, or any other storage that rclone supports):
+1. In Google Cloud Console, signed in to HEA's account: create a project, enable the Google Drive API, configure the Google Auth Platform (Internal if HEA uses Google Workspace; otherwise External and **publish it to "In production"**, because tokens of apps left in Testing expire after 7 days; `drive.file` needs no Google verification), and create an OAuth client of type **Desktop app**.
+2. Authorise it once with scope `drive.file` (as under "Backups", or `rclone authorize "drive" CLIENT_ID CLIENT_SECRET` on a machine with a browser) and add a second remote, e.g. `[hea-gdrive]` with `type = drive`, `scope = drive.file`, `client_id`, `client_secret` and `token`, to `/root/.config/rclone/rclone.conf`.
+3. Add it to `REMOTES=(...)` in `deploy/ops/netd-backup-to-gdrive.sh` (commit and deploy), run the script once by hand and check that `/var/log/netd-backup.log` has an `upload OK` line for it.
+4. After about 60 days (when HEA's folder holds the full history), remove `data-gdrive-unza_ac_zm` from `REMOTES` and from this server's `rclone.conf` (the DataLab website server keeps it: it is not part of NETD). Lighton then deletes the "NETD portal backups" folders from his Drive.
+
+Without Google: rclone can write the same backups to S3-compatible storage or over SFTP to an HEA server (`rclone config`, then step 3).
 
 ## SMTP app passwords (rotated November 2, 2026)
 
