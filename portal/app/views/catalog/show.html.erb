@@ -206,15 +206,15 @@
     <% author = rec_values(d, 'author_ssim').first.to_s.split(',').first.to_s.strip %>
     <% scholar = "https://scholar.google.com/scholar?q=#{ERB::Util.url_encode(%("#{title}" #{author}).strip)}" %>
     <% if @similar.present? %>
-      <div class="netd-similar">
-        <h2>Similar theses</h2>
+      <details class="netd-similar" open>
+        <summary><h2>Similar theses</h2></summary>
         <ol>
           <% @similar.each do |sd| %>
             <li><%= link_to Array(sd['title_tsim']).first.to_s, solr_document_path(sd['id']) %>
               <span class="netd-similar-meta"><%= [Array(sd['year_ssim']).first, Array(sd['institution_short_ssim']).first].compact.join(' · ') %></span></li>
           <% end %>
         </ol>
-      </div>
+      </details>
     <% end %>
     <div class="netd-analysis">
       <h2>Analysis</h2>

@@ -136,7 +136,12 @@ footer.netd-footer strong { color: var(--netd-ink); font-weight: 600; }
 .netd-usage-item svg { color: var(--netd-muted, #6c757d); flex: none; }
 .netd-usage-icon { vertical-align: -.15em; color: var(--netd-muted, #6c757d); }
 .netd-similar { margin-top: 1.5rem; }
-.netd-similar h2 { font-size: 1rem; font-weight: 600; margin-bottom: .5rem; }
+.netd-similar summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e3e6ea; padding-bottom: .35rem; margin-bottom: .6rem; }
+.netd-similar summary::-webkit-details-marker { display: none; }
+.netd-similar summary h2 { font-size: 1rem; font-weight: 600; margin: 0; }
+.netd-similar summary::after { content: ""; width: .55rem; height: .55rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); margin: 0 .3rem .2rem 0; transition: transform .15s; color: var(--netd-muted); }
+.netd-similar:not([open]) summary::after { transform: rotate(-45deg); margin-bottom: 0; }
+.netd-similar summary:focus-visible { outline: 2px solid #0071c2; outline-offset: 2px; }
 .netd-similar ol { padding-left: 1.1rem; margin: 0; font-size: .9rem; }
 .netd-similar li { margin-bottom: .55rem; }
 .netd-similar-meta { display: block; color: var(--netd-muted); font-size: .8rem; }
