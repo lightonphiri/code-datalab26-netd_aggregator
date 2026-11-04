@@ -37,6 +37,7 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Date | Item | Commit |
 |---|---|---|
+| November 4, 2026 | Google Scholar and Google: meta tags, sitemap, canonical links (FR-66); similar theses (FR-67); field of study on results without keywords (FR-55); sentence case for titles in capitals in citations; "Repository link" label; icons on `/admin/usage` (Lighton, November 4, 2026) | session 12 |
 | November 4, 2026 | "How to cite" on record pages (FR-65), as in OJS: ten styles, copy, RIS and BibTeX; repository links rebuilt from OAI identifiers (Lighton, November 4, 2026). Fixed with it: the record pages' "Persistent link" for all UNZA records pointed to dspace.unza.zm, no longer in DNS, and 33 others to localhost | session 12 |
 | November 4, 2026 | Record page usage line (FR-61): icons for views (eye) and downloads (download arrow) instead of text alone (Lighton, November 4, 2026); display only, counting code unchanged since `paper-v1` | session 12 |
 | November 3, 2026 | Supervisor names (FR-64), per-record resolution of bare surnames: **measured and closed, not built**. 166 mentions in 144 of 3,180 records with a supervisor (4.5%); a simple rule would resolve 56, 80 ambiguous, 30 without a fuller spelling; the most frequent value ("Mweemba", 9) is the gold-standard counterexample to department-based joining. Reopen only with gold data for bare surnames | session 12 (`work/bare-s12a.py`; `docs/PAPER-PLAN.md`) |

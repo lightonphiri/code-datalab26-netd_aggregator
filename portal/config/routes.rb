@@ -49,6 +49,7 @@ Rails.application.routes.draw do
   get "follow", to: "follow#show", as: :follow   # feeds of new additions for a search (FR-60)
   get "quality", to: "quality#index", as: :quality   # metadata quality dashboard (FR-28)
   get "catalog/:id/pdf", to: "catalog#pdf", as: :record_pdf, constraints: { id: /[A-Za-z0-9_-]+/ }  # counted download (FR-61)
+  get "sitemap.xml", to: "catalog#sitemap", as: :sitemap, defaults: { format: :xml }   # FR-66
   get "catalog/:id/cite(.:format)", to: "catalog#cite", as: :cite_record,
       constraints: { id: /[A-Za-z0-9_-]+/, format: /html|ris|bib/ }   # "How to cite" (FR-65)
   get "browse", to: "browse#index", as: :browse      # institution → faculty → department (FR-25)

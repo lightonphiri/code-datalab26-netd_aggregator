@@ -63,6 +63,24 @@ class Citation
     end
   end
 
+  # Words kept capitalised when a title written in capitals is put into sentence case.
+  KEEP = %w[Zambia Zambian Zambians Lusaka Copperbelt Africa African Southern Eastern Northern Western Central Luapula
+            Muchinga Ndola Kitwe Kabwe Livingstone Chipata Kasama Solwezi Mongu Mansa Chongwe HIV AIDS ART TB COVID-19
+            UNZA SADC COMESA ICT ZESCO ZRA ZNBC NGO NGOs SMEs UN UNICEF USAID WHO I II III].to_h { |w| [w.downcase, w] }.freeze
+
+  # Titles harvested in capitals ("THE IMPACT OF ...") in sentence case for citations; other titles as written.
+  def self.sentence_case(title)
+    letters = title.to_s.scan(/[[:alpha:]]/)
+    return title if letters.size < 8 || letters.count { |c| c == c.upcase } < letters.size * 0.8
+
+    first = true
+    title.downcase.gsub(/[[:alpha:]][[:alnum:]'-]*/) do |w|
+      out = KEEP[w] || (first ? w.capitalize : w)
+      first = false
+      out
+    end.gsub(/([:.?!]\s+)([[:alpha:]])/) { "#{Regexp.last_match(1)}#{Regexp.last_match(2).upcase}" }
+  end
+
   # Markup in harvested values must not reach the page: citeproc-ruby escapes "&" but passes "<" and ">" through,
   # so they are escaped before rendering (the view also sanitises the result).
   def self.html_text(s) = s.to_s.gsub('<', '&lt;').gsub('>', '&gt;')
@@ -73,7 +91,7 @@ class Citation
   def item(html: false)
     t = html ? self.class.method(:html_text) : ->(s) { s }
     {
-      'id' => @doc.id, 'type' => 'thesis', 'title' => t.(v('title_tsim').presence || v('title_ssm')),
+      'id' => @doc.id, 'type' => 'thesis', 'title' => t.(self.class.sentence_case(v('title_tsim').presence || v('title_ssm'))),
       'author' => authors.map { |a| a.transform_values { |x| t.(x) } }, 'issued' => (y = v('year_ssim')).present? ? { 'date-parts' => [[y.to_i]] } : nil,
       'genre' => genre, 'publisher' => t.(v('institution_ssim')).presence, 'URL' => url
     }.compact

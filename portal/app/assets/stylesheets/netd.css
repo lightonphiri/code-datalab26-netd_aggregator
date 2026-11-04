@@ -134,6 +134,13 @@ footer.netd-footer strong { color: var(--netd-ink); font-weight: 600; }
 .netd-usage-item { display: inline-flex; align-items: center; gap: .3rem; }
 .netd-usage-item strong { margin-right: .1rem; }
 .netd-usage-item svg { color: var(--netd-muted, #6c757d); flex: none; }
+.netd-usage-icon { vertical-align: -.15em; color: var(--netd-muted, #6c757d); }
+.netd-similar { margin-top: 1.5rem; }
+.netd-similar h2 { font-size: 1rem; font-weight: 600; margin-bottom: .5rem; }
+.netd-similar ol { padding-left: 1.1rem; margin: 0; font-size: .9rem; }
+.netd-similar li { margin-bottom: .55rem; }
+.netd-similar-meta { display: block; color: var(--netd-muted); font-size: .8rem; }
+.etd-subjects.etd-fos a { font-style: italic; }
 .netd-nofile { display: block; color: var(--netd-muted); font-size: .92rem; padding: .4rem 0; }
 .netd-side-label { font-size: .82rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin: 1rem 0 .3rem; }
 .netd-cite-text { font-size: .86rem; line-height: 1.45; background: #f6f7f9; border: 1px solid #e3e6ea; border-radius: 4px; padding: .55rem .65rem; overflow-wrap: anywhere; transition: opacity .15s; }

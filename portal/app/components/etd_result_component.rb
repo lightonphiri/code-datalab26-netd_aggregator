@@ -36,9 +36,18 @@ class EtdResultComponent < Blacklight::DocumentComponent
     if subjects.any?
       parts << content_tag(:div, safe_join(subjects.map { |s| link_to(s, helpers.search_action_path(f: { subject_ssim: [s] })) }),
                            class: 'etd-subjects')
+    elsif (fos = fields_of_study).any?
+      # No keywords from the repository: the portal's field of study (OpenAlex Topics, FR-55), marked as such.
+      parts << content_tag(:div, safe_join(fos.map { |f, v| link_to(v, helpers.search_action_path(f: { f => [v] })) }),
+                           class: 'etd-subjects etd-fos', title: 'Field of study assigned by the portal (OpenAlex Topics)')
     end
     parts << pdf_link
     safe_join(parts.compact)
+  end
+
+  def fields_of_study
+    subs = Array(@document['fos_subfield_ssim']).map { |v| ['fos_subfield_ssim', v] }
+    subs.presence || Array(@document['fos_field_ssim']).map { |v| ['fos_field_ssim', v] }
   end
 
   def pdf_link(css = 'etd-pdf-link')

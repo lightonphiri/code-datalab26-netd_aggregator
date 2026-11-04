@@ -103,6 +103,28 @@ class CatalogController < ApplicationController
 
     count_usage('record_view', record_id: @document.id, institution: Array(@document['institution_ssim']).first)
     @usage = UsageCount.where(record_id: @document.id, event: %w[record_view pdf_download]).group(:event).sum(:hits)
+    @similar = similar_theses(@document.id)
+  end
+
+  # GET /sitemap.xml: every listed record page (other copies of duplicates left out), for Google and Google Scholar
+  # (FR-66). Cached for a day; not counted as usage.
+  def sitemap
+    xml = Rails.cache.fetch('netd/sitemap', expires_in: 1.day) do
+      conn = Blacklight.default_index.connection
+      ids, start = [], 0
+      loop do
+        r = conn.get('select', params: { q: '*:*', fq: '-duplicate_of_ssi:[* TO *]', fl: 'id,year_ssim', rows: 2000,
+                                         start: start, sort: 'id asc', facet: false, spellcheck: false, wt: 'json' })
+        docs = r.dig('response', 'docs') || []
+        ids.concat(docs.map { |d| d['id'] })
+        start += docs.size
+        break if docs.size < 2000
+      end
+      urls = [root_url, browse_url] + ids.map { |id| solr_document_url(id) }
+      %(<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n) +
+        urls.map { |u| "<url><loc>#{ERB::Util.html_escape(u)}</loc></url>" }.join("\n") + "\n</urlset>\n"
+    end
+    render xml: xml
   end
 
   # GET /catalog/:id/pdf(?file=n): counts the download, then sends the reader to the repository's own copy. Only a
@@ -142,6 +164,19 @@ class CatalogController < ApplicationController
   private
 
     def html_page? = response.successful? && response.media_type.to_s == 'text/html'
+
+    # "Similar theses" (FR-67): Solr MoreLikeThis on title, abstract and keywords; other copies of duplicates left out.
+    def similar_theses(id)
+      r = Blacklight.default_index.connection.get('select', params: {
+        q: "id:#{RSolr.solr_escape(id)}", rows: 1, fl: 'id,title_tsim,year_ssim,institution_short_ssim,duplicate_of_ssi',
+        mlt: true, 'mlt.fl' => 'title_tsim,abstract_tesim,subject_tsim', 'mlt.mintf' => 1, 'mlt.mindf' => 2,
+        'mlt.count' => 10, facet: false, spellcheck: false, wt: 'json'
+      })
+      (r.dig('moreLikeThis', id, 'docs') || []).reject { |d| d['duplicate_of_ssi'] }.first(5)
+    rescue StandardError => e
+      Rails.logger.warn("similar_theses #{id}: #{e.class}")
+      []
+    end
 
   # Popular searches (FR-61): facet values chosen on a first results page that found records. Only configured facet
   # fields, at most 10 values per search; nothing typed by the reader is stored.

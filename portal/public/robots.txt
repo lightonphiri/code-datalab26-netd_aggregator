@@ -2,6 +2,7 @@
 # Record pages (/catalog/<id>) and single-facet result pages may be crawled. Facet combinations, feeds and
 # data formats are an endless crawl trap; programs should use the API (/developers/api) or OAI-PMH (/oai).
 User-agent: *
+Allow: /sitemap.xml
 Disallow: /admin
 Disallow: /*f%5B*f%5B
 Disallow: /*f[*f[
@@ -15,3 +16,5 @@ Disallow: /follow
 Disallow: /bookmarks
 Disallow: /search_history
 Crawl-delay: 2
+
+Sitemap: https://netd.ac.zm/sitemap.xml

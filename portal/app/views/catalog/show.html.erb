@@ -8,6 +8,28 @@
 <% pdf = rec_values(d, 'pdf_url_ssm').first || files.first&.dig('url') %>
 <% handle = rec_values(d, 'url_ssm').first %>
 <% derived = rec_derived(d) %>
+<% content_for(:head) do %>
+  <%# Google Scholar (Highwire Press tags) and link previews (Open Graph). FR-66. %>
+  <% rec_url = solr_document_url(d.id) %>
+  <link rel="canonical" href="<%= rec_url %>">
+  <meta name="citation_title" content="<%= title %>">
+  <% rec_values(d, 'author_ssim').each do |a| %><meta name="citation_author" content="<%= a %>">
+  <% end %><% if (y = rec_values(d, 'year_ssim').first) %><meta name="citation_publication_date" content="<%= y %>">
+  <% end %><meta name="citation_dissertation_institution" content="<%= rec_values(d, 'institution_ssim').first %>">
+  <% if (deg = rec_values(d, 'degree_ssim').first) %><meta name="citation_dissertation_name" content="<%= deg %>">
+  <% end %><meta name="citation_publisher" content="<%= rec_values(d, 'institution_ssim').first %>">
+  <meta name="citation_abstract_html_url" content="<%= rec_url %>">
+  <% if (pdfurl = rec_values(d, 'pdf_url_ssm').first) %><meta name="citation_pdf_url" content="<%= pdfurl %>">
+  <% end %><% if (abs0 = rec_values(d, 'abstract_tesim').first) %><meta name="citation_abstract" content="<%= abs0.squish %>">
+  <meta name="description" content="<%= truncate(abs0.squish, length: 300, separator: ' ') %>">
+  <meta property="og:description" content="<%= truncate(abs0.squish, length: 300, separator: ' ') %>">
+  <% end %><% kw = rec_values(d, 'subject_ssim').presence || rec_values(d, 'fos_subfield_ssim') %><% if kw.any? %><meta name="citation_keywords" content="<%= kw.join('; ') %>">
+  <% end %><% if (lang = rec_values(d, 'language_ssim').first) %><meta name="citation_language" content="<%= lang.to_s[0, 2] %>">
+  <% end %><meta property="og:type" content="article">
+  <meta property="og:title" content="<%= title %>">
+  <meta property="og:url" content="<%= rec_url %>">
+  <meta property="og:site_name" content="<%= application_name %>">
+<% end %>
 <%= render presenter.view_config.document_header_component.new(document: d, search_context: @search_context, search_session: search_session) %>
 <div class="row g-5 netd-record" id="document">
   <div class="col-lg-8">
@@ -112,15 +134,15 @@
       <% if @usage %>
         <% views = @usage['record_view'].to_i; dls = @usage['pdf_download'].to_i %>
         <div class="netd-rec-usage" title="Counted by the portal since November 2, 2026, without tracking readers; downloads through this page's Download links only, crawlers not counted">
-          <span class="netd-usage-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg><strong><%= number_with_delimiter(views) %></strong> <%= views == 1 ? 'view' : 'views' %></span>
+          <span class="netd-usage-item"><%= usage_icon(:view) %><strong><%= number_with_delimiter(views) %></strong> <%= views == 1 ? 'view' : 'views' %></span>
           <span aria-hidden="true">·</span>
-          <span class="netd-usage-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10.5l5 5 5-5"/><path d="M4 17v3h16v-3"/></svg><strong><%= number_with_delimiter(dls) %></strong> <%= dls == 1 ? 'download' : 'downloads' %></span>
+          <span class="netd-usage-item"><%= usage_icon(:download) %><strong><%= number_with_delimiter(dls) %></strong> <%= dls == 1 ? 'download' : 'downloads' %></span>
         </div>
       <% end %>
       <% if handle %>
-        <div class="netd-side-label">Persistent link</div>
+        <div class="netd-side-label">Repository link</div>
         <div class="input-group netd-copy">
-          <input type="text" class="form-control" value="<%= handle %>" readonly id="netd-handle" aria-label="Persistent link">
+          <input type="text" class="form-control" value="<%= handle %>" readonly id="netd-handle" aria-label="Repository link">
           <button class="btn btn-outline-secondary" type="button" title="Copy link"
                   onclick="navigator.clipboard.writeText(document.getElementById('netd-handle').value); this.textContent='Copied';">Copy</button>
         </div>
@@ -183,6 +205,17 @@
 
     <% author = rec_values(d, 'author_ssim').first.to_s.split(',').first.to_s.strip %>
     <% scholar = "https://scholar.google.com/scholar?q=#{ERB::Util.url_encode(%("#{title}" #{author}).strip)}" %>
+    <% if @similar.present? %>
+      <div class="netd-similar">
+        <h2>Similar theses</h2>
+        <ol>
+          <% @similar.each do |sd| %>
+            <li><%= link_to Array(sd['title_tsim']).first.to_s, solr_document_path(sd['id']) %>
+              <span class="netd-similar-meta"><%= [Array(sd['year_ssim']).first, Array(sd['institution_short_ssim']).first].compact.join(' · ') %></span></li>
+          <% end %>
+        </ol>
+      </div>
+    <% end %>
     <div class="netd-analysis">
       <h2>Analysis</h2>
       <a class="netd-analysis-row" href="<%= scholar %>" target="_blank" rel="noopener">
