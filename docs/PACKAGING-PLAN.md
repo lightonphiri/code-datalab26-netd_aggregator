@@ -7,7 +7,7 @@ Started November 4, 2026 (documentation and packaging track, session 13). Goal (
 | Decision | Choice | By |
 |---|---|---|
 | Licence | **BSD 3-Clause** (as DSpace) | Lighton, November 4, 2026 |
-| Where the manual is published | Markdown in `docs/manual/` (master copy) **and** a static site built with MkDocs on GitHub Pages (`mkdocs.yml`, `.github/workflows/manual.yml`) | Lighton, November 4, 2026 |
+| Where the manual is published (live since November 5, 2026: https://lightonphiri.github.io/code-datalab26-netd_aggregator/; GitHub releases for `v0.1.0`–`v0.9.0` created the same day) | Markdown in `docs/manual/` (master copy) **and** a static site built with MkDocs on GitHub Pages (`mkdocs.yml`, `.github/workflows/manual.yml`) | Lighton, November 4, 2026 |
 | Milestone versions | Annotated tags `v0.1.0` to `v0.9.0` on the real milestone commits, tagged retrospectively; `paper-v1` unchanged; commit dates never rewritten | agreed November 4, 2026 |
 
 **Licence file added (release P2, November 4, 2026):** Lighton confirmed that the University of Zambia's IP policy allows the open-source release (November 4, 2026); copyright line as prepared. *Earlier text:* Lighton checks the University of Zambia's intellectual property policy on software written by staff (who holds the copyright, and whether the University must approve an open-source release). The `LICENSE` text is prepared (section 6) and goes into the repository in the release after that check. Note that **the GitHub repository is already public** (checked November 4, 2026); without a licence file, others may read the code but have no right to reuse it.

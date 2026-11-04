@@ -20,6 +20,9 @@ Post-paper changes.
 - The site probe's recovery e-mail now says since when the portal was down (it read the outage start after deleting the file that held it).
 - Record pages at `/theses/<short id>` (the DSpace default handle prefix dropped, e.g. `/theses/zcas-298`), with permanent redirects from `/catalog/<id>`; REST API 1.6.0 accepts the short id (FR-68, SRS 0.37, SDD 0.36; maintenance track).
 
+### Fixed
+- OAI-PMH set `level:postgraduate-diploma` answered HTTP 500 (the two-word level was not quoted in the Solr filter); `tests/oai_conformance.py` now expects every record, duplicate copies included, as OAI-PMH lists them.
+
 ### Removed
 - A Python bytecode cache that had been committed by mistake (`deploy/ops/__pycache__/`); `.gitignore` now covers every `__pycache__` folder and the manual's build output.
 

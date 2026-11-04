@@ -3,7 +3,7 @@
     pip install sickle lxml
     python tests/oai_conformance.py [BASE_URL] [EXPECTED_RECORD_COUNT]
 
-Defaults: https://netd.ac.zm/oai and the number of records reported by the portal's JSON API. Responses are validated
+Defaults: https://netd.ac.zm/oai and the number of records reported by the REST API with duplicates included. Responses are validated
 against the OAI-PMH, oai-identifier and oai_dc schemas (downloaded once into ~/.cache/netd-oai-xsd). The ETD-MS v1.1
 schema host was not reachable when this was written, so etdms records are checked for element order and required
 elements instead. A full run harvests every record three times and takes about five minutes. Exit status 1 = problem.
@@ -23,8 +23,9 @@ BASE = sys.argv[1] if len(sys.argv) > 1 else "https://netd.ac.zm/oai"
 if len(sys.argv) > 2:
     EXPECTED = int(sys.argv[2])
 else:
-    api = BASE.rsplit("/oai", 1)[0] + "/catalog.json?per_page=1"
-    EXPECTED = json.load(urllib.request.urlopen(api, timeout=60))["meta"]["pages"]["total_count"]
+    # OAI-PMH lists every record, duplicate copies included (FR-19); search pages show each thesis once
+    api = BASE.rsplit("/oai", 1)[0] + "/api/v1/records?per_page=1&duplicates=include"
+    EXPECTED = json.load(urllib.request.urlopen(api, timeout=60))["meta"]["total"]
 XSD = os.path.expanduser("~/.cache/netd-oai-xsd")
 XSD_FILES = {
     "OAI-PMH.xsd": "https://www.openarchives.org/OAI/2.0/OAI-PMH.xsd",

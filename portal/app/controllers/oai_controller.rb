@@ -248,7 +248,7 @@ class OaiController < ActionController::Base
       when 'level'
         raise OaiError.new('noRecordsMatch', "No such set: #{state['s']}") unless LEVELS.key?(value)
 
-        fq << "degree_level_ssim:#{LEVELS[value]}"
+        fq << "degree_level_ssim:\"#{LEVELS[value]}\""   # quoted: "Postgraduate Diploma" is two words
       else
         raise OaiError.new('noRecordsMatch', "No such set: #{state['s']}")
       end

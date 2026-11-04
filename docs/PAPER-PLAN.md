@@ -344,6 +344,10 @@ Nothing in this session changes an evaluated component (text extraction, OCR, mo
 - One file, `config/country.yml`, now names the installation (country, portal name and host, regulator, contacts, senders, credits, time zone); the portal, harvester and deployment scripts read it at start-up and refuse to start without it. Host name, contacts, senders, the portal name in mail and reports, and the admin time zone were moved first because they appear in code rather than wording; page wording follows (P3b, P4).
 - Acceptance was "pages unchanged": HTML of 13 pages, OAI-PMH and REST responses captured with the `netd-check` user agent before and after the release and compared after masking tokens and response dates, plus screenshots and the two conformance tests. This is the transferability evidence the paper may mention as post-paper work.
 - Loading the file in `config/application.rb` (not an initializer) was needed because the environment files (mailer host) are evaluated before initializers.
+- Before the release, the changed portal was booted in production mode in a scratch copy on the server and its pages compared with the running portal's; after it, captures before and after were identical. The OAI-PMH conformance test then found an older fault, not caused by the release: the `level:postgraduate-diploma` set answered HTTP 500 (an unquoted two-word value in the Solr filter), and the test expected the search count (5,474 distinct theses) rather than every record (5,719, duplicate copies included). Both fixed (November 5, 2026); OAI-PMH record content is unchanged.
+
+### Publishing
+- The manual is live on GitHub Pages and the milestone tags `v0.1.0` to `v0.9.0` have GitHub releases with their CHANGELOG text (November 5, 2026). The paper may cite `paper-v1` and the releases page.
 
 ## Technical record from session 13 (November 4, 2026, documentation and packaging track; post-paper)
 
