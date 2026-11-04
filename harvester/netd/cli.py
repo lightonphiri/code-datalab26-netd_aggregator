@@ -102,6 +102,8 @@ def do_process(store, srcs, ecfg, scope=None):
 def do_index(store, srcs, solr):
     from . import dedup
     dups = dedup.load(store)  # FR-19: "duplicate of" / "other copies" on each record in a group
+    from . import citedby
+    cites = citedby.load(store)  # FR-69: OpenAlex work and citing works per thesis
     from collections import Counter
     from . import units, people
     for src in srcs:
@@ -119,6 +121,8 @@ def do_index(store, srcs, solr):
             new = people.apply(rec, smap)
             if new:
                 rec["supervisor_orig"], rec["supervisor"] = rec["supervisor"], new
+            if rec["id"] in cites:
+                rec["_openalex"] = cites[rec["id"]]
             batch.append(index.to_solr(rec, dups.get(rec["id"])))
             if len(batch) >= 500:
                 index.post(solr, batch)
@@ -200,7 +204,7 @@ def do_check(store, srcs, solr, max_age_hours):
 
 def main(argv=None):
     p = argparse.ArgumentParser(prog="netd")
-    p.add_argument("command", choices=["harvest", "process", "index", "run", "reprocess", "report", "check", "csv-check", "check-repositories", "quality-report", "dedup",
+    p.add_argument("command", choices=["harvest", "process", "index", "run", "reprocess", "report", "check", "csv-check", "check-repositories", "quality-report", "dedup", "cited-by",
                                        "extract-text", "ocr-text", "text-report", "predict", "load-predictions",
                                        "export-predictions", "correct", "uncorrect", "gold-sample", "evaluate"])
     p.add_argument("args", nargs="*", help="file (csv-check, load/export-predictions, gold-sample, evaluate) or "
@@ -217,6 +221,8 @@ def main(argv=None):
     p.add_argument("--strata", action="store_true", help="evaluate: also report by kind of PDF text")
     p.add_argument("--limit", type=int)
     p.add_argument("--max-age-hours", type=float, default=30)
+    p.add_argument("--max-calls", type=int, default=80, help="cited-by: OpenAlex list calls per run")
+    p.add_argument("--max-age-days", type=float, default=7, help="cited-by: check each thesis again after this")
     p.add_argument("--out", default=os.path.join(os.environ.get("NETD_LOGS", os.path.join(HERE, "..", "logs")),
                                                  "repository-check.json"))
     p.add_argument("--db", default=os.environ.get("NETD_DB", os.path.join(HERE, "netd.sqlite3")))
@@ -265,6 +271,9 @@ def main(argv=None):
             quality_report(store, sources, os.path.join(os.path.dirname(a.out), "quality.json"))
         except Exception as e:  # noqa: BLE001
             print("quality report skipped: %s" % e, file=sys.stderr)
+    if a.command == "cited-by":  # FR-69; takes no lock itself: run it under run.lock
+        from . import citedby
+        citedby.run(store, a.solr, max_calls=a.max_calls, max_age_days=a.max_age_days)
     if a.command == "dedup":
         from . import dedup
         dedup.run(store)

@@ -205,6 +205,20 @@
 
     <% author = rec_values(d, 'author_ssim').first.to_s.split(',').first.to_s.strip %>
     <% scholar = "https://scholar.google.com/scholar?q=#{ERB::Util.url_encode(%("#{title}" #{author}).strip)}" %>
+    <% citing = rec_values(d, 'cited_by_ssm').filter_map { |j| JSON.parse(j) rescue nil } %>
+    <% if citing.any? %>
+      <%# FR-69: works citing this thesis, from OpenAlex (matched by title and year; refreshed weekly) %>
+      <details class="netd-similar netd-citedby" open>
+        <summary><h2>Cited by <%= number_with_delimiter(citing.size) %></h2></summary>
+        <ol>
+          <% citing.each do |c| %>
+            <li><%= link_to c['title'].to_s, c['url'].to_s, target: '_blank', rel: 'noopener' %>
+              <span class="netd-similar-meta"><%= c['year'] %></span></li>
+          <% end %>
+        </ol>
+        <p class="netd-similar-meta">Citation data from <%= link_to 'OpenAlex', "https://openalex.org/works/#{d['openalex_id_ssi']}", target: '_blank', rel: 'noopener' %></p>
+      </details>
+    <% end %>
     <% if @similar.present? %>
       <details class="netd-similar" open>
         <summary><h2>Similar theses</h2></summary>

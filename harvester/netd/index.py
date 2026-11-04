@@ -93,6 +93,11 @@ def to_solr(rec, dup=None):
         doc["files_ssm"] = [json.dumps(f, ensure_ascii=False) for f in rec["files"]]
     doc["full_text_ssim"] = ["PDF available" if rec.get("pdf_url") else
                              ("Other file available" if rec.get("file_url") else "Metadata only")]
+    if rec.get("_openalex"):  # FR-69: the matched OpenAlex work and the works citing it
+        doc["openalex_id_ssi"], citing = rec["_openalex"]
+        doc["cited_by_isi"] = len(citing)
+        if citing:
+            doc["cited_by_ssm"] = [json.dumps(c, ensure_ascii=False) for c in citing]
     if dup and dup.get("duplicate_of"):  # FR-19: listed once in search; this copy links to the main record
         doc["duplicate_of_ssi"] = dup["duplicate_of"]
     if dup and dup.get("duplicates"):

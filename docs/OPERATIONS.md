@@ -6,7 +6,7 @@ How the Zambia National ETD Portal (https://netd.ac.zm/) is kept running: schedu
 
 | Unit | When (UTC) | What it does |
 |---|---|---|
-| `netd-harvest.timer` | daily 02:30 (+ up to 20 min) | harvest → process → index all sources, then `netd.cli check` (which also asks the OAI-PMH provider at http://127.0.0.1:3010/oai for `Identify`) |
+| `netd-harvest.timer` | daily 02:30 (+ up to 20 min) | `netd.cli cited-by` (OpenAlex, FR-69; failures ignored), then harvest → process → index all sources, then `netd.cli check` (which also asks the OAI-PMH provider at http://127.0.0.1:3010/oai for `Identify`) |
 | `netd-backup.timer` | daily 04:15 | server backup to `/var/backups/netd/`, then copy to Google Drive |
 | `netd-probe.timer` | every 15 min | checks that https://netd.ac.zm/ returns search results |
 | `netd-weekly.timer` | Mondays 06:00 | weekly status email |
@@ -182,6 +182,13 @@ All commands run in `/opt/netd/harvester` as `netd` (`sudo -u netd .venv/bin/pyt
 ## Search engines (FR-66)
 - **Google Search Console:** property `https://netd.ac.zm/` under lighton.phiri@unza.ac.zm (November 4, 2026), verified by the file `portal/public/google3d6feb9cbe4a8169.html` (**do not remove it**, or verification is lost). Sitemap `/sitemap.xml` submitted (rebuilt from Solr, cached one day). Temporary removals requested for the old EMI pages (`/node…`, `/about-us…`; about six months, by which time Google has dropped them as 404).
 - **Google Scholar** has no submission form: it finds records through the sitemap and links, reads the `citation_*` meta tags on record pages, and takes weeks to months. Check with `site:netd.ac.zm` on scholar.google.com from December 2026. Scholar may group a portal record with the same thesis on the repository as versions of one work.
+- **Record addresses (FR-68, November 4, 2026):** record pages are at `/theses/<short id>` (`/theses/unza-9150` for record `unza-123456789-9150`). Every old `/catalog/<record id>` address (and `/pdf`, `/cite`, `.json`) answers 301 to the new one, so links already shared and anything Google indexed keep working; the sitemap lists only the new addresses (resubmitted in Search Console on November 4, 2026). Record ids, OAI-PMH identifiers, the API and usage counts are unchanged. Search stays at `/catalog?q=…`.
+
+## Cited by (OpenAlex, FR-69)
+- `netd.cli cited-by` runs every night before the harvest, under `run.lock` (`ExecStartPre` of `netd-harvest.service`; a failure never stops the harvest). It checks the theses not checked for 7 days, 40 titles per OpenAlex call, and stops at 80 calls or when OpenAlex's daily allowance is nearly used; the nightly `index` puts the results on the record pages. The whole collection takes about 137 calls, so each thesis is refreshed about weekly. The result line is in `journalctl -u netd-harvest` ("cited-by: …").
+- **OpenAlex allowance (since February 13, 2026):** a list call costs $0.001; without an API key OpenAlex allows $0.10 a day (about 100 calls), with a free key $1 a day. The job works without a key. To add one: create an OpenAlex account (openalex.org, Settings → API), then on the server `echo 'OPENALEX_API_KEY=<key>' | sudo tee /opt/netd/openalex.env && sudo chmod 600 /opt/netd/openalex.env` (read by systemd; never commit it). The `mailto` "polite pool" no longer exists.
+- By hand: `cd /opt/netd/harvester && sudo -u netd flock -w 7200 run.lock .venv/bin/python -m netd.cli cited-by --max-calls 40`, then `sudo -u netd flock -w 7200 run.lock .venv/bin/python -m netd.cli index`. `--max-age-days 0` checks every thesis again.
+- Data: store table `openalex_citations` (record id, OpenAlex work, OpenAlex's count, citing works as JSON, checked at); Solr `openalex_id_ssi`, `cited_by_isi`, `cited_by_ssm`. A work that matches two theses is left unmatched for both.
 
 ## Excluding records
 
@@ -257,7 +264,7 @@ Everything below runs today on Lighton Phiri's accounts (UNZA Google account lig
 | Server access | Account `claude-ops` (passwordless sudo, SSH key on Lighton's laptop) and the hosting arrangement with ZAMREN | Create accounts for HEA's administrators; remove `claude-ops` and its key from `~claude-ops/.ssh/authorized_keys`; agree the hosting with ZAMREN |
 | Portal accounts | Admin accounts of the project | HEA staff: `netd-user.sh add ... ROLE=viewer` or `ROLE=admin`; remove project accounts that are no longer needed |
 | Google Search Console | Property `https://netd.ac.zm/` in lighton.phiri@unza.ac.zm (November 4, 2026) | Add an HEA owner in Search Console (Settings → Users and permissions), then remove Lighton |
-| OpenAlex contact | `--mailto` of the field-of-study rebuild uses Lighton's address | Use an HEA address next time the model is rebuilt |
+| OpenAlex | `--mailto` of the field-of-study rebuild uses Lighton's address (OpenAlex now ignores it); the nightly cited-by job (FR-69) runs without an API key (November 4, 2026) | If an API key is added (`/opt/netd/openalex.env`), make it an HEA OpenAlex account's key; use HEA's key for model rebuilds too |
 
 **Moving the off-site backups to HEA** (needs an HEA Google account, or any other storage that rclone supports):
 1. In Google Cloud Console, signed in to HEA's account: create a project, enable the Google Drive API, configure the Google Auth Platform (Internal if HEA uses Google Workspace; otherwise External and **publish it to "In production"**, because tokens of apps left in Testing expire after 7 days; `drive.file` needs no Google verification), and create an OAuth client of type **Desktop app**.
