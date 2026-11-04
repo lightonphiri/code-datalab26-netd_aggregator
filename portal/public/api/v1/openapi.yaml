@@ -279,7 +279,7 @@ components:
                   title: {type: string}
                   year: {type: integer, nullable: true}
                   type: {type: string, nullable: true, example: article}
-                  url: {type: string, format: uri, description: DOI link when there is one, otherwise the OpenAlex page}
+                  url: {type: string, format: uri, description: 'DOI link when there is one, otherwise the OpenAlex page'}
     Institution:
       type: object
       required: [name, records, status, postgraduate_levels]

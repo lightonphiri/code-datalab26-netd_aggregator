@@ -121,10 +121,11 @@ expect(sum(st["by_degree_level"].values()) == total, "  degree levels add up: %s
 expect({i["id"]: i["records"] for i in st["by_institution"]} == harvested, "  per-institution counts match /institutions")
 print("     completeness: %s" % st["completeness"])
 
-# Export
+# Export: every record, other copies of duplicates included (API 1.5.0)
+every = S.get(API + "/records?duplicates=include&per_page=1", timeout=60).json()["meta"]["total"]
 r = S.get(API + "/export.csv", timeout=300)
 rows = list(csv.reader(io.StringIO(r.content.decode("utf-8"))))
-expect(r.status_code == 200 and rows[0][0] == "id" and len(rows) - 1 == total, "export.csv: %d rows" % (len(rows) - 1))
+expect(r.status_code == 200 and rows[0][0] == "id" and len(rows) - 1 == every and rows[0][-2:] == ["openalex_id", "cited_by_count"], "export.csv: %d rows" % (len(rows) - 1))
 r = S.get(API + "/export.jsonl", timeout=300)
 lines = r.content.decode("utf-8").splitlines()
 rec_schema = nullable_to_jsonschema(spec["components"]["schemas"]["Record"])
@@ -134,7 +135,7 @@ for ln in lines:
         jsonschema.validate(json.loads(ln), rec_schema)
     except Exception:  # noqa: BLE001
         bad += 1
-expect(r.status_code == 200 and len(lines) == total and bad == 0, "export.jsonl: %d lines, %d failing the Record schema" % (len(lines), bad))
+expect(r.status_code == 200 and len(lines) == every and bad == 0, "export.jsonl: %d lines, %d failing the Record schema" % (len(lines), bad))
 r = S.options(API + "/records", headers={"Origin": "https://example.org", "Access-Control-Request-Method": "GET"}, timeout=30)
 expect(r.status_code == 204 and r.headers.get("Access-Control-Allow-Methods") == "GET, OPTIONS", "CORS preflight")
 r = S.get(BASE + "/developers/api", timeout=30)
