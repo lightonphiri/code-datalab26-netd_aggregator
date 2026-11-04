@@ -5,11 +5,7 @@ Harvests Electronic Theses and Dissertations (ETD) metadata from Zambian institu
 - **Live:** https://netd.ac.zm/ (replaced the earlier UCT ETD Portal deployment on October 31, 2026)
 - **Requirements:** [docs/SRS.md](docs/SRS.md) (ISO/IEC/IEEE 29148)
 - **Design:** [docs/SDD.md](docs/SDD.md) (IEEE 1016, with UML)
-- **Manual:** [docs/manual/](docs/manual/index.md) (installing, using, administration, configuration, customisation, interfaces, development), also as a website: https://lightonphiri.github.io/code-datalab26-netd_aggregator/
-- **Changes:** [CHANGELOG.md](CHANGELOG.md) (release tags `v0.1.0` onwards; `paper-v1` is the version described in the paper)
-- **Operations:** [docs/OPERATIONS.md](docs/OPERATIONS.md) (the Zambian installation's runbook: schedules, backups, alerts, restore, server maintenance)
-- **Packaging for other countries:** [docs/PACKAGING-PLAN.md](docs/PACKAGING-PLAN.md)
-- **Licence:** BSD 3-Clause (chosen November 4, 2026; the licence file is added once the University of Zambia's policy on staff-written software has been checked)
+- **Operations:** [docs/OPERATIONS.md](docs/OPERATIONS.md) (schedules, backups, alerts, restore, server maintenance)
 - **Project page:** https://datalab.unza.zm/projects/zambia-national-etd-portal
 - **Publications based on the project:** [PUBLICATIONS.md](PUBLICATIONS.md) (also on the portal's About page)
 - **Maintainer:** DataLab Research Group
@@ -34,7 +30,7 @@ Each document starts with a revision history giving the version, date and change
 ## Run the harvester locally
 ```bash
 cd harvester
-python3 -m venv .venv && . .venv/bin/activate      # Python 3.12
+python3 -m venv .venv && . .venv/bin/activate      # Python 3.8+
 pip install -r requirements.txt
 python -m netd.cli harvest --source unza --full --limit 50
 python -m netd.cli process

@@ -157,7 +157,9 @@ def run(store, solr, max_calls=80, max_age_days=7, key=None):
     db = store.db
     db.executescript(SCHEMA)
     key = key or os.environ.get("OPENALEX_API_KEY") or None
-    client = Client(key=key, max_calls=max_calls)
+    # title queries stop early enough to leave calls and budget for the citing works of today's matches
+    reserve = max(5, max_calls // 8)
+    client = Client(key=key, max_calls=max_calls - reserve, min_usd=0.02)
     checked = {r[0]: r[1] for r in db.execute("SELECT record_id, checked_at FROM openalex_citations").fetchall()}
     cutoff = time.time() - max_age_days * 86400
     todo = sorted((t for t in theses(solr) if checked.get(t[0], 0) < cutoff), key=lambda t: checked.get(t[0], 0))
@@ -189,11 +191,18 @@ def run(store, solr, max_calls=80, max_age_days=7, key=None):
     except Budget:
         stopped = True
     # citing works for the theses matched in this run that OpenAlex says are cited
+    client.max_calls, client.min_usd = max_calls, 0.005
+    # also theses matched earlier whose citing works could not be fetched then (checked_at reset to 0)
+    titles = {t[0]: t[1] for t in todo}
+    for rid, wid, n in db.execute("""SELECT record_id, openalex_id, cited_by_count FROM openalex_citations
+                                    WHERE checked_at = 0 AND cited_by_count > 0""").fetchall():
+        matched.setdefault(rid, (wid, n, titles.get(rid, "")))
     cited = {wid: title for rid, (wid, n, title) in matched.items() if n > 0}
     try:
         lists = citing_works(client, cited) if cited else {}
-        rows = [(json.dumps(lists[wid], ensure_ascii=False), rid) for rid, (wid, n, t) in matched.items() if wid in lists]
-        db.executemany("UPDATE openalex_citations SET citing = ? WHERE record_id = ?", rows)
+        now = time.time()
+        rows = [(json.dumps(lists[wid], ensure_ascii=False), now, rid) for rid, (wid, n, t) in matched.items() if wid in lists]
+        db.executemany("UPDATE openalex_citations SET citing = ?, checked_at = ? WHERE record_id = ?", rows)
         db.commit()
     except Budget:
         stopped = True  # the counts stay; the lists are fetched on the next check of those theses

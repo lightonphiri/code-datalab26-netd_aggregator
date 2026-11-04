@@ -19,8 +19,3 @@ harvester/run.lock
 # notebook working files
 notebooks/netd-notebook-work/
 harvester/models/
-
-# manual build output (mkdocs build)
-site/
-# Python caches anywhere
-**/__pycache__/
