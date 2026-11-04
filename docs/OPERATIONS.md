@@ -121,6 +121,9 @@ Lighton asked for the EMI site (the one other application that must keep working
 - Backup and Migrate's "Daily Schedule" (it actually runs weekly: period 604,800 s; keeps every backup) failed because no private path was set; run by hand after the change: `private/backup_migrate/backup-2026-11-02T11-05-51.mysql.gz` (1.1 MB). These backups stay on the server; the server-wide backup copies are on Drive.
 - Email works again (11:57, November 2, 2026; test received): same route as NETD's alerts, Google SMTP as lighton.phiri@unza.ac.zm with its own app password "EMI site (emi.org.zm)" (Lighton, November 2, 2026). Smtp module on (`smtp.gmail.com`, 587, TLS, from "EMI x Z website" <lighton.phiri@unza.ac.zm>), `system.mail` interface `SMTPMailSystem`; the password is set in `settings.php` (`$config['smtp.settings']['smtp_password']`), not in exported config; laptop copy `access/emi-smtp-app-password.txt`. Before: PHP mail with no `sendmail` on the server, so every message failed.
 
+### Catch-all default site (November 4, 2026)
+`/etc/apache2/sites-available/000-catchall.conf` (enabled; ports 80 and 443, snakeoil certificate) is the server's default site: a request for a host name the server does not serve, or for the bare IP address, gets 404. Before this the default was the EMI website, which is how Google came to index EMI pages under netd.ac.zm before the NETD site existed. To undo: `a2dissite 000-catchall && systemctl reload apache2`. Note: `orthanc.conf` also declares `netd.ac.zm` on port 80 (`/orthanc` proxy); `netd.conf` is matched first, so that block is never used.
+
 ### Unplanned stop (November 2, 2026)
 - The VM stopped abruptly at 10:14:27 UTC (journal of boot -1 ends mid-request, no shutdown sequence, no out-of-memory messages) during a deploy, and was back at 13:07:47 UTC (about 2 h 53 min). The cause is outside the VM (host or network side; not visible from inside). The 1da3c26 deploy had not landed and was rerun; the transient `netd-mltext` unit was gone and was restarted.
 - After any unplanned reboot: `journalctl --list-boots`, `journalctl -b -1 | tail`, check the portal, Solr and Apache, rerun the last release, and restart transient units (`netd-mltext`).
@@ -175,6 +178,10 @@ All commands run in `/opt/netd/harvester` as `netd` (`sudo -u netd .venv/bin/pyt
 - The model `openalex-fos` runs with the other models (`predict`, nightly); its embedding model is downloaded once to `/opt/netd/harvester/models/fastembed` (about 90 MB).
 - **Rebuild the model** (e.g. a new OpenAlex taxonomy): on the server, `sudo -u netd .venv/bin/python tools/openalex_training.py /opt/netd/harvester/models/openalex --per-subfield 120 --mailto lighton.phiri@unza.ac.zm` (OpenAlex allows a small anonymous daily budget per address; with a free key add `--api-key`); copy `taxonomy.json` and `works.jsonl` to a machine with spare CPU and run `python tools/train_fieldofstudy.py DATA_DIR netd/ml/models/data/openalex-fos-v<N>.npz --report ...` (about 25 minutes on 2 CPUs; embeddings are cached for later runs); bump `VERSION` and the file names in `netd/ml/models/fieldofstudy.py`, copy the taxonomy to `netd/ml/models/data/openalex-taxonomy.json`, release, then run `deploy/ops/netd-ml-apply.sh`.
 - Thresholds: `SUBFIELD_MIN`, `SECOND_MIN`, `FIELD_MIN` in `fieldofstudy.py` (a change needs a new `VERSION`).
+
+## Search engines (FR-66)
+- **Google Search Console:** property `https://netd.ac.zm/` under lighton.phiri@unza.ac.zm (November 4, 2026), verified by the file `portal/public/google3d6feb9cbe4a8169.html` (**do not remove it**, or verification is lost). Sitemap `/sitemap.xml` submitted (rebuilt from Solr, cached one day). Temporary removals requested for the old EMI pages (`/node…`, `/about-us…`; about six months, by which time Google has dropped them as 404).
+- **Google Scholar** has no submission form: it finds records through the sitemap and links, reads the `citation_*` meta tags on record pages, and takes weeks to months. Check with `site:netd.ac.zm` on scholar.google.com from December 2026. Scholar may group a portal record with the same thesis on the repository as versions of one work.
 
 ## Excluding records
 
@@ -249,6 +256,7 @@ Everything below runs today on Lighton Phiri's accounts (UNZA Google account lig
 | Source code | GitHub `lightonphiri/code-datalab26-netd_aggregator` | Transfer the repository to an HEA GitHub organisation (GitHub keeps redirects), or fork it; the server deploys from its own checkout, so nothing on the server changes |
 | Server access | Account `claude-ops` (passwordless sudo, SSH key on Lighton's laptop) and the hosting arrangement with ZAMREN | Create accounts for HEA's administrators; remove `claude-ops` and its key from `~claude-ops/.ssh/authorized_keys`; agree the hosting with ZAMREN |
 | Portal accounts | Admin accounts of the project | HEA staff: `netd-user.sh add ... ROLE=viewer` or `ROLE=admin`; remove project accounts that are no longer needed |
+| Google Search Console | Property `https://netd.ac.zm/` in lighton.phiri@unza.ac.zm (November 4, 2026) | Add an HEA owner in Search Console (Settings → Users and permissions), then remove Lighton |
 | OpenAlex contact | `--mailto` of the field-of-study rebuild uses Lighton's address | Use an HEA address next time the model is rebuilt |
 
 **Moving the off-site backups to HEA** (needs an HEA Google account, or any other storage that rclone supports):
