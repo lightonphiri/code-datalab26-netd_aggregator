@@ -11,12 +11,13 @@ module Api
       SORTS = {
         'relevance' => 'score desc, year_isi desc, id asc', 'newest' => 'year_isi desc, title_ssort asc, id asc',
         'oldest' => 'year_isi asc, title_ssort asc, id asc', 'title' => 'title_ssort asc, id asc',
-        'updated' => 'updated_dtsi desc, id asc', 'added' => 'added_dtsi desc, id asc'
+        'updated' => 'updated_dtsi desc, id asc', 'added' => 'added_dtsi desc, id asc',
+        'cited' => 'cited_by_isi desc, year_isi desc, id asc' # FR-69, API 1.7.0
       }.freeze
       EXACT = { 'faculty' => 'faculty_ssim', 'department' => 'department_ssim', 'discipline' => 'discipline_ssim',
                 'degree' => 'degree_ssim', 'subject_exact' => 'subject_ssim', 'supervisor_exact' => 'supervisor_ssim' }.freeze
       LEVELS = { 'masters' => 'Masters', 'doctoral' => 'Doctoral', 'postgraduate_diploma' => 'Postgraduate Diploma' }.freeze
-      KNOWN = %w[q field institution level year full_text updated_since duplicates sort page per_page] + EXACT.keys
+      KNOWN = %w[q field institution level year full_text cited updated_since duplicates sort page per_page] + EXACT.keys
 
       def index
         unknown = request.query_parameters.keys - KNOWN
@@ -96,6 +97,11 @@ module Api
           raise ArgumentError, 'full_text must be true or false' unless %w[true false].include?(params[:full_text])
 
           fq << "#{'-' if params[:full_text] == 'false'}full_text_ssim:\"PDF available\""
+        end
+        if params[:cited].present? # FR-69, API 1.7.0: only theses with (true) or without (false) a citing work in OpenAlex
+          raise ArgumentError, 'cited must be true or false' unless %w[true false].include?(params[:cited])
+
+          fq << "#{'-' if params[:cited] == 'false'}cited_by_isi:[1 TO *]"
         end
         if params[:updated_since].present?
           v = params[:updated_since].to_s

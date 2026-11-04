@@ -12,7 +12,7 @@
       <div class="card"><div class="card-body">
         <h2 class="h5">ETDs per institution</h2>
         <p class="small text-muted">Summary and completeness; theses by year, degree level, year and level, type,
-          faculty, faculty and department, and degree. With "All institutions": every HEA institution, with 0 where
+          faculty, faculty and department, degree, and citations (OpenAlex). With "All institutions": every HEA institution, with 0 where
           nothing has been harvested yet.</p>
         <%= form_with url: admin_etd_report_path('institution'), method: :get, local: true do %>
           <%= render 'admin/etd_reports/filters', id: 'i' %>

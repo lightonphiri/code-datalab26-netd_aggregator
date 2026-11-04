@@ -40,7 +40,7 @@ class OaiController < ActionController::Base
 
   FIELDS = %w[id updated_dtsi title_ssm author_ssim supervisor_ssim subject_ssim fos_ssm abstract_tesim year_ssim
               degree_ssim degree_level_ssim discipline_ssim faculty_ssim department_ssim institution_ssim
-              source_ssi language_ssim type_ssim rights_ssm url_ssm pdf_url_ssm].join(',')
+              source_ssi language_ssim type_ssim rights_ssm url_ssm pdf_url_ssm openalex_id_ssi].join(',')
 
   class OaiError < StandardError
     attr_reader :code
@@ -351,7 +351,12 @@ class OaiController < ActionController::Base
 
   def values(doc, field) = Array(doc[field]).map { |v| v.to_s.gsub(XML_ILLEGAL, ' ').strip }.reject(&:empty?).uniq
 
-  def identifiers(doc) = ["#{PORTAL_RECORD_URL}#{ThesisId.short(doc['id'])}", *values(doc, 'url_ssm'), *values(doc, 'pdf_url_ssm')].uniq
+  # Portal page, repository page, PDF and, since FR-69, the same thesis in OpenAlex (an identifier of the work in
+  # another system: dc:identifier in oai_dc, identifier in ETD-MS, both repeatable URIs)
+  def identifiers(doc)
+    oa = values(doc, 'openalex_id_ssi').map { |w| "https://openalex.org/#{w}" }
+    ["#{PORTAL_RECORD_URL}#{ThesisId.short(doc['id'])}", *values(doc, 'url_ssm'), *values(doc, 'pdf_url_ssm'), *oa].uniq
+  end
 
   def types(doc) = (['Electronic Thesis or Dissertation', 'Text'] + values(doc, 'type_ssim')).uniq
 

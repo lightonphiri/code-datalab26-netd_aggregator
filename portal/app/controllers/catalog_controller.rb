@@ -43,6 +43,9 @@ class CatalogController < ApplicationController
     config.add_facet_field 'institution_ssim', label: 'Institution', limit: 10, collapse: false,
                                               component: InstitutionFacetComponent
     config.add_facet_field 'full_text_ssim', label: 'Full text', collapse: false
+    # Theses cited by at least one work in OpenAlex (FR-69)
+    config.add_facet_field 'cited', label: 'Citations (OpenAlex)', collapse: false,
+                                    query: { 'cited' => { label: 'Cited', fq: 'cited_by_isi:[1 TO *]' } }
     config.add_facet_field 'degree_level_ssim', label: 'Degree level', collapse: false
     # Field of study: OpenAlex Topics, assigned to every record (FR-55); the main subject facets
     config.add_facet_field 'fos_domain_ssim', label: 'Research domain', limit: 4, collapse: false
@@ -80,6 +83,8 @@ class CatalogController < ApplicationController
     config.add_sort_field 'title_az', sort: 'title_ssort asc, year_isi desc', label: 'Title A-Z'
     config.add_sort_field 'title_za', sort: 'title_ssort desc, year_isi desc', label: 'Title Z-A'
     config.add_sort_field 'added', sort: 'added_dtsi desc, title_ssort asc', label: 'Newest Additions'  # FR-60
+    # Most citing works in OpenAlex first (FR-69); uncited and unmatched theses follow, newest first
+    config.add_sort_field 'cited', sort: 'cited_by_isi desc, year_isi desc, title_ssort asc', label: 'Most Cited'
 
     config.spell_max = 5
     config.autocomplete_enabled = false

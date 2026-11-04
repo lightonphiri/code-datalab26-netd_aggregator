@@ -208,7 +208,7 @@
     <% citing = rec_values(d, 'cited_by_ssm').filter_map { |j| JSON.parse(j) rescue nil } %>
     <% if citing.any? %>
       <%# FR-69: works citing this thesis, from OpenAlex (matched by title and year; refreshed weekly) %>
-      <details class="netd-similar netd-citedby" open>
+      <details class="netd-similar netd-citedby" id="cited-by" open>
         <summary><h2>Cited by <%= number_with_delimiter(citing.size) %></h2></summary>
         <ol>
           <% citing.each do |c| %>

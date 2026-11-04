@@ -11,6 +11,9 @@ class HeaReport
   LEVELS = ['Doctoral', 'Masters', 'Postgraduate Diploma'].freeze
   NOT_RECORDED = 'Not recorded'
   LIST_MAX = 20_000
+  CITED = 'cited_by_isi:[1 TO *]'     # FR-69
+  MATCHED = 'openalex_id_ssi:[* TO *]' # FR-69: found in OpenAlex
+  MOST_CITED = 20
 
   # grouping and filter fields offered in custom reports: key => [label, Solr field]
   GROUPS = {
@@ -28,7 +31,8 @@ class HeaReport
     'degree' => 'Degree', 'degree_level' => 'Degree level', 'faculty' => 'Faculty / School',
     'department' => 'Department', 'discipline' => 'Programme / Discipline', 'institution' => 'Institution',
     'type' => 'Type', 'subjects' => 'Keywords', 'fields_of_study' => 'Fields of study', 'language' => 'Language',
-    'full_text' => 'Full text', 'filled' => 'Filled by the portal', 'portal_url' => 'Portal link',
+    'full_text' => 'Full text', 'filled' => 'Filled by the portal', 'cited_by' => 'Cited by (OpenAlex)',
+    'portal_url' => 'Portal link',
     'source_url' => 'Repository link'
   }.freeze
   DEFAULT_COLUMNS = %w[title authors supervisors year degree_level faculty department institution portal_url].freeze
@@ -70,6 +74,7 @@ class HeaReport
     def supervisor = p['supervisor'].presence
     def words = p['words'].presence
     def term(key) = p[key].presence
+    def cited = p['cited'].to_s == '1' # FR-69: only theses cited by at least one work in OpenAlex
 
     def institution_name
       return nil unless source
@@ -89,6 +94,7 @@ class HeaReport
         d << ['Supervisor names matched', supervisor_names.size.to_s] if supervisor_names
       end
       d << ['Words in title or abstract', words] if words
+      d << ['Citations (OpenAlex)', 'Cited theses only'] if cited
       d
     end
   end
@@ -102,6 +108,7 @@ class HeaReport
     fq << term_fq('source_ssi', f.source) if f.source
     fq << "year_isi:[#{f.year_from || '*'} TO #{f.year_to || '*'}]" if f.year_from || f.year_to
     TERM_FILTERS.each { |k, field| fq << term_fq(field, f.term(k)) if f.term(k) }
+    fq << CITED if f.cited
     names = nil
     if f.supervisor
       names = supervisor_names(fq, f.supervisor)
@@ -174,6 +181,7 @@ class HeaReport
     when 'fields_of_study' then h['fields_of_study'].map { |f| f['name'] }.join('; ')
     when 'full_text' then h.dig('links', 'pdf') ? 'PDF' : ''
     when 'filled' then filled(h)
+    when 'cited_by' then h.dig('cited_by', 'count')
     when 'portal_url' then h.dig('links', 'portal')
     when 'source_url' then h.dig('links', 'source')
     else doc[col]
@@ -216,6 +224,7 @@ class HeaReport
     degrees = facet('degree_ssim', fq, words)
     r.add(title: 'By degree', headers: %w[Degree Theses], rows: degrees.map { |v, n| [label(v), n] }, total: true,
           note: 'Degree names as read from the repository or the title page.')
+    r.citation_sections(fq, f, words)
     r.usage_sections(f) if usage
     r.notes.push(*standard_notes)
     r
@@ -242,6 +251,8 @@ class HeaReport
       rows << [lab, *with.call("#{field}:[* TO *]")]
     end
     rows << ['With a full-text PDF link', *with.call(k.term_fq('full_text_ssim', 'PDF available'))]
+    rows << ['Found in OpenAlex', *with.call(MATCHED)]
+    rows << ['Cited at least once (OpenAlex)', *with.call(CITED)]
     add(title: 'Summary', headers: ['Measure', 'Value', '% of theses'], rows: rows, kind: :summary)
   end
 
@@ -275,6 +286,37 @@ class HeaReport
     end
     add(title: 'By faculty and department', headers: ['Faculty / School', 'Department', 'Theses'], rows: rows,
         note: 'Faculty comes from the repository collection; department from the repository or the title page.')
+  end
+
+  CITED_NOTE = 'Citations from OpenAlex (CC0): a thesis is found in OpenAlex by matching its title and year, and the ' \
+               'works OpenAlex records as citing it are counted. A lower bound: citations OpenAlex has not recorded, ' \
+               'and theses not matched, are missing. Refreshed about weekly.'
+
+  # Citations (FR-69): cited theses by institution (all institutions) and the most cited theses.
+  def citation_sections(fq, f, words)
+    k = self.class
+    unless f.source
+      facet = { inst: { type: 'terms', field: 'institution_ssim', limit: -1, mincount: 1,
+                        facet: { found: { type: 'query', q: MATCHED },
+                                 cited: { type: 'query', q: CITED, facet: { works: 'sum(cited_by_isi)' } } } } }
+      buckets = k.solr({ fq: fq, 'json.facet': facet.to_json }, words).dig('facets', 'inst', 'buckets').to_a
+      rows = buckets.map do |b|
+        cited = b.dig('cited', 'count').to_i
+        [b['val'], b['count'].to_i, b.dig('found', 'count').to_i, cited, k.pct(cited, b['count'].to_i),
+         b.dig('cited', 'works').to_i]
+      end.sort_by { |name, n, _, c, *| [-c, -n, name] }
+      add(title: 'Cited theses by institution',
+          headers: ['Institution', 'Theses', 'Found in OpenAlex', 'Cited', '% cited', 'Citing works'],
+          rows: rows, total: true, note: CITED_NOTE)
+    end
+    rows = []
+    k.each_doc(fq + [CITED], words, sort: 'cited_by_isi desc, year_isi desc, id asc', max: MOST_CITED) do |doc|
+      h = ApiRecord.to_h(doc)
+      rows << [h['title'], h['year'], h.dig('institution', 'name'), h.dig('cited_by', 'count'), h.dig('links', 'portal')]
+    end
+    add(title: 'Most cited theses', headers: ['Title', 'Year', 'Institution', 'Cited by', 'Link'],
+        rows: rows.presence || [['No cited theses among these.', nil, nil, nil, nil]], kind: :listing,
+        note: "The #{MOST_CITED} theses with the most citing works in OpenAlex. #{CITED_NOTE}")
   end
 
   # Usage (FR-61), for administrators: views and downloads since counting began, by institution, most viewed records.

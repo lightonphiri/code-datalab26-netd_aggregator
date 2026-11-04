@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Zambia National ETD Portal REST API
-  version: 1.6.0
+  version: 1.7.0
   description: |
     Read-only access to the theses and dissertations aggregated by the Zambia National ETD Portal
     (https://netd.ac.zm) from Zambian higher education institutions: postgraduate diploma, master's and doctoral work. No key is needed. Responses are JSON
@@ -45,6 +45,7 @@ paths:
         - {name: level, in: query, description: Degree level, schema: {type: string, enum: [masters, doctoral, postgraduate_diploma]}}
         - {name: year, in: query, description: A year or a range of years, schema: {type: string, pattern: '^\d{4}(-\d{4})?$'}, example: 2020-2024}
         - {name: full_text, in: query, description: Only records with (true) or without (false) a PDF link, schema: {type: boolean}}
+        - {name: cited, in: query, description: 'Only theses cited (true) or not cited (false) by at least one work in OpenAlex; see the cited_by field. Added in API 1.7.0.', schema: {type: boolean}}
         - {name: updated_since, in: query, description: 'Records changed in the portal since this date or time (UTC)', schema: {type: string}, example: '2026-11-01'}
         - {name: duplicates, in: query, description: 'A thesis deposited more than once is returned once (its main record) by default; include returns every copy (each other copy has duplicate_of). Added in API 1.5.0.', schema: {type: string, enum: [exclude, include], default: exclude}}
         - {name: faculty, in: query, description: Exact faculty or school name, schema: {type: string}}
@@ -55,8 +56,8 @@ paths:
         - {name: supervisor_exact, in: query, description: Exact supervisor name as shown in records, schema: {type: string}}
         - name: sort
           in: query
-          description: Default `relevance` with `q`, otherwise `newest`
-          schema: {type: string, enum: [relevance, newest, oldest, title, updated, added]}
+          description: 'Default `relevance` with `q`, otherwise `newest`; `cited` (most cited first, by the number of citing works in OpenAlex) added in API 1.7.0'
+          schema: {type: string, enum: [relevance, newest, oldest, title, updated, added, cited]}
         - {name: page, in: query, schema: {type: integer, minimum: 1, default: 1}}
         - {name: per_page, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
       responses:
@@ -254,6 +255,31 @@ components:
         added_at: {type: string, nullable: true, format: date-time, description: "When the record first appeared in the portal (records present before November 1, 2026 carry their institution's first harvest). Added in API 1.4.0."}
         duplicate_of: {type: string, nullable: true, description: "Id of the main record when this record is another copy of the same thesis (deposited twice, in one repository or two). Added in API 1.5.0."}
         other_copies: {type: array, items: {type: string}, description: "Ids of the other copies of this thesis when this is the main record. Added in API 1.5.0."}
+        openalex_id:
+          type: string
+          nullable: true
+          example: W2754327412
+          description: >-
+            The thesis as a work in OpenAlex (https://openalex.org/<id>), found by matching title and year; null when it
+            has not been checked yet or no confident match was found. Added in API 1.7.0.
+        cited_by:
+          type: object
+          required: [count, works]
+          description: >-
+            Works that cite this thesis, from OpenAlex (CC0), refreshed about weekly. A lower bound: only citations
+            OpenAlex has recorded. Added in API 1.7.0.
+          properties:
+            count: {type: integer, nullable: true, minimum: 0, description: 'Number of citing works; null when openalex_id is null'}
+            works:
+              type: array
+              items:
+                type: object
+                properties:
+                  openalex_id: {type: string, example: W4385762611}
+                  title: {type: string}
+                  year: {type: integer, nullable: true}
+                  type: {type: string, nullable: true, example: article}
+                  url: {type: string, format: uri, description: DOI link when there is one, otherwise the OpenAlex page}
     Institution:
       type: object
       required: [name, records, status, postgraduate_levels]

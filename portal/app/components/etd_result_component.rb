@@ -41,6 +41,7 @@ class EtdResultComponent < Blacklight::DocumentComponent
       parts << content_tag(:div, safe_join(fos.map { |f, v| link_to(v, helpers.search_action_path(f: { f => [v] })) }),
                            class: 'etd-subjects etd-fos', title: 'Field of study assigned by the portal (OpenAlex Topics)')
     end
+    parts << cited_line
     parts << pdf_link
     safe_join(parts.compact)
   end
@@ -48,6 +49,15 @@ class EtdResultComponent < Blacklight::DocumentComponent
   def fields_of_study
     subs = Array(@document['fos_subfield_ssim']).map { |v| ['fos_subfield_ssim', v] }
     subs.presence || Array(@document['fos_field_ssim']).map { |v| ['fos_field_ssim', v] }
+  end
+
+  # "Cited by 3 (OpenAlex)" linking to the record page's Cited by section (FR-69)
+  def cited_line
+    n = @document['cited_by_isi'].to_i
+    return nil unless n.positive?
+
+    content_tag(:div, link_to("Cited by #{n}", "#{helpers.solr_document_path(@document)}#cited-by",
+                              title: 'Works citing this thesis, from OpenAlex'), class: 'etd-cited')
   end
 
   def pdf_link(css = 'etd-pdf-link')

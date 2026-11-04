@@ -26,4 +26,6 @@
     <div class="col-md-6"><label class="form-label small">Words in title or abstract
       <%= text_field_tag :words, nil, class: 'form-control form-control-sm' %></label></div>
   <% end %>
+  <div class="col-12"><div class="form-check"><%= check_box_tag :cited, '1', false, class: 'form-check-input', id: "cited-#{local_assigns[:id]}" %>
+    <label class="form-check-label small" for="cited-<%= local_assigns[:id] %>">Only theses cited by at least one work in OpenAlex</label></div></div>
 </div>

@@ -93,7 +93,13 @@ b, _ = check("/records", API + "/records?updated_since=2099-01-01", "updated_sin
 expect(b["meta"]["total"] == 0 and b["links"]["next"] is None, "  no records, no next link")
 b, _ = check("/records/{id}", API + "/records/unza-123456789-9150", "one record")
 d = b["data"]
-expect(d["oai_identifier"] == "oai:netd.ac.zm:unza-123456789-9150" and d["links"]["portal"].endswith(d["id"]), "  identifiers and links")
+expect(d["oai_identifier"] == "oai:netd.ac.zm:unza-123456789-9150" and d["links"]["portal"].endswith("/theses/unza-9150"), "  identifiers and links")
+expect(isinstance(d["cited_by"], dict) and "count" in d["cited_by"] and isinstance(d["cited_by"]["works"], list), "  cited_by present (1.7.0)")
+b, _ = check("/records", API + "/records?cited=true&sort=cited&per_page=100", "cited theses, most cited first (1.7.0)")
+counts = [x["cited_by"]["count"] for x in b["data"]]
+expect(b["meta"]["total"] > 0 and all(c and c >= 1 for c in counts) and counts == sorted(counts, reverse=True),
+       "  %d cited, sorted by citations" % b["meta"]["total"])
+expect(all(x["openalex_id"] and len(x["cited_by"]["works"]) == x["cited_by"]["count"] for x in b["data"]), "  works listed match the count")
 fac = d["faculty"][0] if d["faculty"] else None
 if fac:
     b, _ = check("/records", API + "/records?" + requests.compat.urlencode({"faculty": fac, "per_page": 100}), "exact faculty")
@@ -101,7 +107,7 @@ if fac:
 
 # Errors
 for q, st in [("/records?foo=1", 400), ("/records?level=phd", 400), ("/records?per_page=101", 400), ("/records?page=101&per_page=100", 400),
-              ("/records?sort=best", 400), ("/records?year=99", 400), ("/records/no-such-record", 404), ("/nothing", 404)]:
+              ("/records?sort=best", 400), ("/records?cited=yes", 400), ("/records?year=99", 400), ("/records/no-such-record", 404), ("/nothing", 404)]:
     check("/records", API + q, "error " + q, status=st)
 
 # Institutions and stats
