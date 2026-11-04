@@ -34,4 +34,9 @@ module RecordHelper
     name = file['name'].presence
     name || (file['mime'].to_s.include?('pdf') ? "Full text (PDF) #{index + 1}" : "File #{index + 1}")
   end
+
+  # "How to cite" (FR-65): the rendered entry, sanitised (only the style's own markup is kept).
+  def citation_html(citation, style)
+    sanitize(citation.render(style), tags: %w[i b em strong span div sup sub], attributes: %w[class])
+  end
 end

@@ -122,6 +122,17 @@ def degree_level(texts):
     return None
 
 
+_OAI_ID = re.compile(r"^oai:([A-Za-z0-9.-]+\.[A-Za-z]{2,}):(\d+/\d+)$")
+
+
+def record_link(oai_id, src):
+    """Item page on the source repository for a DSpace OAI identifier (FR-65); None to keep the harvested link."""
+    if (src.get("record_url") or "handle") == "harvested":
+        return None
+    m = _OAI_ID.match(oai_id or "")
+    return f"https://{m.group(1)}/handle/{m.group(2)}" if m else None
+
+
 def to_canonical(row, src, set_names, files=None):
     """row: a raw_records row; files: bitstreams harvested for it.
     Returns canonical dict or None for deleted records."""
@@ -146,6 +157,17 @@ def to_canonical(row, src, set_names, files=None):
     if rec.get("url"):
         urls = [u for u in rec["url"] if u.startswith("http")]
         rec["url"] = urls[:1] or rec["url"][:1]
+    # FR-65: link to the item on the repository's current host, built from the OAI identifier
+    # ("oai:rims.unza.ac.zm:123456789/234" -> "https://rims.unza.ac.zm/handle/123456789/234"). The harvested
+    # dc.identifier.uri is often stale or unusable: all UNZA items still name dspace.unza.zm (no longer in DNS),
+    # some name localhost or an edit page, and the 123456789 handle prefix is not registered at handle.net.
+    # A source can keep its harvested links with `record_url: harvested` in sources.yml.
+    link = record_link(row["oai_id"], src)
+    if link:
+        if rec.get("url") and rec["url"][0] != link:
+            rec["url_harvested"] = rec["url"][:1]
+        rec["url"] = [link]
+        rec["provenance"]["url"] = "derived:oai_id"
 
     # Faculty/Department from the community/collection hierarchy (setSpecs in the OAI header)
     ignore = set(n.lower() for n in src.get("ignore_set_names", []))

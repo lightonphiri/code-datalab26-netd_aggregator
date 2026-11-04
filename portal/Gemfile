@@ -40,3 +40,5 @@ gem "maxmind-db", "~> 1.2"   # offline IP-to-country/city lookup for usage count
 gem "caxlsx", "~> 4.1"        # Excel reports for HEA (FR-62)
 gem "prawn", "~> 2.5"         # PDF reports for HEA (FR-62)
 gem "prawn-table", "~> 0.2.2"
+gem "citeproc-ruby", "~> 2.1"  # "How to cite" (FR-65): CSL citation styles, as in OJS
+gem "csl", "~> 2.0"

@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SDD, structured per IEEE 1016-2009 (design viewpoints) |
-| Version | 0.33 |
+| Version | 0.34 |
 | Date | November 2, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Related | `docs/SRS.md` (requirement IDs referenced below) |
@@ -15,6 +15,7 @@
 | 0.1 | October 30, 2026 | Initial design: harvester, raw/canonical stores, crosswalk, enrichers, Blacklight portal, deployment |
 | 0.2 | October 30, 2026 | Discipline/degree derivation; Solr analysers; URL-safe record ids; HTTPS |
 | 0.24 | November 1, 2026 | Fields of study (FR-54 to FR-57): model `openalex-fos` (`netd/ml/models/fieldofstudy.py`, data in `netd/ml/models/data/`), batch prediction in `predict.run`, per-field display thresholds in the overlay, Solr fields `fos_domain_ssim`, `fos_field_ssim`, `fos_subfield_ssim`, `fos_ssm`, `fos_tsim`, facets and record page, API `fields_of_study` (1.2.0), OAI-PMH subject scheme, training scripts in `harvester/tools/` |
+| 0.34 | November 4, 2026 | "How to cite" (FR-65): `Citation` model (`app/models/citation.rb`; gems `citeproc-ruby` and `csl`; CSL files and the en-GB locale in `config/csl`, see its README), `CatalogController#cite` (`/catalog/:id/cite?style=`, an HTML fragment; `.ris`, `.bib`), `RecordHelper#citation_html` (sanitised), panel `netd-cite` on the record page (default APA rendered with the page; other styles fetched on change); `robots.txt` disallows `/catalog/*/cite`. Crosswalk: `record_link(oai_id, src)` sets `url` to `https://<host>/handle/<handle>` from the OAI identifier (provenance `derived:oai_id`; the harvested value kept as `url_harvested` when different; `record_url: harvested` in `sources.yml` to opt out) |
 | 0.33 | November 4, 2026 | Record page `netd-rec-usage` (FR-61): each count in a `netd-usage-item` span with an inline SVG icon (eye; download arrow), `aria-hidden`, coloured with `--netd-muted`; styles in `netd.css`. Display only: the counting code (`usage_counting.rb`, `usage_count.rb`) is unchanged since `paper-v1` |
 | 0.32 | November 3, 2026 | Off-site backups use the project's own Google OAuth client (Google Cloud project "DataLab backups", unza.ac.zm, consent screen Internal, Desktop client, scope `drive.file`) instead of rclone's shared client; handover of the backup destination and other account-bound services to HEA described in `docs/OPERATIONS.md` |
 | 0.31 | November 2, 2026 | Supervisor name variants (FR-64): `netd/people.py` (`canonical()` per institution over (supervisors, departments, faculties) of each record; `apply()`), names parsed by `ml.evaluate.person_words` (split out of `_person`, behaviour unchanged); applied in `cli.do_index` after the department mapping; Solr `supervisor_orig_ssm`, original spellings added to `supervisor_tsim`; record page "As written in the record" line for department and supervisor; Blacklight show field `supervisor_ssim`; `tests/test_people.py`. Account roles (FR-36): `users.role` (`admin`\|`viewer`, migration 20261102190000), `User#admin?`/`#viewer?`, `Admin::BaseController#require_role` with `VIEWER_PAGES`, menu by role, `netd:user:add ROLE=`, `netd:user:role`. Crawler filter (FR-61): `UsageCounting::BOT` extended, `NO_PLATFORM` |
@@ -348,7 +349,7 @@ classDiagram
 | degree, discipline | `thesis.degree.name`, `thesis.degree.discipline` | "Master of X in Y" / "PhD Y" patterns in `dc.description` |
 | degree_level | `thesis.degree.level` | patterns over degree, type, description and set names |
 | year | `dc.date.issued` | first 4-digit year |
-| url | `dc.identifier.uri` | — |
+| url | built from the OAI identifier: `https://<host>/handle/<handle>` (FR-65) | `dc.identifier.uri` (sources with `record_url: harvested`, or identifiers that are not DSpace handles) |
 
 ### 4.4 Solr document
 `id, title_tsim/ssm/ssort, author_tsim/ssim, supervisor_tsim/ssim, subject_tsim/ssim, faculty_tsim/ssim, department_tsim/ssim, faculty_department_ssim ("Faculty|Dept", only when both values are facetable; FR-25 browsing), discipline_tsim/ssim, degree_ssim, degree_level_ssim, year_isi/ssim, abstract_tesim, url_ssm, pdf_url_ssm, rights_ssm, language_ssim, type_ssim, institution_ssim, institution_short_ssim, source_ssi, oai_id_ssi, datestamp_ssi (source datestamp), updated_dtsi (last content change in the portal; OAI-PMH datestamp), provenance_ssm, derived_ssm (FR-50), duplicate_of_ssi (main record of a copy, FR-19), duplicates_ssim (copies of a main record), completeness_isi`. Searches, facets and counts add `fq=-duplicate_of_ssi:[* TO *]` (FR-19); OAI-PMH, exports and `/get` do not. A facet (`*_ssim`) value is omitted when its field is not `facetable` (FR-17).
@@ -362,7 +363,7 @@ classDiagram
 | Model contract (§4.1.1) | module with `NAME`, `VERSION`, `FIELDS`, `USES`, `NEEDS_TEXT`, optional `prepare(texts)`, and `predict(meta, text) -> {field: (values, confidence, evidence)}`; registered in `netd/ml/predict.py` `MODELS` |
 | Enricher contract | `def enrich(record: dict) -> dict`; set `record["provenance"][field] = "model:<name>-<version>"` and optionally `record["confidence"][field] = float` |
 | Solr | JSON `POST /solr/netd/update`; Blacklight queries `/select` (edismax, ETD `qf`) |
-| HTTP | `GET /` (search), `/catalog/<id>` (record), `/catalog.json?q=…` (JSON) |
+| HTTP | `GET /` (search), `/catalog/<id>` (record), `/catalog/<id>/cite?style=<key>` (citation fragment; `.ris`, `.bib`; FR-65), `/catalog.json?q=…` (JSON) |
 | OAI-PMH | `GET`/`POST /oai` (§5.1) |
 | REST API | `GET /api/v1/…` (§5.3), JSON; specification `/api/v1/openapi.yaml` |
 | Admin panel | `/admin` (§5.2), signed-in portal team only |

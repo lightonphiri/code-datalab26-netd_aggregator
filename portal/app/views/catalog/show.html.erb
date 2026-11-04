@@ -125,6 +125,39 @@
                   onclick="navigator.clipboard.writeText(document.getElementById('netd-handle').value); this.textContent='Copied';">Copy</button>
         </div>
       <% end %>
+      <% cite = Citation.new(d, solr_document_url(d.id)) %>
+      <div class="netd-side-label">How to cite</div>
+      <div class="netd-cite" id="netd-cite" data-url="<%= cite_record_path(d.id) %>">
+        <div class="netd-cite-text" id="netd-cite-text" aria-live="polite"><%= citation_html(cite, Citation::DEFAULT) %></div>
+        <div class="netd-cite-tools">
+          <label class="visually-hidden" for="netd-cite-style">Citation style</label>
+          <select class="form-select form-select-sm" id="netd-cite-style">
+            <% Citation::STYLES.each do |key, (label, _)| %>
+              <option value="<%= key %>"<%= ' selected' if key == Citation::DEFAULT %>><%= label %></option>
+            <% end %>
+          </select>
+          <button class="btn btn-outline-secondary btn-sm" type="button" id="netd-cite-copy">Copy</button>
+        </div>
+        <div class="netd-cite-dl">Download citation:
+          <%= link_to 'RIS', cite_record_path(d.id, format: :ris), title: 'EndNote, Zotero, Mendeley', rel: 'nofollow' %> ·
+          <%= link_to 'BibTeX', cite_record_path(d.id, format: :bib), title: 'BibTeX, LaTeX', rel: 'nofollow' %></div>
+      </div>
+      <script>
+        (() => {
+          const box = document.getElementById('netd-cite'), text = document.getElementById('netd-cite-text');
+          document.getElementById('netd-cite-style').addEventListener('change', (e) => {
+            text.style.opacity = '.5';
+            fetch(box.dataset.url + '?style=' + encodeURIComponent(e.target.value), { headers: { Accept: 'text/html' } })
+              .then((r) => r.ok ? r.text() : Promise.reject(r.status))
+              .then((html) => { text.innerHTML = html; })
+              .catch(() => { text.textContent = 'This citation style could not be loaded; please try again.'; })
+              .finally(() => { text.style.opacity = ''; });
+          });
+          document.getElementById('netd-cite-copy').addEventListener('click', (e) => {
+            navigator.clipboard.writeText(text.innerText.trim()); e.target.textContent = 'Copied';
+          });
+        })();
+      </script>
       <div class="netd-share">
         <% url = request.original_url %>
         <a href="https://twitter.com/intent/tweet?url=<%= ERB::Util.url_encode(url) %>&text=<%= ERB::Util.url_encode(title) %>" target="_blank" rel="noopener" aria-label="Share on X">

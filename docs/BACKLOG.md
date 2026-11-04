@@ -9,6 +9,7 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Added | Item | Type | Notes |
 |---|---|---|---|
+| November 4, 2026 | Persistent identifiers: every repository uses DSpace's default handle prefix `123456789`, which is not registered at handle.net, so no link is truly persistent; registered handle prefixes (or DOIs, e.g. through a national DataCite membership) would let citations survive a change of repository host, as UNZA's did | Note (through HEA) | Outside the portal's control; the portal now rebuilds links from OAI identifiers on each harvest, so a host change is followed automatically |
 | November 1, 2026 | Email alerts, phase 2 (FR-60) | Feature | After the HEA handover: double opt-in, weekly digest, unsubscribe; needs a portal sending address (ZAMREN or HEA) and a privacy notice (Data Protection Act 2021) |
 | November 1, 2026 | Public per-institution quality figures (FR-28) | Feature | Only once agreed with HEA; one switch in `QualityController` |
 | November 1, 2026 | NDLTD and registry registration | Feature | After more HEIs have OAI-PMH providers |
@@ -36,6 +37,7 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Date | Item | Commit |
 |---|---|---|
+| November 4, 2026 | "How to cite" on record pages (FR-65), as in OJS: ten styles, copy, RIS and BibTeX; repository links rebuilt from OAI identifiers (Lighton, November 4, 2026). Fixed with it: the record pages' "Persistent link" for all UNZA records pointed to dspace.unza.zm, no longer in DNS, and 33 others to localhost | session 12 |
 | November 4, 2026 | Record page usage line (FR-61): icons for views (eye) and downloads (download arrow) instead of text alone (Lighton, November 4, 2026); display only, counting code unchanged since `paper-v1` | session 12 |
 | November 3, 2026 | Supervisor names (FR-64), per-record resolution of bare surnames: **measured and closed, not built**. 166 mentions in 144 of 3,180 records with a supervisor (4.5%); a simple rule would resolve 56, 80 ambiguous, 30 without a fuller spelling; the most frequent value ("Mweemba", 9) is the gold-standard counterexample to department-based joining. Reopen only with gold data for bare surnames | session 12 (`work/bare-s12a.py`; `docs/PAPER-PLAN.md`) |
 | November 3, 2026 | Off-site backups (NETD and DataLab website servers) moved from rclone's shared Google client (throttled: the website's upload of November 3 failed with `rateLimitExceeded`) to an own OAuth client in the Google Cloud project "DataLab backups" (unza.ac.zm, Internal, Desktop client, `drive.file`); old Drive folders renamed "(old rclone client)"; manual uploads verified on both servers | Server only (`docs/OPERATIONS.md`, "Backups") |

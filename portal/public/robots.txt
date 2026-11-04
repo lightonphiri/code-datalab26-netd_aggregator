@@ -10,6 +10,7 @@ Disallow: /*.atom
 Disallow: /*.json
 Disallow: /*.xml
 Disallow: /catalog/*/pdf
+Disallow: /catalog/*/cite
 Disallow: /follow
 Disallow: /bookmarks
 Disallow: /search_history

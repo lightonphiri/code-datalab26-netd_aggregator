@@ -136,6 +136,11 @@ footer.netd-footer strong { color: var(--netd-ink); font-weight: 600; }
 .netd-usage-item svg { color: var(--netd-muted, #6c757d); flex: none; }
 .netd-nofile { display: block; color: var(--netd-muted); font-size: .92rem; padding: .4rem 0; }
 .netd-side-label { font-size: .82rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin: 1rem 0 .3rem; }
+.netd-cite-text { font-size: .86rem; line-height: 1.45; background: #f6f7f9; border: 1px solid #e3e6ea; border-radius: 4px; padding: .55rem .65rem; overflow-wrap: anywhere; transition: opacity .15s; }
+.netd-cite-text div { display: inline; }
+.netd-cite-tools { display: flex; gap: .5rem; margin-top: .45rem; }
+.netd-cite-tools select { flex: 1; }
+.netd-cite-dl { font-size: .82rem; color: var(--netd-muted); margin-top: .35rem; }
 .netd-copy input { font-size: .85rem; }
 .netd-share { display: flex; gap: .55rem; margin-top: 1rem; }
 .netd-rights { font-size: .85rem; margin-top: 1rem; color: var(--netd-muted); }

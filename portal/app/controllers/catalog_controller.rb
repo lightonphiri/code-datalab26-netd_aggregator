@@ -124,6 +124,21 @@ class CatalogController < ApplicationController
   end
 
 
+
+  # GET /catalog/:id/cite?style=apa (an HTML fragment for the "How to cite" panel) and /catalog/:id/cite.ris or
+  # .bib (downloads for reference managers). SRS FR-65. Not counted as usage; kept out of search engines.
+  def cite
+    doc = search_service.fetch(params[:id].to_s)
+    doc = doc.last if doc.is_a?(Array)
+    c = Citation.new(doc, solr_document_url(doc.id))
+    response.headers['X-Robots-Tag'] = 'noindex'
+    case params[:format]
+    when 'ris' then send_data c.ris, filename: "#{doc.id}.ris", type: 'application/x-research-info-systems'
+    when 'bib' then send_data c.bibtex, filename: "#{doc.id}.bib", type: 'application/x-bibtex'
+    else render html: helpers.citation_html(c, params[:style].to_s), layout: false
+    end
+  end
+
   private
 
     def html_page? = response.successful? && response.media_type.to_s == 'text/html'

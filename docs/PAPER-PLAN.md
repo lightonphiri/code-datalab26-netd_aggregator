@@ -315,8 +315,11 @@ Code: `harvester/netd/people.py`, `harvester/netd/ml/evaluate.py` (`person_words
 ### Display change after the freeze
 - Icons for the view and download counts on record pages (Lighton, November 4, 2026). Presentation only: `git diff paper-v1 -- portal/app/controllers/concerns/usage_counting.rb portal/app/models/usage_count.rb` stays empty, so usage rows logged after the freeze remain usable.
 
+### Citing an aggregated thesis, and links that rot
+- "How to cite" (Lighton, November 4, 2026) cites the item on the awarding institution's repository, not the portal: the repository holds the version of record and the portal is a discovery layer over it (as a journal article is cited by its publisher's DOI, not by an index). Building it showed that harvested `dc.identifier.uri` values are unreliable: every UNZA record (5,290) named dspace.unza.zm, a host no longer in DNS after UNZA moved to rims.unza.ac.zm, and 33 others named localhost; no repository has a registered handle prefix (all use DSpace's default `123456789`, which handle.net does not resolve). Links are now rebuilt from the OAI identifier on each harvest, which always names the host actually harvested. Lesson for the paper's deployment section: an aggregator must not trust self-reported identifiers, and persistence needs registered identifiers, not handles in name only. Not an evaluated component (post-paper, display and linking only).
+
 ### Artefacts
-`work/bare-s12a.py` (laptop); SRS 0.34, SDD 0.33.
+`work/bare-s12a.py` (laptop); SRS 0.34, SDD 0.33; SRS 0.35, SDD 0.34 (FR-65); `work/urls-s12b.py`, `work/oai-s12c.py` (laptop); `portal/config/csl/README.md`.
 
 ## Evaluation
 Field-level P/R/F1 (normalised matching; people by surname with compatible initials, one-to-one, since session 08); risk–coverage curves and calibration error; cross-institution generalisation (train UNZA, test ZCAS, MU, UNILUS); born-digital vs scanned; ablations (front matter first, page classification, grounding check, distillation); facet counts before and after (discoverability); cost, time and energy per 1,000 ETDs on free and CPU hardware.
