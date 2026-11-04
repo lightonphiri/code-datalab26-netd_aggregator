@@ -335,6 +335,23 @@ Code: `harvester/netd/people.py`, `harvester/netd/ml/evaluate.py` (`person_words
 ### Artefacts
 `work/bare-s12a.py` (laptop); SRS 0.34, SDD 0.33; SRS 0.35, SDD 0.34 (FR-65); `work/urls-s12b.py`, `work/oai-s12c.py` (laptop); `portal/config/csl/README.md`.
 
+## Technical record from session 13 (November 4, 2026, documentation and packaging track; post-paper)
+
+Nothing in this session changes an evaluated component (text extraction, OCR, models, the overlay) or the usage counting code; the FINAL and `paper-v1` rows stand, and no evidence-log row is needed.
+
+### Versions that can be cited honestly
+- The software was built from October 30 to November 4, 2026 without release tags. Milestones were tagged retrospectively as annotated tags `v0.1.0` to `v0.9.0` on the commits that completed them (each tag message gives the commit date and says it was tagged on November 4, 2026); `CHANGELOG.md` tells the story from the SRS and SDD revision histories. Commit dates were not rewritten: rewriting history would also change the `paper-v1` hash the paper cites. For the paper: cite `paper-v1` (commit fe6f8c7); the preceding milestone is `v0.8.0` (a8e9959, November 2, 2026), and `v0.9.0` (ae15b79, November 4, 2026) is the first post-paper release.
+
+### Making the system reusable by another country
+- A grep inventory of installation-specific values (`docs/PACKAGING-PLAN.md`, section 2) found the country name in 31 files (62 occurrences), the host name in 25 files (57), the regulator in 17 (23), contact addresses in 14 (26), developer and host credits in 16 (65), and the time zone in 9 (10); two lists inside the code are Zambian by content (place names kept capitalised in citations, institution abbreviations that the title-page rules never take as names). For a "transferability" paragraph: the pipeline and models are generic, but national identity leaks into templates, deployment files and even model word lists; the plan gathers it into one country configuration, and the one change inside a model (P9) will be versioned and evaluated as a new post-paper row.
+- The repository has been public since before the freeze, without a licence file; licence chosen: BSD 3-Clause (as DSpace), to be added after the University of Zambia's IP policy on staff-written software has been checked. A security check of the full history found no secrets (the app password exposed on November 2, 2026 had been pasted in a chat, never committed) and no gold-standard annotations.
+
+### Documentation
+- A generic manual in `docs/manual/` (12 chapters on the DSpace documentation's outline: introduction, release notes, installing, upgrading, using, administration, configuration, customisation, metadata filling, interfaces, architecture, developing), published as a MkDocs site on GitHub Pages; `docs/OPERATIONS.md` stays the Zambian installation's runbook.
+
+### Artefacts
+`CHANGELOG.md`; tags `v0.1.0` to `v0.9.0`; `docs/manual/`, `mkdocs.yml`, `.github/workflows/manual.yml`; `docs/PACKAGING-PLAN.md`.
+
 ## Technical record from session 13 (November 4, 2026, maintenance track; post-paper)
 
 ### Record addresses (FR-68)
@@ -353,7 +370,7 @@ Code: `harvester/netd/people.py`, `harvester/netd/ml/evaluate.py` (`person_words
 Field-level P/R/F1 (normalised matching; people by surname with compatible initials, one-to-one, since session 08); risk–coverage curves and calibration error; cross-institution generalisation (train UNZA, test ZCAS, MU, UNILUS); born-digital vs scanned; ablations (front matter first, page classification, grounding check, distillation); facet counts before and after (discoverability); cost, time and energy per 1,000 ETDs on free and CPU hardware.
 
 ## Freezing the version for the paper
-At the end of the last implementation session: final evaluation on the held-out test half, figures in the evidence log, commit tagged `paper-v1` (tag and date recorded here). The paper describes `paper-v1` only. Two hand-offs follow in parallel: one for the paper session and one for an ongoing features-and-fixes track working from `docs/BACKLOG.md`; changes after `paper-v1` are logged as post-paper changes (Lighton, November 2, 2026). *Post-freeze documentation change (session 12):* there are in fact **three** parallel hand-offs: the third, for the slide deck of the HEA presentation on November 5, 2026 (`handoff-netd26-12-hea_presentation.zip`; Google Slides, changes nothing on the portal), was added by Lighton on November 3, 2026.
+At the end of the last implementation session: final evaluation on the held-out test half, figures in the evidence log, commit tagged `paper-v1` (tag and date recorded here). The paper describes `paper-v1` only. Two hand-offs follow in parallel: one for the paper session and one for an ongoing features-and-fixes track working from `docs/BACKLOG.md`; changes after `paper-v1` are logged as post-paper changes (Lighton, November 2, 2026). *Post-freeze documentation change (session 12):* there are in fact **three** parallel hand-offs: the third, for the slide deck of the HEA presentation on November 5, 2026 (`handoff-netd26-12-hea_presentation.zip`; Google Slides, changes nothing on the portal), was added by Lighton on November 3, 2026. *Post-freeze documentation change (session 13):* a **fourth** parallel track, documentation and packaging for an open-source release (`handoff-netd26-13-docs_and_packaging.zip`; manual, changelog, retrospective milestone tags, packaging for other countries), was added by Lighton on November 4, 2026. It changes no evaluated component; anything it changes is post-paper.
 
 **Frozen:** tag `paper-v1`, November 3, 2026, on the session 11 documentation commit (the commit that adds this line; `git rev-parse paper-v1` gives its hash). Figures: the FINAL rows (sessions 08 and 09), confirmed unchanged by the `paper-v1` evaluation row of session 11.
 
