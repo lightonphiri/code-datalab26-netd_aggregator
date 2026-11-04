@@ -30,9 +30,10 @@ module ThesisId
     ids = candidates(param)
     return ids.first if ids.size == 1
 
-    q = "id:(#{ids.map { |i| RSolr.solr_escape(i) }.join(' OR ')})"
-    found = (connection.get('select', params: { q: q, fl: 'id', rows: ids.size, facet: false, spellcheck: false,
-                                                wt: 'json' }).dig('response', 'docs') || []).map { |d| d['id'] }
+    # terms query parser (ids never contain commas); defType lucene, as edismax ignores local parameters
+    found = (connection.get('select', params: { q: "{!terms f=id}#{ids.join(',')}", defType: 'lucene', fl: 'id',
+                                                rows: ids.size, facet: false, spellcheck: false, wt: 'json' })
+                       .dig('response', 'docs') || []).map { |d| d['id'] }
     ids.find { |i| found.include?(i) }
   end
 end

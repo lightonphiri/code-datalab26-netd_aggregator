@@ -112,7 +112,7 @@ class CatalogController < ApplicationController
   # GET /sitemap.xml: every listed record page (other copies of duplicates left out), for Google and Google Scholar
   # (FR-66). Cached for a day; not counted as usage.
   def sitemap
-    xml = Rails.cache.fetch('netd/sitemap', expires_in: 1.day) do
+    xml = Rails.cache.fetch('netd/sitemap/theses', expires_in: 1.day) do
       conn = Blacklight.default_index.connection
       ids, start = [], 0
       loop do
