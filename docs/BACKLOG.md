@@ -36,6 +36,7 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Date | Item | Commit |
 |---|---|---|
+| November 4, 2026 | Record page usage line (FR-61): icons for views (eye) and downloads (download arrow) instead of text alone (Lighton, November 4, 2026); display only, counting code unchanged since `paper-v1` | session 12 |
 | November 3, 2026 | Supervisor names (FR-64), per-record resolution of bare surnames: **measured and closed, not built**. 166 mentions in 144 of 3,180 records with a supervisor (4.5%); a simple rule would resolve 56, 80 ambiguous, 30 without a fuller spelling; the most frequent value ("Mweemba", 9) is the gold-standard counterexample to department-based joining. Reopen only with gold data for bare surnames | session 12 (`work/bare-s12a.py`; `docs/PAPER-PLAN.md`) |
 | November 3, 2026 | Off-site backups (NETD and DataLab website servers) moved from rclone's shared Google client (throttled: the website's upload of November 3 failed with `rateLimitExceeded`) to an own OAuth client in the Google Cloud project "DataLab backups" (unza.ac.zm, Internal, Desktop client, `drive.file`); old Drive folders renamed "(old rclone client)"; manual uploads verified on both servers | Server only (`docs/OPERATIONS.md`, "Backups") |
 | November 3, 2026 | The 4 supervisor values with trailing words corrected in the store (FR-51; `unza-123456789-1611`, `-3619`, `-4621`, `zcas-123456789-164`), read from the title pages; reprocessed and checked in Solr | Server only (`corrections`, by `claude-ops`) |

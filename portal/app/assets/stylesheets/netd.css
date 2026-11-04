@@ -130,7 +130,10 @@ footer.netd-footer strong { color: var(--netd-ink); font-weight: 600; }
 .netd-about td { font-size: .95rem; padding: .35rem 1rem; }
 .netd-side { border: 1px solid #dfe3e6; border-radius: 4px; padding: .7rem; }
 .netd-dl { font-size: 1.05rem; padding: .55rem; }
-.netd-rec-usage { display: flex; gap: .5rem; justify-content: center; margin: .5rem 0 .25rem; color: #555; font-size: .92rem; }
+.netd-rec-usage { display: flex; gap: .75rem; align-items: center; justify-content: center; margin: .5rem 0 .25rem; color: #555; font-size: .92rem; }
+.netd-usage-item { display: inline-flex; align-items: center; gap: .3rem; }
+.netd-usage-item strong { margin-right: .1rem; }
+.netd-usage-item svg { color: var(--netd-muted, #6c757d); flex: none; }
 .netd-nofile { display: block; color: var(--netd-muted); font-size: .92rem; padding: .4rem 0; }
 .netd-side-label { font-size: .82rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin: 1rem 0 .3rem; }
 .netd-copy input { font-size: .85rem; }

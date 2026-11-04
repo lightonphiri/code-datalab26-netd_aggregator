@@ -312,8 +312,11 @@ Code: `harvester/netd/people.py`, `harvester/netd/ml/evaluate.py` (`person_words
 ### Bare supervisor surnames: measured, not built
 - FR-64 never merges a bare surname ("Mweemba"), because one spelling stands for different people. A per-record resolution was kept as an option until bare surnames proved common. They do not: 4.5% of records with a supervisor carry one, and a simple rule would resolve about a third of those mentions, the rest staying ambiguous or having no fuller spelling. The most frequent bare value is itself a documented counterexample to department-based joining. A measurement before building saved a feature whose precision could not be checked without new gold data.
 
+### Display change after the freeze
+- Icons for the view and download counts on record pages (Lighton, November 4, 2026). Presentation only: `git diff paper-v1 -- portal/app/controllers/concerns/usage_counting.rb portal/app/models/usage_count.rb` stays empty, so usage rows logged after the freeze remain usable.
+
 ### Artefacts
-`work/bare-s12a.py` (laptop).
+`work/bare-s12a.py` (laptop); SRS 0.34, SDD 0.33.
 
 ## Evaluation
 Field-level P/R/F1 (normalised matching; people by surname with compatible initials, one-to-one, since session 08); risk–coverage curves and calibration error; cross-institution generalisation (train UNZA, test ZCAS, MU, UNILUS); born-digital vs scanned; ablations (front matter first, page classification, grounding check, distillation); facet counts before and after (discoverability); cost, time and energy per 1,000 ETDs on free and CPU hardware.
