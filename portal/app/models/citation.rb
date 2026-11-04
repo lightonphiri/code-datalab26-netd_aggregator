@@ -67,12 +67,15 @@ class Citation
   # so they are escaped before rendering (the view also sanitises the result).
   def self.html_text(s) = s.to_s.gsub('<', '&lt;').gsub('>', '&gt;')
 
+  # Thesis description from the degree level; failing that, the repository's type ("Dissertation") or "Thesis".
+  def genre = GENRE[v('degree_level_ssim')] || (v('type_ssim').casecmp?('Dissertation') ? 'Dissertation' : 'Thesis')
+
   def item(html: false)
     t = html ? self.class.method(:html_text) : ->(s) { s }
     {
       'id' => @doc.id, 'type' => 'thesis', 'title' => t.(v('title_tsim').presence || v('title_ssm')),
       'author' => authors.map { |a| a.transform_values { |x| t.(x) } }, 'issued' => (y = v('year_ssim')).present? ? { 'date-parts' => [[y.to_i]] } : nil,
-      'genre' => GENRE[v('degree_level_ssim')], 'publisher' => t.(v('institution_ssim')).presence, 'URL' => url
+      'genre' => genre, 'publisher' => t.(v('institution_ssim')).presence, 'URL' => url
     }.compact
   end
 
