@@ -1,0 +1,26 @@
+# NETD country configuration: the identity of this installation (packaging release P3, November 4, 2026).
+# Read once at start-up by the portal (portal/config/netd_country.rb), the harvester (harvester/netd/config.py)
+# and the deployment scripts (deploy/site.env, written by deploy/deploy.sh). Override the path with NETD_COUNTRY.
+# A new installation copies an example from config/examples/ and edits it; see manual chapter 7.
+country:
+  name: Zambia
+  adjective: Zambian
+  time_zone: Africa/Lusaka          # IANA name; admin and quality times are shown in it
+portal:
+  name: Zambia National ETD Portal
+  wordmark: [Zambia, National ETD Portal]
+  host: netd.ac.zm                  # public host name, served over HTTPS
+regulator:
+  name: Higher Education Authority
+  short_name: HEA
+  register_url: https://online.hea.org.zm
+contact:
+  email: datalab@unza.zm            # public contact shown on the pages, in OAI-PMH Identify and the API description
+  reports_to: [lighton.phiri@unza.ac.zm, datalab@unza.zm]   # recipients of "Report a problem"
+mail:
+  from: datalab@unza.zm             # default sender of portal e-mail
+  sender: lighton.phiri@unza.ac.zm  # sender of problem reports when SMTP_FROM and SMTP_USER are not set
+credits:
+  - {name: DataLab Research Group, url: https://datalab.unza.zm, logo: datalab-logo-light.svg, role: developed by}
+  - {name: ZAMREN, url: https://zamren.zm, logo: zamren-logo.png, role: hosted by}
+locale: en

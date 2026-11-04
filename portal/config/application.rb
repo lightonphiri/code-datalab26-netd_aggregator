@@ -18,6 +18,10 @@ require "action_view/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+# The installation's country configuration (config/country.yml), needed by the environment files.
+require_relative "netd_country"
+Netd.config
+
 module Portal
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.

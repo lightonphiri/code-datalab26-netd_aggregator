@@ -1,6 +1,6 @@
 # 8. Customisation
 
-How to make a NETD installation your own: its name, look, pages, language and citation styles. In this release most of these are edits to templates and styles; the packaging plan replaces them with one country configuration and a theme folder, and this chapter will then describe those instead.
+How to make a NETD installation your own: its name, look, pages, language and citation styles. Start with `config/country.yml` ([chapter 7.1](07-configuration.md)): it sets the host name, contact and sender addresses, the portal name used in e-mail and reports, and the time zone. The rest of this chapter is still edits to templates and styles; the packaging plan moves them into the same file, locale files and a theme folder, release by release.
 
 Keep your changes on a branch of your own (or in a fork) so that upgrades can be merged; after any change below, run `deploy/deploy.sh`.
 
@@ -12,9 +12,8 @@ Keep your changes on a branch of your own (or in a fork) so that upgrades can be
 | Header wordmark (two parts, e.g. "Zambia" and "National ETD Portal") | `portal/app/components/netd_header_component.html.erb` |
 | Footer credit line | `portal/app/views/shared/_footer.html.erb` |
 | Home page introduction | `portal/app/views/catalog/_home_text.html.erb` |
-| Emails (problem reports, alerts) | `portal/app/mailers/problem_mailer.rb`, `deploy/ops/netd-alert.py` |
-| OAI-PMH `Identify` (repository name, administrator email) | `portal/app/controllers/oai_controller.rb` |
-| Excel and PDF reports | `portal/app/reports/report_xlsx.rb`, `report_pdf.rb` |
+| Emails (problem reports, alerts), Excel and PDF reports, OAI-PMH administrator e-mail | `portal.name`, `portal.host`, `contact.email` in `config/country.yml` |
+| OAI-PMH `Identify` repository name | `portal/app/controllers/oai_controller.rb` |
 | REST API specification | `portal/public/api/v1/openapi.yaml` (title, contact, server) |
 
 ## 8.2 Logo and credits
@@ -67,4 +66,4 @@ Titles written in capitals are put into sentence case; place names that must kee
 
 ## 8.8 Time zone and dates
 
-Dates are written as "January 3, 2027". Admin panel times are shown in `Africa/Lusaka` (`portal/app/helpers/admin_helper.rb`); systemd timers run in the server's time zone. Change the helper for another country.
+Dates are written as "January 3, 2027". Admin panel and quality-page times are shown in `country.time_zone` from `config/country.yml` (labelled with its city, e.g. "Lusaka time"); stored and API times are UTC; systemd timers run in the server's time zone.

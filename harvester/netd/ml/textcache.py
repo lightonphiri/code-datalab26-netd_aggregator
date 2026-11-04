@@ -13,7 +13,9 @@ import time
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
-UA = "NETD metadata enrichment (+https://netd.ac.zm)"
+from .. import config
+
+UA = f"NETD metadata enrichment (+{config.base_url()})"
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS pdf_text (

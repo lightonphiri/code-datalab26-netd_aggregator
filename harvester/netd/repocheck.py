@@ -14,7 +14,9 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-UA = {"User-Agent": "NETD repository check (+https://netd.ac.zm)"}
+from . import config
+
+UA = {"User-Agent": f"NETD repository check (+{config.base_url()})"}
 
 
 def _get(url, timeout=30):

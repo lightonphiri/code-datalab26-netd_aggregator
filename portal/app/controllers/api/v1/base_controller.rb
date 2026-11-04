@@ -18,7 +18,7 @@ module Api
 
       def preflight = head(:no_content)
 
-      def not_found = error(404, 'Not found', "No API endpoint at #{request.path}. See https://netd.ac.zm/api/v1/openapi.yaml")
+      def not_found = error(404, 'Not found', "No API endpoint at #{request.path}. See #{Netd.base_url}/api/v1/openapi.yaml")
 
       private
 

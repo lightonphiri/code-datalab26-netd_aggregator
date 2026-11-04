@@ -63,7 +63,7 @@
         </table>
       </details>
     <% end %>
-    <p class="netd-admin-help">Computed <%= Time.parse(@report['generated_at']).in_time_zone('Africa/Lusaka').strftime('%B %-d, %Y, %H:%M') %> (Lusaka time).
+    <p class="netd-admin-help">Computed <%= Time.parse(@report['generated_at']).in_time_zone(Netd.time_zone).strftime('%B %-d, %Y, %H:%M') %> (<%= Netd.time_zone_label %> time).
       Download: <%= link_to 'CSV', admin_quality_path(format: :csv) %> · <%= link_to 'JSON', admin_quality_path(format: :json) %>.</p>
   <% end %>
 </div>

@@ -5,7 +5,7 @@
     participating institutional repositories; full texts stay in those repositories.</p>
 
   <h2 id="api">REST API</h2>
-  <p>A read-only JSON API at <code>https://netd.ac.zm/api/v1</code>. No key is needed. Each endpoint allows 120 requests a
+  <p>A read-only JSON API at <code><%= Netd.base_url %>/api/v1</code>. No key is needed. Each endpoint allows 120 requests a
     minute from one address (the export, 20 an hour). Field names in version 1 will not change.
     <strong><%= link_to 'Interactive reference', api_docs_path %></strong> ·
     <%= link_to 'OpenAPI 3 specification', '/api/v1/openapi.yaml' %></p>
@@ -26,11 +26,11 @@
   <p>Responses have <code>data</code>, and for lists <code>meta</code> (total, page, pages) and <code>links</code>
     (next, previous). Errors return <code>{"error": {"status", "title", "detail"}}</code> with status 400, 404 or 429.
     Browsers may call the API from other websites (CORS).</p>
-  <pre class="netd-code">curl -s "https://netd.ac.zm/api/v1/records?q=malaria&amp;level=doctoral&amp;per_page=5"</pre>
+  <pre class="netd-code">curl -s "<%= Netd.base_url %>/api/v1/records?q=malaria&amp;level=doctoral&amp;per_page=5"</pre>
 
   <h3>Search pages as JSON</h3>
   <p>Every search and record page is also available as JSON by adding <code>.json</code>, for example
-    <code>https://netd.ac.zm/catalog.json?q=malaria</code> or <code>https://netd.ac.zm/theses/unza-9150.json</code>.
+    <code><%= Netd.base_url %>/catalog.json?q=malaria</code> or <code><%= Netd.base_url %>/theses/unza-9150.json</code>.
     This follows the website's search interface and its internal field names, which may change; use the REST API above for
     anything that must keep working.</p>
 
@@ -51,22 +51,22 @@
 
   <h2>OAI-PMH</h2>
   <table class="netd-about netd-api">
-    <tr><th>Base URL</th><td><code>https://netd.ac.zm/oai</code></td></tr>
+    <tr><th>Base URL</th><td><code><%= Netd.base_url %>/oai</code></td></tr>
     <tr><th>Protocol</th><td>OAI-PMH 2.0; all six verbs (<code>Identify</code>, <code>ListMetadataFormats</code>, <code>ListSets</code>,
       <code>ListIdentifiers</code>, <code>ListRecords</code>, <code>GetRecord</code>)</td></tr>
     <tr><th>Metadata formats</th><td><code>oai_dc</code> (Dublin Core) and <code>etdms</code> (ETD-MS v1.1, for NDLTD)</td></tr>
     <tr><th>Sets</th><td>One per institution (for example <code>inst:unza</code>) and per degree level (<code>level:doctoral</code>, <code>level:masters</code>, <code>level:postgraduate-diploma</code>)</td></tr>
     <tr><th>Datestamps</th><td>When the record last changed in the portal (UTC, <code>YYYY-MM-DDThh:mm:ssZ</code>); use <code>from</code> and <code>until</code> for incremental harvesting</td></tr>
     <tr><th>Paging</th><td>100 records per response, with resumption tokens valid for 24 hours</td></tr>
-    <tr><th>Identifiers</th><td><code>oai:netd.ac.zm:&lt;record id&gt;</code>, e.g. <code>oai:netd.ac.zm:unza-123456789-9150</code></td></tr>
+    <tr><th>Identifiers</th><td><code>oai:<%= Netd.host %>:&lt;record id&gt;</code>, e.g. <code>oai:<%= Netd.host %>:unza-123456789-9150</code></td></tr>
   </table>
-  <pre class="netd-code">https://netd.ac.zm/oai?verb=ListRecords&amp;metadataPrefix=etdms&amp;set=inst:unza</pre>
+  <pre class="netd-code"><%= Netd.base_url %>/oai?verb=ListRecords&amp;metadataPrefix=etdms&amp;set=inst:unza</pre>
 
   <h2 id="csv">Contributing records by CSV</h2>
   <p>An institution without a repository that supports OAI-PMH can contribute its theses and dissertations as a CSV file,
     one row per thesis or dissertation. Start from the
     <%= link_to 'CSV template', '/netd-etd-template.csv' %>, which has one example row, and send the file to
-    <a href="mailto:datalab@unza.zm">datalab@unza.zm</a>. You can also publish it at a stable link, for example a Google
+    <a href="mailto:<%= Netd.contact_email %>"><%= Netd.contact_email %></a>. You can also publish it at a stable link, for example a Google
     Sheet published to the web as CSV, so that the portal reads the latest version every night. Records that are removed
     from the file are removed from the portal. Librarians: see the step-by-step <%= link_to 'guide for institutions', contribute_path %>.</p>
   <table class="netd-about netd-api">
@@ -83,5 +83,5 @@
   <h2>Source code and contact</h2>
   <p>The portal is open source:
     <%= link_to 'github.com/lightonphiri/code-datalab26-netd_aggregator', 'https://github.com/lightonphiri/code-datalab26-netd_aggregator', target: '_blank', rel: 'noopener' %>.
-    Questions: <a href="mailto:datalab@unza.zm">datalab@unza.zm</a>.</p>
+    Questions: <a href="mailto:<%= Netd.contact_email %>"><%= Netd.contact_email %></a>.</p>
 </div>

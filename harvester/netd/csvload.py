@@ -19,6 +19,7 @@ import time
 import urllib.request
 from xml.sax.saxutils import escape
 
+from . import config
 from .crosswalk import degree_level
 from .rest import DIM_NS
 
@@ -129,7 +130,7 @@ def to_dim(row):
 def fetch(src):
     """[(name, text, datestamp)] for the source's CSV file(s)."""
     if src.get("csv_url"):
-        req = urllib.request.Request(src["csv_url"], headers={"User-Agent": "NETD harvester (+https://netd.ac.zm)"})
+        req = urllib.request.Request(src["csv_url"], headers={"User-Agent": f"NETD harvester (+{config.base_url()})"})
         with urllib.request.urlopen(req, timeout=120) as r:
             data = r.read(MAX_BYTES + 1)
         if len(data) > MAX_BYTES:

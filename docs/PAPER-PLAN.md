@@ -336,6 +336,15 @@ Code: `harvester/netd/people.py`, `harvester/netd/ml/evaluate.py` (`person_words
 ### Artefacts
 `work/bare-s12a.py` (laptop); SRS 0.34, SDD 0.33; SRS 0.35, SDD 0.34 (FR-65); `work/urls-s12b.py`, `work/oai-s12c.py` (laptop); `portal/config/csl/README.md`.
 
+## Technical record from session 14 (November 4, 2026, documentation and packaging track; post-paper)
+
+Nothing in this session changes an evaluated component (text extraction, OCR, models, the overlay) or the usage counting code; the FINAL and `paper-v1` rows stand, and no evidence-log row is needed. (`ml/evaluate.py` and `ml/textcache.py` now take the host name for gold-sample links and the user agent from the configuration; neither affects any score.)
+
+### Country configuration (packaging P3a, NFR-15)
+- One file, `config/country.yml`, now names the installation (country, portal name and host, regulator, contacts, senders, credits, time zone); the portal, harvester and deployment scripts read it at start-up and refuse to start without it. Host name, contacts, senders, the portal name in mail and reports, and the admin time zone were moved first because they appear in code rather than wording; page wording follows (P3b, P4).
+- Acceptance was "pages unchanged": HTML of 13 pages, OAI-PMH and REST responses captured with the `netd-check` user agent before and after the release and compared after masking tokens and response dates, plus screenshots and the two conformance tests. This is the transferability evidence the paper may mention as post-paper work.
+- Loading the file in `config/application.rb` (not an initializer) was needed because the environment files (mailer host) are evaluated before initializers.
+
 ## Technical record from session 13 (November 4, 2026, documentation and packaging track; post-paper)
 
 Nothing in this session changes an evaluated component (text extraction, OCR, models, the overlay) or the usage counting code; the FINAL and `paper-v1` rows stand, and no evidence-log row is needed.

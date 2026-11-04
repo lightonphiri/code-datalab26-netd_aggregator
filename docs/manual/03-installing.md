@@ -52,16 +52,20 @@ This adds a 2 GB swap file, downloads Solr into `/opt/netd/solr-dist` (Solr home
 
 ## 3.4 Site-specific files (before the first deployment)
 
-Until the country configuration is in place, these files carry the Zambian installation's values. Change them for your host name, institutions and contacts (details in [chapter 7](07-configuration.md) and [chapter 8](08-customisation.md)):
+First create the installation's identity from an example and edit it (host name, contacts, senders, time zone; [chapter 7.1](07-configuration.md)):
+
+```bash
+sudo -u netd cp /opt/netd/config/examples/zambia/country.yml /opt/netd/config/country.yml
+sudo -u netd nano /opt/netd/config/country.yml
+```
+
+The files below still carry the Zambian installation's values until the later packaging releases; change them for your host name, institutions and contacts (details in [chapter 7](07-configuration.md) and [chapter 8](08-customisation.md)):
 
 | File | Change |
 |---|---|
 | `deploy/apache/netd.conf`, `deploy/apache/netd-le-ssl.conf` | `ServerName`, `ServerAlias`, `ServerAdmin`, certificate paths; remove the `ProxyPass … !` lines for other applications on the Zambian server (`/znrp`, `/ojs`) and the old-portal redirects if you do not need them |
-| `deploy/ops/netd-probe.sh`, `deploy/systemd/netd-probe.service`, `deploy/ops/netd-alert.py` | the public address checked and named in alerts |
-| `portal/config/environments/production.rb` | `action_mailer.default_url_options` host |
 | `harvester/sources.yml` | your repositories (one entry each) |
 | `harvester/institutions.yml` | every institution expected to contribute, with status |
-| `portal/app/mailers/*.rb` | sender and recipients of problem reports |
 | `deploy/ops/netd-backup-to-gdrive.sh` | rclone remote and Drive folder for off-server backups (or disable the Drive copy) |
 
 ## 3.5 Deploy

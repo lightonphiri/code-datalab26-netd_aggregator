@@ -2,7 +2,55 @@
 
 Every file an installation may need to change, with its settings. Paths are relative to `/opt/netd` (the repository root). After changing a harvester file, run `reprocess` (or the step named); after changing a portal or deployment file, run `deploy/deploy.sh`.
 
-## 7.1 `harvester/sources.yml` — sources harvested
+## 7.1 `config/country.yml` — the installation's identity
+
+One file names the country, the portal and the people behind it. The portal, the harvester and the deployment scripts read it at start-up; a missing file, a missing required key or an unknown time zone stops them with a message that names the file and the key. Start from an example: `cp config/examples/zambia/country.yml config/country.yml`, then edit it and run `deploy/deploy.sh`. To keep the file elsewhere, set `NETD_COUNTRY` to its path (in `portal.env` and the systemd units).
+
+```yaml
+country:
+  name: Zambia
+  adjective: Zambian
+  time_zone: Africa/Lusaka          # IANA name
+portal:
+  name: Zambia National ETD Portal
+  wordmark: [Zambia, National ETD Portal]
+  host: netd.ac.zm                  # public host name, served over HTTPS
+regulator:
+  name: Higher Education Authority
+  short_name: HEA
+  register_url: https://online.hea.org.zm
+contact:
+  email: datalab@unza.zm
+  reports_to: [lighton.phiri@unza.ac.zm, datalab@unza.zm]
+mail:
+  from: datalab@unza.zm
+  sender: lighton.phiri@unza.ac.zm
+credits:
+  - {name: DataLab Research Group, url: https://datalab.unza.zm, logo: datalab-logo-light.svg, role: developed by}
+  - {name: ZAMREN, url: https://zamren.zm, logo: zamren-logo.png, role: hosted by}
+locale: en
+```
+
+| Key | Required | Used for |
+|---|---|---|
+| `country.name`, `country.adjective` | yes | page text (from the next release; see 7.11) |
+| `country.time_zone` | yes | times in the admin panel and on the quality pages, and their label ("Lusaka time") |
+| `portal.name` | yes | e-mail subjects, report headers and document properties |
+| `portal.wordmark` | no | the two parts of the header wordmark (next release) |
+| `portal.host` | yes | every absolute address: OAI-PMH base URL and identifiers (`oai:<host>:<record id>`), REST API links, links in e-mail, Developer Resources examples, harvester user agents, the site probe and alerts |
+| `regulator.*` | no | the body whose register lists the institutions (next release) |
+| `contact.email` | yes | the public address on the pages and in OAI-PMH `Identify` |
+| `contact.reports_to` | yes | recipients of "Report a problem" |
+| `mail.from` | yes | default sender of portal e-mail |
+| `mail.sender` | yes | sender of problem reports when `SMTP_FROM` and `SMTP_USER` are not set in `portal.env` |
+| `credits` | no | developer and host credits (next release) |
+| `locale` | no | interface language (default `en`) |
+
+`deploy.sh` writes the values the shell scripts need to `deploy/site.env` (do not edit it; it is rewritten on every deployment). To see them: `sudo -u netd env PYTHONPATH=/opt/netd/harvester /opt/netd/harvester/.venv/bin/python -m netd.config --env`.
+
+Changing `portal.host` changes the OAI-PMH identifiers of every record: harvesters of your portal will see new records. Choose the host before the portal is announced.
+
+## 7.2 `harvester/sources.yml` — sources harvested
 
 ```yaml
 scope:
@@ -39,7 +87,7 @@ sources:
 
 `harvester/sources.local.yml` (not in the repository) holds sources added from the admin panel, in the same format.
 
-## 7.2 `harvester/institutions.yml` — institutions expected
+## 7.3 `harvester/institutions.yml` — institutions expected
 
 ```yaml
 institutions:
@@ -51,7 +99,7 @@ institutions:
 
 `status` is one of `harvested`, `no-etds-yet`, `no-etd-collection`, `repository-unreachable`, `no-repository-known`. `oai` and `etd_sets` are probed weekly by `check-repositories`. In Zambia the list is every institution with an accredited Master's or Doctoral programme (from the Higher Education Authority's register); another country would use its own regulator's register.
 
-## 7.3 `harvester/enrichers.yml` — cleaning and metadata filling
+## 7.4 `harvester/enrichers.yml` — cleaning and metadata filling
 
 | Setting | Default | Meaning |
 |---|---|---|
@@ -64,7 +112,7 @@ institutions:
 | `ml.nightly` | true | the nightly run extracts text, OCRs and predicts for new or changed records |
 | `ml.nightly_pdfs`, `ml.nightly_ocr` | 300, 30 | nightly limits per source (PDFs) and overall (OCR) |
 
-## 7.4 `/opt/netd/portal.env` — secrets and mail (not in the repository; mode 600)
+## 7.5 `/opt/netd/portal.env` — secrets and mail (not in the repository; mode 600)
 
 | Variable | Meaning |
 |---|---|
@@ -77,7 +125,7 @@ institutions:
 
 `SOLR_URL` is set in the systemd unit, not here.
 
-## 7.5 systemd units — `deploy/systemd/`
+## 7.6 systemd units — `deploy/systemd/`
 
 | Unit | Notes |
 |---|---|
@@ -85,26 +133,25 @@ institutions:
 | `netd-portal.service` | Puma on 127.0.0.1:3010; sets `SOLR_URL`, `RAILS_ENV`, `RAILS_MAX_THREADS=3`, `WEB_CONCURRENCY=0`; reads `portal.env` |
 | `netd-harvest.service` / `.timer` | daily `run` under `run.lock`, then `check` |
 | `netd-backup.service` / `.timer` | nightly backup and off-server copy; prunes search history |
-| `netd-probe.service` / `.timer` | public site check every 15 minutes (address in `deploy/ops/netd-probe.sh`) |
+| `netd-probe.service` / `.timer` | public site check every 15 minutes (address from `deploy/site.env`) |
 | `netd-weekly.service` / `.timer` | repository check and weekly status |
 | `netd-alert@.service` | sends the alert for a failed unit |
 
 Times in the timers are server time (UTC on the Zambian server).
 
-## 7.6 Apache — `deploy/apache/`
+## 7.7 Apache — `deploy/apache/`
 
 `netd.conf` (port 80: redirect to HTTPS, Let's Encrypt webroot) and `netd-le-ssl.conf` (port 443: TLS, `RequestHeader set X-Forwarded-Proto "https"`, proxy `/` to `http://127.0.0.1:3010/`). Paths excluded from the proxy (`ProxyPass /path !`) are other applications on the same host. On a shared server, give it a **catch-all default site** so that unknown host names do not show another site's content.
 
-## 7.7 Solr — `solr/netd/conf`
+## 7.8 Solr — `solr/netd/conf`
 
 The Blacklight schema with ASCII folding instead of ICU analysers (the slim Solr distribution has no ICU module), ETD search fields and their weights (`qf`, `pf` per search field in `solrconfig.xml`), spelling dictionaries, and the MoreLikeThis component used for similar theses. `deploy.sh` copies it into the core and reloads the core.
 
-## 7.8 Portal
+## 7.9 Portal
 
 | File | Setting |
 |---|---|
 | `portal/config/blacklight.yml` | Solr URL from `SOLR_URL` |
-| `portal/config/environments/production.rb` | mail link host (`action_mailer.default_url_options`) |
 | `portal/app/controllers/catalog_controller.rb` | facets, search fields, sort options, results per page |
 | `portal/config/publications.yml` | publications shown on the About page (and written to `PUBLICATIONS.md` by `deploy/gen_publications_md.py`) |
 | `portal/config/csl/` | citation styles and the locale file (see [chapter 8](08-customisation.md)) |
@@ -112,19 +159,19 @@ The Blacklight schema with ASCII folding instead of ICU analysers (the slim Solr
 | `portal/public/api/v1/openapi.yaml` | the REST API specification (server address inside) |
 | `portal/public/netd-etd-template.csv` | the CSV template for institutions |
 
-## 7.9 Search engines
+## 7.10 Search engines
 
 The sitemap is at `/sitemap.xml` (built from Solr, cached one day) and is named in `robots.txt`. Record pages carry Highwire Press `citation_*` meta tags (read by Google Scholar), Open Graph tags and a canonical link. To register with Google Search Console, verify the property with an HTML file in `portal/public/` (keep the file, or verification is lost) and submit the sitemap. Google Scholar has no submission form; it finds records through the sitemap within weeks to months.
 
-## 7.10 Settings still in code
+## 7.11 Settings still in code
 
-These are planned to move into one country configuration (`docs/PACKAGING-PLAN.md`):
+These are planned to move into `config/country.yml` or templates rendered from it (`docs/PACKAGING-PLAN.md`):
 
 | What | Where now |
 |---|---|
-| Portal name, regulator name, wording on pages | views in `portal/app/views/` and `portal/app/components/` |
-| Contact and sender addresses | `portal/app/mailers/`, `portal/app/views/shared/_footer.html.erb`, `deploy/apache/` |
-| Host name | `deploy/`, `portal/config/environments/production.rb`, `portal/public/robots.txt`, `openapi.yaml`, harvester user agent strings |
-| Time zone for dates in the admin panel | `portal/app/helpers/admin_helper.rb` (`Africa/Lusaka`), `portal/app/models/geo_lookup.rb` |
+| Country, portal and regulator names, credits, wording on pages | views in `portal/app/views/` and `portal/app/components/` |
+| Administrator address and host name in the Apache sites | `deploy/apache/` |
+| Host name and contact in static files | `portal/public/robots.txt` (sitemap address), `portal/public/api/v1/openapi.yaml` |
+| Host name in the upgrade check and the backup destination | `deploy/ops/upgrade/upgrade-check.sh`, `deploy/ops/netd-backup-to-gdrive.sh` |
 | Place names kept capitalised in citations | `KEEP` in `portal/app/models/citation.rb` |
 | Words that are never names (title-page rules) | `harvester/netd/ml/models/titlepage.py` |

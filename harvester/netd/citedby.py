@@ -25,12 +25,14 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+from . import config
+
 API = "https://api.openalex.org/works"
 BATCH = 40          # theses per title query (URL about 4,000 characters)
 CITES_BATCH = 50    # works per cites: query
 MIN_WORDS = 4       # shorter titles are too ambiguous to match on
 SIM = 0.8
-UA = "netd.ac.zm cited-by (Zambia National ETD Portal)"
+UA = f"{config.host()} cited-by ({config.portal_name()})"
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS openalex_citations (

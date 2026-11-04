@@ -13,7 +13,7 @@ Rails.application.configure do
     config.action_mailer.delivery_method = :test
   end
   config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.default_url_options = { host: "netd.ac.zm", protocol: "https" }
+  config.action_mailer.default_url_options = { host: Netd.host, protocol: "https" }
 
   # Settings specified here will take precedence over those in config/application.rb.
 

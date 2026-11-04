@@ -24,3 +24,6 @@ harvester/models/
 site/
 # Python caches anywhere
 **/__pycache__/
+# written on the server by deploy.sh from config/country.yml
+deploy/site.env
+deploy/site.env.new

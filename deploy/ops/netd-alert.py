@@ -9,12 +9,30 @@ Uses the SMTP account in /opt/netd/portal.env (SMTP_USER/SMTP_PASSWORD, optional
 recipient is ALERT_TO in portal.env, else SMTP_USER.
 """
 import json
+import shlex
 import smtplib
 import socket
 import subprocess
 import sys
 import urllib.request
 from email.message import EmailMessage
+
+
+def site_env(path="/opt/netd/deploy/site.env"):
+    """NAME=value settings written by deploy.sh from config/country.yml."""
+    env = {}
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            if "=" in line and not line.startswith("#"):
+                k, v = line.rstrip("\n").split("=", 1)
+                env[k] = " ".join(shlex.split(v))
+    return env
+
+
+try:
+    URL = site_env()["NETD_BASE_URL"] + "/"
+except (OSError, KeyError):  # an alert must still go out when site.env is missing
+    URL = "the NETD portal"
 
 ENV = "/opt/netd/portal.env"
 
@@ -75,7 +93,7 @@ def main():
     host = socket.gethostname()
     if sys.argv[1:] == ["--weekly"]:
         body = "\n".join([
-            "Weekly status of https://netd.ac.zm/ (%s)" % host, "",
+            "Weekly status of %s (%s)" % (URL, host), "",
             "Search index documents: " + solr_count(), "",
             "Services:", sh("systemctl", "is-active", "netd-solr", "netd-portal", "apache2"), "",
             "Latest harvest check:", sh("journalctl", "-u", "netd-harvest", "-n", "8", "--no-pager", "-o", "cat"), "",
@@ -87,8 +105,8 @@ def main():
         send("NETD weekly status: index %s documents" % solr_count(), body)
         return
     if sys.argv[1:2] == ["--recovered"]:
-        send("NETD recovered: https://netd.ac.zm/ is serving again",
-             "https://netd.ac.zm/ is serving search results again (%s; %s).\nSearch index documents: %s\n"
+        send("NETD recovered: %s is serving again" % URL,
+             URL + " is serving search results again (%s; %s).\nSearch index documents: %s\n"
              % (" ".join(sys.argv[2:]), host, solr_count()))
         return
     unit = sys.argv[1]

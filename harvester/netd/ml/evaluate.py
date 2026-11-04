@@ -16,6 +16,8 @@ import random
 import re
 import unicodedata
 
+from .. import config
+
 GOLD_FIELDS = ("degree_level", "degree", "discipline", "supervisor", "department", "faculty")
 TITLES = re.compile(r"\b(prof(essor)?|dr|mr|mrs|ms|rev|eng)\b\.?", re.I)
 
@@ -92,7 +94,7 @@ def sample(store, path, n=300, seed=2026, source=None, take_all=False):
             group = r["id"]   # a main record is its own group; its copies were left out above
             half = "dev" if int(hashlib.sha256(group.encode()).hexdigest(), 16) % 2 == 0 else "test"
             w.writerow([r["id"], r["institution_short"], (r.get("title") or [""])[0],
-                        "https://netd.ac.zm/catalog/" + r["id"], r["pdf_url"][0], group, half] + harv +
+                        config.base_url() + "/catalog/" + r["id"], r["pdf_url"][0], group, half] + harv +
                        [""] * (len(GOLD_FIELDS) + 2))
     print("wrote %d records to %s (%s); %d duplicate copies left out" % (len(picks), path, ", ".join(
         "%s %d" % (s, sum(1 for p in picks if p["source"] == s)) for s in sorted(by_src)), skipped))

@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "datalab@unza.zm"
+  default from: Netd.mail_from
   layout false
 end

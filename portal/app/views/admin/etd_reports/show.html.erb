@@ -21,7 +21,7 @@
       <tbody>
       <% sec.rows.first(max).each do |row| %>
         <tr><% row.each do |v| %>
-          <td class="<%= 'text-end' if v.is_a?(Numeric) %>"><% if v.to_s.start_with?('https://netd.ac.zm/') %><%= link_to 'open', v %><% elsif v.is_a?(Integer) %><%= number_with_delimiter(v) %><% else %><%= v %><% end %></td>
+          <td class="<%= 'text-end' if v.is_a?(Numeric) %>"><% if v.to_s.start_with?("#{Netd.base_url}/") %><%= link_to 'open', v %><% elsif v.is_a?(Integer) %><%= number_with_delimiter(v) %><% else %><%= v %><% end %></td>
         <% end %></tr>
       <% end %>
       </tbody>

@@ -46,6 +46,7 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Date | Item | Commit |
 |---|---|---|
+| November 4, 2026 | Country configuration, first part (packaging P3a, NFR-15): `config/country.yml` read by portal, harvester and deployment scripts; host, contacts, senders, time zone, portal name in mail and reports; pages unchanged (post-paper) | this release |
 | November 4, 2026 | **Cited by, second part (FR-69)**: REST API 1.7.0 (`openalex_id`, `cited_by`, `cited`, `sort=cited`), OpenAlex identifier in OAI-PMH, "Cited" filter and "Most Cited" sort, "Cited by N" on result cards, citations in the HEA reports; API conformance test fixed for the export (every copy) | 270194c and the commit after it |
 | November 4, 2026 | Usage baseline for November 3, 2026 (UTC) recorded in the evidence log (session 12) | Session 12 evidence row |
 | November 4, 2026 | Licence (packaging P2): `LICENSE` BSD 3-Clause, `NOTICE`, `CONTRIBUTING.md`, `SECURITY.md`; UNZA IP policy allows it (Lighton, November 4, 2026) (post-paper) | this release |

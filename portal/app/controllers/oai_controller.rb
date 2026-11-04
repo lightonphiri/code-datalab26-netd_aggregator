@@ -4,7 +4,7 @@ require 'builder'
 
 # OAI-PMH 2.0 data provider for the portal's cleaned records (SRS EI-4; SDD "OAI-PMH data provider").
 #
-# Base URL https://netd.ac.zm/oai, GET or POST, all six verbs, formats oai_dc and etdms (ETD-MS v1.1).
+# Base URL https://<portal.host>/oai (config/country.yml), GET or POST, all six verbs, formats oai_dc and etdms (ETD-MS v1.1).
 # Records are read from Solr only. The datestamp is updated_dtsi: the last change of the record's content in
 # the portal (seconds granularity, UTC). Sets: inst:<source id> per institution and level:<masters|doctoral>.
 # Resumption tokens are stateless (Base64 JSON holding the Solr cursorMark, the request filters and an expiry).
@@ -12,12 +12,12 @@ require 'builder'
 class OaiController < ActionController::Base
   skip_forgery_protection
 
-  BASE_URL = 'https://netd.ac.zm/oai'
-  REPOSITORY_ID = 'netd.ac.zm'
-  ADMIN_EMAIL = 'datalab@unza.zm'
+  BASE_URL = "#{Netd.base_url}/oai"
+  REPOSITORY_ID = Netd.host
+  ADMIN_EMAIL = Netd.contact_email
   PAGE_SIZE = 100
   TOKEN_TTL = 24 * 3600
-  PORTAL_RECORD_URL = 'https://netd.ac.zm/theses/'   # record pages, short ids (FR-68)
+  PORTAL_RECORD_URL = "#{Netd.base_url}/theses/"   # record pages, short ids (FR-68)
   LEVELS = { 'masters' => 'Masters', 'doctoral' => 'Doctoral', 'postgraduate-diploma' => 'Postgraduate Diploma' }.freeze
   LEVEL_NAMES = { 'masters' => "Master's theses and dissertations", 'doctoral' => 'Doctoral theses',
                   'postgraduate-diploma' => 'Postgraduate diploma reports and dissertations' }.freeze

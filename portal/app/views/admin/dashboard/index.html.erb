@@ -26,7 +26,7 @@
     <% end %>
     </tbody>
   </table>
-  <p class="netd-admin-help">The nightly harvest of all sources runs at 04:30 (Lusaka time). "Run now" harvests one source;
+  <p class="netd-admin-help">The nightly harvest of all sources runs at 04:30 (<%= Netd.time_zone_label %> time). "Run now" harvests one source;
     only one harvest runs at a time.</p>
   <h2>Institutions not yet harvested</h2>
   <% if @repo_check %>

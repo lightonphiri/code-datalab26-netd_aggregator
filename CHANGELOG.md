@@ -11,11 +11,13 @@ Every change after `paper-v1` is a post-paper change: it is not part of the resu
 Post-paper changes.
 
 ### Added
+- Country configuration, first part (packaging P3a; NFR-15): `config/country.yml` (Zambia as the example, also in `config/examples/zambia/`) read at start-up by the portal (`portal/config/netd_country.rb`), the harvester (`netd.config`) and the deployment scripts (`deploy/site.env`, written by `deploy.sh`); host name, contact and sender addresses, problem-report recipients, portal name in e-mail, reports and OAI-PMH, and the admin time zone now come from it. Pages and API responses are unchanged.
 - Cited by (FR-69): theses matched to OpenAlex works by title and year (dissertations only); citing works listed on record pages, refreshed weekly (SRS 0.38, SDD 0.37; maintenance track).
 - `CHANGELOG.md`, retrospective milestone tags `v0.1.0` to `v0.9.0`, the manual in `docs/manual/` (published with MkDocs on GitHub Pages) and `docs/PACKAGING-PLAN.md` (documentation and packaging track, from November 4, 2026).
 - `LICENSE` (BSD 3-Clause), `NOTICE` (third-party material), `CONTRIBUTING.md`, `SECURITY.md`.
 
 ### Changed
+- The site probe's recovery e-mail now says since when the portal was down (it read the outage start after deleting the file that held it).
 - Record pages at `/theses/<short id>` (the DSpace default handle prefix dropped, e.g. `/theses/zcas-298`), with permanent redirects from `/catalog/<id>`; REST API 1.6.0 accepts the short id (FR-68, SRS 0.37, SDD 0.36; maintenance track).
 
 ### Removed

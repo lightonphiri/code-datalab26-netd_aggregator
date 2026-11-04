@@ -40,7 +40,7 @@
       (<code>thesis.degree.name</code> and <code>thesis.degree.level</code>, or a description such as "A dissertation submitted
       in partial fulfilment of the requirements for the degree of Master of …").</li>
   </ol>
-  <p>Then send the repository's address to <a href="mailto:datalab@unza.zm">datalab@unza.zm</a>. We check the records,
+  <p>Then send the repository's address to <a href="mailto:<%= Netd.contact_email %>"><%= Netd.contact_email %></a>. We check the records,
     agree with you which collections to include, and add the repository to the nightly harvest.</p>
 
   <h2>Route 2: no repository yet — send a spreadsheet</h2>
@@ -56,7 +56,7 @@
     <li>If the full text is online (for example on your website or in a shared Google Drive folder set to "Anyone with the
       link"), put its link in <code>pdf_url</code>. Rows without a link are still listed, with the library as the place to
       find the thesis.</li>
-    <li>Save as CSV (UTF-8) and email it to <a href="mailto:datalab@unza.zm">datalab@unza.zm</a>. Better still, keep it as a
+    <li>Save as CSV (UTF-8) and email it to <a href="mailto:<%= Netd.contact_email %>"><%= Netd.contact_email %></a>. Better still, keep it as a
       Google Sheet and publish it to the web as CSV (File → Share → Publish to web → CSV): the portal then reads the latest
       version every night, so you only maintain the sheet. Rows you delete are removed from the portal.</li>
   </ol>
@@ -70,5 +70,5 @@
     <li>Records are updated every night. Corrections are best made in your repository or sheet; the portal follows them.</li>
     <li>Readers can report a problem with any record from its page, and we pass reports about metadata on to you.</li>
   </ul>
-  <p>Questions: <a href="mailto:datalab@unza.zm">datalab@unza.zm</a>. The portal is run by the DataLab Research Group.</p>
+  <p>Questions: <a href="mailto:<%= Netd.contact_email %>"><%= Netd.contact_email %></a>. The portal is run by the DataLab Research Group.</p>
 </div>

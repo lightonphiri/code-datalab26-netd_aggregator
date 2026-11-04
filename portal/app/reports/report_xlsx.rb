@@ -26,7 +26,7 @@ module ReportXlsx
 
       section_sheet(wb, st, sec, names[i])
     end
-    pkg.core.creator = 'Zambia National ETD Portal (netd.ac.zm)'
+    pkg.core.creator = "#{Netd.portal_name} (#{Netd.host})"
     pkg.to_stream.read
   end
 
@@ -68,7 +68,7 @@ module ReportXlsx
     wb.add_worksheet(name: report.sections.first&.kind == :summary ? names.first : 'Summary') do |ws|
       ws.add_row [report.title], style: st[:title], height: 28
       ws.add_row [report.subtitle], style: st[:subtitle]
-      ws.add_row ["Zambia National ETD Portal (netd.ac.zm) · generated #{HeaReport.date(report.generated_at)}, " \
+      ws.add_row ["#{Netd.portal_name} (#{Netd.host}) · generated #{HeaReport.date(report.generated_at)}, " \
                   "#{report.generated_at.strftime('%H:%M')} UTC"], style: st[:small]
       ws.add_row []
       ws.add_row ['Filters'], style: st[:h2]

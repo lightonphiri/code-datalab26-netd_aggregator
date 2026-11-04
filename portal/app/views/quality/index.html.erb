@@ -34,12 +34,12 @@
 
     <h2>About these figures</h2>
     <ul>
-      <li>Computed after every nightly harvest; last computed <%= Time.parse(@report['generated_at']).in_time_zone('Africa/Lusaka').strftime('%B %-d, %Y, %H:%M') %> (Lusaka time).
+      <li>Computed after every nightly harvest; last computed <%= Time.parse(@report['generated_at']).in_time_zone(Netd.time_zone).strftime('%B %-d, %Y, %H:%M') %> (<%= Netd.time_zone_label %> time).
         Download: <%= link_to 'CSV', quality_path(format: :csv) %> · <%= link_to 'JSON', quality_path(format: :json) %>.</li>
       <li>"At source" counts only values the repository supplies in the proper metadata element. Values the portal reads from
         collection names or free text, or fills from the PDF (shown with a "derived" badge on record pages), make the portal
         more complete but do not help other services that harvest the repositories directly.</li>
-      <li>Institutions that want to improve their metadata can contact <a href="mailto:datalab@unza.zm">datalab@unza.zm</a>;
+      <li>Institutions that want to improve their metadata can contact <a href="mailto:<%= Netd.contact_email %>"><%= Netd.contact_email %></a>;
         the <%= link_to 'guide for institutions', contribute_path %> lists the recommended fields.</li>
     </ul>
   <% end %>

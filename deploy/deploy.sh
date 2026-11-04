@@ -1,5 +1,5 @@
 #!/bin/bash
-# (Re)deploy NETD v2 (https://netd.ac.zm/) on the server from /opt/netd (run as root after syncing the code).
+# (Re)deploy NETD v2 (host from config/country.yml) on the server from /opt/netd (run as root after syncing the code).
 set -euo pipefail
 N=/opt/netd
 mkdir -p $N/logs/solr $N/harvester/uploads && chown -R netd:netd $N/logs $N/harvester/uploads
@@ -12,6 +12,10 @@ chown -R netd:netd $N/solr-home
 # Harvester environment
 cd $N/harvester && sudo -u netd $N/bin/uv venv -q --allow-existing --python 3.12 .venv && \
   sudo -u netd $N/bin/uv pip install -q --python .venv/bin/python -r requirements.txt
+
+# Country configuration (config/country.yml) -> deploy/site.env for the shell scripts; stops if the file is invalid
+sudo -u netd env PYTHONPATH=$N/harvester $N/harvester/.venv/bin/python -m netd.config --env > $N/deploy/site.env.new && \
+  mv $N/deploy/site.env.new $N/deploy/site.env && chmod 644 $N/deploy/site.env
 
 # Portal: gems, secrets, database, assets
 [ -f $N/portal.env ] || { echo "SECRET_KEY_BASE=$(head -c 64 /dev/urandom | od -An -tx1 | tr -d ' \n')" > $N/portal.env; chmod 600 $N/portal.env; chown netd:netd $N/portal.env; }

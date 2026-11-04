@@ -19,7 +19,7 @@ module ReportPdf
 
   def render(report)
     pdf = Prawn::Document.new(page_size: 'A4', compress: true, margin: [56, 40, 48, 40], info: { Title: report.title,
-                                                                              Creator: 'Zambia National ETD Portal (netd.ac.zm)' })
+                                                                              Creator: "#{Netd.portal_name} (#{Netd.host})" })
     fonts(pdf)
     title_band(pdf, report)
     filters(pdf, report)
@@ -54,7 +54,7 @@ module ReportPdf
     pdf.text_box safe(pdf, report.title), at: [0, pdf.bounds.top + 24], size: 20, style: :bold,
                                          width: pdf.bounds.width, height: 26, overflow: :shrink_to_fit
     pdf.text_box safe(pdf, report.subtitle), at: [0, pdf.bounds.top - 6], size: 11, width: pdf.bounds.width
-    pdf.text_box "Generated #{HeaReport.date(report.generated_at)}, #{report.generated_at.strftime('%H:%M')} UTC · netd.ac.zm",
+    pdf.text_box "Generated #{HeaReport.date(report.generated_at)}, #{report.generated_at.strftime('%H:%M')} UTC · #{Netd.host}",
                  at: [0, pdf.bounds.top - 24], size: 8.5, color: 'DDEBF7'
     pdf.fill_color '000000'
     pdf.move_down 70
@@ -256,7 +256,7 @@ module ReportPdf
   def footer(pdf, report)
     pdf.repeat(:all, dynamic: true) do
       pdf.fill_color '7F7F7F'
-      pdf.text_box safe(pdf, "#{report.title} · Zambia National ETD Portal, netd.ac.zm"),
+      pdf.text_box safe(pdf, "#{report.title} · #{Netd.portal_name}, #{Netd.host}"),
                    at: [0, -20], width: pdf.bounds.width - 80, height: 12, size: 7.5
       pdf.text_box "Page #{pdf.page_number} of #{pdf.page_count}", at: [pdf.bounds.width - 80, -20], width: 80, height: 12,
                                                                     size: 7.5, align: :right

@@ -2,7 +2,7 @@
 
 # Stable public representation of a record for the REST API v1 (SRS EI-6), independent of Solr field names.
 module ApiRecord
-  BASE = 'https://netd.ac.zm'
+  BASE = Netd.base_url
   FIELDS = %w[id updated_dtsi added_dtsi title_ssm author_ssim supervisor_ssim subject_ssim abstract_tesim year_isi degree_ssim
               degree_level_ssim discipline_ssim faculty_ssim department_ssim institution_ssim source_ssi language_ssim
               type_ssim rights_ssm url_ssm pdf_url_ssm files_ssm derived_ssm fos_ssm duplicate_of_ssi duplicates_ssim
@@ -67,7 +67,7 @@ module ApiRecord
   def to_h(doc)
     {
       'id' => doc['id'],
-      'oai_identifier' => "oai:netd.ac.zm:#{doc['id']}",
+      'oai_identifier' => "oai:#{Netd.host}:#{doc['id']}",
       'title' => one(doc, 'title_ssm'),
       'authors' => list(doc, 'author_ssim'),
       'supervisors' => list(doc, 'supervisor_ssim'),
