@@ -8,7 +8,7 @@
     <% if r['excluded'] %>
       · <span class="badge text-bg-secondary">Excluded</span> <small><%= r['excluded'] %></small>
     <% else %>
-      · <%= link_to 'Portal page', solr_document_path(@id), target: '_blank', rel: 'noopener' %>
+      · <%= link_to 'Portal page', solr_document_path(ThesisId.short(@id)), target: '_blank', rel: 'noopener' %>
     <% end %>
     <% if (pdf = Array(r['pdf_url']).first) %> · <%= link_to 'PDF', pdf, target: '_blank', rel: 'noopener' %><% end %>
     · PDF text: <%= @text ? "#{@text['status']}#{" (#{@text['pages']} pages)" if @text['pages']}" : 'not extracted yet' %>

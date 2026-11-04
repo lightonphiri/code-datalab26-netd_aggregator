@@ -68,7 +68,7 @@ module ApiRecord
       'type' => one(doc, 'type_ssim'),
       'rights' => one(doc, 'rights_ssm'),
       'institution' => { 'id' => doc['source_ssi'], 'name' => one(doc, 'institution_ssim') },
-      'links' => { 'portal' => "#{BASE}/catalog/#{doc['id']}", 'source' => one(doc, 'url_ssm'),
+      'links' => { 'portal' => "#{BASE}/theses/#{ThesisId.short(doc['id'])}", 'source' => one(doc, 'url_ssm'),
                    'pdf' => one(doc, 'pdf_url_ssm'), 'api' => "#{BASE}/api/v1/records/#{doc['id']}" },
       'files' => files(doc),
       'derived' => derived(doc),

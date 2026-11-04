@@ -1,5 +1,5 @@
 # See https://www.robotstxt.org/robotstxt.html
-# Record pages (/catalog/<id>) and single-facet result pages may be crawled. Facet combinations, feeds and
+# Record pages (/theses/<id>; the old /catalog/<id> addresses redirect to them) and single-facet result pages may be crawled. Facet combinations, feeds and
 # data formats are an endless crawl trap; programs should use the API (/developers/api) or OAI-PMH (/oai).
 User-agent: *
 Allow: /sitemap.xml
@@ -10,6 +10,8 @@ Disallow: /*.rss
 Disallow: /*.atom
 Disallow: /*.json
 Disallow: /*.xml
+Disallow: /theses/*/pdf
+Disallow: /theses/*/cite
 Disallow: /catalog/*/pdf
 Disallow: /catalog/*/cite
 Disallow: /follow

@@ -12,4 +12,7 @@ class SolrDocument
   # and Blacklight::Document::SemanticFields#to_semantic_values
   # Recommendation: Use field names from Dublin Core
   use_extension(Blacklight::Document::DublinCore)
+
+  # Record page addresses use the short id: /theses/unza-9150 (FR-68). Record ids themselves are unchanged.
+  def to_param = ThesisId.short(id)
 end

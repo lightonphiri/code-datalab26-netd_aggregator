@@ -48,9 +48,25 @@ Rails.application.routes.draw do
   get "developers", to: "pages#developers", as: :developers
   get "follow", to: "follow#show", as: :follow   # feeds of new additions for a search (FR-60)
   get "quality", to: "quality#index", as: :quality   # metadata quality dashboard (FR-28)
-  get "catalog/:id/pdf", to: "catalog#pdf", as: :record_pdf, constraints: { id: /[A-Za-z0-9_-]+/ }  # counted download (FR-61)
+  # Record pages live at /theses/<short id> (FR-68, November 4, 2026). The old /catalog/<record id> addresses, with
+  # their /pdf, /cite and format variants, redirect permanently (301) to the new ones, query string kept. Old ids
+  # always contain a hyphen, so these routes never catch Blacklight's own /catalog/<action> routes.
+  old_id = /[A-Za-z0-9_]+-[A-Za-z0-9_-]+/
+  moved = lambda do |tail|
+    redirect(status: 301) do |p, req|
+      q = req.query_string.presence
+      "/theses/#{ThesisId.short(p[:id])}#{tail.call(p)}#{"?#{q}" if q}"
+    end
+  end
+  get "catalog/:id/pdf", to: moved.call(->(_) { '/pdf' }), constraints: { id: old_id }
+  get "catalog/:id/cite(.:format)", to: moved.call(->(p) { "/cite#{".#{p[:format]}" if p[:format]}" }),
+      constraints: { id: old_id, format: /html|ris|bib/ }
+  get "catalog/:id(.:format)", to: moved.call(->(p) { p[:format] ? ".#{p[:format]}" : '' }),
+      constraints: { id: old_id, format: /[a-z]+/ }
+  get "theses", to: redirect('/', status: 301)
+  get "theses/:id/pdf", to: "catalog#pdf", as: :record_pdf, constraints: { id: /[A-Za-z0-9_-]+/ }  # counted download (FR-61)
   get "sitemap.xml", to: "catalog#sitemap", as: :sitemap, defaults: { format: :xml }   # FR-66
-  get "catalog/:id/cite(.:format)", to: "catalog#cite", as: :cite_record,
+  get "theses/:id/cite(.:format)", to: "catalog#cite", as: :cite_record,
       constraints: { id: /[A-Za-z0-9_-]+/, format: /html|ris|bib/ }   # "How to cite" (FR-65)
   get "browse", to: "browse#index", as: :browse      # institution → faculty → department (FR-25)
   get "contribute", to: "pages#contribute", as: :contribute   # guide for institutions (FR-59)
@@ -64,7 +80,7 @@ Rails.application.routes.draw do
 
   concern :exportable, Blacklight::Routes::Exportable.new
 
-  resources :solr_documents, only: [:show], path: '/catalog', controller: 'catalog' do
+  resources :solr_documents, only: [:show], path: '/theses', controller: 'catalog' do
     concerns :exportable
   end
 

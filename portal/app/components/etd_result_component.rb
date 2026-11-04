@@ -54,7 +54,7 @@ class EtdResultComponent < Blacklight::DocumentComponent
     url = first('pdf_url_ssm')
     return nil unless url
 
-    link_to('Download PDF ↓', helpers.record_pdf_path(@document.id), class: css, target: '_blank', rel: 'noopener nofollow')
+    link_to('Download PDF ↓', helpers.record_pdf_path(@document), class: css, target: '_blank', rel: 'noopener nofollow')
   end
 
   def snippet

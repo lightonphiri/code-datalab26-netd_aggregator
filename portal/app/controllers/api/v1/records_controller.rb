@@ -42,6 +42,7 @@ module Api
         id = params[:id].to_s
         raise ArgumentError, 'Invalid record id' unless id.match?(/\A[A-Za-z0-9_-]{1,200}\z/)
 
+        id = ThesisId.resolve(id) || id   # the short id of a record page address works too (FR-68)
         doc = solr(q: "{!term f=id}#{id}", defType: 'lucene', rows: 1, fl: ApiRecord::FIELDS)['response']['docs'].first
         return error(404, 'Not found', "No record with id #{id}") unless doc
 

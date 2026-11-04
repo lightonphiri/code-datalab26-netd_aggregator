@@ -6,6 +6,9 @@ class CatalogController < ApplicationController
   include Blacklight::Catalog
   include UsageCounting
 
+  # One address per thesis (FR-68): /theses/unza-123456789-9150 redirects permanently to /theses/unza-9150.
+  before_action :canonical_thesis_address, only: %i[show pdf cite]
+
   configure_blacklight do |config|
     config.header_component = NetdHeaderComponent
     # No search-history row for crawlers (one crawler made 162,594 requests in a morning, November 2, 2026)
@@ -120,17 +123,17 @@ class CatalogController < ApplicationController
         start += docs.size
         break if docs.size < 2000
       end
-      urls = [root_url, browse_url] + ids.map { |id| solr_document_url(id) }
+      urls = [root_url, browse_url] + ids.map { |id| solr_document_url(ThesisId.short(id)) }
       %(<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n) +
         urls.map { |u| "<url><loc>#{ERB::Util.html_escape(u)}</loc></url>" }.join("\n") + "\n</urlset>\n"
     end
     render xml: xml
   end
 
-  # GET /catalog/:id/pdf(?file=n): counts the download, then sends the reader to the repository's own copy. Only a
+  # GET /theses/:id/pdf(?file=n): counts the download, then sends the reader to the repository's own copy. Only a
   # link stored in the record is used (no open redirect).
   def pdf
-    doc = search_service.fetch(params[:id].to_s)
+    doc = retrieve_document(params[:id].to_s)
     doc = doc.last if doc.is_a?(Array)
     files = Array(doc['files_ssm']).filter_map { |j| JSON.parse(j) rescue nil }
     url = if params[:file].present?
@@ -147,12 +150,12 @@ class CatalogController < ApplicationController
 
 
 
-  # GET /catalog/:id/cite?style=apa (an HTML fragment for the "How to cite" panel) and /catalog/:id/cite.ris or
+  # GET /theses/:id/cite?style=apa (an HTML fragment for the "How to cite" panel) and /theses/:id/cite.ris or
   # .bib (downloads for reference managers). SRS FR-65. Not counted as usage; kept out of search engines.
   def cite
-    doc = search_service.fetch(params[:id].to_s)
+    doc = retrieve_document(params[:id].to_s)
     doc = doc.last if doc.is_a?(Array)
-    c = Citation.new(doc, solr_document_url(doc.id))
+    c = Citation.new(doc, solr_document_url(doc))
     response.headers['X-Robots-Tag'] = 'noindex'
     case params[:format]
     when 'ris' then send_data c.ris, filename: "#{doc.id}.ris", type: 'application/x-research-info-systems'
@@ -162,6 +165,20 @@ class CatalogController < ApplicationController
   end
 
   private
+
+    # Address id (short or record id) -> the record (FR-68). Used by show (through Blacklight), pdf and cite.
+    def retrieve_document(id)
+      super(ThesisId.resolve(id) || id)
+    end
+
+    def canonical_thesis_address
+      given = params[:id].to_s
+      short = ThesisId.short(given)
+      return if short == given
+
+      q = request.query_string.presence
+      redirect_to "#{request.path.sub("/theses/#{given}", "/theses/#{short}")}#{"?#{q}" if q}", status: :moved_permanently
+    end
 
     def html_page? = response.successful? && response.media_type.to_s == 'text/html'
 

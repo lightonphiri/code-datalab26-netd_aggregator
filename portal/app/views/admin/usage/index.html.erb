@@ -64,7 +64,7 @@
           <% if rows.empty? %><p>None yet.</p><% else %>
           <ol class="small">
             <% rows.each do |id, n| %>
-              <li><%= link_to(@titles[id] || id, solr_document_path(id)) %> · <%= number_with_delimiter(n) %></li>
+              <li><%= link_to(@titles[id] || id, solr_document_path(ThesisId.short(id))) %> · <%= number_with_delimiter(n) %></li>
             <% end %>
           </ol>
           <% end %>

@@ -17,7 +17,7 @@ class OaiController < ActionController::Base
   ADMIN_EMAIL = 'datalab@unza.zm'
   PAGE_SIZE = 100
   TOKEN_TTL = 24 * 3600
-  PORTAL_RECORD_URL = 'https://netd.ac.zm/catalog/'
+  PORTAL_RECORD_URL = 'https://netd.ac.zm/theses/'   # record pages, short ids (FR-68)
   LEVELS = { 'masters' => 'Masters', 'doctoral' => 'Doctoral', 'postgraduate-diploma' => 'Postgraduate Diploma' }.freeze
   LEVEL_NAMES = { 'masters' => "Master's theses and dissertations", 'doctoral' => 'Doctoral theses',
                   'postgraduate-diploma' => 'Postgraduate diploma reports and dissertations' }.freeze
@@ -351,7 +351,7 @@ class OaiController < ActionController::Base
 
   def values(doc, field) = Array(doc[field]).map { |v| v.to_s.gsub(XML_ILLEGAL, ' ').strip }.reject(&:empty?).uniq
 
-  def identifiers(doc) = ["#{PORTAL_RECORD_URL}#{doc['id']}", *values(doc, 'url_ssm'), *values(doc, 'pdf_url_ssm')].uniq
+  def identifiers(doc) = ["#{PORTAL_RECORD_URL}#{ThesisId.short(doc['id'])}", *values(doc, 'url_ssm'), *values(doc, 'pdf_url_ssm')].uniq
 
   def types(doc) = (['Electronic Thesis or Dissertation', 'Text'] + values(doc, 'type_ssim')).uniq
 

@@ -16,13 +16,13 @@
     <% @groups.each do |g| %>
       <% m = g['primary'] %>
       <tr class="table-light">
-        <td><%= link_to m['id'], solr_document_path(m['id']) %><br><small>main record<%= ' · PDF' if m['pdf'] %></small></td>
+        <td><%= link_to m['id'], solr_document_path(ThesisId.short(m['id'])) %><br><small>main record<%= ' · PDF' if m['pdf'] %></small></td>
         <td><%= m['title'] %></td><td><%= m['author'] %></td><td><%= m['year'] %></td><td></td>
         <td class="text-nowrap"><%= button_to 'Not a duplicate', admin_decide_duplicate_path(m['id']), params: { decision: 'distinct' }, class: 'btn btn-sm btn-outline-secondary', form_class: 'd-inline' %></td>
       </tr>
       <% g['copies'].each do |c| %>
         <tr>
-          <td><%= link_to c['id'], solr_document_path(c['id']) %><br><small>copy<%= ' · PDF' if c['pdf'] %></small></td>
+          <td><%= link_to c['id'], solr_document_path(ThesisId.short(c['id'])) %><br><small>copy<%= ' · PDF' if c['pdf'] %></small></td>
           <td><%= c['title'] %></td><td><%= c['author'] %></td><td><%= c['year'] %></td>
           <td><small><%= c['method'] %><%= format(' %.2f', c['score'].to_f) if c['score'] %></small></td>
           <td class="text-nowrap">

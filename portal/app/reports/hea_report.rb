@@ -295,7 +295,7 @@ class HeaReport
     top = scope.where(event: 'record_view').group(:record_id).order('sum_hits DESC').limit(20).sum(:hits).to_a
     titles = titles_for(top.map(&:first))
     add(title: 'Most viewed records', headers: %w[Title Views Link],
-        rows: top.map { |id, n| [titles[id] || id, n, "#{ApiRecord::BASE}/catalog/#{id}"] }, kind: :usage)
+        rows: top.map { |id, n| [titles[id] || id, n, "#{ApiRecord::BASE}/theses/#{ThesisId.short(id)}"] }, kind: :usage)
     places = UsagePlace.where(event: %w[record_view pdf_download search]).group(:country).sum(:hits).sort_by { |_, n| -n }
     add(title: 'Readers by country (all institutions)', headers: ['Country', 'Views, downloads and searches'],
         rows: places.map { |c, n| [c.presence || 'Unknown', n] }, total: true, kind: :usage,

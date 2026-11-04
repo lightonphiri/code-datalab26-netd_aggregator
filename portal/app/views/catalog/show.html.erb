@@ -10,7 +10,7 @@
 <% derived = rec_derived(d) %>
 <% content_for(:head) do %>
   <%# Google Scholar (Highwire Press tags) and link previews (Open Graph). FR-66. %>
-  <% rec_url = solr_document_url(d.id) %>
+  <% rec_url = solr_document_url(d) %>
   <link rel="canonical" href="<%= rec_url %>">
   <meta name="citation_title" content="<%= title %>">
   <% rec_values(d, 'author_ssim').each do |a| %><meta name="citation_author" content="<%= a %>">
@@ -35,11 +35,11 @@
   <div class="col-lg-8">
     <% if (main = d['duplicate_of_ssi'].presence) %>
       <div class="alert alert-secondary netd-dup-note" role="note">This thesis was deposited more than once. The portal
-        lists it once, under its <%= link_to 'main record', solr_document_path(main) %>; this copy is kept as harvested.</div>
+        lists it once, under its <%= link_to 'main record', solr_document_path(ThesisId.short(main)) %>; this copy is kept as harvested.</div>
     <% elsif (copies = rec_values(d, 'duplicates_ssim')).any? %>
       <div class="alert alert-light netd-dup-note" role="note">This thesis was deposited more than once; the portal lists
         it once. Other <%= copies.size == 1 ? 'copy' : 'copies' %>:
-        <%= safe_join(copies.map { |c| link_to(c, solr_document_path(c)) }, ', ') %>.</div>
+        <%= safe_join(copies.map { |c| link_to(c, solr_document_path(ThesisId.short(c))) }, ', ') %>.</div>
     <% end %>
     <div class="netd-rec-kicker">
       <% (rec_values(d, 'year_ssim') + ['Theses'] + rec_values(d, 'degree_level_ssim')).each do |k| %><span><%= k %></span><% end %>
@@ -82,10 +82,10 @@
               <span class="netd-file-icon" aria-hidden="true">
                 <svg width="22" height="26" viewBox="0 0 22 26" fill="none" stroke="#9aa3ad" stroke-width="1.2"><path d="M1 1h13l7 7v17H1z"/><path d="M14 1v7h7"/></svg>
               </span>
-              <a class="netd-file-name" href="<%= record_pdf_path(d.id, file: i) %>" target="_blank" rel="noopener"><%= file_label(f, i) %></a>
+              <a class="netd-file-name" href="<%= record_pdf_path(d, file: i) %>" target="_blank" rel="noopener"><%= file_label(f, i) %></a>
               <span class="netd-file-meta"><%= f['mime'] %></span>
               <span class="netd-file-meta"><%= human_size(f['size']) %></span>
-              <a class="netd-file-dl" href="<%= record_pdf_path(d.id, file: i) %>" target="_blank" rel="noopener" aria-label="Download <%= file_label(f, i) %>">
+              <a class="netd-file-dl" href="<%= record_pdf_path(d, file: i) %>" target="_blank" rel="noopener" aria-label="Download <%= file_label(f, i) %>">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 7v9M8 12.5l4 4 4-4"/></svg>
               </a>
             </li>
@@ -127,7 +127,7 @@
   <aside class="col-lg-4">
     <div class="netd-side">
       <% if pdf %>
-        <a class="btn btn-primary w-100 netd-dl" href="<%= record_pdf_path(d.id) %>" target="_blank" rel="noopener">Download</a>
+        <a class="btn btn-primary w-100 netd-dl" href="<%= record_pdf_path(d) %>" target="_blank" rel="noopener">Download</a>
       <% else %>
         <span class="netd-nofile">No full text available from the repository</span>
       <% end %>
@@ -147,9 +147,9 @@
                   onclick="navigator.clipboard.writeText(document.getElementById('netd-handle').value); this.textContent='Copied';">Copy</button>
         </div>
       <% end %>
-      <% cite = Citation.new(d, solr_document_url(d.id)) %>
+      <% cite = Citation.new(d, solr_document_url(d)) %>
       <div class="netd-side-label">How to cite</div>
-      <div class="netd-cite" id="netd-cite" data-url="<%= cite_record_path(d.id) %>">
+      <div class="netd-cite" id="netd-cite" data-url="<%= cite_record_path(d) %>">
         <div class="netd-cite-text" id="netd-cite-text" aria-live="polite"><%= citation_html(cite, Citation::DEFAULT) %></div>
         <div class="netd-cite-tools">
           <label class="visually-hidden" for="netd-cite-style">Citation style</label>
@@ -161,8 +161,8 @@
           <button class="btn btn-outline-secondary btn-sm" type="button" id="netd-cite-copy">Copy</button>
         </div>
         <div class="netd-cite-dl">Download citation:
-          <%= link_to 'RIS', cite_record_path(d.id, format: :ris), title: 'EndNote, Zotero, Mendeley', rel: 'nofollow' %> ·
-          <%= link_to 'BibTeX', cite_record_path(d.id, format: :bib), title: 'BibTeX, LaTeX', rel: 'nofollow' %></div>
+          <%= link_to 'RIS', cite_record_path(d, format: :ris), title: 'EndNote, Zotero, Mendeley', rel: 'nofollow' %> ·
+          <%= link_to 'BibTeX', cite_record_path(d, format: :bib), title: 'BibTeX, LaTeX', rel: 'nofollow' %></div>
       </div>
       <script>
         (() => {
@@ -210,7 +210,7 @@
         <summary><h2>Similar theses</h2></summary>
         <ol>
           <% @similar.each do |sd| %>
-            <li><%= link_to Array(sd['title_tsim']).first.to_s, solr_document_path(sd['id']) %>
+            <li><%= link_to Array(sd['title_tsim']).first.to_s, solr_document_path(ThesisId.short(sd['id'])) %>
               <span class="netd-similar-meta"><%= [Array(sd['year_ssim']).first, Array(sd['institution_short_ssim']).first].compact.join(' · ') %></span></li>
           <% end %>
         </ol>

@@ -4,8 +4,8 @@
 | Item | Value |
 |---|---|
 | Document | SDD, structured per IEEE 1016-2009 (design viewpoints) |
-| Version | 0.35 |
-| Date | November 2, 2026 |
+| Version | 0.36 |
+| Date | November 4, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Related | `docs/SRS.md` (requirement IDs referenced below) |
 
@@ -15,6 +15,7 @@
 | 0.1 | October 30, 2026 | Initial design: harvester, raw/canonical stores, crosswalk, enrichers, Blacklight portal, deployment |
 | 0.2 | October 30, 2026 | Discipline/degree derivation; Solr analysers; URL-safe record ids; HTTPS |
 | 0.24 | November 1, 2026 | Fields of study (FR-54 to FR-57): model `openalex-fos` (`netd/ml/models/fieldofstudy.py`, data in `netd/ml/models/data/`), batch prediction in `predict.run`, per-field display thresholds in the overlay, Solr fields `fos_domain_ssim`, `fos_field_ssim`, `fos_subfield_ssim`, `fos_ssm`, `fos_tsim`, facets and record page, API `fields_of_study` (1.2.0), OAI-PMH subject scheme, training scripts in `harvester/tools/` |
+| 0.36 | November 4, 2026 | Record page addresses (FR-68): `ThesisId` (`app/models/thesis_id.rb`: `short`, `candidates`, `resolve` in one Solr request, trying `<source>-123456789-<n>` before the literal id so CSV-loaded ids still work), `SolrDocument#to_param` returns the short id, so Blacklight's links, feeds (`polymorphic_url`) and `solr_document_path(doc)` use it; `resources :solr_documents, path: '/theses'`; `record_pdf` and `cite_record` at `/theses/:id/…`; 301 redirect routes from `/catalog/:id(.:format)`, `/catalog/:id/pdf`, `/catalog/:id/cite(.:format)` (old ids always contain a hyphen, so Blacklight's `/catalog/<action>` routes are never caught) and `/theses` to `/`; `CatalogController#retrieve_document` resolves the short id (used by `show`, `pdf`, `cite`), `before_action :canonical_thesis_address` redirects `/theses/<record id>`; sitemap, OAI-PMH `PORTAL_RECORD_URL`, `ApiRecord` `links.portal`, HEA usage report links, admin links and `robots.txt` (`/theses/*/pdf`, `/theses/*/cite`) updated; `Api::V1::RecordsController#show` accepts the short id (API 1.6.0). Usage counting unchanged (record ids) |
 | 0.35 | November 4, 2026 | FR-66: record page `content_for(:head)` with Highwire Press, description, Open Graph and canonical tags; `CatalogController#sitemap` (`/sitemap.xml`, Solr pages of 2,000 ids, `Rails.cache` one day); `robots.txt` `Allow: /sitemap.xml` and `Sitemap:` line. FR-67: `CatalogController#similar_theses` (one `select` with `mlt=true`, `mlt.fl=title_tsim,abstract_tesim,subject_tsim`, `mintf` 1, `mindf` 2, 10 candidates, duplicate copies dropped, 5 shown; errors logged and the panel left out), panel `netd-similar` (a `<details>` element, open by default, that readers can collapse and expand, as PMC's similar articles). `EtdResultComponent#fields_of_study` (subfield, else field) when a result has no `subject_ssim`, class `etd-fos`. `Citation.sentence_case` (titles at least 80% capitals; `KEEP` list of place names and acronyms). `ApplicationHelper#usage_icon(:view|:download)` shared by the record page and `/admin/usage` |
 | 0.34 | November 4, 2026 | "How to cite" (FR-65): `Citation` model (`app/models/citation.rb`; gems `citeproc-ruby` and `csl`; CSL files and the en-GB locale in `config/csl`, see its README), `CatalogController#cite` (`/catalog/:id/cite?style=`, an HTML fragment; `.ris`, `.bib`), `RecordHelper#citation_html` (sanitised), panel `netd-cite` on the record page (default APA rendered with the page; other styles fetched on change); `robots.txt` disallows `/catalog/*/cite`. Crosswalk: `record_link(oai_id, src)` sets `url` to `https://<host>/handle/<handle>` from the OAI identifier (provenance `derived:oai_id`; the harvested value kept as `url_harvested` when different; `record_url: harvested` in `sources.yml` to opt out) |
 | 0.33 | November 4, 2026 | Record page `netd-rec-usage` (FR-61): each count in a `netd-usage-item` span with an inline SVG icon (eye; download arrow), `aria-hidden`, coloured with `--netd-muted`; styles in `netd.css`. Display only: the counting code (`usage_counting.rb`, `usage_count.rb`) is unchanged since `paper-v1` |
@@ -364,7 +365,7 @@ classDiagram
 | Model contract (§4.1.1) | module with `NAME`, `VERSION`, `FIELDS`, `USES`, `NEEDS_TEXT`, optional `prepare(texts)`, and `predict(meta, text) -> {field: (values, confidence, evidence)}`; registered in `netd/ml/predict.py` `MODELS` |
 | Enricher contract | `def enrich(record: dict) -> dict`; set `record["provenance"][field] = "model:<name>-<version>"` and optionally `record["confidence"][field] = float` |
 | Solr | JSON `POST /solr/netd/update`; Blacklight queries `/select` (edismax, ETD `qf`) |
-| HTTP | `GET /` (search), `/catalog/<id>` (record), `/catalog/<id>/cite?style=<key>` (citation fragment; `.ris`, `.bib`; FR-65), `/sitemap.xml` (FR-66), `/catalog.json?q=…` (JSON) |
+| HTTP | `GET /` (search), `/theses/<short id>` (record; FR-68, old `/catalog/<id>` addresses answer 301), `/theses/<short id>/pdf` (counted download), `/theses/<short id>/cite?style=<key>` (citation fragment; `.ris`, `.bib`; FR-65), `/sitemap.xml` (FR-66), `/catalog.json?q=…` (JSON) |
 | OAI-PMH | `GET`/`POST /oai` (§5.1) |
 | REST API | `GET /api/v1/…` (§5.3), JSON; specification `/api/v1/openapi.yaml` |
 | Admin panel | `/admin` (§5.2), signed-in portal team only |
