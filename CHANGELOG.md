@@ -13,6 +13,7 @@ Post-paper changes.
 ### Added
 - Cited by (FR-69): theses matched to OpenAlex works by title and year (dissertations only); citing works listed on record pages, refreshed weekly (SRS 0.38, SDD 0.37; maintenance track).
 - `CHANGELOG.md`, retrospective milestone tags `v0.1.0` to `v0.9.0`, the manual in `docs/manual/` (published with MkDocs on GitHub Pages) and `docs/PACKAGING-PLAN.md` (documentation and packaging track, from November 4, 2026).
+- `LICENSE` (BSD 3-Clause), `NOTICE` (third-party material), `CONTRIBUTING.md`, `SECURITY.md`.
 
 ### Changed
 - Record pages at `/theses/<short id>` (the DSpace default handle prefix dropped, e.g. `/theses/zcas-298`), with permanent redirects from `/catalog/<id>`; REST API 1.6.0 accepts the short id (FR-68, SRS 0.37, SDD 0.36; maintenance track).

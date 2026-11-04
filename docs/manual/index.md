@@ -23,4 +23,4 @@ The structure follows the DSpace documentation (Introduction, Release Notes, Ins
 
 **Status of this manual (November 4, 2026).** The software was built for one country first. Several Zambian details (the portal's name, the institutions' regulator, contact addresses, the host name, the time zone) are still set in code and templates; each chapter says where. Moving them into one country configuration is planned in [`docs/PACKAGING-PLAN.md`](https://github.com/lightonphiri/code-datalab26-netd_aggregator/blob/main/docs/PACKAGING-PLAN.md), and this manual will be updated release by release.
 
-**Licence.** BSD 3-Clause (chosen on November 4, 2026; the `LICENSE` file is added to the repository once the University of Zambia's policy on staff-written software has been checked).
+**Licence.** BSD 3-Clause ([`LICENSE`](https://github.com/lightonphiri/code-datalab26-netd_aggregator/blob/main/LICENSE)); third-party material is listed in [`NOTICE`](https://github.com/lightonphiri/code-datalab26-netd_aggregator/blob/main/NOTICE).

@@ -9,7 +9,7 @@ Harvests Electronic Theses and Dissertations (ETD) metadata from Zambian institu
 - **Changes:** [CHANGELOG.md](CHANGELOG.md) (release tags `v0.1.0` onwards; `paper-v1` is the version described in the paper)
 - **Operations:** [docs/OPERATIONS.md](docs/OPERATIONS.md) (the Zambian installation's runbook: schedules, backups, alerts, restore, server maintenance)
 - **Packaging for other countries:** [docs/PACKAGING-PLAN.md](docs/PACKAGING-PLAN.md)
-- **Licence:** BSD 3-Clause (chosen November 4, 2026; the licence file is added once the University of Zambia's policy on staff-written software has been checked)
+- **Licence:** BSD 3-Clause ([LICENSE](LICENSE); third-party material in [NOTICE](NOTICE)); contributions: [CONTRIBUTING.md](CONTRIBUTING.md); security reports: [SECURITY.md](SECURITY.md)
 - **Project page:** https://datalab.unza.zm/projects/zambia-national-etd-portal
 - **Publications based on the project:** [PUBLICATIONS.md](PUBLICATIONS.md) (also on the portal's About page)
 - **Maintainer:** DataLab Research Group

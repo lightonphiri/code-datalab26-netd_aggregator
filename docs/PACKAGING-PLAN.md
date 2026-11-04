@@ -10,7 +10,7 @@ Started November 4, 2026 (documentation and packaging track, session 13). Goal (
 | Where the manual is published | Markdown in `docs/manual/` (master copy) **and** a static site built with MkDocs on GitHub Pages (`mkdocs.yml`, `.github/workflows/manual.yml`) | Lighton, November 4, 2026 |
 | Milestone versions | Annotated tags `v0.1.0` to `v0.9.0` on the real milestone commits, tagged retrospectively; `paper-v1` unchanged; commit dates never rewritten | agreed November 4, 2026 |
 
-**Before the licence file is added:** Lighton checks the University of Zambia's intellectual property policy on software written by staff (who holds the copyright, and whether the University must approve an open-source release). The `LICENSE` text is prepared (section 6) and goes into the repository in the release after that check. Note that **the GitHub repository is already public** (checked November 4, 2026); without a licence file, others may read the code but have no right to reuse it.
+**Licence file added (release P2, November 4, 2026):** Lighton confirmed that the University of Zambia's IP policy allows the open-source release (November 4, 2026); copyright line as prepared. *Earlier text:* Lighton checks the University of Zambia's intellectual property policy on software written by staff (who holds the copyright, and whether the University must approve an open-source release). The `LICENSE` text is prepared (section 6) and goes into the repository in the release after that check. Note that **the GitHub repository is already public** (checked November 4, 2026); without a licence file, others may read the code but have no right to reuse it.
 
 ## 2. Inventory: what is Zambian or installation-specific
 
@@ -74,7 +74,7 @@ Loaded once at start-up: Rails (`config/initializers/netd_country.rb` → `Rails
 | # | Release | Contents | Check |
 |---|---|---|---|
 | P1 | Repository hygiene | remove the tracked `deploy/ops/__pycache__/*.pyc`; `.gitignore` for all `__pycache__` and `site/`; `CHANGELOG.md`; manual; MkDocs and Pages workflow | `git ls-files` has no caches; the manual builds with `mkdocs build --strict` |
-| P2 | Licence and notices | `LICENSE` (BSD 3-Clause), `NOTICE` (section 6), `CONTRIBUTING.md`, `SECURITY.md` (how to report a vulnerability), README licence section | after Lighton's IP policy check |
+| P2 (done November 4, 2026) | Licence and notices | `LICENSE` (BSD 3-Clause), `NOTICE` (section 6), `CONTRIBUTING.md`, `SECURITY.md` (how to report a vulnerability), README licence section | after Lighton's IP policy check |
 | P3 | Country configuration, read-only | `country.yml` and the loaders; replace host name, contacts, time zone and names in code with configuration reads; Zambia's file reproduces today's pages | page-by-page screenshots identical; API and OAI conformance tests pass |
 | P4 | Text into locale files | template text into `en.yml` keys | screenshots identical |
 | P5 | Theme folder | `themes/default` (neutral colours, generic wordmark) and `themes/zambia` | screenshots with each theme |

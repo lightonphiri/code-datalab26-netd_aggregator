@@ -1,0 +1,26 @@
+NETD (Zambia National ETD Portal software)
+Copyright (c) 2026, Lighton Phiri and contributors
+Released under the BSD 3-Clause License (see LICENSE).
+
+This repository includes, or its installer downloads, third-party material under its own licence:
+
+Included in the repository
+- Citation Style Language styles and the en-GB locale (portal/config/csl/), from
+  https://github.com/citation-style-language/styles and https://github.com/citation-style-language/locales.
+  Licence: Creative Commons Attribution-ShareAlike 3.0 Unported. Authors and contributors are named in each file's <info> block.
+- OpenAlex topic taxonomy and model weights trained on OpenAlex works (harvester/netd/ml/models/data/).
+  OpenAlex data: CC0 1.0 (https://openalex.org).
+
+Downloaded at installation or first use
+- DB-IP Lite City database (deploy/ops/geoip-update.sh): CC BY 4.0, "IP Geolocation by DB-IP" (https://db-ip.com).
+- sentence-transformers/all-MiniLM-L6-v2 (through fastembed): Apache 2.0.
+- Apache Solr (deploy/install-server.sh): Apache 2.0.
+- Swagger UI (on /developers/api): Apache 2.0.
+
+Main software dependencies (each under its own licence; see the package)
+- Ruby: Ruby on Rails, Propshaft, Importmap, Turbo, Stimulus, Jbuilder, Bootsnap, Kaminari, Faraday, Nokogiri, caxlsx, bcrypt (MIT);
+  Blacklight, RSolr (Apache 2.0); Puma, sqlite3 (BSD 3-Clause); citeproc, citeproc-ruby, csl (BSD 2-Clause);
+  namae (BSD 2-Clause, dual-licensed with AGPL 3.0; used under BSD 2-Clause); maxmind-db (Apache 2.0 or MIT);
+  Prawn, prawn-table (Ruby licence, or GPL 2.0 or 3.0; used under the Ruby licence).
+- Python: Sickle (BSD), lxml, pypdf (BSD 3-Clause), PyYAML (MIT), fastembed (Apache 2.0), cryptography (Apache 2.0 or BSD 3-Clause).
+- System: Tesseract OCR (Apache 2.0), Poppler utilities (GPL 2.0 or later; run as separate programs, not linked).

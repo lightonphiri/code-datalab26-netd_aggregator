@@ -67,4 +67,4 @@ When testing a live installation, add `check` to the user agent (for example `Mo
 
 ## 12.5 Contributing
 
-Issues and pull requests are welcome on GitHub: https://github.com/lightonphiri/code-datalab26-netd_aggregator. Describe the problem or the change, the requirement it affects, and how you tested it. A `CONTRIBUTING.md` with these rules is planned as part of the packaging work.
+Issues and pull requests are welcome on GitHub: https://github.com/lightonphiri/code-datalab26-netd_aggregator. Describe the problem or the change, the requirement it affects, and how you tested it. The rules are also in [`CONTRIBUTING.md`](https://github.com/lightonphiri/code-datalab26-netd_aggregator/blob/main/CONTRIBUTING.md); security problems are reported privately as described in [`SECURITY.md`](https://github.com/lightonphiri/code-datalab26-netd_aggregator/blob/main/SECURITY.md).
