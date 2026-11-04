@@ -1,0 +1,35 @@
+site_name: NETD manual
+site_description: Manual for NETD, open-source software for a national ETD aggregator (Zambia National ETD Portal)
+site_url: https://lightonphiri.github.io/code-datalab26-netd_aggregator/
+repo_url: https://github.com/lightonphiri/code-datalab26-netd_aggregator
+edit_uri: edit/main/docs/manual/
+docs_dir: docs/manual
+site_dir: site
+copyright: NETD is released under the BSD 3-Clause licence.
+theme:
+  name: material
+  language: en
+  features: [navigation.sections, navigation.footer, search.highlight, content.code.copy]
+markdown_extensions:
+  - tables
+  - admonition
+  - toc: {permalink: true}
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+nav:
+  - Home: index.md
+  - 1. Introduction: 01-introduction.md
+  - 2. Release notes: 02-release-notes.md
+  - 3. Installing: 03-installing.md
+  - 4. Upgrading: 04-upgrading.md
+  - 5. Using the portal: 05-using.md
+  - 6. System administration: 06-administration.md
+  - 7. Configuration reference: 07-configuration.md
+  - 8. Customisation: 08-customisation.md
+  - 9. Metadata filling: 09-metadata-filling.md
+  - 10. Interfaces: 10-interfaces.md
+  - 11. Architecture: 11-architecture.md
+  - 12. Developing and contributing: 12-developing.md
