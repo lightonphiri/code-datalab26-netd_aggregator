@@ -14,8 +14,9 @@ from zoneinfo import ZoneInfo
 
 import yaml
 
-REQUIRED = ("country.name", "country.adjective", "country.time_zone", "portal.name", "portal.host",
-            "contact.email", "contact.reports_to", "mail.from", "mail.sender")
+REQUIRED = ("country.name", "country.adjective", "country.time_zone", "portal.name", "portal.wordmark", "portal.host",
+            "regulator.name", "regulator.short_name", "regulator.url", "contact.email", "contact.reports_to",
+            "mail.from", "mail.sender")
 
 
 def path():

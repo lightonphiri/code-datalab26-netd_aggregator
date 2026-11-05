@@ -45,12 +45,13 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Date | Item | Commit |
 |---|---|---|
-| November 5, 2026 | OAI-PMH set `level:postgraduate-diploma` answered HTTP 500 (two-word level unquoted in the Solr filter); `tests/oai_conformance.py` expected the search count (5,474 distinct theses) instead of every record (5,719) | this release |
+| November 5, 2026 | Country configuration, second part (packaging P3b, NFR-15): country, regulator, wordmark, credits and portal name in page text, Blacklight name, OAI-PMH `Identify`, RIS, citation capitals from `config/country.yml`; Zambian pages unchanged (post-paper) | this release |
+| November 5, 2026 | OAI-PMH set `level:postgraduate-diploma` answered HTTP 500 (two-word level unquoted in the Solr filter); `tests/oai_conformance.py` expected the search count (5,474 distinct theses) instead of every record (5,719) | de053e0 |
 | November 5, 2026 | GitHub Pages switched on for `gh-pages` (manual at https://lightonphiri.github.io/code-datalab26-netd_aggregator/); GitHub releases `v0.1.0` to `v0.9.0` created from the CHANGELOG text, in the built-in browser signed in by Lighton | settings |
-| November 4, 2026 | Country configuration, first part (packaging P3a, NFR-15): `config/country.yml` read by portal, harvester and deployment scripts; host, contacts, senders, time zone, portal name in mail and reports; pages unchanged (post-paper) | this release |
+| November 4, 2026 | Country configuration, first part (packaging P3a, NFR-15): `config/country.yml` read by portal, harvester and deployment scripts; host, contacts, senders, time zone, portal name in mail and reports; pages unchanged (post-paper) | 544fb81 |
 | November 4, 2026 | **Cited by, second part (FR-69)**: REST API 1.7.0 (`openalex_id`, `cited_by`, `cited`, `sort=cited`), OpenAlex identifier in OAI-PMH, "Cited" filter and "Most Cited" sort, "Cited by N" on result cards, citations in the HEA reports; API conformance test fixed for the export (every copy) | 270194c and the commit after it |
 | November 4, 2026 | Usage baseline for November 3, 2026 (UTC) recorded in the evidence log (session 12) | Session 12 evidence row |
-| November 4, 2026 | Licence (packaging P2): `LICENSE` BSD 3-Clause, `NOTICE`, `CONTRIBUTING.md`, `SECURITY.md`; UNZA IP policy allows it (Lighton, November 4, 2026) (post-paper) | this release |
+| November 4, 2026 | Licence (packaging P2): `LICENSE` BSD 3-Clause, `NOTICE`, `CONTRIBUTING.md`, `SECURITY.md`; UNZA IP policy allows it (Lighton, November 4, 2026) (post-paper) | ccb473d |
 | November 4, 2026 | **Cited by from OpenAlex (FR-69)**: nightly batched title match within the free allowance, citing works on record pages (first pass: 1,800 theses checked, 1,103 matched, 247 cited, 490 links) | 1ec457d; calls reserved for citing works in the commit after it |
 | November 4, 2026 | **Record pages at `/theses/<short id>` (FR-68)** with 301 redirects from every `/catalog/<id>` address; sitemap, canonical, Scholar tags, citations, feeds, OAI-PMH, API (1.6.0 accepts short ids), admin and developer pages; sitemap resubmitted in Search Console | b577b26, 8dcc3c1 |
 | November 4, 2026 | "Similar theses" collapsible (deployed; pushed in session 12) | ae15b79 |

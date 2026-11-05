@@ -11,6 +11,8 @@ Every change after `paper-v1` is a post-paper change: it is not part of the resu
 Post-paper changes.
 
 ### Added
+- Country configuration, second part (packaging P3b; NFR-15): country name and adjective, regulator (name, short name, web address), header wordmark, developer and host credits (header bar, footer, About, Credits, For Institutions) and the portal name in page titles, Blacklight's `application_name`, OAI-PMH `Identify`, RIS exports and problem-report e-mail now come from `config/country.yml`; installation words kept capitalised in citations from `citation.keep_capitals` (general list stays in `Citation::KEEP_GENERAL`). Zambian pages unchanged (SRS 0.41, SDD 0.40).
+- Cited by, second part (FR-69): REST API 1.7.0 (`openalex_id`, `cited_by`, `cited` filter, `sort=cited`), OpenAlex identifier in OAI-PMH, "Cited" filter and "Most Cited" sort, "Cited by N" on result cards, citations in the HEA reports (SRS 0.39, SDD 0.38; maintenance track, 270194c).
 - Country configuration, first part (packaging P3a; NFR-15): `config/country.yml` (Zambia as the example, also in `config/examples/zambia/`) read at start-up by the portal (`portal/config/netd_country.rb`), the harvester (`netd.config`) and the deployment scripts (`deploy/site.env`, written by `deploy.sh`); host name, contact and sender addresses, problem-report recipients, portal name in e-mail, reports and OAI-PMH, and the admin time zone now come from it. Pages and API responses are unchanged.
 - Cited by (FR-69): theses matched to OpenAlex works by title and year (dissertations only); citing works listed on record pages, refreshed weekly (SRS 0.38, SDD 0.37; maintenance track).
 - `CHANGELOG.md`, retrospective milestone tags `v0.1.0` to `v0.9.0`, the manual in `docs/manual/` (published with MkDocs on GitHub Pages) and `docs/PACKAGING-PLAN.md` (documentation and packaging track, from November 4, 2026).
@@ -21,9 +23,11 @@ Post-paper changes.
 - Record pages at `/theses/<short id>` (the DSpace default handle prefix dropped, e.g. `/theses/zcas-298`), with permanent redirects from `/catalog/<id>`; REST API 1.6.0 accepts the short id (FR-68, SRS 0.37, SDD 0.36; maintenance track).
 
 ### Fixed
+- OpenAPI 1.7.0 description quoted (it did not parse); the API conformance test compares the export with every copy of a record (maintenance track, c91ea7f).
 - OAI-PMH set `level:postgraduate-diploma` answered HTTP 500 (the two-word level was not quoted in the Solr filter); `tests/oai_conformance.py` now expects every record, duplicate copies included, as OAI-PMH lists them.
 
 ### Removed
+- `portal/config/locales/blacklight.en.yml` (its only key, `application_name`, is now set from `portal.name` in `portal/config/locales/netd_country.rb`).
 - A Python bytecode cache that had been committed by mistake (`deploy/ops/__pycache__/`); `.gitignore` now covers every `__pycache__` folder and the manual's build output.
 
 ## [v0.9.0] – November 4, 2026 (commit ae15b79) – post-paper

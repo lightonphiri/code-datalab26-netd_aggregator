@@ -21,7 +21,7 @@ module Api
           end.sort_by { |h| [-h['records'], h['name']] }
         end
         render json: { 'data' => data, 'meta' => { 'total' => data.size, 'with_records' => data.count { |h| h['records'].positive? },
-                                                   'source' => 'Higher Education Authority, https://www.hea.org.zm' } }
+                                                   'source' => "#{Netd.regulator_name}, #{Netd.regulator_url}" } }
       end
     end
   end

@@ -8,17 +8,16 @@ Keep your changes on a branch of your own (or in a fork) so that upgrades can be
 
 | Where it appears | File |
 |---|---|
-| Browser titles and Blacklight's own labels | `application_name` in `portal/config/locales/blacklight.en.yml` |
-| Header wordmark (two parts, e.g. "Zambia" and "National ETD Portal") | `portal/app/components/netd_header_component.html.erb` |
-| Footer credit line | `portal/app/views/shared/_footer.html.erb` |
-| Home page introduction | `portal/app/views/catalog/_home_text.html.erb` |
+| Browser titles and Blacklight's own labels, OAI-PMH `Identify` repository name, RIS exports | `portal.name` in `config/country.yml` |
+| Header wordmark (two parts, e.g. "Zambia" and "National ETD Portal") | `portal.wordmark` in `config/country.yml` |
+| Footer credit line, header group bar | `credits` in `config/country.yml` (sentence built in `portal/app/views/shared/_footer.html.erb`) |
+| Home page introduction | `portal.name`, `country.adjective` and `regulator` in `config/country.yml`; the rest of the text in `portal/app/views/catalog/_home_text.html.erb` |
 | Emails (problem reports, alerts), Excel and PDF reports, OAI-PMH administrator e-mail | `portal.name`, `portal.host`, `contact.email` in `config/country.yml` |
-| OAI-PMH `Identify` repository name | `portal/app/controllers/oai_controller.rb` |
 | REST API specification | `portal/public/api/v1/openapi.yaml` (title, contact, server) |
 
 ## 8.2 Logo and credits
 
-Logos are in `portal/public/images/` (the developer's and the host's logos in the footer and on the About and Credits pages). Replace the files and the `<img>` references in the footer, `pages/about.html.erb` and `pages/credits.html.erb`. The site icon is `portal/public/icon.png` and `icon.svg`.
+Credits are listed in `credits` in `config/country.yml` ([chapter 7.1](07-configuration.md)): the header bar and footer name the entry with role `developed by`, and the About and Credits pages show every entry's logo, in order. Put the logo files in `portal/public/images/` and name them in `logo` (with `logo_height` in pixels); `class` is the style class of the logo link (`datalab-credit` and `zamren-credit` are styled in `netd.css`; a theme folder follows in release P5). The site icon is `portal/public/icon.png` and `icon.svg`.
 
 ## 8.3 Colours and fonts
 
@@ -56,13 +55,13 @@ Facets, search fields, sort options and results per page are set in `portal/app/
 
 ## 8.6 Languages
 
-The interface is in English. Blacklight's own texts come from `portal/config/locales/blacklight.en.yml` and `en.yml`; most NETD templates have their text written in them. To add a language today, translate the locale files (`blacklight.<lang>.yml`) and the templates; the packaging plan moves the templates' text into locale files first, so that a translation is one file per language. Metadata is shown in the language it was deposited in.
+The interface is in English. Blacklight's own texts come from the Blacklight gem and `en.yml` (the portal name from `config/country.yml`, through `portal/config/locales/netd_country.rb`); most NETD templates have their text written in them. To add a language today, translate the locale files (`blacklight.<lang>.yml`) and the templates; the packaging plan moves the templates' text into locale files first, so that a translation is one file per language. Metadata is shown in the language it was deposited in.
 
 ## 8.7 Citation styles
 
 "How to cite" uses official Citation Style Language files in `portal/config/csl/`, rendered by `citeproc-ruby`; terms come from `locales-en-GB.xml`. To add a style, copy an independent `.csl` file from https://github.com/citation-style-language/styles into that folder and add a line to `Citation::STYLES` in `portal/app/models/citation.rb` (key, label, file name). To change the default, set `Citation::DEFAULT`. For another language's terms, add its locale file from https://github.com/citation-style-language/locales.
 
-Titles written in capitals are put into sentence case; place names that must keep their capital letter are listed in `KEEP` in `citation.rb`. Add your country's place names there.
+Titles written in capitals are put into sentence case; words that must keep their capital letter are a general list (`KEEP_GENERAL` in `citation.rb`: continents, directions, diseases, international bodies, Roman numerals) plus `citation.keep_capitals` in `config/country.yml`. Add your country's place names, institutions and bodies there.
 
 ## 8.8 Time zone and dates
 

@@ -262,7 +262,7 @@ class HeaReport
       [i[:name], counts[i[:source]].to_i, InstitutionRegistry::STATUS_LABELS.fetch(i[:status].to_s, i[:status].to_s)]
     end.sort_by { |name, n, _| [-n, name] }
     add(title: 'By institution', headers: ['Institution', 'Theses', 'Status'], rows: rows, chart: :bar, total: true,
-        note: 'All HEA institutions with accredited postgraduate programmes; 0 where nothing has been harvested yet.')
+        note: "All #{Netd.regulator_short_name} institutions with accredited postgraduate programmes; 0 where nothing has been harvested yet.")
   end
 
   def year_level_section(fq, words)

@@ -18,6 +18,7 @@ portal:
 regulator:
   name: Higher Education Authority
   short_name: HEA
+  url: https://www.hea.org.zm
   register_url: https://online.hea.org.zm
 contact:
   email: datalab@unza.zm
@@ -26,24 +27,30 @@ mail:
   from: datalab@unza.zm
   sender: lighton.phiri@unza.ac.zm
 credits:
-  - {name: DataLab Research Group, url: https://datalab.unza.zm, logo: datalab-logo-light.svg, role: developed by}
-  - {name: ZAMREN, url: https://zamren.zm, logo: zamren-logo.png, role: hosted by}
+  - {name: DataLab Research Group, url: https://datalab.unza.zm, logo: datalab-logo-light.svg, logo_height: 40,
+     class: datalab-credit, article: the, role: developed by}
+  - {name: ZAMREN, full_name: Zambia Research and Education Network, url: https://zamren.zm, logo: zamren-logo.png,
+     logo_height: 48, class: zamren-credit, role: hosted by}
+citation:
+  keep_capitals: [Zambia, Zambian, Zambians, Lusaka, Copperbelt, Luapula, Muchinga, Ndola, Kitwe, Kabwe, Livingstone,
+                  Chipata, Kasama, Solwezi, Mongu, Mansa, Chongwe, UNZA, ZESCO, ZRA, ZNBC]
 locale: en
 ```
 
 | Key | Required | Used for |
 |---|---|---|
-| `country.name`, `country.adjective` | yes | page text (from the next release; see 7.11) |
+| `country.name`, `country.adjective` | yes | page text ("theses from Zambian universities") |
 | `country.time_zone` | yes | times in the admin panel and on the quality pages, and their label ("Lusaka time") |
-| `portal.name` | yes | e-mail subjects, report headers and document properties |
-| `portal.wordmark` | no | the two parts of the header wordmark (next release) |
+| `portal.name` | yes | browser titles, the home, FAQ, About and Credits pages, e-mail, report headers and document properties, OAI-PMH `Identify`, RIS exports |
+| `portal.wordmark` | yes | the two parts of the header wordmark (exactly two) |
 | `portal.host` | yes | every absolute address: OAI-PMH base URL and identifiers (`oai:<host>:<record id>`), REST API links, links in e-mail, Developer Resources examples, harvester user agents, the site probe and alerts |
-| `regulator.*` | no | the body whose register lists the institutions (next release) |
+| `regulator.name`, `regulator.short_name`, `regulator.url` | yes | the body that accredits the institutions: named and linked on the home, FAQ and For Institutions pages; the short name in admin pages, reports and the API's institution list ("HEA-listed"); `register_url` (optional) is its online register |
 | `contact.email` | yes | the public address on the pages and in OAI-PMH `Identify` |
 | `contact.reports_to` | yes | recipients of "Report a problem" |
 | `mail.from` | yes | default sender of portal e-mail |
 | `mail.sender` | yes | sender of problem reports when `SMTP_FROM` and `SMTP_USER` are not set in `portal.env` |
-| `credits` | no | developer and host credits (next release) |
+| `credits` | no | developer and host credits, in order: header bar (role `developed by`), footer sentence and logo, About and Credits pages (role `hosted by` is the server's host). Each entry needs `name`, `url`, `role`; optional `full_name`, `logo` (file in `portal/public/images/`), `logo_height`, `class` (style class of the logo link), `article` ("the") |
+| `citation.keep_capitals` | no | your country's place names, institutions and bodies kept capitalised when a title in capitals is put into sentence case (added to a general list) |
 | `locale` | no | interface language (default `en`) |
 
 `deploy.sh` writes the values the shell scripts need to `deploy/site.env` (do not edit it; it is rewritten on every deployment). To see them: `sudo -u netd env PYTHONPATH=/opt/netd/harvester /opt/netd/harvester/.venv/bin/python -m netd.config --env`.
@@ -169,9 +176,8 @@ These are planned to move into `config/country.yml` or templates rendered from i
 
 | What | Where now |
 |---|---|
-| Country, portal and regulator names, credits, wording on pages | views in `portal/app/views/` and `portal/app/components/` |
+| Other wording on pages | views in `portal/app/views/` and `portal/app/components/` |
 | Administrator address and host name in the Apache sites | `deploy/apache/` |
 | Host name and contact in static files | `portal/public/robots.txt` (sitemap address), `portal/public/api/v1/openapi.yaml` |
 | Host name in the upgrade check and the backup destination | `deploy/ops/upgrade/upgrade-check.sh`, `deploy/ops/netd-backup-to-gdrive.sh` |
-| Place names kept capitalised in citations | `KEEP` in `portal/app/models/citation.rb` |
 | Words that are never names (title-page rules) | `harvester/netd/ml/models/titlepage.py` |

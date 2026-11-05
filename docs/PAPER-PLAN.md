@@ -336,6 +336,16 @@ Code: `harvester/netd/people.py`, `harvester/netd/ml/evaluate.py` (`person_words
 ### Artefacts
 `work/bare-s12a.py` (laptop); SRS 0.34, SDD 0.33; SRS 0.35, SDD 0.34 (FR-65); `work/urls-s12b.py`, `work/oai-s12c.py` (laptop); `portal/config/csl/README.md`.
 
+## Technical record from session 15 (November 5, 2026, documentation and packaging track; post-paper)
+
+Nothing in this session changes an evaluated component (text extraction, OCR, models, the overlay) or the usage counting code; the FINAL and `paper-v1` rows stand, and no evidence-log row is needed. (The citation capitals list affects only "How to cite" text, which is not evaluated.)
+
+### Country configuration, second part (packaging P3b, NFR-15)
+- The country name and adjective, the regulator, the header wordmark, the developer and host credits and the portal name in page text now come from `config/country.yml`; with the Zambian file, every public page is byte-identical to before (one page differs in white space only, where the regulator's name had been split over two lines in the template). Keeping the output identical meant keeping each template's own markup (attribute order differs between the footer, About and Credits pages), so credits are looped in the templates rather than rendered by one helper.
+- The citation list of words kept capitalised was split into a general part (continents, directions, diseases, international bodies, Roman numerals) and the installation's part (21 Zambian places, institutions and bodies); the merged list equals the old one (46 words).
+- Blacklight's application name moved from a YAML locale file to a Ruby locale file reading the configuration; emptying the YAML key instead would have merged an empty `blacklight:` over the gem's own translations.
+- The boot test in a scratch copy of the portal (22 pages and responses compared with the running portal) found two traps of the test itself, not of the release: a tar that contains a harvester file turns the copy's `harvester` link into a folder, and the copy shares nothing but keeps its own Rails file cache, so a first failed run is served again for 10 minutes; clear `tmp/cache` before re-running.
+
 ## Technical record from session 14 (November 4, 2026, documentation and packaging track; post-paper)
 
 Nothing in this session changes an evaluated component (text extraction, OCR, models, the overlay) or the usage counting code; the FINAL and `paper-v1` rows stand, and no evidence-log row is needed. (`ml/evaluate.py` and `ml/textcache.py` now take the host name for gold-sample links and the user agent from the configuration; neither affects any score.)

@@ -1,4 +1,4 @@
-<% content_for(:page_title) { "Developer Resources — Zambia National ETD Portal" } %>
+<% content_for(:page_title) { "Developer Resources — #{Netd.portal_name}" } %>
 <div class="netd-page netd-faq">
   <h1>Developer Resources</h1>
   <p>The portal's metadata can be reused through a REST API, an OAI-PMH interface and bulk downloads. The metadata comes from the
@@ -19,7 +19,7 @@
     <tr><th>Sort and paging</th><td><code>&amp;sort=newest</code> (also <code>relevance</code>, <code>oldest</code>, <code>title</code>,
       <code>updated</code>); <code>&amp;page=2&amp;per_page=50</code> (20 by default, at most 100)</td></tr>
     <tr><th>One record</th><td><code>GET /api/v1/records/unza-123456789-9150</code></td></tr>
-    <tr><th>Institutions</th><td><code>GET /api/v1/institutions</code>: every HEA-listed institution, with record counts and harvest status</td></tr>
+    <tr><th>Institutions</th><td><code>GET /api/v1/institutions</code>: every <%= Netd.regulator_short_name %>-listed institution, with record counts and harvest status</td></tr>
     <tr><th>Statistics</th><td><code>GET /api/v1/stats</code>: counts by institution, degree level and year, and how complete each field is</td></tr>
     <tr><th>Everything</th><td><code>GET /api/v1/export.csv</code> or <code>/api/v1/export.jsonl</code>: all records in one file, refreshed every 6 hours</td></tr>
   </table>

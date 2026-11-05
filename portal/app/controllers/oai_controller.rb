@@ -108,7 +108,7 @@ class OaiController < ActionController::Base
   def verb_identify
     envelope do |x|
       x.Identify do
-        x.repositoryName 'Zambia National ETD Portal'
+        x.repositoryName Netd.portal_name
         x.baseURL BASE_URL
         x.protocolVersion '2.0'
         x.adminEmail ADMIN_EMAIL

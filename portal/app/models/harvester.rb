@@ -188,7 +188,7 @@ class Harvester
       raise ArgumentError, 'Source id: 2-16 lower-case letters or digits, starting with a letter' unless id.match?(ID_PATTERN)
       raise ArgumentError, "Source id #{id} is already in use" if source(id)
       raise ArgumentError, "#{name} already has a source" if sources.any? { |s| s['name'] == name }
-      raise ArgumentError, "#{name} is not in the HEA institution list" unless InstitutionRegistry.names.include?(name)
+      raise ArgumentError, "#{name} is not in the #{Netd.regulator_short_name} institution list" unless InstitutionRegistry.names.include?(name)
 
       data = File.exist?(LOCAL_SOURCES) ? (YAML.safe_load_file(LOCAL_SOURCES) || {}) : {}
       data['sources'] = Array(data['sources']) + [{ 'id' => id, 'name' => name, 'short_name' => short_name,

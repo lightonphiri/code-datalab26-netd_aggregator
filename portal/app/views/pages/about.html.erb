@@ -4,20 +4,19 @@
   <h1 class="h3">About the <%= p['name'] %></h1>
   <p><%= p['summary'] %></p>
   <div class="netd-partner-logos">
-    <a href="<%= p['group_url'] %>" class="datalab-credit" title="DataLab Research Group" target="_blank" rel="noopener"><img src="/images/datalab-logo-light.svg" alt="DataLab Research Group" height="40"></a>
-    <a href="https://zamren.zm" class="zamren-credit" title="Zambia Research and Education Network" target="_blank" rel="noopener"><img src="/images/zamren-logo.png" alt="ZAMREN — Zambia Research and Education Network" height="48"></a>
-  </div>
-  <p>Developed by the <%= link_to p['group'], p['group_url'], target: '_blank', rel: 'noopener' %>, and hosted by
-    <%= link_to 'ZAMREN', 'https://zamren.zm', target: '_blank', rel: 'noopener' %> (Zambia Research and Education Network), which
-    provides the server space for the portal. See also the <%= link_to 'credits', credits_path %>.
+<% Netd.credits.each do |c| %>    <a href="<%= c['url'] %>" class="<%= c['class'] %>" title="<%= Netd.credit_title(c) %>" target="_blank" rel="noopener"><img src="/images/<%= c['logo'] %>" alt="<%= Netd.credit_alt(c) %>" height="<%= c['logo_height'] %>"></a>
+<% end %>  </div>
+<% dev = Netd.credit('developed by'); host = Netd.credit('hosted by') %>  <p><% if dev %>Developed by <%= "#{dev['article']} " if dev['article'] %><%= link_to dev['name'], dev['url'], target: '_blank', rel: 'noopener' %><% end %><% if host %>, and hosted by
+    <%= link_to host['name'], host['url'], target: '_blank', rel: 'noopener' %><%= " (#{host['full_name']})" if host['full_name'] %>, which
+    provides the server space for the portal.<% end %> See also the <%= link_to 'credits', credits_path %>.
     Project page: <%= link_to p['url'], p['url'], target: '_blank', rel: 'noopener' %></p>
   <h2 class="h5 mt-4">Project members</h2>
   <ul class="netd-members">
     <% p['members'].each do |m| %><li><strong><%= m['url'] ? link_to(m['name'], m['url'], target: '_blank', rel: 'noopener') : m['name'] %></strong> (<%= m['role'] %>)</li><% end %>
   </ul>
-  <h2 class="h5 mt-4">Publications based on the <%= link_to 'Zambia National ETD Portal project', p['url'], target: '_blank', rel: 'noopener' %></h2>
-  <p>The publications, dissertations and capstone reports below come out of the <%= link_to 'Zambia National ETD Portal project', p['url'], target: '_blank', rel: 'noopener' %>.
-    They study the visibility of Zambian research, the quality, completeness and ETD-MS compliance of ETD metadata in
+  <h2 class="h5 mt-4">Publications based on the <%= link_to "#{Netd.portal_name} project", p['url'], target: '_blank', rel: 'noopener' %></h2>
+  <p>The publications, dissertations and capstone reports below come out of the <%= link_to "#{Netd.portal_name} project", p['url'], target: '_blank', rel: 'noopener' %>.
+    They study the visibility of <%= Netd.country_adjective %> research, the quality, completeness and ETD-MS compliance of ETD metadata in
     institutional repositories, and ways of improving it; their findings shaped how this portal harvests, cleans and
     presents ETD metadata.</p>
   <ul class="netd-pubs">

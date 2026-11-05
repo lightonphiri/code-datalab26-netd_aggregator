@@ -2,7 +2,7 @@
 <div class="netd-admin netd-reports">
   <%= render 'admin/nav' %>
   <h1>ETD reports</h1>
-  <p class="netd-admin-help">Reports for HEA and institutions, as Excel (one sheet per table, with charts) or PDF.
+  <p class="netd-admin-help">Reports for <%= Netd.regulator_short_name %> and institutions, as Excel (one sheet per table, with charts) or PDF.
     Visible to signed-in administrators only. Counts are of distinct theses (other copies of a thesis deposited twice
     are left out, as in search results); values filled by the portal are marked in the Excel listings. Each report
     run is written to the activity log.</p>
@@ -12,7 +12,7 @@
       <div class="card"><div class="card-body">
         <h2 class="h5">ETDs per institution</h2>
         <p class="small text-muted">Summary and completeness; theses by year, degree level, year and level, type,
-          faculty, faculty and department, degree, and citations (OpenAlex). With "All institutions": every HEA institution, with 0 where
+          faculty, faculty and department, degree, and citations (OpenAlex). With "All institutions": every <%= Netd.regulator_short_name %> institution, with 0 where
           nothing has been harvested yet.</p>
         <%= form_with url: admin_etd_report_path('institution'), method: :get, local: true do %>
           <%= render 'admin/etd_reports/filters', id: 'i' %>

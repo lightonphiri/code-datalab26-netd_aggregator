@@ -63,10 +63,11 @@ class Citation
     end
   end
 
-  # Words kept capitalised when a title written in capitals is put into sentence case.
-  KEEP = %w[Zambia Zambian Zambians Lusaka Copperbelt Africa African Southern Eastern Northern Western Central Luapula
-            Muchinga Ndola Kitwe Kabwe Livingstone Chipata Kasama Solwezi Mongu Mansa Chongwe HIV AIDS ART TB COVID-19
-            UNZA SADC COMESA ICT ZESCO ZRA ZNBC NGO NGOs SMEs UN UNICEF USAID WHO I II III].to_h { |w| [w.downcase, w] }.freeze
+  # Words kept capitalised when a title written in capitals is put into sentence case: a general list here, and the
+  # installation's places, institutions and bodies from config/country.yml (citation.keep_capitals).
+  KEEP_GENERAL = %w[Africa African Southern Eastern Northern Western Central HIV AIDS ART TB COVID-19 SADC COMESA ICT
+                    NGO NGOs SMEs UN UNICEF USAID WHO I II III].freeze
+  KEEP = (KEEP_GENERAL + Netd.keep_capitals).to_h { |w| [w.downcase, w] }.freeze
 
   # Titles harvested in capitals ("THE IMPACT OF ...") in sentence case for citations; other titles as written.
   def self.sentence_case(title)
@@ -109,7 +110,7 @@ class Citation
     lines = [%w[TY THES]]
     authors.each { |a| lines << ['AU', [a['family'], a['given']].compact.join(', ')] }
     lines << ['TI', item['title']] << ['PY', v('year_ssim')] << ['PB', v('institution_ssim')]
-    lines << ['M3', item['genre']] << ['UR', url] << ['DB', 'Zambia National ETD Portal'] << ['ER', '']
+    lines << ['M3', item['genre']] << ['UR', url] << ['DB', Netd.portal_name] << ['ER', '']
     lines.reject { |k, val| val.blank? && k != 'ER' }.map { |k, val| "#{k}  - #{val}".rstrip }.join("\r\n") + "\r\n"
   end
 

@@ -1,9 +1,9 @@
-<% content_for(:page_title) { "For Institutions — Zambia National ETD Portal" } %>
+<% content_for(:page_title) { "For Institutions — #{Netd.portal_name}" } %>
 <div class="netd-page netd-faq">
   <h1>For Institutions: adding your theses and dissertations</h1>
-  <p>This guide is for librarians and repository managers at Zambian higher education institutions. The portal aims to list the
-    postgraduate theses and dissertations of every institution with a Master's or Doctoral programme accredited by the Higher
-    Education Authority. Taking part costs nothing: the portal holds only the descriptions (metadata) and links to the full text,
+  <p>This guide is for librarians and repository managers at <%= Netd.country_adjective %> higher education institutions. The portal aims to list the
+    postgraduate theses and dissertations of every institution with a Master's or Doctoral programme accredited by the
+    <%= Netd.regulator_name %>. Taking part costs nothing: the portal holds only the descriptions (metadata) and links to the full text,
     which stays in your institution's repository or on your website.</p>
 
   <h2>What the portal includes</h2>
@@ -70,5 +70,5 @@
     <li>Records are updated every night. Corrections are best made in your repository or sheet; the portal follows them.</li>
     <li>Readers can report a problem with any record from its page, and we pass reports about metadata on to you.</li>
   </ul>
-  <p>Questions: <a href="mailto:<%= Netd.contact_email %>"><%= Netd.contact_email %></a>. The portal is run by the DataLab Research Group.</p>
+  <p>Questions: <a href="mailto:<%= Netd.contact_email %>"><%= Netd.contact_email %></a>. <% if (dev = Netd.credit('developed by')) %>The portal is run by <%= "#{dev['article']} " if dev['article'] %><%= dev['name'] %>.<% end %></p>
 </div>

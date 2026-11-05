@@ -1,10 +1,10 @@
 <header class="netd-header" role="banner">
   <div class="netd-groupbar">
-    <div class="container"><a href="https://datalab.unza.zm" target="_blank" rel="noopener">DataLab Research Group</a></div>
+    <div class="container"><% if (dev = Netd.credit('developed by')) %><a href="<%= dev['url'] %>" target="_blank" rel="noopener"><%= dev['name'] %></a><% end %></div>
   </div>
   <div class="container netd-masthead">
     <a class="netd-wordmark" href="<%= helpers.root_path %>">
-      <span class="netd-wm-a">Zambia</span><span class="netd-wm-sep"></span><span class="netd-wm-b">National ETD Portal</span>
+      <span class="netd-wm-a"><%= Netd.wordmark[0] %></span><span class="netd-wm-sep"></span><span class="netd-wm-b"><%= Netd.wordmark[1] %></span>
     </a>
     <form class="netd-search" action="<%= helpers.search_action_url %>" method="get" role="search">
       <input type="hidden" name="search_field" value="all_fields">

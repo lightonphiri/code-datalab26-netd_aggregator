@@ -9,8 +9,8 @@
 <% waiting = registry - contributing %>
 <% fmt = ->(n) { number_with_delimiter(n.to_i) } %>
 <div class="netd-home">
-  <p class="netd-intro"><strong>Zambia National ETD Portal</strong> provides a single point of access to theses and
-    dissertations produced at Zambian universities and higher education institutions.
+  <p class="netd-intro"><strong><%= Netd.portal_name %></strong> provides a single point of access to theses and
+    dissertations produced at <%= Netd.country_adjective %> universities and higher education institutions.
     <%= link_to 'Learn more →', about_path %></p>
 
   <div class="row g-4 netd-cards">
@@ -26,7 +26,7 @@
       <%= link_to search_action_path(f: { degree_level_ssim: ['Doctoral'] }), class: 'netd-card' do %>
         <span class="netd-card-title"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/><path d="M22 9v6"/></svg>
           Explore PhD Manuscripts</span>
-        <span class="netd-card-text">Browse <%= fmt.(lvl['Doctoral']) %> doctoral theses from Zambian universities,
+        <span class="netd-card-text">Browse <%= fmt.(lvl['Doctoral']) %> doctoral theses from <%= Netd.country_adjective %> universities,
           with direct links to the full text held in each institutional repository.</span>
       <% end %>
     </div>
@@ -55,7 +55,7 @@
         <% end %>
       </ul>
       <p class="netd-note">Metadata is meant to be harvested from all <strong><%= registry.size %></strong> institutions offering
-        Master's and PhD programmes accredited by the <a href="https://www.hea.org.zm" target="_blank" rel="noopener">Higher Education Authority</a>.
+        Master's and PhD programmes accredited by the <a href="<%= Netd.regulator_url %>" target="_blank" rel="noopener"><%= Netd.regulator_name %></a>.
         <a class="netd-more-toggle collapsed" data-bs-toggle="collapse" href="#netd-waiting" role="button" aria-expanded="false" aria-controls="netd-waiting">
           <span class="when-collapsed">Show the <%= waiting.size %> not yet harvested »</span><span class="when-expanded">« Hide</span></a></p>
       <ul class="netd-inst netd-inst-waiting collapse" id="netd-waiting">

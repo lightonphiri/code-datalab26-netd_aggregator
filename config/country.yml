@@ -10,9 +10,10 @@ portal:
   name: Zambia National ETD Portal
   wordmark: [Zambia, National ETD Portal]
   host: netd.ac.zm                  # public host name, served over HTTPS
-regulator:
+regulator:                          # the body that accredits the institutions; named on the home, FAQ and admin pages
   name: Higher Education Authority
   short_name: HEA
+  url: https://www.hea.org.zm        # linked from the home and FAQ pages and given as the source of /api/v1/institutions
   register_url: https://online.hea.org.zm
 contact:
   email: datalab@unza.zm            # public contact shown on the pages, in OAI-PMH Identify and the API description
@@ -20,7 +21,18 @@ contact:
 mail:
   from: datalab@unza.zm             # default sender of portal e-mail
   sender: lighton.phiri@unza.ac.zm  # sender of problem reports when SMTP_FROM and SMTP_USER are not set
+# Credits in the header bar, footer, About and Credits pages, in this order. role "developed by" is the group named in the
+# header bar and footer; role "hosted by" provides the server. full_name is shown after the name where given; logo is a file
+# in portal/public/images/ (themes/ from release P5), logo_height its height in pixels on the About and Credits pages,
+# class the style class of the logo link, article a word put before the name in running text ("developed by the ...").
 credits:
-  - {name: DataLab Research Group, url: https://datalab.unza.zm, logo: datalab-logo-light.svg, role: developed by}
-  - {name: ZAMREN, url: https://zamren.zm, logo: zamren-logo.png, role: hosted by}
+  - {name: DataLab Research Group, url: https://datalab.unza.zm, logo: datalab-logo-light.svg, logo_height: 40,
+     class: datalab-credit, article: the, role: developed by}
+  - {name: ZAMREN, full_name: Zambia Research and Education Network, url: https://zamren.zm, logo: zamren-logo.png,
+     logo_height: 48, class: zamren-credit, role: hosted by}
+# Words kept capitalised when a title in capitals is put into sentence case for citations, added to the general list
+# in portal/app/models/citation.rb (Africa, HIV, UN, Roman numerals and so on): places, institutions and bodies.
+citation:
+  keep_capitals: [Zambia, Zambian, Zambians, Lusaka, Copperbelt, Luapula, Muchinga, Ndola, Kitwe, Kabwe, Livingstone,
+                  Chipata, Kasama, Solwezi, Mongu, Mansa, Chongwe, UNZA, ZESCO, ZRA, ZNBC]
 locale: en

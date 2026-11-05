@@ -1,9 +1,9 @@
-<% content_for(:page_title) { "FAQ — Zambia National ETD Portal" } %>
+<% content_for(:page_title) { "FAQ — #{Netd.portal_name}" } %>
 <div class="netd-page netd-faq">
   <h1>Frequently Asked Questions</h1>
 
-  <h2>What is the Zambia National ETD Portal?</h2>
-  <p>A single place to search the electronic theses and dissertations (ETDs) of Zambian universities and higher education
+  <h2>What is the <%= Netd.portal_name %>?</h2>
+  <p>A single place to search the electronic theses and dissertations (ETDs) of <%= Netd.country_adjective %> universities and higher education
     institutions. It collects descriptions of ETDs (title, author, abstract, subjects, institution, year and so on) from each
     institution's repository and links to the full text held there.</p>
 
@@ -13,7 +13,7 @@
 
   <h2>Which institutions are included?</h2>
   <p>The portal aims to include every institution with Master's or PhD programmes accredited by the
-    <a href="https://www.hea.org.zm" target="_blank" rel="noopener">Higher Education Authority</a>. The home page lists them all;
+    <a href="<%= Netd.regulator_url %>" target="_blank" rel="noopener"><%= Netd.regulator_name %></a>. The home page lists them all;
     institutions showing 0 have no public repository yet, no ETD collection, or a repository that cannot currently be harvested.</p>
 
   <h2>How can my institution's ETDs be included?</h2>
