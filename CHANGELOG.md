@@ -19,6 +19,7 @@ Post-paper changes.
 - `LICENSE` (BSD 3-Clause), `NOTICE` (third-party material), `CONTRIBUTING.md`, `SECURITY.md`.
 
 ### Changed
+- The SRS and SDD are published in the manual site under Reference (an MkDocs hook adds them at build time; the Markdown files stay the master copies); two SDD diagrams that GitHub could not render are fixed, and the diagrams no longer show the old `/beta` address.
 - Manual chapters 5 and 10 describe Cited by (search, record page, REST API 1.7.0, OAI-PMH); new record-page screenshots.
 - The site probe's recovery e-mail now says since when the portal was down (it read the outage start after deleting the file that held it).
 - Record pages at `/theses/<short id>` (the DSpace default handle prefix dropped, e.g. `/theses/zcas-298`), with permanent redirects from `/catalog/<id>`; REST API 1.6.0 accepts the short id (FR-68, SRS 0.37, SDD 0.36; maintenance track).

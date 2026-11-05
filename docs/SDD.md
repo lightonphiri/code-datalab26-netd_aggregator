@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SDD, structured per IEEE 1016-2009 (design viewpoints) |
-| Version | 0.40 |
+| Version | 0.41 |
 | Date | November 4, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Related | `docs/SRS.md` (requirement IDs referenced below) |
@@ -15,6 +15,7 @@
 | 0.1 | October 30, 2026 | Initial design: harvester, raw/canonical stores, crosswalk, enrichers, Blacklight portal, deployment |
 | 0.2 | October 30, 2026 | Discipline/degree derivation; Solr analysers; URL-safe record ids; HTTPS |
 | 0.24 | November 1, 2026 | Fields of study (FR-54 to FR-57): model `openalex-fos` (`netd/ml/models/fieldofstudy.py`, data in `netd/ml/models/data/`), batch prediction in `predict.run`, per-field display thresholds in the overlay, Solr fields `fos_domain_ssim`, `fos_field_ssim`, `fos_subfield_ssim`, `fos_ssm`, `fos_tsim`, facets and record page, API `fields_of_study` (1.2.0), OAI-PMH subject scheme, training scripts in `harvester/tools/` |
+| 0.41 | November 5, 2026 | Diagrams: `/beta` removed from the context, composition and search diagrams (the portal is at the site root since October 31, 2026); two labels quoted so that GitHub's Mermaid renders them; published in the manual site as a Reference page |
 | 0.40 | November 5, 2026 | Country configuration, second part (NFR-15, packaging P3b): `Netd` accessors for wordmark, regulator and credits, citation capitals; page text, titles, Blacklight `application_name` (`config/locales/netd_country.rb`), OAI-PMH repository name and RIS database name from the configuration (post-paper) |
 | 0.39 | November 4, 2026 | Country configuration (NFR-15, packaging P3a): `config/country.yml`; `Netd` module (`portal/config/netd_country.rb`, required by `config/application.rb` before the environment files); `netd.config` in the harvester; `deploy/site.env` written by `deploy.sh` (`python -m netd.config --env`) and read by `netd-probe.sh` and `netd-alert.py`; release archive includes `config/`; OAI-PMH `level:` set filter quoted (`Postgraduate Diploma` is two words) (post-paper) |
 | 0.38 | November 4, 2026 | Cited by, second part (FR-69): `ApiRecord` reads `openalex_id_ssi`, `cited_by_isi`, `cited_by_ssm` (`openalex_id`; `cited_by` = `{count, works: [{openalex_id, title, year, type, url}]}`, count null when unmatched; CSV columns `openalex_id`, `cited_by_count` appended at the end), `Api::V1::RecordsController` `cited` (fq `cited_by_isi:[1 TO *]`, negated for false) and sort `cited` (`cited_by_isi desc, year_isi desc, id asc`; unmatched theses have no value and sort with 0), OpenAPI 1.7.0; `OaiController#identifiers` adds `https://openalex.org/<W id>` (repeatable `dc:identifier` / ETD-MS `identifier`, so both formats stay schema-valid); `CatalogController` query facet `cited` ("Citations (OpenAlex)", one value "Cited") and sort `cited` ("Most Cited"); `EtdResultComponent#cited_line` links to `#cited-by` on the record page; `HeaReport`: `CITED`, `MATCHED`, `Filters#cited` (form checkbox in `_filters`), summary rows, `citation_sections` (JSON facet on `institution_ssim` with query sub-facets and `sum(cited_by_isi)`; the 20 most cited through `each_doc`), listing column `cited_by`. No Solr schema change (dynamic fields from session 13); no harvester change |
@@ -101,7 +102,7 @@ flowchart TB
   NETD[[NETD v2]]
   IR1 -->|ListRecords dim| NETD
   IR2 -->|ListRecords dim| NETD
-  Users -->|HTTPS /beta| NETD
+  Users -->|HTTPS| NETD
   NETD -->|OAI-PMH /oai oai_dc, etdms| NDLTD
 ```
 
@@ -127,7 +128,7 @@ flowchart LR
     RC[EtdResultComponent<br/>cards, badges]
     TH[netd.css theme]
   end
-  APA[Apache reverse proxy /beta]
+  APA[Apache reverse proxy]
   CLI --> HV --> ST
   CLI --> CW --> EN --> ST
   EN -.->|registered in enrichers.yml| ML
@@ -272,7 +273,7 @@ flowchart LR
   T -->|first pages, front matter first| PT[(pdf_text)]
   PT --> P[predict runner]
   R -->|harvested values only| P
-  M[models/titlepage.py<br/>NAME, VERSION, FIELDS, USES,<br/>prepare(texts), predict(meta, text)] --> P
+  M["models/titlepage.py<br/>NAME, VERSION, FIELDS, USES,<br/>prepare(texts), predict(meta, text)"] --> P
   C[Colab / elsewhere] -->|JSON Lines| L[load-predictions]
   P --> PR[(predictions)]
   L --> PR
@@ -564,10 +565,10 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
   participant B as Browser
-  participant A as Apache /beta
+  participant A as Apache
   participant P as Puma + Blacklight
   participant Q as Solr
-  B->>A: GET /beta/?q=malaria&f[faculty_ssim][]=Medicine
+  B->>A: GET /?q=malaria&f[faculty_ssim][]=Medicine
   A->>P: proxy 127.0.0.1:3010
   P->>Q: /select edismax + facet.field…
   Q-->>P: docs + facet counts
@@ -603,7 +604,7 @@ flowchart TB
     TI[netd-harvest.timer<br/>daily harvest+process+index, then check]
     BK[netd-backup.timer<br/>nightly backup + Drive copy]
     PR[netd-probe.timer<br/>site check every 15 min]
-    AL[netd-alert@ unit<br/>email via SMTP]
+    AL["netd-alert@ unit<br/>email via SMTP"]
     FS["/opt/netd: harvester, portal, solr, ruby, netd.sqlite3"]
   end
   AP --> PU

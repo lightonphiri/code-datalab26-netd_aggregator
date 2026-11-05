@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SRS, structured per ISO/IEC/IEEE 29148:2018 (supersedes IEEE 830-1998) |
-| Version | 0.41 |
+| Version | 0.42 |
 | Date | November 4, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Repository | https://github.com/lightonphiri/code-datalab26-netd_aggregator |
@@ -16,6 +16,7 @@
 | 0.1 | October 30, 2026 | Initial SRS: harvesting (UNZA, UNILUS), cleaning pipeline, Blacklight discovery |
 | 0.2 | October 30, 2026 | Discipline and Degree fields (FR-12, FR-21); institution entry points (FR-26); HTTPS (NFR-9); PDF pilot and onboarding findings (§4) |
 | 0.26 | November 1, 2026 | Standard fields of study: FR-54 scheme (OpenAlex Topics), FR-55 assignment to every record with back-off, FR-56 exposure (portal facets, record page, REST API `fields_of_study` (API 1.2.0), OAI-PMH `etdms` subject scheme and `oai_dc` URIs, FAQ and Developer Resources), FR-57 model, training data and evaluation; repository subjects shown as "Keywords (from the repository)" |
+| 0.42 | November 5, 2026 | Context diagram (2.1): the portal at netd.ac.zm (it left `/beta` on October 31, 2026); published in the manual site as a Reference page; FR-34's e-mail subject written as code (a bare `<title>` broke the published page) |
 | 0.41 | November 5, 2026 | NFR-15 second part (packaging P3b): country, regulator, wordmark, credits and portal name in page text, and the citation capitals list, from `config/country.yml`; verification row extended (post-paper) |
 | 0.40 | November 4, 2026 | NFR-15 Configurability: the installation's identity (country, portal name and host, regulator, contacts, mail senders, credits, time zone) in one file, `config/country.yml`, read at start-up; first part (packaging P3a): host, contacts, senders, time zone and portal name in mail, reports and OAI-PMH (post-paper) |
 | 0.39 | November 4, 2026 | FR-69 second part: citations in the REST API (API 1.7.0: `openalex_id`, `cited_by` with count and citing works, `cited` filter, `sort=cited`; two CSV columns appended), the OpenAlex work as an identifier in OAI-PMH (`oai_dc` and `etdms`), a "Citations (OpenAlex)" filter ("Cited") and a "Most Cited" sort on search pages, "Cited by N" on result cards, and citations in the HEA reports (summary rows, cited theses by institution, the 20 most cited, a "Cited by" column and a cited-only filter) (post-paper) |
@@ -118,7 +119,7 @@ flowchart LR
   R --> P[Crosswalk + Enrichers<br/>rules & ML models]
   P --> K[(Canonical records<br/>with provenance)]
   K --> S[(Solr index)]
-  S --> U[Blacklight portal<br/>netd.ac.zm/beta]
+  S --> U[Blacklight portal<br/>netd.ac.zm]
   K --> O[OAI-PMH provider /oai] --> N[NDLTD Union Catalog]
 ```
 
@@ -231,7 +232,7 @@ Priority: **M** = must (v0.1), **S** = should (v0.2), **C** = could (later).
 | FR-30 | The home page shall state that metadata is meant to be harvested from all institutions offering HEA-accredited Master's and PhD programmes, citing HEA. | M |
 | FR-31 | The portal (About page) and the repository (`PUBLICATIONS.md`) shall list the project details [R14], the project members with their roles as on the DataLab people page (the PI marked Principal Investigator), and the publications, dissertations and capstone reports based on the Zambia National ETD Portal project, with a short explanation of how they relate to the portal, from one source file (`portal/config/publications.yml`). | M |
 | FR-35 | Every page shall have a footer, as on Academic Commons [R15], with links to About, FAQ, Developer Resources and Credits, the contact address datalab@unza.zm, and a line crediting the DataLab Research Group (development) and ZAMREN (hosting). The About page shall credit both, with their logos. Developer Resources shall document the JSON (REST) API and the OAI-PMH interface (EI-4). Credits shall name DataLab and ZAMREN, the Core Team (Lighton Phiri, Lead Developer and Principal Investigator; Elijah Chileshe, Assistant Programmer/Analyst), and as Contributors and Former Team Members the students listed on the project page [R14]. | M |
-| FR-34 | Record pages shall offer a "Report a problem" popup form (problem type, message, name, email address, record URL). Each report shall be stored in the portal database and emailed to lighton.phiri@unza.ac.zm and datalab@unza.zm (subject "(Zambia National ETD Portal) <problem>: <title>", reply-to the reporter) through an authenticated SMTP account; the form shall have a spam trap and a rate limit. | M |
+| FR-34 | Record pages shall offer a "Report a problem" popup form (problem type, message, name, email address, record URL). Each report shall be stored in the portal database and emailed to lighton.phiri@unza.ac.zm and datalab@unza.zm (subject `(<portal name>) <problem>: <title>`, reply-to the reporter) through an authenticated SMTP account; the form shall have a spam trap and a rate limit. | M |
 | FR-36 | Admin sign-in. The system shall provide an admin panel at /admin for the portal team only. Access shall require an email address and password; accounts shall be created, reset and disabled from the server's command line only (no self-registration). A new or reset account shall get a one-time password that must be changed at first sign-in (at least 12 characters). Sessions shall end after 2 hours of inactivity or 12 hours in total, and on sign-out. Each account shall have a role: "admin" (every admin page and action) or "viewer" (read-only, e.g. for HEA staff: the reports for HEA, metadata quality and usage pages, and changing its own password; every other admin page redirects to the reports and is left out of the menu). The role is set from the command line (November 2, 2026). | M |
 | FR-37 | Admin dashboard. The panel shall show every source with its loader, latest harvest (time, status, message), records in the staging store and in the search index, whether a harvest is running, and the number of open problem reports; a source page shall list its recent harvests. An administrator shall be able to start a harvest of one source ("Run now"); it shall never run at the same time as another harvest, including the nightly one. | M |
 | FR-38 | Problem reports in the panel. Reports received through FR-34 shall be listed (open or resolved), shown in full, and marked resolved or reopened with a note recording what was done; the panel shall record who resolved a report and when. | M |

@@ -49,7 +49,7 @@ When testing a live installation, add `check` to the user agent (for example `Mo
 
 ## 12.3 How changes are made
 
-1. **Requirements first.** Every feature or behaviour change updates `docs/SRS.md` (a requirement with an identifier, and the revision history) and `docs/SDD.md` (the design and the revision history) in the same change.
+1. **Requirements first.** Every feature or behaviour change updates `docs/SRS.md` (a requirement with an identifier, and the revision history) and `docs/SDD.md` (the design and the revision history) in the same change. Both are published in this site under Reference ([requirements](reference/srs.md), [design](reference/sdd.md)) each time it is built.
 2. **Data changes are dry-run** on a copy of the store before they reach the live one; model changes are tuned on the dev half of the gold standard and reported on the test half.
 3. **Small releases.** Each release is one commit (or a few) that can be deployed and checked on its own.
 4. **Changelog and tags.** Add the change under `[Unreleased]` in `CHANGELOG.md`. A release moves those entries under a new version heading and gets an annotated tag `vX.Y.Z` on its commit (Semantic Versioning: a new feature raises Y, a fix raises Z). Commit dates and published tags are never rewritten.

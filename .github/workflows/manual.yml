@@ -3,7 +3,7 @@ name: manual
 on:
   push:
     branches: [main]
-    paths: ["docs/manual/**", "mkdocs.yml", ".github/workflows/manual.yml"]
+    paths: ["docs/manual/**", "docs/SRS.md", "docs/SDD.md", "docs/mkdocs_hooks.py", "mkdocs.yml", ".github/workflows/manual.yml"]
   workflow_dispatch:
 permissions:
   contents: write

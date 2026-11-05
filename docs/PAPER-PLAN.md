@@ -348,6 +348,7 @@ Nothing in this session changes an evaluated component (text extraction, OCR, mo
 - Released as 644412a (deployed); after it, captures of 12 pages, OAI-PMH and REST responses and screenshots matched those before (For Institutions in white space only; the home page differed only by Turbo's progress-bar style, injected depending on load timing); `tests/api_conformance.py` 0 problems; `tests/oai_conformance.py` 48 checks, 0 problems.
 
 ### Documentation
+- The SRS and SDD are published in the manual site under Reference (Lighton, November 5, 2026), added at build time by an MkDocs hook so that the Markdown files stay the only master copies. All 19 Mermaid diagrams were parsed with Mermaid 11.17; two SDD diagrams that GitHub could not render (parentheses and "@" in unquoted labels) were fixed, and the current diagrams no longer show the `/beta` address the portal left on October 31, 2026.
 - Manual chapters 5 and 10 now describe Cited by (FR-69, maintenance track): result cards, the Most Cited sort and Citations filter, the record page (new screenshots), the API 1.7.0 fields and the OpenAlex identifier in OAI-PMH.
 
 ## Technical record from session 14 (November 4, 2026, documentation and packaging track; post-paper)

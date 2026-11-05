@@ -4,6 +4,7 @@ site_url: https://lightonphiri.github.io/code-datalab26-netd_aggregator/
 repo_url: https://github.com/lightonphiri/code-datalab26-netd_aggregator
 edit_uri: edit/main/docs/manual/
 docs_dir: docs/manual
+hooks: [docs/mkdocs_hooks.py]   # adds docs/SRS.md and docs/SDD.md as Reference pages
 site_dir: site
 copyright: NETD is released under the BSD 3-Clause licence.
 theme:
@@ -33,3 +34,6 @@ nav:
   - 10. Interfaces: 10-interfaces.md
   - 11. Architecture: 11-architecture.md
   - 12. Developing and contributing: 12-developing.md
+  - Reference:
+      - Software requirements (SRS): reference/srs.md
+      - Software design (SDD): reference/sdd.md
