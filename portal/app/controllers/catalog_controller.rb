@@ -26,45 +26,47 @@ class CatalogController < ApplicationController
     # ---- record page ----------------------------------------------------
     config.show.title_field = 'title_tsim'
     config.show.document_component = EtdShowComponent
-    config.add_show_field 'author_tsim', label: 'Author', link_to_facet: 'author_ssim'
-    config.add_show_field 'supervisor_ssim', label: 'Supervisor', link_to_facet: 'supervisor_ssim'
-    config.add_show_field 'institution_ssim', label: 'Institution', link_to_facet: true
-    config.add_show_field 'faculty_tsim', label: 'Faculty / School', link_to_facet: 'faculty_ssim'
-    config.add_show_field 'department_tsim', label: 'Department', link_to_facet: 'department_ssim'
-    config.add_show_field 'degree_level_ssim', label: 'Degree level', link_to_facet: true
-    config.add_show_field 'degree_ssim', label: 'Degree', link_to_facet: true
-    config.add_show_field 'discipline_tsim', label: 'Programme / Discipline', link_to_facet: 'discipline_ssim'
-    config.add_show_field 'year_ssim', label: 'Year', link_to_facet: true
-    config.add_show_field 'subject_tsim', label: 'Keywords (from the repository)', link_to_facet: 'subject_ssim', separator_options: { words_connector: '; ', last_word_connector: '; ', two_words_connector: '; ' }
-    config.add_show_field 'language_ssim', label: 'Language'
-    config.add_show_field 'abstract_tesim', label: 'Abstract'
+    config.add_show_field 'author_tsim', link_to_facet: 'author_ssim'
+    config.add_show_field 'supervisor_ssim', link_to_facet: 'supervisor_ssim'
+    config.add_show_field 'institution_ssim', link_to_facet: true
+    config.add_show_field 'faculty_tsim', link_to_facet: 'faculty_ssim'
+    config.add_show_field 'department_tsim', link_to_facet: 'department_ssim'
+    config.add_show_field 'degree_level_ssim', link_to_facet: true
+    config.add_show_field 'degree_ssim', link_to_facet: true
+    config.add_show_field 'discipline_tsim', link_to_facet: 'discipline_ssim'
+    config.add_show_field 'year_ssim', link_to_facet: true
+    config.add_show_field 'subject_tsim', link_to_facet: 'subject_ssim', separator_options: { words_connector: '; ', last_word_connector: '; ', two_words_connector: '; ' }
+    config.add_show_field 'language_ssim'
+    config.add_show_field 'abstract_tesim'
 
     # ---- facets ----------------------------------------------------------
-    config.add_facet_field 'institution_ssim', label: 'Institution', limit: 10, collapse: false,
+    config.add_facet_field 'institution_ssim', limit: 10, collapse: false,
                                               component: InstitutionFacetComponent
-    config.add_facet_field 'full_text_ssim', label: 'Full text', collapse: false
+    config.add_facet_field 'full_text_ssim', collapse: false
     # Theses cited by at least one work in OpenAlex (FR-69)
-    config.add_facet_field 'cited', label: 'Citations (OpenAlex)', collapse: false,
-                                    query: { 'cited' => { label: 'Cited', fq: 'cited_by_isi:[1 TO *]' } }
-    config.add_facet_field 'degree_level_ssim', label: 'Degree level', collapse: false
+    config.add_facet_field 'cited', collapse: false,
+                                    helper_method: :cited_facet_label,
+                                    query: { 'cited' => { fq: 'cited_by_isi:[1 TO *]' } }
+    config.add_facet_field 'degree_level_ssim', collapse: false
     # Field of study: OpenAlex Topics, assigned to every record (FR-55); the main subject facets
-    config.add_facet_field 'fos_domain_ssim', label: 'Research domain', limit: 4, collapse: false
-    config.add_facet_field 'fos_field_ssim', label: 'Field of study', limit: 10, collapse: false
-    config.add_facet_field 'fos_subfield_ssim', label: 'Subfield', limit: 10
-    config.add_facet_field 'faculty_ssim', label: 'Faculty / School', limit: 10
-    config.add_facet_field 'department_ssim', label: 'Department', limit: 10
-    config.add_facet_field 'discipline_ssim', label: 'Programme / Discipline', limit: 10
-    config.add_facet_field 'degree_ssim', label: 'Degree', limit: 10
-    config.add_facet_field 'supervisor_ssim', label: 'Supervisor', limit: 10
-    config.add_facet_field 'subject_ssim', label: 'Keywords (from the repository)', limit: 15
-    config.add_facet_field 'year_ssim', label: 'Year', limit: 200, sort: 'index', component: YearFacetComponent
-    config.add_facet_field 'author_ssim', label: 'Author', show: false
+    config.add_facet_field 'fos_domain_ssim', limit: 4, collapse: false
+    config.add_facet_field 'fos_field_ssim', limit: 10, collapse: false
+    config.add_facet_field 'fos_subfield_ssim', limit: 10
+    config.add_facet_field 'faculty_ssim', limit: 10
+    config.add_facet_field 'department_ssim', limit: 10
+    config.add_facet_field 'discipline_ssim', limit: 10
+    config.add_facet_field 'degree_ssim', limit: 10
+    config.add_facet_field 'supervisor_ssim', limit: 10
+    config.add_facet_field 'subject_ssim', limit: 15
+    config.add_facet_field 'year_ssim', limit: 200, sort: 'index', component: YearFacetComponent
+    config.add_facet_field 'author_ssim', show: false
     config.add_facet_fields_to_solr_request!
 
     # ---- search fields -----------------------------------------------------
-    config.add_search_field 'all_fields', label: 'All fields'
-    { 'title' => 'Title', 'author' => 'Author', 'supervisor' => 'Supervisor', 'subject' => 'Subject' }.each do |key, label|
-      config.add_search_field(key, label: label) do |field|
+    # Labels of facets, record fields, search fields and sort options: en.yml, blacklight.search.fields.<context>.<field> (P4e)
+    config.add_search_field 'all_fields'
+    %w[title author supervisor subject].each do |key|
+      config.add_search_field(key) do |field|
         field.solr_parameters = { 'spellcheck.dictionary': key == 'supervisor' ? 'default' : key,
                                   qf: "${#{key}_qf}", pf: "${#{key}_pf}" }
       end
@@ -77,14 +79,14 @@ class CatalogController < ApplicationController
     config.add_results_collection_tool(:follow_search, partial: 'follow_search_link')  # feeds for a search (FR-60)
 
     # Sort options as on Columbia's Academic Commons (FR-22)
-    config.add_sort_field 'relevance', sort: 'score desc, year_isi desc, title_ssort asc', label: 'Best Match'
-    config.add_sort_field 'latest', sort: 'year_isi desc, title_ssort asc', label: 'Published Latest'
-    config.add_sort_field 'earliest', sort: 'year_isi asc, title_ssort asc', label: 'Published Earliest'
-    config.add_sort_field 'title_az', sort: 'title_ssort asc, year_isi desc', label: 'Title A-Z'
-    config.add_sort_field 'title_za', sort: 'title_ssort desc, year_isi desc', label: 'Title Z-A'
-    config.add_sort_field 'added', sort: 'added_dtsi desc, title_ssort asc', label: 'Newest Additions'  # FR-60
+    config.add_sort_field 'relevance', sort: 'score desc, year_isi desc, title_ssort asc'
+    config.add_sort_field 'latest', sort: 'year_isi desc, title_ssort asc'
+    config.add_sort_field 'earliest', sort: 'year_isi asc, title_ssort asc'
+    config.add_sort_field 'title_az', sort: 'title_ssort asc, year_isi desc'
+    config.add_sort_field 'title_za', sort: 'title_ssort desc, year_isi desc'
+    config.add_sort_field 'added', sort: 'added_dtsi desc, title_ssort asc'  # FR-60
     # Most citing works in OpenAlex first (FR-69); uncited and unmatched theses follow, newest first
-    config.add_sort_field 'cited', sort: 'cited_by_isi desc, year_isi desc, title_ssort asc', label: 'Most Cited'
+    config.add_sort_field 'cited', sort: 'cited_by_isi desc, year_isi desc, title_ssort asc'
 
     config.spell_max = 5
     config.autocomplete_enabled = false

@@ -5,12 +5,8 @@ require 'csv'
 # The metadata quality report written by `netd.cli quality-report` after every scheduled run (SRS FR-28).
 # Public page: overall figures only; per-institution breakdown in the admin panel.
 class QualityReport
-  GROUPS = {
-    'repository' => ['In the repository element', 'Supplied by the institution\'s repository in the proper metadata element'],
-    'elsewhere' => ['Elsewhere in the repository', 'Supplied by the repository, but only in collection names or free text'],
-    'portal' => ['Filled by the portal', 'Read from the PDF by the portal\'s models, or corrected by the portal team'],
-    'missing' => ['Missing', 'No value']
-  }.freeze
+  # code => [label, description]; text in en.yml under netd.quality_groups (P4e)
+  GROUPS = LocalisedLabels.new('netd.quality_groups', %w[repository elsewhere portal missing], fields: %w[label description])
 
   def self.load
     JSON.parse(File.read(File.join(Harvester::LOGS, 'quality.json')))

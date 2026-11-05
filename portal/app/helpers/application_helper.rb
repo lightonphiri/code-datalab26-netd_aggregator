@@ -3,6 +3,9 @@ module ApplicationHelper
   # available for interpolation (Netd.text_values). Keys ending in _html are HTML; other values are escaped.
   def nt(key, **values) = t("netd.#{key}", **Netd.text_values.merge(values))
 
+  # Label of the Citations facet's one item (a query facet; Blacklight calls this before using the query's label)
+  def cited_facet_label(_value) = nt('facets.cited')
+
   # The regulator's name linked to its website, opening in a new tab (for %{regulator_link} in interface text).
   def regulator_link = tag.a(Netd.regulator_name, href: Netd.regulator_url, target: '_blank', rel: 'noopener')
 

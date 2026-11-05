@@ -61,7 +61,7 @@ module Admin
     end
 
     def blacklight_facet_labels
-      CatalogController.blacklight_config.facet_fields.to_h { |k, v| [k.to_s, (v.label.presence || k).to_s] }
+      CatalogController.blacklight_config.facet_fields.to_h { |k, v| [k.to_s, (v.display_label('facet').presence || k).to_s] }
     rescue StandardError
       {}
     end

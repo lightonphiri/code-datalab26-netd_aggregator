@@ -14,7 +14,7 @@ class FollowController < ApplicationController
     @rss = search_action_url(feed.merge(format: 'rss'))
     @results = search_action_path(@query.merge(sort: 'added'))
     @filters = (@query['f'] || {}).flat_map do |field, values|
-      label = blacklight_config.facet_fields[field]&.label || field
+      label = blacklight_config.facet_fields[field]&.display_label('facet') || field
       Array(values).map { |v| "#{label}: #{v}" }
     end
   end

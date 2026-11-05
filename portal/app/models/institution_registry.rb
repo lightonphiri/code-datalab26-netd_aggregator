@@ -3,13 +3,9 @@
 # HEA-accredited postgraduate institutions (harvester/institutions.yml), shared by the
 # home page and the Institution facet so institutions with no harvested ETDs show "0".
 class InstitutionRegistry
-  STATUS_LABELS = {
-    'harvested' => 'Harvested',
-    'no-etds-yet' => 'Repository has no theses yet',
-    'no-etd-collection' => 'Repository has no ETD collection',
-    'repository-unreachable' => 'Repository not reachable or not harvestable',
-    'no-repository-known' => 'No public repository known'
-  }.freeze
+  # Labels in en.yml under netd.institution_status (P4e)
+  STATUS_LABELS = LocalisedLabels.new('netd.institution_status',
+                                      %w[harvested no-etds-yet no-etd-collection repository-unreachable no-repository-known])
 
   def self.path
     ENV.fetch('NETD_INSTITUTIONS', Rails.root.join('..', 'harvester', 'institutions.yml').to_s)

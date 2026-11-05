@@ -15,7 +15,9 @@
 #
 # Moved into this file so far: header, footer and home page (P4a); About, Credits, FAQ, For Institutions, Developer
 # Resources and the REST API reference (P4b); Browse by Faculty, Follow a search, Metadata Quality and the "Follow
-# this search" button (P4c). The search results and record pages and the administration pages follow later.
+# this search" button (P4c); the record page, result cards and facet toggles (P4d); institution status and quality
+# group labels, and below the netd: block Blacklight's field, facet and sort labels and the date formats (P4e).
+# The administration pages and mail follow later.
 
 en:
   netd:
@@ -414,3 +416,80 @@ en:
       more_institutions_html: "more <span class=\"sr-only visually-hidden\">Institution</span> »"
       more_years_html: "more <span class=\"visually-hidden\">years</span> »"
       fewer_html: "« fewer"
+      cited: "Cited"
+    # Status of each institution in the regulator's list (home page, admin dashboard, reports); P4e
+    institution_status:
+      harvested: "Harvested"
+      no-etds-yet: "Repository has no theses yet"
+      no-etd-collection: "Repository has no ETD collection"
+      repository-unreachable: "Repository not reachable or not harvestable"
+      no-repository-known: "No public repository known"
+    # Origins of a metadata value (Metadata Quality page and admin quality page); P4e
+    quality_groups:
+      repository:
+        label: "In the repository element"
+        description: "Supplied by the institution's repository in the proper metadata element"
+      elsewhere:
+        label: "Elsewhere in the repository"
+        description: "Supplied by the repository, but only in collection names or free text"
+      portal:
+        label: "Filled by the portal"
+        description: "Read from the PDF by the portal's models, or corrected by the portal team"
+      missing:
+        label: "Missing"
+        description: "No value"
+  # Dates: l(time, format: :netd) prints "November 5, 2026, 14:30" (P4e)
+  time:
+    formats:
+      netd: "%B %-d, %Y, %H:%M"
+  date:
+    formats:
+      netd: "%B %-d, %Y"
+  # Labels of facets, record fields, search fields and sort options (Blacklight 9 reads
+  # blacklight.search.fields.<context>.<field> before the label: in CatalogController); P4e
+  blacklight:
+    search:
+      fields:
+        facet:
+          institution_ssim: "Institution"
+          full_text_ssim: "Full text"
+          cited: "Citations (OpenAlex)"
+          degree_level_ssim: "Degree level"
+          fos_domain_ssim: "Research domain"
+          fos_field_ssim: "Field of study"
+          fos_subfield_ssim: "Subfield"
+          faculty_ssim: "Faculty / School"
+          department_ssim: "Department"
+          discipline_ssim: "Programme / Discipline"
+          degree_ssim: "Degree"
+          supervisor_ssim: "Supervisor"
+          subject_ssim: "Keywords (from the repository)"
+          year_ssim: "Year"
+          author_ssim: "Author"
+        show:
+          author_tsim: "Author"
+          supervisor_ssim: "Supervisor"
+          institution_ssim: "Institution"
+          faculty_tsim: "Faculty / School"
+          department_tsim: "Department"
+          degree_level_ssim: "Degree level"
+          degree_ssim: "Degree"
+          discipline_tsim: "Programme / Discipline"
+          year_ssim: "Year"
+          subject_tsim: "Keywords (from the repository)"
+          language_ssim: "Language"
+          abstract_tesim: "Abstract"
+        search:
+          all_fields: "All fields"
+          title: "Title"
+          author: "Author"
+          supervisor: "Supervisor"
+          subject: "Subject"
+        sort:
+          relevance: "Best Match"
+          latest: "Published Latest"
+          earliest: "Published Earliest"
+          title_az: "Title A-Z"
+          title_za: "Title Z-A"
+          added: "Newest Additions"
+          cited: "Most Cited"
