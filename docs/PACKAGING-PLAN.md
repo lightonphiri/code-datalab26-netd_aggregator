@@ -73,12 +73,14 @@ Loaded once at start-up: Rails (`config/initializers/netd_country.rb` → `Rails
 
 **P3 in two parts.** P3a (November 4, 2026): `config/country.yml`, the loaders and `deploy/site.env`; host name, contacts, senders, portal name in mail, reports and OAI-PMH, time zone. P3b (November 5, 2026): country and regulator names, wordmark and credits in page text, citation `KEEP` list; accepted by the scratch-copy boot test (22 responses compared) and identical captures before and after. `HeaReport` keeps its name (invisible to users; renaming would touch the maintenance track's report code). Static files and Apache sites stay for P6.
 
+**P4 in parts.** P4a (November 5, 2026): header, footer and home page into `portal/config/locales/en.yml` (`nt` helper, `Netd.text_values`, `regulator_link`); accepted by the boot test (22 responses: 9 identical, 11 pages in white space only, quality and stats environmental) and identical screenshots. Next: P4b About, Credits, FAQ, For Institutions, Developer Resources; P4c browse, follow, quality, search and record pages (and `InstitutionRegistry::STATUS_LABELS`); P4d admin pages and mail. Remove the unread `credits.hosting` block of `publications.yml` with P4b.
+
 | # | Release | Contents | Check |
 |---|---|---|---|
 | P1 | Repository hygiene | remove the tracked `deploy/ops/__pycache__/*.pyc`; `.gitignore` for all `__pycache__` and `site/`; `CHANGELOG.md`; manual; MkDocs and Pages workflow | `git ls-files` has no caches; the manual builds with `mkdocs build --strict` |
 | P2 (done November 4, 2026) | Licence and notices | `LICENSE` (BSD 3-Clause), `NOTICE` (section 6), `CONTRIBUTING.md`, `SECURITY.md` (how to report a vulnerability), README licence section | after Lighton's IP policy check |
 | P3 (P3a done November 4, 2026; P3b done November 5, 2026) | Country configuration, read-only | `country.yml` and the loaders; replace host name, contacts, time zone and names in code with configuration reads; Zambia's file reproduces today's pages | page-by-page screenshots identical; API and OAI conformance tests pass |
-| P4 | Text into locale files | template text into `en.yml` keys | screenshots identical |
+| P4 (P4a done November 5, 2026) | Text into locale files | template text into `en.yml` keys | screenshots identical |
 | P5 | Theme folder | `themes/default` (neutral colours, generic wordmark) and `themes/zambia` | screenshots with each theme |
 | P6 | Deployment templates | Apache sites, probe, alert and backup scripts rendered from `deploy/site.env`; `install-server.sh` also installs uv and checks Java; no Zambian paths left in `deploy/` | a fresh install on a clean VM following manual chapter 3 |
 | P7 | Demo data and source | `config/examples/demo/`: a small public OAI-PMH source (or a bundled sample of public records as CSV) so a new installation shows results at once | fresh install shows records after `netd.cli run` |

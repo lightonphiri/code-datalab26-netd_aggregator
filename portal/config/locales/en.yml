@@ -1,31 +1,74 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
+# Interface text of the portal (packaging step P4; SRS NFR-15, SDD 8.1, manual 8.6).
 #
-# To use the locales, use `I18n.t`:
+# Templates read these keys with the helper nt('area.key'), which looks up netd.area.key and adds the country
+# configuration's values (config/country.yml) for interpolation:
+#   %{portal}             portal name                    %{country}           country name
+#   %{country_adjective}  "Zambian" in "Zambian universities"
+#   %{regulator}          regulator's full name          %{regulator_short}   regulator's short name
+# Some keys take their own values as well (%{n}, %{link}, ...); the comment above the key says so.
 #
-#     I18n.t "hello"
+# Keys ending in _html hold HTML: write & as &amp; and do not use < or > except in tags. Interpolated values are
+# escaped unless the template marks them as HTML. Other keys are plain text and are escaped where they are shown.
+# A second language is a copy of this file with the same keys (for example fr.yml under fr:); see manual 8.6.
+# Quote every value (YAML reads yes, no, on and off as true or false).
 #
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
+# Moved into this file so far: header, footer and home page (P4a). The other pages follow in later releases.
 
 en:
-  hello: "Hello world"
+  netd:
+    header:
+      search: "Search"
+      search_placeholder: "Search theses and dissertations…"
+      nav_label: "Main"
+      about_html: "About"
+      explore_html: "Explore"
+      browse_html: "Browse by Faculty"
+
+    footer:
+      nav_label: "Footer"
+      about: "About"
+      faq: "FAQ"
+      developers: "Developer Resources"
+      contribute: "For Institutions"
+      quality: "Metadata Quality"
+      credits: "Credits"
+      admin_html: "Administration"
+      admin_title: "Sign in to the administration panel (portal and %{regulator_short} staff)"
+      text_html: "The %{portal} provides access to theses and dissertations from %{country_adjective} universities and higher education institutions."
+      # Followed by the credits of config/country.yml: "It is developed by X and hosted by Y."
+      credits_intro_html: "It is"
+      credits_separator_html: ", "
+      credits_last_html: "and"
+
+    home:
+      intro_html: "<strong>%{portal}</strong> provides a single point of access to theses and dissertations produced at %{country_adjective} universities and higher education institutions."
+      learn_more: "Learn more →"
+      masters_title_html: "Explore Master's Manuscripts"
+      # %{n}: number of master's records
+      masters_text_html: "Browse %{n} master's dissertations and theses, filter by institution, faculty, subject and year, and download the full text where the repository provides it."
+      doctoral_title_html: "Explore PhD Manuscripts"
+      # %{n}: number of doctoral records
+      doctoral_text_html: "Browse %{n} doctoral theses from %{country_adjective} universities, with direct links to the full text held in each institutional repository."
+      stats_html: "Stats at a glance"
+      stat_total: "total ETDs"
+      stat_masters: "master's"
+      stat_doctoral: "doctoral"
+      stat_pdf: "with full-text PDF"
+      # %{n} of %{total} institutions
+      stat_institutions_count_html: "%{n} of %{total}"
+      stat_institutions_html: "institutions contributing"
+      stat_years_html: "years covered"
+      # %{n}: records without a degree level
+      no_level_html: "%{n} ETDs do not yet state their degree level in the source repository."
+      newest: "Newest additions"
+      follow_title: "Feeds of new additions, for a feed reader or email"
+      follow_html: "follow new additions"
+      contributing_html: "Contributing institutions"
+      # %{n}: number of listed institutions; %{regulator_link}: the regulator's name linked to its website
+      harvest_note_html: "Metadata is meant to be harvested from all <strong>%{n}</strong> institutions offering Master's and PhD programmes accredited by the %{regulator_link}."
+      # %{n}: institutions with no records yet
+      show_waiting_html: "Show the %{n} not yet harvested »"
+      hide_waiting_html: "« Hide"
+      # %{link}: link to the For Institutions page, with the text of listed_zero_link
+      listed_zero_html: "Is your institution listed with 0? %{link}."
+      listed_zero_link: "Here is how to add its theses and dissertations"

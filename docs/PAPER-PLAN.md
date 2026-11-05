@@ -336,6 +336,15 @@ Code: `harvester/netd/people.py`, `harvester/netd/ml/evaluate.py` (`person_words
 ### Artefacts
 `work/bare-s12a.py` (laptop); SRS 0.34, SDD 0.33; SRS 0.35, SDD 0.34 (FR-65); `work/urls-s12b.py`, `work/oai-s12c.py` (laptop); `portal/config/csl/README.md`.
 
+## Technical record from session 16 (November 5, 2026, documentation and packaging track; post-paper)
+
+Nothing in this session changes an evaluated component (text extraction, OCR, models, the overlay) or the usage counting code; the FINAL and `paper-v1` rows stand, and no evidence-log row is needed.
+
+### Interface text in locale files (packaging P4, NFR-15)
+- P4a moved the header, footer and home-page wording into `portal/config/locales/en.yml`, read through a small helper that adds the configuration's names (portal, country, adjective, regulator) to every lookup, so that the wording and the installation's identity stay separate: another country edits names in `config/country.yml` and wording in `en.yml`, and a translation is a second locale file.
+- Keeping the pages unchanged decided two conventions. Text written directly in a template becomes an `_html` key, because Rails escapes plain keys and would turn apostrophes into `&#39;`; text that was a Ruby string becomes a plain key, because it was escaped before as well. A linked name inside a sentence is written by a helper with the template's attribute order (`link_to` puts `href` last). Sentences that were wrapped over two template lines are now one line, so pages differ from before in white space only, which a browser does not render; byte-identical output would have meant writing template indentation into every translation.
+- Accepted by the scratch-copy boot test (22 pages and responses: the 9 OAI-PMH, REST API and citation responses identical, 11 HTML pages identical except for white space, the quality page and statistics environmental) and by screenshots before and after the release.
+
 ## Technical record from session 15 (November 5, 2026, documentation and packaging track; post-paper)
 
 Nothing in this session changes an evaluated component (text extraction, OCR, models, the overlay) or the usage counting code; the FINAL and `paper-v1` rows stand, and no evidence-log row is needed. (The citation capitals list affects only "How to cite" text, which is not evaluated.)

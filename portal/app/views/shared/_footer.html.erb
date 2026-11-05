@@ -1,13 +1,12 @@
 <footer class="netd-footer">
   <div class="container netd-footer-links">
-    <nav aria-label="Footer">
-      <%= link_to 'About', about_path %><span>|</span><%= link_to 'FAQ', faq_path %><span>|</span><%= link_to 'Developer Resources', developers_path %><span>|</span><%= link_to 'For Institutions', contribute_path %><span>|</span><%= link_to 'Metadata Quality', quality_path %><span>|</span><%= link_to 'Credits', credits_path %><span>|</span><%= link_to admin_root_path, class: 'netd-footer-admin', rel: 'nofollow', title: "Sign in to the administration panel (portal and #{Netd.regulator_short_name} staff)" do %><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Administration<% end %>
+    <nav aria-label="<%= nt('footer.nav_label') %>">
+      <%= link_to nt('footer.about'), about_path %><span>|</span><%= link_to nt('footer.faq'), faq_path %><span>|</span><%= link_to nt('footer.developers'), developers_path %><span>|</span><%= link_to nt('footer.contribute'), contribute_path %><span>|</span><%= link_to nt('footer.quality'), quality_path %><span>|</span><%= link_to nt('footer.credits'), credits_path %><span>|</span><%= link_to admin_root_path, class: 'netd-footer-admin', rel: 'nofollow', title: nt('footer.admin_title') do %><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> <%= nt('footer.admin_html') %><% end %>
     </nav>
     <a class="netd-footer-mail" href="mailto:<%= Netd.contact_email %>"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="m3 6 9 7 9-7"/></svg> <%= Netd.contact_email %></a>
   </div>
   <div class="container netd-footer-text netd-footer-credit">
     <% if (dev = Netd.credit('developed by')) %><a href="<%= dev['url'] %>" class="<%= dev['class'] %>" title="<%= Netd.credit_title(dev) %>" target="_blank" rel="noopener"><img src="/images/<%= dev['logo'] %>" alt="<%= Netd.credit_alt(dev) %>" height="30"></a><% end %>
-    <span>The <%= Netd.portal_name %> provides access to theses and dissertations from <%= Netd.country_adjective %> universities and higher education
-      institutions.<% if Netd.credits.any? %> It is <% Netd.credits.each_with_index do |c, i| %><%= i.zero? ? '' : (i == Netd.credits.size - 1 ? "\n      and " : ', ') %><%= c['role'] %> <%= "#{c['article']} " if c['article'] %><a href="<%= c['url'] %>" target="_blank" rel="noopener"><%= c['name'] %></a><% end %>.<% end %></span>
+    <span><%= nt('footer.text_html') %><% if Netd.credits.any? %> <%= nt('footer.credits_intro_html') %> <% Netd.credits.each_with_index do |c, i| %><%= i.zero? ? '' : (i == Netd.credits.size - 1 ? " #{nt('footer.credits_last_html')} " : nt('footer.credits_separator_html')) %><%= c['role'] %> <%= "#{c['article']} " if c['article'] %><a href="<%= c['url'] %>" target="_blank" rel="noopener"><%= c['name'] %></a><% end %>.<% end %></span>
   </div>
 </footer>

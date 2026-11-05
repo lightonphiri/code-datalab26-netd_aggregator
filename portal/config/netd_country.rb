@@ -65,6 +65,10 @@ module Netd
     def credit_alt(c) = c['full_name'] ? "#{c['name']} — #{c['full_name']}" : c['name']
     # Installation words kept capitalised in citations (merged with Citation::KEEP_GENERAL).
     def keep_capitals = Array(get('citation.keep_capitals'))
+    # Values every interface text may use (config/locales/en.yml, keys under netd.; SRS NFR-15, SDD 8.1):
+    # %{portal}, %{country}, %{country_adjective}, %{regulator}, %{regulator_short}.
+    def text_values = { portal: portal_name, country: country_name, country_adjective: country_adjective,
+                        regulator: regulator_name, regulator_short: regulator_short_name }
 
     private
 

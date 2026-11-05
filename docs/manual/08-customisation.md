@@ -55,7 +55,11 @@ Facets, search fields, sort options and results per page are set in `portal/app/
 
 ## 8.6 Languages
 
-The interface is in English. Blacklight's own texts come from the Blacklight gem and `en.yml` (the portal name from `config/country.yml`, through `portal/config/locales/netd_country.rb`); most NETD templates have their text written in them. To add a language today, translate the locale files (`blacklight.<lang>.yml`) and the templates; the packaging plan moves the templates' text into locale files first, so that a translation is one file per language. Metadata is shown in the language it was deposited in.
+The interface is in English. Its wording is being moved out of the templates into `portal/config/locales/en.yml`, a few pages per release: the header, footer and home page are there now (keys under `netd.header`, `netd.footer` and `netd.home`); the other pages still have their text in their templates. Blacklight's own texts (search form, pagination, facet buttons) come from the Blacklight gem, and the portal name from `config/country.yml` through `portal/config/locales/netd_country.rb`.
+
+To change a sentence, edit its key in `en.yml` and restart the portal (`sudo systemctl restart netd-portal`). Names come from `config/country.yml`: write `%{portal}`, `%{country}`, `%{country_adjective}`, `%{regulator}` or `%{regulator_short}` rather than the name itself, so the text stays right for another installation. Keys ending in `_html` may contain HTML (write `&` as `&amp;`); the comments in the file say which keys take extra values such as `%{n}` or `%{link}`.
+
+To add a language, copy `en.yml` to, for example, `fr.yml`, change the first line to `fr:` and translate the values (keep the keys and the `%{...}` names), translate Blacklight's texts the same way (`blacklight.fr.yml`, from the gem's own file), and set the locale in `portal/config/application.rb` (`config.i18n.default_locale = :fr`). Metadata is shown in the language it was deposited in. Metadata is shown in the language it was deposited in.
 
 ## 8.7 Citation styles
 
