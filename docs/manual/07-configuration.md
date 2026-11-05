@@ -43,6 +43,7 @@ locale: en
 | `country.time_zone` | yes | times in the admin panel and on the quality pages, and their label ("Lusaka time") |
 | `portal.name` | yes | browser titles, the home, FAQ, About and Credits pages, e-mail, report headers and document properties, OAI-PMH `Identify`, RIS exports |
 | `portal.wordmark` | yes | the two parts of the header wordmark (exactly two) |
+| `portal.theme` | no | the theme folder in `themes/` (colours, wordmark font, logo files; [chapter 8.3](08-customisation.md)); `default` when absent |
 | `portal.host` | yes | every absolute address: OAI-PMH base URL and identifiers (`oai:<host>:<record id>`), REST API links, links in e-mail, Developer Resources examples, harvester user agents, the site probe and alerts |
 | `regulator.name`, `regulator.short_name`, `regulator.url` | yes | the body that accredits the institutions: named and linked on the home, FAQ and For Institutions pages; the short name in admin pages, reports and the API's institution list ("HEA-listed"); `register_url` (optional) is its online register |
 | `contact.email` | yes | the public address on the pages and in OAI-PMH `Identify` |
@@ -176,7 +177,6 @@ These are planned to move into `config/country.yml` or templates rendered from i
 
 | What | Where now |
 |---|---|
-| Other wording on pages | views in `portal/app/views/` and `portal/app/components/` |
 | Administrator address and host name in the Apache sites | `deploy/apache/` |
 | Host name and contact in static files | `portal/public/robots.txt` (sitemap address), `portal/public/api/v1/openapi.yaml` |
 | Host name in the upgrade check and the backup destination | `deploy/ops/upgrade/upgrade-check.sh`, `deploy/ops/netd-backup-to-gdrive.sh` |

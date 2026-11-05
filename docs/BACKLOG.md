@@ -46,7 +46,8 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Date | Item | Commit |
 |---|---|---|
-| November 5, 2026 | Interface text in locale files, seventh and last part (packaging P4g, NFR-15): remaining admin pages, usage event labels and flash messages from `en.yml`; P4 done (post-paper) | this release |
+| November 5, 2026 | Theme folders (packaging P5a, NFR-15): `themes/zambia` and `themes/default`, `portal.theme`; logos served from the theme (post-paper) | this release |
+| November 5, 2026 | Interface text in locale files, seventh and last part (packaging P4g, NFR-15): remaining admin pages, usage event labels and flash messages from `en.yml`; P4 done (post-paper) | 15594bb |
 | November 5, 2026 | Interface text in locale files, sixth part (packaging P4f, NFR-15): admin pages (first part), admin times and the problem-report mail from `en.yml`; missing translations raise in development and test (post-paper) | 222eb2e |
 | November 5, 2026 | Interface text in locale files, fifth part (packaging P4e, NFR-15): facet, field and sort labels, institution status and quality group labels, the quality page's date from `en.yml` (post-paper) | 0073385 |
 | November 5, 2026 | Interface text in locale files, fourth part (packaging P4d, NFR-15): record page, Report a problem form, result cards and facet toggles from `en.yml` (post-paper) | 938b22d |

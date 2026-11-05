@@ -11,3 +11,4 @@
 @import url(https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css);
 @import url("blacklight.css");
 @import url("netd.css");
+@import url("theme.css");   /* themes/<portal.theme>/stylesheets/theme.css (packaging P5) */

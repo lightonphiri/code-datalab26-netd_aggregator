@@ -1,0 +1,22 @@
+/* Theme "zambia" (Zambia National ETD Portal): navy group bar and wordmark, one blue for links and actions,
+   wordmark in Cinzel. Selected by portal.theme in config/country.yml; imported after netd.css (packaging P5). */
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&display=swap");
+
+:root {
+  --netd-navy: #0b1f6b;              /* group bar, first wordmark part */
+  --netd-blue: #0071c2;              /* links, buttons, second wordmark part */
+  --netd-blue-dark: #005a9c;         /* hover */
+  --netd-blue-pale: #eef5fb;         /* menu hover background */
+  --netd-wordmark-rule: #9db6d6;     /* line between the wordmark parts */
+  --netd-wordmark-font: "Cinzel", "Trajan Pro", Georgia, serif;
+  --netd-ink: #111;
+  --netd-muted: #5b6470;
+  --netd-line: #e3e6ea;
+  --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --bs-body-color: #111;
+  --bs-link-color: #0071c2;
+  --bs-link-color-rgb: 0, 113, 194;
+  --bs-link-hover-color: #005a9c;
+  --bs-primary: #0071c2;
+  --bs-primary-rgb: 0, 113, 194;
+}

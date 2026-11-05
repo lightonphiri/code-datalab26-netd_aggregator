@@ -10,6 +10,7 @@ portal:
   name: Zambia National ETD Portal
   wordmark: [Zambia, National ETD Portal]
   host: netd.ac.zm                  # public host name, served over HTTPS
+  theme: zambia                     # folder in themes/: colours, wordmark font, logos (default: default)
 regulator:                          # the body that accredits the institutions; named on the home, FAQ and admin pages
   name: Higher Education Authority
   short_name: HEA
@@ -23,7 +24,7 @@ mail:
   sender: lighton.phiri@unza.ac.zm  # sender of problem reports when SMTP_FROM and SMTP_USER are not set
 # Credits in the header bar, footer, About and Credits pages, in this order. role "developed by" is the group named in the
 # header bar and footer; role "hosted by" provides the server. full_name is shown after the name where given; logo is a file
-# in portal/public/images/ (themes/ from release P5), logo_height its height in pixels on the About and Credits pages,
+# in themes/<portal.theme>/public/images/ (or portal/public/images/), logo_height its height in pixels on the About and Credits pages,
 # class the style class of the logo link, article a word put before the name in running text ("developed by the ...").
 credits:
   - {name: DataLab Research Group, url: https://datalab.unza.zm, logo: datalab-logo-light.svg, logo_height: 40,

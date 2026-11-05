@@ -39,6 +39,10 @@ module Netd
 
     def get(key) = dig(config, key)
 
+    # Theme folder (packaging P5): themes/<portal.theme>/, "default" when not set; checked at start-up.
+    def theme = get('portal.theme').to_s.empty? ? 'default' : get('portal.theme')
+    def theme_dir = File.expand_path("../../themes/#{theme}", __dir__)
+
     def country_name = get('country.name')
     def country_adjective = get('country.adjective')
     def time_zone = get('country.time_zone')

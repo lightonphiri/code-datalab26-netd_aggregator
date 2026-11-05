@@ -1,37 +1,21 @@
-/* Zambia National ETD Portal — theme modelled on Columbia University Libraries' Academic Commons:
-   system UI typography, white pages, one blue for links and actions, a navy group bar, light cards. */
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&display=swap");
-
-:root {
-  --netd-navy: #0b1f6b;
-  --netd-blue: #0071c2;
-  --netd-blue-dark: #005a9c;
-  --netd-ink: #111;
-  --netd-muted: #5b6470;
-  --netd-line: #e3e6ea;
-  --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-  --bs-body-color: #111;
-  --bs-link-color: #0071c2;
-  --bs-link-color-rgb: 0, 113, 194;
-  --bs-link-hover-color: #005a9c;
-  --bs-primary: #0071c2;
-  --bs-primary-rgb: 0, 113, 194;
-}
+/* NETD portal styles: layout modelled on Columbia University Libraries' Academic Commons (system UI typography,
+   white pages, one colour for links and actions, a dark group bar, light cards). Colours and the wordmark font
+   come from the theme (themes/<portal.theme>/stylesheets/theme.css, imported after this file; packaging P5). */
 body { font-family: var(--bs-body-font-family); color: var(--netd-ink); background: #fff; }
 a { color: var(--netd-blue); text-decoration: none; }
 a:hover { color: var(--netd-blue-dark); text-decoration: underline; }
 .container, #main-container { max-width: 1180px; }
-.btn-primary { --bs-btn-bg: #0071c2; --bs-btn-border-color: #0071c2; --bs-btn-hover-bg: #005a9c; --bs-btn-hover-border-color: #005a9c; }
-.btn-outline-primary { --bs-btn-color: #0071c2; --bs-btn-border-color: #0071c2; --bs-btn-hover-bg: #0071c2; --bs-btn-hover-border-color: #0071c2; }
+.btn-primary { --bs-btn-bg: var(--netd-blue); --bs-btn-border-color: var(--netd-blue); --bs-btn-hover-bg: var(--netd-blue-dark); --bs-btn-hover-border-color: var(--netd-blue-dark); }
+.btn-outline-primary { --bs-btn-color: var(--netd-blue); --bs-btn-border-color: var(--netd-blue); --bs-btn-hover-bg: var(--netd-blue); --bs-btn-hover-border-color: var(--netd-blue); }
 
 /* ---------- header ---------- */
 .netd-groupbar { background: var(--netd-navy); font-size: .82rem; letter-spacing: .06em; text-transform: uppercase; }
 .netd-groupbar a { color: #fff; display: inline-block; padding: .55rem 0; }
 .netd-masthead { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding-top: 1.4rem; padding-bottom: 1.4rem; flex-wrap: wrap; }
-.netd-wordmark { display: flex; align-items: center; font-family: "Cinzel", "Trajan Pro", Georgia, serif; font-size: 2.15rem;
+.netd-wordmark { display: flex; align-items: center; font-family: var(--netd-wordmark-font); font-size: 2.15rem;
   line-height: 1; letter-spacing: .01em; text-decoration: none !important; }
 .netd-wm-a { color: var(--netd-navy); font-weight: 600; }
-.netd-wm-sep { width: 1px; height: 2.6rem; background: #9db6d6; margin: 0 .7rem; }
+.netd-wm-sep { width: 1px; height: 2.6rem; background: var(--netd-wordmark-rule); margin: 0 .7rem; }
 .netd-wm-b { color: var(--netd-blue); font-weight: 500; }
 .netd-search { display: flex; width: min(360px, 100%); }
 .netd-search input { flex: 1; border: 1px solid #c9ced4; border-right: 0; padding: .45rem .7rem; font-style: italic; border-radius: 2px 0 0 2px; }
@@ -143,7 +127,7 @@ footer.netd-footer strong { color: var(--netd-ink); font-weight: 600; }
 .netd-similar summary h2 { font-size: 1rem; font-weight: 600; margin: 0; }
 .netd-similar summary::after { content: ""; width: .55rem; height: .55rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); margin: 0 .3rem .2rem 0; transition: transform .15s; color: var(--netd-muted); }
 .netd-similar:not([open]) summary::after { transform: rotate(-45deg); margin-bottom: 0; }
-.netd-similar summary:focus-visible { outline: 2px solid #0071c2; outline-offset: 2px; }
+.netd-similar summary:focus-visible { outline: 2px solid var(--netd-blue); outline-offset: 2px; }
 .netd-similar ol { padding-left: 1.1rem; margin: 0; font-size: .9rem; }
 .netd-similar li { margin-bottom: .55rem; }
 .netd-similar-meta { display: block; color: var(--netd-muted); font-size: .8rem; }
@@ -166,8 +150,8 @@ footer.netd-footer strong { color: var(--netd-ink); font-weight: 600; }
 /* sort control (Academic Commons style): grey button, blue highlighted option */
 #sort-dropdown .btn, .sort-dropdown .btn, #per_page-dropdown .btn { background: #6c757d; border-color: #6c757d; color: #fff; }
 #sort-dropdown .btn:hover, .sort-dropdown .btn:hover, #per_page-dropdown .btn:hover { background: #5a6268; color: #fff; }
-.dropdown-menu { --bs-dropdown-link-active-bg: #0071c2; --bs-dropdown-link-hover-bg: #eef5fb; border-radius: 3px; }
-.dropdown-menu .dropdown-item.active { background: #0071c2; color: #fff; }
+.dropdown-menu { --bs-dropdown-link-active-bg: var(--netd-blue); --bs-dropdown-link-hover-bg: var(--netd-blue-pale); border-radius: 3px; }
+.dropdown-menu .dropdown-item.active { background: var(--netd-blue); color: #fff; }
 .netd-report { display: inline-flex; align-items: center; gap: .4rem; margin-top: 1rem; font-size: .92rem; color: var(--netd-ink); }
 .netd-analysis { background: #f3f4f5; border-radius: 4px; padding: .9rem 1rem; margin-top: 1rem; }
 .netd-analysis h2 { font-size: 1.3rem; font-weight: 600; margin: 0 0 .7rem; }

@@ -1,0 +1,21 @@
+/* Theme "default": neutral slate and blue, the wordmark in the system serif font (no web font is loaded).
+   Copy this folder to themes/<name>/, change the values and set portal.theme: <name> in config/country.yml
+   (manual 8.2). The --bs-* values are Bootstrap's; keep the -rgb triplets equal to the colours above them. */
+:root {
+  --netd-navy: #2f3a45;              /* group bar, first wordmark part */
+  --netd-blue: #2b6cb0;              /* links, buttons, second wordmark part */
+  --netd-blue-dark: #22558a;         /* hover */
+  --netd-blue-pale: #eef3f9;         /* menu hover background */
+  --netd-wordmark-rule: #b5c3d1;     /* line between the wordmark parts */
+  --netd-wordmark-font: Georgia, "Times New Roman", serif;
+  --netd-ink: #111;
+  --netd-muted: #5b6470;
+  --netd-line: #e3e6ea;
+  --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --bs-body-color: #111;
+  --bs-link-color: #2b6cb0;
+  --bs-link-color-rgb: 43, 108, 176;
+  --bs-link-hover-color: #22558a;
+  --bs-primary: #2b6cb0;
+  --bs-primary-rgb: 43, 108, 176;
+}
