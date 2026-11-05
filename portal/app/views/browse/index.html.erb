@@ -1,19 +1,16 @@
-<% content_for(:page_title) { "Browse by Faculty — #{Netd.portal_name}" } %>
+<% content_for(:page_title) { nt('browse.page_title') } %>
 <% link = ->(f) { search_action_path(f: f) } %>
 <div class="netd-page netd-faq netd-browse">
-  <h1>Browse by Faculty and Department</h1>
-  <p>Theses and dissertations by institution, faculty or school, and department, as the institutions' repositories
-    record them (faculties come from repository collections; departments mostly from the theses' title pages, where the
-    portal could read them). Each thesis is counted once. To combine this with other filters, use
-    <%= link_to 'Explore', search_action_path(q: '', search_field: 'all_fields') %>.</p>
+  <h1><%= nt('browse.heading_html') %></h1>
+  <p><%= nt('browse.theses_and_dissertations_by_html', link1: link_to(nt('browse.theses_and_dissertations_by_link1'), search_action_path(q: '', search_field: 'all_fields'))) %></p>
   <% if @tree.empty? %>
-    <p class="netd-note">Nothing to browse yet.</p>
+    <p class="netd-note"><%= nt('browse.nothing_to_browse_yet_html') %></p>
   <% end %>
   <% @tree.each do |inst| %>
     <section class="netd-browse-inst">
       <h2><%= link_to inst['name'], link.call('institution_ssim' => [inst['name']]) %> <span class="netd-count"><%= number_with_delimiter(inst['count']) %></span></h2>
       <% if inst['faculties'].empty? %>
-        <p class="netd-note">No faculty or school recorded for this institution's theses.</p>
+        <p class="netd-note"><%= nt('browse.no_faculty_or_school_html') %></p>
       <% else %>
         <ul class="netd-browse-list">
           <% inst['faculties'].each do |fac| %>
@@ -22,7 +19,7 @@
               <% if fac['departments'].any? %>
                 <details>
                   <summary><%= link_to fac['name'], link.call(ff) %> <span class="netd-count"><%= number_with_delimiter(fac['count']) %></span>
-                    <small>· <%= pluralize(fac['departments'].size, 'department') %></small></summary>
+                    <small>· <%= nt('browse.departments', count: fac['departments'].size) %></small></summary>
                   <ul>
                     <% fac['departments'].each do |d| %>
                       <li><%= link_to d['name'], link.call(ff.merge('department_ssim' => [d['name']])) %> <span class="netd-count"><%= d['count'] %></span></li>
@@ -35,7 +32,7 @@
             </li>
           <% end %>
           <% if inst['without_faculty'].positive? %>
-            <li class="netd-note"><%= number_with_delimiter(inst['without_faculty']) %> without a faculty or school</li>
+            <li class="netd-note"><%= nt('browse.without_faculty_html', n: number_with_delimiter(inst['without_faculty'])) %></li>
           <% end %>
         </ul>
       <% end %>

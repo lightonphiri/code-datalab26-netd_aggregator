@@ -1,27 +1,22 @@
-<% content_for(:page_title) { "Metadata Quality — #{Netd.portal_name}" } %>
+<% content_for(:page_title) { nt('quality.page_title') } %>
 <div class="netd-page netd-faq netd-quality">
-  <h1>Metadata Quality</h1>
-  <p>How complete the metadata of the portal's theses and dissertations is, element by element, and how much of it comes from
-    the institutions' own repositories. Measured against the <a href="https://ndltd.org/wp-content/uploads/2021/04/etd-ms-v1.1.html"
-    target="_blank" rel="noopener">ETD-MS 1.1</a> metadata standard for theses and dissertations used by NDLTD, plus faculty,
-    department and full text.</p>
+  <h1><%= nt('quality.heading_html') %></h1>
+  <p><%= nt('quality.how_complete_the_metadata_html') %></p>
   <% if @report.nil? || @report['institutions'].empty? %>
-    <p class="netd-note">The quality report has not been computed yet. It is refreshed after every nightly harvest.</p>
+    <p class="netd-note"><%= nt('quality.the_quality_report_has_html') %></p>
   <% else %>
     <% all = @report['institutions'].first %>
     <%= render 'quality/legend' %>
     <table class="netd-stats netd-qheadline">
-      <tr><td><%= all['etdms_compliance'] %>%</td><td>ETD-MS compliance at source: the mean share of the 12 ETD-MS elements that
-        repositories supply in the proper metadata element</td></tr>
-      <tr><td><%= all['complete_after_portal'] %>%</td><td>complete in the portal: the mean share of all 15 elements with a value,
-        after the portal fills gaps from the full text</td></tr>
-      <tr><td><%= number_with_delimiter(all['records']) %></td><td>ETDs from <%= @report['institutions_measured'] %> institutions</td></tr>
+      <tr><td><%= all['etdms_compliance'] %>%</td><td><%= nt('quality.etd_ms_compliance_at_html') %></td></tr>
+      <tr><td><%= all['complete_after_portal'] %>%</td><td><%= nt('quality.complete_in_the_portal_html') %></td></tr>
+      <tr><td><%= number_with_delimiter(all['records']) %></td><td><%= nt('quality.etds_from_html', n: @report['institutions_measured']) %></td></tr>
     </table>
 
-    <h2>By element</h2>
-    <p>Share of all ETDs in the portal, by where the value comes from. Hover over a bar for the figures.</p>
+    <h2><%= nt('quality.by_element_html') %></h2>
+    <p><%= nt('quality.share_of_all_etds_html') %></p>
     <table class="netd-about netd-api netd-qtable">
-      <thead><tr><th>Element <small>(ETD-MS)</small></th><th>Origin of the value</th>
+      <thead><tr><th><%= nt('quality.element_etd_ms_html') %></th><th><%= nt('quality.origin_of_the_value_html') %></th>
         <% QualityReport::GROUPS.each_value do |(l, _)| %><th class="text-end"><%= l %></th><% end %></tr></thead>
       <tbody>
       <% all['elements'].each do |e| %>
@@ -32,15 +27,12 @@
       </tbody>
     </table>
 
-    <h2>About these figures</h2>
+    <h2><%= nt('quality.about_these_figures_html') %></h2>
     <ul>
-      <li>Computed after every nightly harvest; last computed <%= Time.parse(@report['generated_at']).in_time_zone(Netd.time_zone).strftime('%B %-d, %Y, %H:%M') %> (<%= Netd.time_zone_label %> time).
-        Download: <%= link_to 'CSV', quality_path(format: :csv) %> · <%= link_to 'JSON', quality_path(format: :json) %>.</li>
-      <li>"At source" counts only values the repository supplies in the proper metadata element. Values the portal reads from
-        collection names or free text, or fills from the PDF (shown with a "derived" badge on record pages), make the portal
-        more complete but do not help other services that harvest the repositories directly.</li>
-      <li>Institutions that want to improve their metadata can contact <a href="mailto:<%= Netd.contact_email %>"><%= Netd.contact_email %></a>;
-        the <%= link_to 'guide for institutions', contribute_path %> lists the recommended fields.</li>
+      <li><%= nt('quality.computed_html', time: Time.parse(@report['generated_at']).in_time_zone(Netd.time_zone).strftime('%B %-d, %Y, %H:%M'), zone: Netd.time_zone_label,
+        csv: link_to('CSV', quality_path(format: :csv)), json: link_to('JSON', quality_path(format: :json))) %></li>
+      <li><%= nt('quality.at_source_counts_only_html') %></li>
+      <li><%= nt('quality.institutions_that_want_to_html', link1: link_to(nt('quality.institutions_that_want_to_link1'), contribute_path)) %></li>
     </ul>
   <% end %>
 </div>

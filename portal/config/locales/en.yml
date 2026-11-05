@@ -14,7 +14,8 @@
 # Quote every value (YAML reads yes, no, on and off as true or false).
 #
 # Moved into this file so far: header, footer and home page (P4a); About, Credits, FAQ, For Institutions, Developer
-# Resources and the REST API reference (P4b). The other pages follow in later releases.
+# Resources and the REST API reference (P4b); Browse by Faculty, Follow a search, Metadata Quality and the "Follow
+# this search" button (P4c). The search results and record pages and the administration pages follow later.
 
 en:
   netd:
@@ -255,3 +256,65 @@ en:
       # link1: link to "specification"
       loading_the_reference_if_html: "Loading the reference… If it does not appear, read the %{link1} directly."
       loading_the_reference_if_link1: "specification"
+
+    browse:
+      page_title: "Browse by Faculty — %{portal}"
+      # %{count} departments of a faculty (one: singular, other: plural)
+      departments:
+        one: "%{count} department"
+        other: "%{count} departments"
+      # %{n}: theses of the institution without a faculty
+      without_faculty_html: "%{n} without a faculty or school"
+      heading_html: "Browse by Faculty and Department"
+      # link1: link to "Explore"
+      theses_and_dissertations_by_html: "Theses and dissertations by institution, faculty or school, and department, as the institutions' repositories record them (faculties come from repository collections; departments mostly from the theses' title pages, where the portal could read them). Each thesis is counted once. To combine this with other filters, use %{link1}."
+      theses_and_dissertations_by_link1: "Explore"
+      nothing_to_browse_yet_html: "Nothing to browse yet."
+      no_faculty_or_school_html: "No faculty or school recorded for this institution's theses."
+
+    follow:
+      page_title: "Follow a search — %{portal}"
+      heading_html: "Follow a search"
+      be_told_when_new_html: "Be told when new theses and dissertations matching this search are added to the portal. No account is needed."
+      search_html: "Search"
+      atom_feed_html: "Atom feed"
+      rss_feed_html: "RSS feed"
+      in_a_feed_reader_html: "In a feed reader"
+      copy_one_of_the_html: "Copy one of the feed addresses above into a feed reader (for example Feedly, Inoreader, NetNewsWire or Thunderbird). New additions appear as they are harvested, usually the morning after an institution adds them to its repository. Each item links to the thesis or dissertation on the portal."
+      by_email_html: "By email"
+      feed_to_email_services_html: "Feed-to-email services (for example Blogtrottr or Feedrabbit, or IFTTT and Zapier) can send you new items from the feed by email, as each item arrives or as a daily or weekly digest: paste the feed address into the service. These services are run by others and have their own terms. Email alerts from the portal itself are planned."
+      other_ways_to_follow_html: "Other ways to follow"
+      # link1: link to "newest additions"; link2: link to "Atom"; link3: link to "RSS"
+      everything_newly_added_html: "Everything newly added: %{link1} (%{link2}, %{link3})."
+      everything_newly_added_link1: "newest additions"
+      everything_newly_added_link2: "Atom"
+      everything_newly_added_link3: "RSS"
+      # link1: link to "Developer Resources"
+      developers_can_use_the_html: "Developers can use the REST API with <code>sort=added</code> or <code>updated_since</code>, or harvest the portal over OAI-PMH: see %{link1}."
+      developers_can_use_the_link1: "Developer Resources"
+
+    quality:
+      page_title: "Metadata Quality — %{portal}"
+      # %{n}: institutions measured
+      etds_from_html: "ETDs from %{n} institutions"
+      # %{time}: when the report was computed; %{zone}: time zone label; %{csv}, %{json}: download links
+      computed_html: "Computed after every nightly harvest; last computed %{time} (%{zone} time). Download: %{csv} · %{json}."
+      heading_html: "Metadata Quality"
+      how_complete_the_metadata_html: "How complete the metadata of the portal's theses and dissertations is, element by element, and how much of it comes from the institutions' own repositories. Measured against the <a href=\"https://ndltd.org/wp-content/uploads/2021/04/etd-ms-v1.1.html\" target=\"_blank\" rel=\"noopener\">ETD-MS 1.1</a> metadata standard for theses and dissertations used by NDLTD, plus faculty, department and full text."
+      the_quality_report_has_html: "The quality report has not been computed yet. It is refreshed after every nightly harvest."
+      etd_ms_compliance_at_html: "ETD-MS compliance at source: the mean share of the 12 ETD-MS elements that repositories supply in the proper metadata element"
+      complete_in_the_portal_html: "complete in the portal: the mean share of all 15 elements with a value, after the portal fills gaps from the full text"
+      by_element_html: "By element"
+      share_of_all_etds_html: "Share of all ETDs in the portal, by where the value comes from. Hover over a bar for the figures."
+      element_etd_ms_html: "Element <small>(ETD-MS)</small>"
+      origin_of_the_value_html: "Origin of the value"
+      about_these_figures_html: "About these figures"
+      at_source_counts_only_html: "\"At source\" counts only values the repository supplies in the proper metadata element. Values the portal reads from collection names or free text, or fills from the PDF (shown with a \"derived\" badge on record pages), make the portal more complete but do not help other services that harvest the repositories directly."
+      # link1: link to "guide for institutions"
+      institutions_that_want_to_html: "Institutions that want to improve their metadata can contact <a href=\"mailto:%{email}\">%{email}</a>; the %{link1} lists the recommended fields."
+      institutions_that_want_to_link1: "guide for institutions"
+
+    # "Follow this search" button on the search results page
+    follow_search:
+      label_html: "Follow this search"
+      title: "Get new theses and dissertations matching this search in a feed reader or by email"

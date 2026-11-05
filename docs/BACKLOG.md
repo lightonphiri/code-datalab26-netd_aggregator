@@ -45,7 +45,8 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Date | Item | Commit |
 |---|---|---|
-| November 5, 2026 | Interface text in locale files, second part (packaging P4b, NFR-15): About, Credits, FAQ, For Institutions, Developer Resources and REST API reference from `en.yml`; `credits.hosting` removed from `publications.yml` (post-paper) | this release |
+| November 5, 2026 | Interface text in locale files, third part (packaging P4c, NFR-15): Browse by Faculty, Follow a search, Metadata Quality and the Follow this search button from `en.yml` (post-paper) | this release |
+| November 5, 2026 | Interface text in locale files, second part (packaging P4b, NFR-15): About, Credits, FAQ, For Institutions, Developer Resources and REST API reference from `en.yml`; `credits.hosting` removed from `publications.yml` (post-paper) | 649923d |
 | November 5, 2026 | Interface text in locale files, first part (packaging P4a, NFR-15): header, footer and home page from `portal/config/locales/en.yml`; manual 8.6; Zambian pages unchanged apart from white space (post-paper) | 797c6da |
 | November 5, 2026 | SRS and SDD in the manual site (Reference; Lighton, November 5, 2026); SDD diagrams that failed on GitHub (Mermaid 11: parentheses and "@" in unquoted labels) fixed; `/beta` removed from the current diagrams; manual home page status brought up to date | 9b4eb46 |
 | November 5, 2026 | Manual: Cited by in chapters 5 (result cards, Most Cited sort, Citations filter, new record-page screenshots) and 10 (API 1.7.0 fields, filter, sort and CSV columns; OpenAlex identifier and the postgraduate-diploma set in OAI-PMH) | 777aa8b |
