@@ -1,59 +1,35 @@
-<% content_for(:page_title) { "FAQ — #{Netd.portal_name}" } %>
+<% content_for(:page_title) { nt('faq.page_title') } %>
 <div class="netd-page netd-faq">
-  <h1>Frequently Asked Questions</h1>
+  <h1><%= nt('faq.heading_html') %></h1>
 
-  <h2>What is the <%= Netd.portal_name %>?</h2>
-  <p>A single place to search the electronic theses and dissertations (ETDs) of <%= Netd.country_adjective %> universities and higher education
-    institutions. It collects descriptions of ETDs (title, author, abstract, subjects, institution, year and so on) from each
-    institution's repository and links to the full text held there.</p>
+  <h2><%= nt('faq.what_is_the_html') %></h2>
+  <p><%= nt('faq.a_single_place_to_html') %></p>
 
-  <h2>Does the portal store the theses themselves?</h2>
-  <p>No. Only the metadata is harvested. The "Download" button opens the file in the institution's own repository, and the
-    rights and conditions for reuse are those of that repository.</p>
+  <h2><%= nt('faq.does_the_portal_store_html') %></h2>
+  <p><%= nt('faq.no_only_the_metadata_html') %></p>
 
-  <h2>Which institutions are included?</h2>
-  <p>The portal aims to include every institution with Master's or PhD programmes accredited by the
-    <a href="<%= Netd.regulator_url %>" target="_blank" rel="noopener"><%= Netd.regulator_name %></a>. The home page lists them all;
-    institutions showing 0 have no public repository yet, no ETD collection, or a repository that cannot currently be harvested.</p>
+  <h2><%= nt('faq.which_institutions_are_included_html') %></h2>
+  <p><%= nt('faq.the_portal_aims_to_html', regulator_link: regulator_link) %></p>
 
-  <h2>How can my institution's ETDs be included?</h2>
-  <p>Set up an institutional repository (for example DSpace), place theses and dissertations in a dedicated collection, and make
-    the repository harvestable over OAI-PMH. Then email <a href="mailto:<%= Netd.contact_email %>"><%= Netd.contact_email %></a> with the repository address.</p>
+  <h2><%= nt('faq.how_can_my_institution_html') %></h2>
+  <p><%= nt('faq.set_up_an_institutional_html') %></p>
 
-  <h2>How often is the portal updated?</h2>
-  <p>Every participating repository is harvested automatically once a day, so new ETDs normally appear within a day of being
-    published in the repository.</p>
+  <h2><%= nt('faq.how_often_is_the_html') %></h2>
+  <p><%= nt('faq.every_participating_repository_is_html') %></p>
 
-  <h2>A record has a mistake or a broken download link. What should I do?</h2>
-  <p>Use "Report a problem" on the record's page. Corrections to the metadata itself are best made in the institution's
-    repository, since the portal updates from there.</p>
+  <h2><%= nt('faq.a_record_has_a_html') %></h2>
+  <p><%= nt('faq.use_report_a_problem_html') %></p>
 
-  <h2>Why do some records have no supervisor, department or degree level?</h2>
-  <p>Many repositories do not record these details. Where a repository leaves them out, the portal reads them from the thesis
-    itself (the title, approval and acknowledgements pages) and shows them with a <span class="netd-derived">derived</span>
-    label when it is confident enough. Values that cannot be read reliably are left empty.</p>
+  <h2><%= nt('faq.why_do_some_records_html') %></h2>
+  <p><%= nt('faq.many_repositories_do_not_html') %></p>
 
-  <h2>What is "Field of study", and how is it assigned?</h2>
-  <p>Institutions describe their theses with their own subject headings, which differ from one repository to another and are
-    often missing, so they cannot be browsed consistently. The portal therefore gives every thesis one or more standard fields
-    of study from <a href="https://openalex.org" target="_blank" rel="noopener">OpenAlex Topics</a>, an open (CC0) scheme
-    with 4 domains, 26 fields and 252 subfields used across the world's research literature. You can browse by
-    <em>Research domain</em>, <em>Field of study</em> and <em>Subfield</em>.</p>
-  <p>Fields of study are assigned automatically by a machine-learning model that reads each thesis's title and abstract. When
-    the model is not confident about a subfield it gives the broader field or domain instead. Each value carries a confidence
-    score and the <span class="netd-derived">derived</span> label, and can be corrected by the portal team: use "Report a
-    problem" on the record's page. The institution's own subject headings remain visible and searchable as "Keywords (from
-    the repository)".</p>
+  <h2><%= nt('faq.what_is_field_of_html') %></h2>
+  <p><%= nt('faq.institutions_describe_their_theses_html') %></p>
+  <p><%= nt('faq.fields_of_study_are_html') %></p>
 
-  <h2>Does the portal track its visitors?</h2>
-  <p>No. The portal uses no third-party trackers or advertising. To see how it is used, it counts searches, record
-    page views and PDF downloads per day, per record and per institution, the country and approximate city they come
-    from, and which filters (faculty, degree, year and so on) were chosen. The place is looked up on the portal's own
-    server from the connection's address, which is then discarded (<a href="https://db-ip.com" target="_blank"
-    rel="noopener">IP Geolocation by DB-IP</a>); it does not store IP addresses, browser details or the words
-    searched for with these counts. Each record page shows its own view and download counts. The search page keeps each search for one day only, so that "Back to search" works. As on any website, the web server keeps a standard access log
-    for security and troubleshooting; it is deleted after 14 days.</p>
+  <h2><%= nt('faq.does_the_portal_track_html') %></h2>
+  <p><%= nt('faq.no_the_portal_uses_html') %></p>
 
-  <h2>Can I use the portal's data in my own work?</h2>
-  <p>Yes. See <%= link_to 'Developer Resources', developers_path %> for the JSON API and the OAI-PMH interface.</p>
+  <h2><%= nt('faq.can_i_use_the_html') %></h2>
+  <p><%= nt('faq.yes_see_for_the_html', link1: link_to(nt('faq.yes_see_for_the_link1'), developers_path)) %></p>
 </div>

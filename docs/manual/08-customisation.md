@@ -47,7 +47,9 @@ Change the variables (and the matching Bootstrap `--bs-*` values below them, whi
 | Credits | `pages/credits.html.erb` |
 | Metadata quality (public) | `portal/app/views/quality/index.html.erb` |
 
-The FAQ describes what is counted in usage analytics and how long server logs are kept; update it to match your server and your country's data protection law.
+The templates hold the layout; the wording of these pages (except the quality page) is in `portal/config/locales/en.yml` under `netd.about`, `netd.faq`, `netd.developers`, `netd.api_docs`, `netd.contribute` and `netd.credits` (section 8.6). To add a question to the FAQ, add an `<h2>` and a `<p>` to the template, each with an `nt(...)` call, and their two keys to `en.yml`.
+
+The FAQ describes what is counted in usage analytics and how long server logs are kept (`netd.faq.no_the_portal_uses_html`); update it to match your server and your country's data protection law.
 
 ## 8.5 Facets, fields and sorting
 
@@ -55,9 +57,9 @@ Facets, search fields, sort options and results per page are set in `portal/app/
 
 ## 8.6 Languages
 
-The interface is in English. Its wording is being moved out of the templates into `portal/config/locales/en.yml`, a few pages per release: the header, footer and home page are there now (keys under `netd.header`, `netd.footer` and `netd.home`); the other pages still have their text in their templates. Blacklight's own texts (search form, pagination, facet buttons) come from the Blacklight gem, and the portal name from `config/country.yml` through `portal/config/locales/netd_country.rb`.
+The interface is in English. Its wording is being moved out of the templates into `portal/config/locales/en.yml`, a few pages per release: the header, footer, home page and the static pages (About, Credits, FAQ, For Institutions, Developer Resources, REST API reference) are there now, under `netd.header`, `netd.footer`, `netd.home`, `netd.about` and so on; the browse, follow, quality, search, record and administration pages still have their text in their templates. Each heading, paragraph, list item and table cell is one key, named after its first words; `page_title` is the browser tab title and `heading_html` the page heading. Blacklight's own texts (search form, pagination, facet buttons) come from the Blacklight gem, and the portal name from `config/country.yml` through `portal/config/locales/netd_country.rb`.
 
-To change a sentence, edit its key in `en.yml` and restart the portal (`sudo systemctl restart netd-portal`). Names come from `config/country.yml`: write `%{portal}`, `%{country}`, `%{country_adjective}`, `%{regulator}` or `%{regulator_short}` rather than the name itself, so the text stays right for another installation. Keys ending in `_html` may contain HTML (write `&` as `&amp;`); the comments in the file say which keys take extra values such as `%{n}` or `%{link}`.
+To change a sentence, edit its key in `en.yml` and restart the portal (`sudo systemctl restart netd-portal`). Names come from `config/country.yml`: write `%{portal}`, `%{country}`, `%{country_adjective}`, `%{regulator}`, `%{regulator_short}`, `%{email}`, `%{host}` or `%{base_url}` rather than the name or address itself, so the text stays right for another installation. Keys ending in `_html` may contain HTML (write `&` as `&amp;`); the comments in the file say which keys take extra values such as `%{n}` or `%{link}`.
 
 To add a language, copy `en.yml` to, for example, `fr.yml`, change the first line to `fr:` and translate the values (keep the keys and the `%{...}` names), translate Blacklight's texts the same way (`blacklight.fr.yml`, from the gem's own file), and set the locale in `portal/config/application.rb` (`config.i18n.default_locale = :fr`). Metadata is shown in the language it was deposited in. Metadata is shown in the language it was deposited in.
 

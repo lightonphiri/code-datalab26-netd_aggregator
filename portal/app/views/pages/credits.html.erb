@@ -1,25 +1,23 @@
-<% content_for(:page_title) { "Credits — #{Netd.portal_name}" } %>
+<% content_for(:page_title) { nt('credits.page_title') } %>
 <% c = @data['credits']; dev = Netd.credit('developed by'); h = Netd.credit('hosted by') %>
 <div class="netd-page">
-  <h1>Credits</h1>
-  <p>The <%= Netd.portal_name %><% if dev %> is developed and maintained by<%= " #{dev['article']}" if dev['article'] %>
-    <%= link_to dev['name'], dev['url'], target: '_blank', rel: 'noopener' %><% end %><% if h %>,
-    and hosted by <%= link_to (h['full_name'] ? "#{h['name']} (#{h['full_name']})" : h['name']), h['url'], target: '_blank', rel: 'noopener' %>,
-    which provides the server space for the portal<% end %>.</p>
+  <h1><%= nt('credits.heading_html') %></h1>
+  <p><%= nt('credits.intro_html') %><% if dev %> <%= nt('credits.developed_by_html') %><%= " #{dev['article']}" if dev['article'] %>
+    <%= link_to dev['name'], dev['url'], target: '_blank', rel: 'noopener' %><% end %><% if h %><%= nt('credits.hosted_by_html') %>
+    <%= link_to (h['full_name'] ? "#{h['name']} (#{h['full_name']})" : h['name']), h['url'], target: '_blank', rel: 'noopener' %><%= nt('credits.hosted_role_html') %><% end %>.</p>
   <div class="netd-partner-logos">
 <% Netd.credits.each do |cr| %>    <a href="<%= cr['url'] %>" class="<%= cr['class'] %>" target="_blank" rel="noopener" title="<%= Netd.credit_title(cr) %>"><img src="/images/<%= cr['logo'] %>" alt="<%= Netd.credit_alt(cr) %>" height="<%= cr['logo_height'] %>"></a>
 <% end %>  </div>
 
-  <h2 class="h5 mt-4">Core Team</h2>
+  <h2 class="h5 mt-4"><%= nt('credits.core_team_html') %></h2>
   <ul class="netd-credit-list">
     <% c['core_team'].each do |m| %>
       <li><%= link_to m['name'], m['url'], target: '_blank', rel: 'noopener' %>, <%= m['role'] %></li>
     <% end %>
   </ul>
 
-  <h2 class="h5 mt-4">Contributors and Former Team Members</h2>
-  <p>Students who worked on problems related to the portal as part of the
-    <%= link_to "#{Netd.portal_name} project", @data['project']['url'], target: '_blank', rel: 'noopener' %>:</p>
+  <h2 class="h5 mt-4"><%= nt('credits.contributors_and_former_team_html') %></h2>
+  <p><%= nt('credits.students_who_worked_on_html', link1: link_to(nt('credits.students_who_worked_on_link1'), @data['project']['url'], target: '_blank', rel: 'noopener')) %></p>
   <ul class="netd-credit-list netd-members">
     <% @contributors.each do |m| %>
       <li><%= m['url'] ? link_to(m['name'], m['url'], target: '_blank', rel: 'noopener') : m['name'] %><% if m['role'] %> (<%= m['role'] %>)<% end %></li>

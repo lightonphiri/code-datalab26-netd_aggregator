@@ -5,6 +5,7 @@
 #   %{portal}             portal name                    %{country}           country name
 #   %{country_adjective}  "Zambian" in "Zambian universities"
 #   %{regulator}          regulator's full name          %{regulator_short}   regulator's short name
+#   %{email}              public contact address         %{host}, %{base_url} the portal's host name and address
 # Some keys take their own values as well (%{n}, %{link}, ...); the comment above the key says so.
 #
 # Keys ending in _html hold HTML: write & as &amp; and do not use < or > except in tags. Interpolated values are
@@ -12,7 +13,8 @@
 # A second language is a copy of this file with the same keys (for example fr.yml under fr:); see manual 8.6.
 # Quote every value (YAML reads yes, no, on and off as true or false).
 #
-# Moved into this file so far: header, footer and home page (P4a). The other pages follow in later releases.
+# Moved into this file so far: header, footer and home page (P4a); About, Credits, FAQ, For Institutions, Developer
+# Resources and the REST API reference (P4b). The other pages follow in later releases.
 
 en:
   netd:
@@ -72,3 +74,184 @@ en:
       # %{link}: link to the For Institutions page, with the text of listed_zero_link
       listed_zero_html: "Is your institution listed with 0? %{link}."
       listed_zero_link: "Here is how to add its theses and dissertations"
+
+    # Shared by several pages
+    common:
+      back_to_search: "← Back to search"
+
+    about:
+      # %{name}: the project name (publications.yml)
+      page_title: "About — %{name}"
+      heading_html: "About the %{name}"
+      # Followed by the developer from config/country.yml
+      developed_by_html: "Developed by"
+      # Followed by the host from config/country.yml
+      hosted_by_html: ", and hosted by"
+      hosted_role_html: ", which provides the server space for the portal."
+      # %{link}: link to the Credits page, with the text of see_credits_link
+      see_credits_html: "See also the %{link}."
+      see_credits_link: "credits"
+      # %{link}: the project page address
+      project_page_html: "Project page: %{link}"
+      project_members_html: "Project members"
+      # link1: link to "%{portal} project"
+      publications_based_on_the_html: "Publications based on the %{link1}"
+      publications_based_on_the_link1: "%{portal} project"
+      # link1: link to "%{portal} project"
+      the_publications_dissertations_and_html: "The publications, dissertations and capstone reports below come out of the %{link1}. They study the visibility of %{country_adjective} research, the quality, completeness and ETD-MS compliance of ETD metadata in institutional repositories, and ways of improving it; their findings shaped how this portal harvests, cleans and presents ETD metadata."
+      the_publications_dissertations_and_link1: "%{portal} project"
+
+    credits:
+      page_title: "Credits — %{portal}"
+      # First sentence: intro, developed_by with the developer, hosted_by with the host, hosted_role, then a full stop
+      intro_html: "The %{portal}"
+      developed_by_html: "is developed and maintained by"
+      hosted_by_html: ", and hosted by"
+      hosted_role_html: ", which provides the server space for the portal"
+      heading_html: "Credits"
+      core_team_html: "Core Team"
+      contributors_and_former_team_html: "Contributors and Former Team Members"
+      # link1: link to "%{portal} project"
+      students_who_worked_on_html: "Students who worked on problems related to the portal as part of the %{link1}:"
+      students_who_worked_on_link1: "%{portal} project"
+
+    faq:
+      page_title: "FAQ — %{portal}"
+      heading_html: "Frequently Asked Questions"
+      what_is_the_html: "What is the %{portal}?"
+      a_single_place_to_html: "A single place to search the electronic theses and dissertations (ETDs) of %{country_adjective} universities and higher education institutions. It collects descriptions of ETDs (title, author, abstract, subjects, institution, year and so on) from each institution's repository and links to the full text held there."
+      does_the_portal_store_html: "Does the portal store the theses themselves?"
+      no_only_the_metadata_html: "No. Only the metadata is harvested. The \"Download\" button opens the file in the institution's own repository, and the rights and conditions for reuse are those of that repository."
+      which_institutions_are_included_html: "Which institutions are included?"
+      the_portal_aims_to_html: "The portal aims to include every institution with Master's or PhD programmes accredited by the %{regulator_link}. The home page lists them all; institutions showing 0 have no public repository yet, no ETD collection, or a repository that cannot currently be harvested."
+      how_can_my_institution_html: "How can my institution's ETDs be included?"
+      set_up_an_institutional_html: "Set up an institutional repository (for example DSpace), place theses and dissertations in a dedicated collection, and make the repository harvestable over OAI-PMH. Then email <a href=\"mailto:%{email}\">%{email}</a> with the repository address."
+      how_often_is_the_html: "How often is the portal updated?"
+      every_participating_repository_is_html: "Every participating repository is harvested automatically once a day, so new ETDs normally appear within a day of being published in the repository."
+      a_record_has_a_html: "A record has a mistake or a broken download link. What should I do?"
+      use_report_a_problem_html: "Use \"Report a problem\" on the record's page. Corrections to the metadata itself are best made in the institution's repository, since the portal updates from there."
+      why_do_some_records_html: "Why do some records have no supervisor, department or degree level?"
+      many_repositories_do_not_html: "Many repositories do not record these details. Where a repository leaves them out, the portal reads them from the thesis itself (the title, approval and acknowledgements pages) and shows them with a <span class=\"netd-derived\">derived</span> label when it is confident enough. Values that cannot be read reliably are left empty."
+      what_is_field_of_html: "What is \"Field of study\", and how is it assigned?"
+      institutions_describe_their_theses_html: "Institutions describe their theses with their own subject headings, which differ from one repository to another and are often missing, so they cannot be browsed consistently. The portal therefore gives every thesis one or more standard fields of study from <a href=\"https://openalex.org\" target=\"_blank\" rel=\"noopener\">OpenAlex Topics</a>, an open (CC0) scheme with 4 domains, 26 fields and 252 subfields used across the world's research literature. You can browse by <em>Research domain</em>, <em>Field of study</em> and <em>Subfield</em>."
+      fields_of_study_are_html: "Fields of study are assigned automatically by a machine-learning model that reads each thesis's title and abstract. When the model is not confident about a subfield it gives the broader field or domain instead. Each value carries a confidence score and the <span class=\"netd-derived\">derived</span> label, and can be corrected by the portal team: use \"Report a problem\" on the record's page. The institution's own subject headings remain visible and searchable as \"Keywords (from the repository)\"."
+      does_the_portal_track_html: "Does the portal track its visitors?"
+      no_the_portal_uses_html: "No. The portal uses no third-party trackers or advertising. To see how it is used, it counts searches, record page views and PDF downloads per day, per record and per institution, the country and approximate city they come from, and which filters (faculty, degree, year and so on) were chosen. The place is looked up on the portal's own server from the connection's address, which is then discarded (<a href=\"https://db-ip.com\" target=\"_blank\" rel=\"noopener\">IP Geolocation by DB-IP</a>); it does not store IP addresses, browser details or the words searched for with these counts. Each record page shows its own view and download counts. The search page keeps each search for one day only, so that \"Back to search\" works. As on any website, the web server keeps a standard access log for security and troubleshooting; it is deleted after 14 days."
+      can_i_use_the_html: "Can I use the portal's data in my own work?"
+      # link1: link to "Developer Resources"
+      yes_see_for_the_html: "Yes. See %{link1} for the JSON API and the OAI-PMH interface."
+      yes_see_for_the_link1: "Developer Resources"
+
+    contribute:
+      page_title: "For Institutions — %{portal}"
+      questions_html: "Questions: <a href=\"mailto:%{email}\">%{email}</a>."
+      # %{name}: the developer from config/country.yml, with its article
+      run_by_html: "The portal is run by %{name}."
+      heading_html: "For Institutions: adding your theses and dissertations"
+      this_guide_is_for_html: "This guide is for librarians and repository managers at %{country_adjective} higher education institutions. The portal aims to list the postgraduate theses and dissertations of every institution with a Master's or Doctoral programme accredited by the %{regulator}. Taking part costs nothing: the portal holds only the descriptions (metadata) and links to the full text, which stays in your institution's repository or on your website."
+      what_the_portal_includes_html: "What the portal includes"
+      master_s_dissertations_and_html: "Master's dissertations and theses, doctoral theses and Postgraduate Diploma reports. Undergraduate projects are left out."
+      for_each_one_title_html: "For each one: title, author, year and degree level as a minimum; ideally also degree, supervisor(s), faculty or school, department, abstract, keywords and a public link to the PDF."
+      missing_supervisor_degree_and_html: "Missing supervisor, degree and department details are filled from the PDF's title and approval pages where possible, and are marked as \"derived\" on the record page."
+      route_your_institution_has_html: "Route 1: your institution has a repository (DSpace or similar)"
+      the_portal_harvests_repositories_html: "The portal harvests repositories automatically every night through OAI-PMH, the standard interface built into DSpace, EPrints and most repository software. Please check the following, in this order:"
+      the_repository_is_reachable_html: "<strong>The repository is reachable from outside your campus.</strong> Open it from a mobile phone on mobile data. A repository that only works on the campus network, or that sits on an address such as <code>192.168.x.x</code> or <code>localhost</code>, cannot be harvested; nor can one whose firewall answers outside visitors with \"403 Forbidden\"."
+      oai_pmh_is_switched_html: "<strong>OAI-PMH is switched on.</strong> On DSpace 7 or later, opening <code>https://&lt;your repository&gt;/server/oai/request?verb=Identify</code> should show your repository's name; on DSpace 6 and earlier, <code>/oai/request?verb=Identify</code>."
+      the_oai_pmh_index_html: "<strong>The OAI-PMH index is kept up to date.</strong> DSpace answers OAI-PMH from a separate index that is <em>not</em> updated when items are added or moved unless a scheduled task does it. Ask your system administrator to schedule <code>[dspace]/bin/dspace oai import</code> (for example nightly), and run <code>dspace oai import -c</code> once after moving collections. If <code>?verb=ListRecords&amp;metadataPrefix=oai_dc</code> returns \"No matches\" or an error while your repository shows items, the index needs rebuilding."
+      theses_and_dissertations_are_html: "<strong>Theses and dissertations are in their own collection(s)</strong>, separate from journal articles, books, past papers and undergraduate projects, so the portal can harvest just those collections. One collection per school or faculty is ideal: the portal uses the collection names to show the faculty."
+      each_item_has_a_html: "<strong>Each item has a public PDF</strong> (or at least the title and approval pages), so readers can reach the full text and missing details can be filled."
+      useful_fields_are_filled_html: "<strong>Useful fields are filled in</strong>, using qualified Dublin Core where your software allows: <code>dc.contributor.advisor</code> (supervisor), <code>dc.type</code> (Thesis), and degree name and level (<code>thesis.degree.name</code> and <code>thesis.degree.level</code>, or a description such as \"A dissertation submitted in partial fulfilment of the requirements for the degree of Master of …\")."
+      then_send_the_repository_html: "Then send the repository's address to <a href=\"mailto:%{email}\">%{email}</a>. We check the records, agree with you which collections to include, and add the repository to the nightly harvest."
+      route_no_repository_yet_html: "Route 2: no repository yet — send a spreadsheet"
+      an_institution_without_a_html: "An institution without a repository, or whose repository cannot be harvested yet, can contribute a CSV file with one row per thesis or dissertation."
+      # link1: link to "CSV template"
+      download_the_it_opens_html: "Download the %{link1}. It opens in Excel, LibreOffice or Google Sheets and has one example row; replace it with your own rows and keep the first row (the column names) unchanged."
+      download_the_it_opens_link1: "CSV template"
+      fill_in_at_least_html: "Fill in at least <code>identifier</code> (your own unique number for the thesis, e.g. its accession or call number), <code>title</code>, <code>author</code>, <code>year</code> and <code>degree_level</code> (<code>Masters</code>, <code>Doctoral</code> or <code>Postgraduate Diploma</code>). Write names as \"Surname, Given names\" and separate several authors, supervisors or keywords with <code>||</code>."
+      if_the_full_text_html: "If the full text is online (for example on your website or in a shared Google Drive folder set to \"Anyone with the link\"), put its link in <code>pdf_url</code>. Rows without a link are still listed, with the library as the place to find the thesis."
+      save_as_csv_utf_html: "Save as CSV (UTF-8) and email it to <a href=\"mailto:%{email}\">%{email}</a>. Better still, keep it as a Google Sheet and publish it to the web as CSV (File → Share → Publish to web → CSV): the portal then reads the latest version every night, so you only maintain the sheet. Rows you delete are removed from the portal."
+      # link1: link to "Developer Resources"
+      every_file_is_checked_html: "Every file is checked before it is loaded, and you will get the list of any rows that need correcting. The full list of columns is on %{link1}."
+      every_file_is_checked_link1: "Developer Resources"
+      after_your_records_are_html: "After your records are added"
+      your_institution_appears_under_html: "Your institution appears under \"Contributing institutions\" on the home page, with its own filter and OAI-PMH set, and its records are shared onwards through the portal's OAI-PMH interface and API."
+      records_are_updated_every_html: "Records are updated every night. Corrections are best made in your repository or sheet; the portal follows them."
+      readers_can_report_a_html: "Readers can report a problem with any record from its page, and we pass reports about metadata on to you."
+
+    developers:
+      page_title: "Developer Resources — %{portal}"
+      heading_html: "Developer Resources"
+      the_portal_s_metadata_html: "The portal's metadata can be reused through a REST API, an OAI-PMH interface and bulk downloads. The metadata comes from the participating institutional repositories; full texts stay in those repositories."
+      rest_api_html: "REST API"
+      # link1: link to "Interactive reference"; link2: link to "OpenAPI 3 specification"
+      a_read_only_json_html: "A read-only JSON API at <code>%{base_url}/api/v1</code>. No key is needed. Each endpoint allows 120 requests a minute from one address (the export, 20 an hour). Field names in version 1 will not change. <strong>%{link1}</strong> · %{link2}"
+      a_read_only_json_link1: "Interactive reference"
+      a_read_only_json_link2: "OpenAPI 3 specification"
+      search_records_html: "Search records"
+      filters_html: "Filters"
+      institution_ids_from_institutions_html: "<code>institution</code> (ids from <code>/institutions</code>, comma-separated), <code>level</code> (<code>masters</code>, <code>doctoral</code>, <code>postgraduate_diploma</code>), <code>year</code> (<code>2024</code> or <code>2015-2025</code>), <code>full_text</code> (<code>true</code>/<code>false</code>), <code>updated_since</code>, and exact <code>faculty</code>, <code>department</code>, <code>discipline</code>, <code>degree</code>, <code>subject_exact</code>, <code>supervisor_exact</code>"
+      search_one_field_html: "Search one field"
+      field_title_also_author_html: "<code>&amp;field=title</code> (also <code>author</code>, <code>supervisor</code>, <code>subject</code>)"
+      sort_and_paging_html: "Sort and paging"
+      sort_newest_also_relevance_html: "<code>&amp;sort=newest</code> (also <code>relevance</code>, <code>oldest</code>, <code>title</code>, <code>updated</code>); <code>&amp;page=2&amp;per_page=50</code> (20 by default, at most 100)"
+      one_record_html: "One record"
+      institutions_html: "Institutions"
+      get_api_v_institutions_html: "<code>GET /api/v1/institutions</code>: every %{regulator_short}-listed institution, with record counts and harvest status"
+      statistics_html: "Statistics"
+      get_api_v_stats_html: "<code>GET /api/v1/stats</code>: counts by institution, degree level and year, and how complete each field is"
+      everything_html: "Everything"
+      get_api_v_export_html: "<code>GET /api/v1/export.csv</code> or <code>/api/v1/export.jsonl</code>: all records in one file, refreshed every 6 hours"
+      responses_have_data_and_html: "Responses have <code>data</code>, and for lists <code>meta</code> (total, page, pages) and <code>links</code> (next, previous). Errors return <code>{\"error\": {\"status\", \"title\", \"detail\"}}</code> with status 400, 404 or 429. Browsers may call the API from other websites (CORS)."
+      search_pages_as_json_html: "Search pages as JSON"
+      every_search_and_record_html: "Every search and record page is also available as JSON by adding <code>.json</code>, for example <code>%{base_url}/catalog.json?q=malaria</code> or <code>%{base_url}/theses/unza-9150.json</code>. This follows the website's search interface and its internal field names, which may change; use the REST API above for anything that must keep working."
+      fields_of_study_openalex_html: "Fields of study (OpenAlex Topics)"
+      every_record_carries_standard_html: "Every record carries standard fields of study from <a href=\"https://openalex.org\" target=\"_blank\" rel=\"noopener\">OpenAlex Topics</a> (CC0): 4 domains, 26 fields and 252 subfields, taxonomy as published by OpenAlex in November 2026. They are assigned by the portal's model <code>openalex-fos</code> (version 2) from each record's title and abstract: a sentence embedding (<code>sentence-transformers/all-MiniLM-L6-v2</code>) and a classifier trained on OpenAlex works labelled with their primary topic's subfield. When no subfield is likely enough, the broader field or domain is given, so every record has a value. Values are identified by their OpenAlex ids and URIs (for example <code>https://openalex.org/subfields/2739</code>)."
+      rest_api_2_html: "REST API"
+      fields_of_study_list_html: "<code>fields_of_study</code>: list of <code>{id, uri, name, level, field, domain, confidence}</code>; also listed under <code>derived</code> as <code>field_of_study</code>"
+      oai_pmh_etdms_html: "OAI-PMH <code>etdms</code>"
+      oai_pmh_oai_dc_html: "OAI-PMH <code>oai_dc</code>"
+      two_dc_subject_values_html: "two <code>dc:subject</code> values per field: the name and its OpenAlex URI"
+      repository_subjects_html: "Repository subjects"
+      kept_unchanged_as_subjects_html: "kept unchanged as <code>subjects</code> (API) and plain <code>subject</code>/<code>dc:subject</code> (OAI-PMH)"
+      oai_pmh_html: "OAI-PMH"
+      base_url_html: "Base URL"
+      protocol_html: "Protocol"
+      oai_pmh_all_six_html: "OAI-PMH 2.0; all six verbs (<code>Identify</code>, <code>ListMetadataFormats</code>, <code>ListSets</code>, <code>ListIdentifiers</code>, <code>ListRecords</code>, <code>GetRecord</code>)"
+      metadata_formats_html: "Metadata formats"
+      oai_dc_dublin_core_html: "<code>oai_dc</code> (Dublin Core) and <code>etdms</code> (ETD-MS v1.1, for NDLTD)"
+      sets_html: "Sets"
+      one_per_institution_for_html: "One per institution (for example <code>inst:unza</code>) and per degree level (<code>level:doctoral</code>, <code>level:masters</code>, <code>level:postgraduate-diploma</code>)"
+      datestamps_html: "Datestamps"
+      when_the_record_last_html: "When the record last changed in the portal (UTC, <code>YYYY-MM-DDThh:mm:ssZ</code>); use <code>from</code> and <code>until</code> for incremental harvesting"
+      paging_html: "Paging"
+      records_per_response_with_html: "100 records per response, with resumption tokens valid for 24 hours"
+      identifiers_html: "Identifiers"
+      oai_record_id_e_html: "<code>oai:%{host}:&lt;record id&gt;</code>, e.g. <code>oai:%{host}:unza-123456789-9150</code>"
+      contributing_records_by_csv_html: "Contributing records by CSV"
+      # link1: link to "CSV template"; link2: link to "guide for institutions"
+      an_institution_without_a_html: "An institution without a repository that supports OAI-PMH can contribute its theses and dissertations as a CSV file, one row per thesis or dissertation. Start from the %{link1}, which has one example row, and send the file to <a href=\"mailto:%{email}\">%{email}</a>. You can also publish it at a stable link, for example a Google Sheet published to the web as CSV, so that the portal reads the latest version every night. Records that are removed from the file are removed from the portal. Librarians: see the step-by-step %{link2}."
+      an_institution_without_a_link1: "CSV template"
+      an_institution_without_a_link2: "guide for institutions"
+      required_columns_html: "Required columns"
+      identifier_unique_within_your_html: "<code>identifier</code> (unique within your institution; letters, digits, <code>-</code> and <code>_</code>), <code>title</code>, <code>author</code>, <code>year</code> (four digits), <code>degree_level</code> (<code>Masters</code>, <code>Doctoral</code> or <code>Postgraduate Diploma</code>)"
+      optional_columns_html: "Optional columns"
+      degree_supervisor_faculty_department_html: "<code>degree</code>, <code>supervisor</code>, <code>faculty</code>, <code>department</code>, <code>discipline</code>, <code>subject</code>, <code>abstract</code>, <code>language</code> (e.g. <code>en</code>), <code>url</code> (the record's page at your institution), <code>pdf_url</code> (a public link to the full text), <code>rights</code>"
+      several_values_html: "Several values"
+      separate_them_with_in_html: "Separate them with <code>||</code> in <code>author</code>, <code>supervisor</code> and <code>subject</code>, e.g. <code>Phiri, Chanda||Mumba, Natasha</code>. Write names as Surname, Given names."
+      file_format_html: "File format"
+      utf_is_preferred_files_html: "UTF-8 is preferred; files saved from Excel are also accepted. Commas or semicolons may separate columns."
+      source_code_and_contact_html: "Source code and contact"
+      # link1: link to "github.com/lightonphiri/code-datalab26-netd_aggregator"
+      the_portal_is_open_html: "The portal is open source: %{link1}. Questions: <a href=\"mailto:%{email}\">%{email}</a>."
+      the_portal_is_open_link1: "github.com/lightonphiri/code-datalab26-netd_aggregator"
+
+    api_docs:
+      page_title: "REST API reference — %{portal}"
+      heading_html: "REST API reference"
+      # link1: link to "OpenAPI 3 specification"; link2: link to "Developer Resources"
+      version_of_the_portal_html: "Version 1 of the portal's REST API, generated from its %{link1}. Choose an endpoint and \"Try it out\" to send a request to the live portal. See %{link2} for an overview and the OAI-PMH interface."
+      version_of_the_portal_link1: "OpenAPI 3 specification"
+      version_of_the_portal_link2: "Developer Resources"
+      # link1: link to "specification"
+      loading_the_reference_if_html: "Loading the reference… If it does not appear, read the %{link1} directly."
+      loading_the_reference_if_link1: "specification"

@@ -45,7 +45,8 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Date | Item | Commit |
 |---|---|---|
-| November 5, 2026 | Interface text in locale files, first part (packaging P4a, NFR-15): header, footer and home page from `portal/config/locales/en.yml`; manual 8.6; Zambian pages unchanged apart from white space (post-paper) | this release |
+| November 5, 2026 | Interface text in locale files, second part (packaging P4b, NFR-15): About, Credits, FAQ, For Institutions, Developer Resources and REST API reference from `en.yml`; `credits.hosting` removed from `publications.yml` (post-paper) | this release |
+| November 5, 2026 | Interface text in locale files, first part (packaging P4a, NFR-15): header, footer and home page from `portal/config/locales/en.yml`; manual 8.6; Zambian pages unchanged apart from white space (post-paper) | 797c6da |
 | November 5, 2026 | SRS and SDD in the manual site (Reference; Lighton, November 5, 2026); SDD diagrams that failed on GitHub (Mermaid 11: parentheses and "@" in unquoted labels) fixed; `/beta` removed from the current diagrams; manual home page status brought up to date | 9b4eb46 |
 | November 5, 2026 | Manual: Cited by in chapters 5 (result cards, Most Cited sort, Citations filter, new record-page screenshots) and 10 (API 1.7.0 fields, filter, sort and CSV columns; OpenAlex identifier and the postgraduate-diploma set in OAI-PMH) | 777aa8b |
 | November 5, 2026 | Country configuration, second part (packaging P3b, NFR-15): country, regulator, wordmark, credits and portal name in page text, Blacklight name, OAI-PMH `Identify`, RIS, citation capitals from `config/country.yml`; Zambian pages unchanged (post-paper) | 644412a |

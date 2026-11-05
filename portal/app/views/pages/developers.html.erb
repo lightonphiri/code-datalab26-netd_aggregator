@@ -1,87 +1,56 @@
-<% content_for(:page_title) { "Developer Resources — #{Netd.portal_name}" } %>
+<% content_for(:page_title) { nt('developers.page_title') } %>
 <div class="netd-page netd-faq">
-  <h1>Developer Resources</h1>
-  <p>The portal's metadata can be reused through a REST API, an OAI-PMH interface and bulk downloads. The metadata comes from the
-    participating institutional repositories; full texts stay in those repositories.</p>
+  <h1><%= nt('developers.heading_html') %></h1>
+  <p><%= nt('developers.the_portal_s_metadata_html') %></p>
 
-  <h2 id="api">REST API</h2>
-  <p>A read-only JSON API at <code><%= Netd.base_url %>/api/v1</code>. No key is needed. Each endpoint allows 120 requests a
-    minute from one address (the export, 20 an hour). Field names in version 1 will not change.
-    <strong><%= link_to 'Interactive reference', api_docs_path %></strong> ·
-    <%= link_to 'OpenAPI 3 specification', '/api/v1/openapi.yaml' %></p>
+  <h2 id="api"><%= nt('developers.rest_api_html') %></h2>
+  <p><%= nt('developers.a_read_only_json_html', link1: link_to(nt('developers.a_read_only_json_link1'), api_docs_path), link2: link_to(nt('developers.a_read_only_json_link2'), '/api/v1/openapi.yaml')) %></p>
   <table class="netd-about netd-api">
-    <tr><th>Search records</th><td><code>GET /api/v1/records?q=malaria&amp;level=doctoral&amp;year=2015-2025</code></td></tr>
-    <tr><th>Filters</th><td><code>institution</code> (ids from <code>/institutions</code>, comma-separated), <code>level</code>
-      (<code>masters</code>, <code>doctoral</code>, <code>postgraduate_diploma</code>), <code>year</code> (<code>2024</code> or <code>2015-2025</code>),
-      <code>full_text</code> (<code>true</code>/<code>false</code>), <code>updated_since</code>, and exact <code>faculty</code>,
-      <code>department</code>, <code>discipline</code>, <code>degree</code>, <code>subject_exact</code>, <code>supervisor_exact</code></td></tr>
-    <tr><th>Search one field</th><td><code>&amp;field=title</code> (also <code>author</code>, <code>supervisor</code>, <code>subject</code>)</td></tr>
-    <tr><th>Sort and paging</th><td><code>&amp;sort=newest</code> (also <code>relevance</code>, <code>oldest</code>, <code>title</code>,
-      <code>updated</code>); <code>&amp;page=2&amp;per_page=50</code> (20 by default, at most 100)</td></tr>
-    <tr><th>One record</th><td><code>GET /api/v1/records/unza-123456789-9150</code></td></tr>
-    <tr><th>Institutions</th><td><code>GET /api/v1/institutions</code>: every <%= Netd.regulator_short_name %>-listed institution, with record counts and harvest status</td></tr>
-    <tr><th>Statistics</th><td><code>GET /api/v1/stats</code>: counts by institution, degree level and year, and how complete each field is</td></tr>
-    <tr><th>Everything</th><td><code>GET /api/v1/export.csv</code> or <code>/api/v1/export.jsonl</code>: all records in one file, refreshed every 6 hours</td></tr>
+    <tr><th><%= nt('developers.search_records_html') %></th><td><code>GET /api/v1/records?q=malaria&amp;level=doctoral&amp;year=2015-2025</code></td></tr>
+    <tr><th><%= nt('developers.filters_html') %></th><td><%= nt('developers.institution_ids_from_institutions_html') %></td></tr>
+    <tr><th><%= nt('developers.search_one_field_html') %></th><td><%= nt('developers.field_title_also_author_html') %></td></tr>
+    <tr><th><%= nt('developers.sort_and_paging_html') %></th><td><%= nt('developers.sort_newest_also_relevance_html') %></td></tr>
+    <tr><th><%= nt('developers.one_record_html') %></th><td><code>GET /api/v1/records/unza-123456789-9150</code></td></tr>
+    <tr><th><%= nt('developers.institutions_html') %></th><td><%= nt('developers.get_api_v_institutions_html') %></td></tr>
+    <tr><th><%= nt('developers.statistics_html') %></th><td><%= nt('developers.get_api_v_stats_html') %></td></tr>
+    <tr><th><%= nt('developers.everything_html') %></th><td><%= nt('developers.get_api_v_export_html') %></td></tr>
   </table>
-  <p>Responses have <code>data</code>, and for lists <code>meta</code> (total, page, pages) and <code>links</code>
-    (next, previous). Errors return <code>{"error": {"status", "title", "detail"}}</code> with status 400, 404 or 429.
-    Browsers may call the API from other websites (CORS).</p>
+  <p><%= nt('developers.responses_have_data_and_html') %></p>
   <pre class="netd-code">curl -s "<%= Netd.base_url %>/api/v1/records?q=malaria&amp;level=doctoral&amp;per_page=5"</pre>
 
-  <h3>Search pages as JSON</h3>
-  <p>Every search and record page is also available as JSON by adding <code>.json</code>, for example
-    <code><%= Netd.base_url %>/catalog.json?q=malaria</code> or <code><%= Netd.base_url %>/theses/unza-9150.json</code>.
-    This follows the website's search interface and its internal field names, which may change; use the REST API above for
-    anything that must keep working.</p>
+  <h3><%= nt('developers.search_pages_as_json_html') %></h3>
+  <p><%= nt('developers.every_search_and_record_html') %></p>
 
-  <h2 id="fields-of-study">Fields of study (OpenAlex Topics)</h2>
-  <p>Every record carries standard fields of study from <a href="https://openalex.org" target="_blank" rel="noopener">OpenAlex
-    Topics</a> (CC0): 4 domains, 26 fields and 252 subfields, taxonomy as published by OpenAlex in November 2026. They are
-    assigned by the portal's model <code>openalex-fos</code> (version 2) from each record's title and abstract: a sentence
-    embedding (<code>sentence-transformers/all-MiniLM-L6-v2</code>) and a classifier trained on OpenAlex works labelled with their primary
-    topic's subfield. When no subfield is likely enough, the broader field or domain is given, so every record has a value.
-    Values are identified by their OpenAlex ids and URIs (for example <code>https://openalex.org/subfields/2739</code>).</p>
+  <h2 id="fields-of-study"><%= nt('developers.fields_of_study_openalex_html') %></h2>
+  <p><%= nt('developers.every_record_carries_standard_html') %></p>
   <table class="netd-about netd-api">
-    <tr><th>REST API</th><td><code>fields_of_study</code>: list of <code>{id, uri, name, level, field, domain, confidence}</code>;
-      also listed under <code>derived</code> as <code>field_of_study</code></td></tr>
-    <tr><th>OAI-PMH <code>etdms</code></th><td><code>&lt;subject scheme="OpenAlex"&gt;name&lt;/subject&gt;</code></td></tr>
-    <tr><th>OAI-PMH <code>oai_dc</code></th><td>two <code>dc:subject</code> values per field: the name and its OpenAlex URI</td></tr>
-    <tr><th>Repository subjects</th><td>kept unchanged as <code>subjects</code> (API) and plain <code>subject</code>/<code>dc:subject</code> (OAI-PMH)</td></tr>
+    <tr><th><%= nt('developers.rest_api_2_html') %></th><td><%= nt('developers.fields_of_study_list_html') %></td></tr>
+    <tr><th><%= nt('developers.oai_pmh_etdms_html') %></th><td><code>&lt;subject scheme="OpenAlex"&gt;name&lt;/subject&gt;</code></td></tr>
+    <tr><th><%= nt('developers.oai_pmh_oai_dc_html') %></th><td><%= nt('developers.two_dc_subject_values_html') %></td></tr>
+    <tr><th><%= nt('developers.repository_subjects_html') %></th><td><%= nt('developers.kept_unchanged_as_subjects_html') %></td></tr>
   </table>
 
-  <h2>OAI-PMH</h2>
+  <h2><%= nt('developers.oai_pmh_html') %></h2>
   <table class="netd-about netd-api">
-    <tr><th>Base URL</th><td><code><%= Netd.base_url %>/oai</code></td></tr>
-    <tr><th>Protocol</th><td>OAI-PMH 2.0; all six verbs (<code>Identify</code>, <code>ListMetadataFormats</code>, <code>ListSets</code>,
-      <code>ListIdentifiers</code>, <code>ListRecords</code>, <code>GetRecord</code>)</td></tr>
-    <tr><th>Metadata formats</th><td><code>oai_dc</code> (Dublin Core) and <code>etdms</code> (ETD-MS v1.1, for NDLTD)</td></tr>
-    <tr><th>Sets</th><td>One per institution (for example <code>inst:unza</code>) and per degree level (<code>level:doctoral</code>, <code>level:masters</code>, <code>level:postgraduate-diploma</code>)</td></tr>
-    <tr><th>Datestamps</th><td>When the record last changed in the portal (UTC, <code>YYYY-MM-DDThh:mm:ssZ</code>); use <code>from</code> and <code>until</code> for incremental harvesting</td></tr>
-    <tr><th>Paging</th><td>100 records per response, with resumption tokens valid for 24 hours</td></tr>
-    <tr><th>Identifiers</th><td><code>oai:<%= Netd.host %>:&lt;record id&gt;</code>, e.g. <code>oai:<%= Netd.host %>:unza-123456789-9150</code></td></tr>
+    <tr><th><%= nt('developers.base_url_html') %></th><td><code><%= Netd.base_url %>/oai</code></td></tr>
+    <tr><th><%= nt('developers.protocol_html') %></th><td><%= nt('developers.oai_pmh_all_six_html') %></td></tr>
+    <tr><th><%= nt('developers.metadata_formats_html') %></th><td><%= nt('developers.oai_dc_dublin_core_html') %></td></tr>
+    <tr><th><%= nt('developers.sets_html') %></th><td><%= nt('developers.one_per_institution_for_html') %></td></tr>
+    <tr><th><%= nt('developers.datestamps_html') %></th><td><%= nt('developers.when_the_record_last_html') %></td></tr>
+    <tr><th><%= nt('developers.paging_html') %></th><td><%= nt('developers.records_per_response_with_html') %></td></tr>
+    <tr><th><%= nt('developers.identifiers_html') %></th><td><%= nt('developers.oai_record_id_e_html') %></td></tr>
   </table>
   <pre class="netd-code"><%= Netd.base_url %>/oai?verb=ListRecords&amp;metadataPrefix=etdms&amp;set=inst:unza</pre>
 
-  <h2 id="csv">Contributing records by CSV</h2>
-  <p>An institution without a repository that supports OAI-PMH can contribute its theses and dissertations as a CSV file,
-    one row per thesis or dissertation. Start from the
-    <%= link_to 'CSV template', '/netd-etd-template.csv' %>, which has one example row, and send the file to
-    <a href="mailto:<%= Netd.contact_email %>"><%= Netd.contact_email %></a>. You can also publish it at a stable link, for example a Google
-    Sheet published to the web as CSV, so that the portal reads the latest version every night. Records that are removed
-    from the file are removed from the portal. Librarians: see the step-by-step <%= link_to 'guide for institutions', contribute_path %>.</p>
+  <h2 id="csv"><%= nt('developers.contributing_records_by_csv_html') %></h2>
+  <p><%= nt('developers.an_institution_without_a_html', link1: link_to(nt('developers.an_institution_without_a_link1'), '/netd-etd-template.csv'), link2: link_to(nt('developers.an_institution_without_a_link2'), contribute_path)) %></p>
   <table class="netd-about netd-api">
-    <tr><th>Required columns</th><td><code>identifier</code> (unique within your institution; letters, digits, <code>-</code> and <code>_</code>),
-      <code>title</code>, <code>author</code>, <code>year</code> (four digits), <code>degree_level</code> (<code>Masters</code>, <code>Doctoral</code> or <code>Postgraduate Diploma</code>)</td></tr>
-    <tr><th>Optional columns</th><td><code>degree</code>, <code>supervisor</code>, <code>faculty</code>, <code>department</code>,
-      <code>discipline</code>, <code>subject</code>, <code>abstract</code>, <code>language</code> (e.g. <code>en</code>),
-      <code>url</code> (the record's page at your institution), <code>pdf_url</code> (a public link to the full text), <code>rights</code></td></tr>
-    <tr><th>Several values</th><td>Separate them with <code>||</code> in <code>author</code>, <code>supervisor</code> and <code>subject</code>,
-      e.g. <code>Phiri, Chanda||Mumba, Natasha</code>. Write names as Surname, Given names.</td></tr>
-    <tr><th>File format</th><td>UTF-8 is preferred; files saved from Excel are also accepted. Commas or semicolons may separate columns.</td></tr>
+    <tr><th><%= nt('developers.required_columns_html') %></th><td><%= nt('developers.identifier_unique_within_your_html') %></td></tr>
+    <tr><th><%= nt('developers.optional_columns_html') %></th><td><%= nt('developers.degree_supervisor_faculty_department_html') %></td></tr>
+    <tr><th><%= nt('developers.several_values_html') %></th><td><%= nt('developers.separate_them_with_in_html') %></td></tr>
+    <tr><th><%= nt('developers.file_format_html') %></th><td><%= nt('developers.utf_is_preferred_files_html') %></td></tr>
   </table>
 
-  <h2>Source code and contact</h2>
-  <p>The portal is open source:
-    <%= link_to 'github.com/lightonphiri/code-datalab26-netd_aggregator', 'https://github.com/lightonphiri/code-datalab26-netd_aggregator', target: '_blank', rel: 'noopener' %>.
-    Questions: <a href="mailto:<%= Netd.contact_email %>"><%= Netd.contact_email %></a>.</p>
+  <h2><%= nt('developers.source_code_and_contact_html') %></h2>
+  <p><%= nt('developers.the_portal_is_open_html', link1: link_to(nt('developers.the_portal_is_open_link1'), 'https://github.com/lightonphiri/code-datalab26-netd_aggregator', target: '_blank', rel: 'noopener')) %></p>
 </div>

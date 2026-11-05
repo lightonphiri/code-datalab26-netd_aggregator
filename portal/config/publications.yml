@@ -42,10 +42,6 @@ credits:
     - {name: "Elijah Chileshe", role: "Assistant Programmer/Analyst", url: "https://datalab.unza.zm/people/elijahchileshe"}
   contributors: [Adrian Chisale, Cecilia Kasonde, Angela Banda, Mubanga Chibesa, Richard Mufuzi, Chanda Chilufya,
                  Kamfwa Chileshe, Memory Phiri, Mainda Chuulu, Gift Muwele, Geoffrey Ngoma, Nkole Mulenga]
-  hosting:
-    name: ZAMREN
-    full_name: Zambia Research and Education Network
-    url: https://zamren.zm
 
 publications:
   - type: Poster
