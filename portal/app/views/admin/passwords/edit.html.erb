@@ -1,19 +1,19 @@
-<% content_for(:page_title) { 'Change password · Admin' } %>
+<% content_for(:page_title) { nt('admin.passwords.page_title') } %>
 <div class="netd-admin">
   <%= render 'admin/nav' %>
   <div class="netd-admin-narrow">
-    <h1>Change password</h1>
+    <h1><%= nt('admin.passwords.heading_html') %></h1>
     <% if current_admin.must_change_password? %>
-      <p>Please choose your own password before continuing.</p>
+      <p><%= nt('admin.passwords.choose_own_html') %></p>
     <% end %>
     <%= form_with url: admin_password_path, method: :patch do |f| %>
-      <div class="mb-3"><%= f.label :current_password, 'Current password', class: 'form-label' %>
+      <div class="mb-3"><%= f.label :current_password, nt('admin.passwords.current'), class: 'form-label' %>
         <%= f.password_field :current_password, required: true, autocomplete: 'current-password', class: 'form-control' %></div>
-      <div class="mb-3"><%= f.label :password, 'New password (at least 12 characters)', class: 'form-label' %>
+      <div class="mb-3"><%= f.label :password, nt('admin.passwords.new'), class: 'form-label' %>
         <%= f.password_field :password, required: true, minlength: 12, autocomplete: 'new-password', class: 'form-control' %></div>
-      <div class="mb-3"><%= f.label :password_confirmation, 'New password again', class: 'form-label' %>
+      <div class="mb-3"><%= f.label :password_confirmation, nt('admin.passwords.again'), class: 'form-label' %>
         <%= f.password_field :password_confirmation, required: true, minlength: 12, autocomplete: 'new-password', class: 'form-control' %></div>
-      <%= f.submit 'Change password', class: 'btn btn-primary' %>
+      <%= f.submit nt('admin.passwords.submit'), class: 'btn btn-primary' %>
     <% end %>
   </div>
 </div>

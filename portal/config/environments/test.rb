@@ -32,7 +32,8 @@ Rails.application.configure do
   config.active_support.deprecation = :stderr
 
   # Raises error for missing translations.
-  # config.i18n.raise_on_missing_translations = true
+  # A missing key in en.yml raises instead of printing "translation missing" (packaging P4f)
+  config.i18n.raise_on_missing_translations = true
 
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true

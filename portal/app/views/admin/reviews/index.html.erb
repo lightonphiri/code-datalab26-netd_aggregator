@@ -1,34 +1,31 @@
-<% content_for(:page_title) { 'Degree-level review · Admin' } %>
+<% content_for(:page_title) { nt('admin.reviews.page_title') } %>
 <div class="netd-admin">
   <%= render 'admin/nav' %>
-  <h1>Degree-level review</h1>
-  <p class="netd-admin-help">A model read these PDFs as below postgraduate level, but not confidently enough to
-    exclude them automatically (SRS FR-52). Open the PDF, then <strong>Exclude</strong> if it is undergraduate work
-    or <strong>Keep</strong> if it is a postgraduate thesis. Decisions are logged, kept across re-harvests, and take
-    effect when the source is next processed.</p>
-  <p><%= link_to 'Waiting', admin_reviews_path, class: ('fw-bold' if @status == 'pending') %> ·
-     <%= link_to 'Decided', admin_reviews_path(status: 'decided'), class: ('fw-bold' if @status == 'decided') %></p>
+  <h1><%= nt('admin.reviews.heading_html') %></h1>
+  <p class="netd-admin-help"><%= nt('admin.reviews.intro_html') %></p>
+  <p><%= link_to nt('admin.reviews.waiting'), admin_reviews_path, class: ('fw-bold' if @status == 'pending') %> ·
+     <%= link_to nt('admin.reviews.decided'), admin_reviews_path(status: 'decided'), class: ('fw-bold' if @status == 'decided') %></p>
   <table class="table table-sm netd-admin-table">
-    <thead><tr><th>Record</th><th>Title</th><th>Predicted</th><th class="text-end">Confidence</th><th>Evidence</th><th></th></tr></thead>
+    <thead><tr><th><%= nt('admin.reviews.record_html') %></th><th><%= nt('admin.reviews.title_html') %></th><th><%= nt('admin.reviews.predicted_html') %></th><th class="text-end"><%= nt('admin.reviews.confidence_html') %></th><th><%= nt('admin.reviews.evidence_html') %></th><th></th></tr></thead>
     <tbody>
     <% @items.each do |i| %>
       <tr>
         <td><%= link_to i['record_id'], admin_record_path(i['record_id']) %><br><small><%= i['inst'] %></small></td>
-        <td><%= i['title'] %><% if i['pdf'] %><br><%= link_to 'PDF', i['pdf'], target: '_blank', rel: 'noopener' %><% end %></td>
+        <td><%= i['title'] %><% if i['pdf'] %><br><%= link_to nt('admin.reviews.pdf'), i['pdf'], target: '_blank', rel: 'noopener' %><% end %></td>
         <td><%= i['predicted'] %><br><small><%= i['model'] %></small></td>
         <td class="text-end"><%= format('%.2f', i['confidence'].to_f) %></td>
         <td><small><%= i['evidence'] %></small></td>
         <td class="text-nowrap">
           <% if @status == 'pending' %>
-            <%= button_to 'Exclude', admin_decide_review_path(i['record_id']), params: { decision: 'exclude' }, class: 'btn btn-sm btn-outline-danger', form_class: 'd-inline' %>
-            <%= button_to 'Keep', admin_decide_review_path(i['record_id']), params: { decision: 'include' }, class: 'btn btn-sm btn-outline-success', form_class: 'd-inline' %>
+            <%= button_to nt('admin.reviews.exclude'), admin_decide_review_path(i['record_id']), params: { decision: 'exclude' }, class: 'btn btn-sm btn-outline-danger', form_class: 'd-inline' %>
+            <%= button_to nt('admin.reviews.keep'), admin_decide_review_path(i['record_id']), params: { decision: 'include' }, class: 'btn btn-sm btn-outline-success', form_class: 'd-inline' %>
           <% else %>
-            <%= link_to 'See decision', admin_record_path(i['record_id']) %>
+            <%= link_to nt('admin.reviews.see_decision'), admin_record_path(i['record_id']) %>
           <% end %>
         </td>
       </tr>
     <% end %>
-    <% if @items.empty? %><tr><td colspan="6"><%= @status == 'pending' ? 'Nothing to review.' : 'No decisions yet.' %></td></tr><% end %>
+    <% if @items.empty? %><tr><td colspan="6"><%= @status == 'pending' ? nt('admin.reviews.nothing') : nt('admin.reviews.no_decisions') %></td></tr><% end %>
     </tbody>
   </table>
 </div>

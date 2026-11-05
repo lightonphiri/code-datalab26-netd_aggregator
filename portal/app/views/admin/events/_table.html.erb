@@ -1,10 +1,10 @@
 <table class="table table-sm netd-admin-table">
-  <thead><tr><th>When</th><th>Who</th><th>Action</th><th>Subject</th><th>Detail</th><th>From</th></tr></thead>
+  <thead><tr><th><%= nt('admin.events.when_html') %></th><th><%= nt('admin.events.who_html') %></th><th><%= nt('admin.events.action_html') %></th><th><%= nt('admin.events.subject_html') %></th><th><%= nt('admin.events.detail_html') %></th><th><%= nt('admin.events.from_html') %></th></tr></thead>
   <tbody>
   <% events.each do |e| %>
     <tr><td><%= admin_time(e.created_at) %></td><td><%= e.user&.name || '—' %></td><td><code><%= e.action %></code></td>
       <td><%= e.subject %></td><td><small><%= e.detail.to_s.truncate(160) %></small></td><td><small><%= e.ip_address %></small></td></tr>
   <% end %>
-  <% if events.empty? %><tr><td colspan="6">No activity yet.</td></tr><% end %>
+  <% if events.empty? %><tr><td colspan="6"><%= nt('admin.events.none_html') %></td></tr><% end %>
   </tbody>
 </table>

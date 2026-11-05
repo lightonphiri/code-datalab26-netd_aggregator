@@ -1,12 +1,13 @@
-A problem was reported on the <%= Netd.portal_name %>.
+<%# Text in en.yml under netd.mail.problem (P4f); plain text, so nothing is escaped %>
+<%= t('netd.mail.problem.intro', portal: Netd.portal_name) %>
 
-Problem:  <%= @r.problem %>
-Record:   <%= @r.record_title %>
-URL:      <%= @r.record_url %>
-From:     <%= @r.name.presence || 'Anonymous' %> <<%= @r.email %>>
-Sent:     <%= @r.created_at&.strftime('%B %-d, %Y %H:%M %Z') %>
+<%= t('netd.mail.problem.problem', value: @r.problem) %>
+<%= t('netd.mail.problem.record', value: @r.record_title) %>
+<%= t('netd.mail.problem.url', value: @r.record_url) %>
+<%= t('netd.mail.problem.from', name: @r.name.presence || t('netd.mail.problem.anonymous'), email: @r.email) %>
+<%= t('netd.mail.problem.sent', value: (l(@r.created_at, format: :netd_mail) if @r.created_at)) %>
 
-Message:
+<%= t('netd.mail.problem.message') %>
 <%= @r.message %>
 
-(Report #<%= @r.id %>; reply to this email to answer the reporter.)
+<%= t('netd.mail.problem.footer', n: @r.id) %>

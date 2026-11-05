@@ -16,8 +16,9 @@
 # Moved into this file so far: header, footer and home page (P4a); About, Credits, FAQ, For Institutions, Developer
 # Resources and the REST API reference (P4b); Browse by Faculty, Follow a search, Metadata Quality and the "Follow
 # this search" button (P4c); the record page, result cards and facet toggles (P4d); institution status and quality
-# group labels, and below the netd: block Blacklight's field, facet and sort labels and the date formats (P4e).
-# The administration pages and mail follow later.
+# group labels, and below the netd: block Blacklight's field, facet and sort labels and the date formats (P4e);
+# the admin navigation, sign-in, password, activity log, level review, problem report and CSV upload pages and the
+# problem-report mail (P4f). The admin dashboard, record, duplicates, quality, usage and report pages follow later.
 
 en:
   netd:
@@ -438,10 +439,140 @@ en:
       missing:
         label: "Missing"
         description: "No value"
+    # Admin panel (P4f): navigation, sign-in, password, activity log, level review, problem reports, CSV upload
+    admin:
+      never_run: "never run"
+      nav:
+        admin_html: "Admin"
+        dashboard: "Dashboard"
+        problem_reports: "Problem reports"
+        upload_csv: "Upload CSV"
+        level_review: "Level review"
+        duplicates: "Duplicates (%{n})"
+        activity_log: "Activity log"
+        lookup_placeholder: "Record id or URL"
+        lookup_label: "Correct a record: record id or portal address"
+        correct: "Correct"
+        quality: "Metadata quality"
+        usage: "Usage"
+        etd_reports: "ETD reports"
+        change_password: "Change password"
+        sign_out: "Sign out"
+      sessions:
+        page_title: "Admin sign-in · %{portal}"
+        heading_html: "Admin sign-in"
+        email: "Email address"
+        password: "Password"
+        sign_in: "Sign in"
+        team_only_html: "For the portal team only. Accounts are created by the system administrator."
+      passwords:
+        page_title: "Change password · Admin"
+        heading_html: "Change password"
+        choose_own_html: "Please choose your own password before continuing."
+        current: "Current password"
+        new: "New password (at least 12 characters)"
+        again: "New password again"
+        submit: "Change password"
+      events:
+        page_title: "Activity log · Admin"
+        heading_html: "Activity log"
+        intro_html: "Every sign-in (including failed attempts) and every change made in the admin panel; the latest 500."
+        when_html: "When"
+        who_html: "Who"
+        action_html: "Action"
+        subject_html: "Subject"
+        detail_html: "Detail"
+        from_html: "From"
+        none_html: "No activity yet."
+      reviews:
+        page_title: "Degree-level review · Admin"
+        heading_html: "Degree-level review"
+        intro_html: "A model read these PDFs as below postgraduate level, but not confidently enough to exclude them automatically (SRS FR-52). Open the PDF, then <strong>Exclude</strong> if it is undergraduate work or <strong>Keep</strong> if it is a postgraduate thesis. Decisions are logged, kept across re-harvests, and take effect when the source is next processed."
+        waiting: "Waiting"
+        decided: "Decided"
+        record_html: "Record"
+        title_html: "Title"
+        predicted_html: "Predicted"
+        confidence_html: "Confidence"
+        evidence_html: "Evidence"
+        pdf: "PDF"
+        exclude: "Exclude"
+        keep: "Keep"
+        see_decision: "See decision"
+        nothing: "Nothing to review."
+        no_decisions: "No decisions yet."
+      problem_reports:
+        page_title: "Problem reports · Admin"
+        heading_html: "Problem reports"
+        open: "Open (%{n})"
+        resolved: "Resolved (%{n})"
+        received_html: "Received"
+        problem_html: "Problem"
+        record_html: "Record"
+        from_html: "From"
+        emailed_html: "Emailed"
+        "yes": "yes"
+        "no": "no"
+        none_open_html: "No open reports."
+        none_resolved_html: "No resolved reports."
+        show_page_title: "Problem report %{n} · Admin"
+        show_heading_html: "Problem report %{n}"
+        status_html: "Status"
+        # time, name: when and by whom the report was resolved (follows the status)
+        resolved_on: " on %{time} by %{name}"
+        message_html: "Message"
+        emailed_team_html: "Emailed to the team"
+        no_error: "no (%{error})"
+        note: "Note (what was done)"
+        mark_resolved: "Mark resolved"
+        reopen: "Reopen"
+        save_note: "Save note"
+        all: "← All reports"
+      csv:
+        page_title: "Upload CSV · Admin"
+        heading_html: "Upload an institution's CSV file"
+        # link1: link to "CSV template"; link2: link to "Developer Resources"
+        intro_html: "The file must follow the %{link1} (columns are described on %{link2}). It is checked first; nothing changes until you confirm on the next page. The new file replaces the institution's current one, so it must contain all of the institution's records: records missing from it are removed from the portal."
+        intro_link1: "CSV template"
+        intro_link2: "Developer Resources"
+        existing: "Institution already sending CSV files"
+        none_new: "— none: a new institution (below) —"
+        none_yet: "— none yet —"
+        or_new_html: "…or a new institution"
+        institution: "%{regulator_short} institution"
+        choose: "— choose —"
+        short_name: "Short name (e.g. CBU)"
+        file: "CSV file (at most 50 MB)"
+        check: "Check file"
+        check_page_title: "Check CSV · Admin"
+        check_heading_html: "Check: %{name}"
+        for_html: "For <strong>%{name}</strong> (%{short})."
+        for_new_html: "For <strong>%{name}</strong> (%{short}), a new CSV source."
+        rows_html: "%{rows} rows: <strong>%{valid} valid</strong>, %{bad} with problems."
+        rows_skipped_html: "%{rows} rows: <strong>%{valid} valid</strong>, %{bad} with problems (these rows will be skipped)."
+        load: "Load %{n} records"
+        confirm: "Replace %{name}'s records with this file?"
+        cancel: "Cancel"
+        no_valid_html: "This file has no valid rows and cannot be loaded. Send the problems above to the institution."
+        another: "Upload another file"
+    # Mail to the portal team when a reader reports a problem (ProblemMailer); plain text (P4f)
+    mail:
+      problem:
+        subject: "(%{portal}) %{problem}: %{title}"
+        intro: "A problem was reported on the %{portal}."
+        problem: "Problem:  %{value}"
+        record: "Record:   %{value}"
+        url: "URL:      %{value}"
+        from: "From:     %{name} <%{email}>"
+        anonymous: "Anonymous"
+        sent: "Sent:     %{value}"
+        message: "Message:"
+        footer: "(Report #%{n}; reply to this email to answer the reporter.)"
   # Dates: l(time, format: :netd) prints "November 5, 2026, 14:30" (P4e)
   time:
     formats:
       netd: "%B %-d, %Y, %H:%M"
+      netd_mail: "%B %-d, %Y %H:%M %Z"
   date:
     formats:
       netd: "%B %-d, %Y"

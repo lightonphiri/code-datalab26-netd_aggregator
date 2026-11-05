@@ -45,7 +45,8 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Date | Item | Commit |
 |---|---|---|
-| November 5, 2026 | Interface text in locale files, fifth part (packaging P4e, NFR-15): facet, field and sort labels, institution status and quality group labels, the quality page's date from `en.yml` (post-paper) | this release |
+| November 5, 2026 | Interface text in locale files, sixth part (packaging P4f, NFR-15): admin pages (first part), admin times and the problem-report mail from `en.yml`; missing translations raise in development and test (post-paper) | this release |
+| November 5, 2026 | Interface text in locale files, fifth part (packaging P4e, NFR-15): facet, field and sort labels, institution status and quality group labels, the quality page's date from `en.yml` (post-paper) | 0073385 |
 | November 5, 2026 | Interface text in locale files, fourth part (packaging P4d, NFR-15): record page, Report a problem form, result cards and facet toggles from `en.yml` (post-paper) | 938b22d |
 | November 5, 2026 | Interface text in locale files, third part (packaging P4c, NFR-15): Browse by Faculty, Follow a search, Metadata Quality and the Follow this search button from `en.yml` (post-paper) | ee86c76 |
 | November 5, 2026 | Interface text in locale files, second part (packaging P4b, NFR-15): About, Credits, FAQ, For Institutions, Developer Resources and REST API reference from `en.yml`; `credits.hosting` removed from `publications.yml` (post-paper) | 649923d |

@@ -6,11 +6,11 @@ module AdminHelper
     return '—' if t.blank?
 
     t = Time.at(t.to_f) if t.is_a?(Numeric)
-    t.in_time_zone(Netd.time_zone).strftime('%B %-d, %Y, %H:%M')
+    l(t.in_time_zone(Netd.time_zone), format: :netd)
   end
 
   def run_badge(status)
     cls = { 'ok' => 'success', 'error' => 'danger' }.fetch(status.to_s, 'secondary')
-    tag.span(status.presence || 'never run', class: "badge text-bg-#{cls}")
+    tag.span(status.presence || nt('admin.never_run'), class: "badge text-bg-#{cls}")
   end
 end

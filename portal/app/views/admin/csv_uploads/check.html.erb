@@ -1,10 +1,9 @@
-<% content_for(:page_title) { 'Check CSV · Admin' } %>
+<% content_for(:page_title) { nt('admin.csv.check_page_title') } %>
 <div class="netd-admin">
   <%= render 'admin/nav' %>
-  <h1>Check: <%= @filename %></h1>
-  <p>For <strong><%= @target[:name] %></strong> (<%= @target[:short_name] %>)<%= ', a new CSV source' if @target[:new] %>.</p>
-  <p><%= number_with_delimiter(@rows) %> rows: <strong><%= number_with_delimiter(@valid) %> valid</strong>,
-    <%= number_with_delimiter(@bad) %> with problems<%= ' (these rows will be skipped)' if @bad.positive? && @valid.positive? %>.</p>
+  <h1><%= nt('admin.csv.check_heading_html', name: @filename) %></h1>
+  <p><%= nt(@target[:new] ? 'admin.csv.for_new_html' : 'admin.csv.for_html', name: @target[:name], short: @target[:short_name]) %></p>
+  <p><%= nt(@bad.positive? && @valid.positive? ? 'admin.csv.rows_skipped_html' : 'admin.csv.rows_html', rows: number_with_delimiter(@rows), valid: number_with_delimiter(@valid), bad: number_with_delimiter(@bad)) %></p>
   <pre class="netd-code netd-admin-log"><%= @output %></pre>
   <% if @valid.positive? %>
     <%= form_with url: admin_load_csv_path do |f| %>
@@ -15,12 +14,12 @@
       <% else %>
         <%= f.hidden_field :source_id, value: @target[:id] %>
       <% end %>
-      <%= f.submit "Load #{number_with_delimiter(@valid)} records", class: 'btn btn-primary',
-                   data: { turbo_confirm: "Replace #{@target[:name]}'s records with this file?" } %>
-      <%= link_to 'Cancel', new_admin_csv_upload_path, class: 'btn btn-link' %>
+      <%= f.submit nt('admin.csv.load', n: number_with_delimiter(@valid)), class: 'btn btn-primary',
+                   data: { turbo_confirm: nt('admin.csv.confirm', name: @target[:name]) } %>
+      <%= link_to nt('admin.csv.cancel'), new_admin_csv_upload_path, class: 'btn btn-link' %>
     <% end %>
   <% else %>
-    <div class="alert alert-danger">This file has no valid rows and cannot be loaded. Send the problems above to the institution.</div>
-    <%= link_to 'Upload another file', new_admin_csv_upload_path, class: 'btn btn-outline-primary' %>
+    <div class="alert alert-danger"><%= nt('admin.csv.no_valid_html') %></div>
+    <%= link_to nt('admin.csv.another'), new_admin_csv_upload_path, class: 'btn btn-outline-primary' %>
   <% end %>
 </div>

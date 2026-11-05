@@ -8,6 +8,7 @@ class ProblemMailer < ApplicationMailer
     mail(to: RECIPIENTS,
          from: ENV.fetch('SMTP_FROM', ENV.fetch('SMTP_USER', Netd.mail_sender)),
          reply_to: @r.email,
-         subject: "(#{Netd.portal_name}) #{@r.problem}: #{@r.record_title.to_s.truncate(100)}")
+         subject: I18n.t('netd.mail.problem.subject', portal: Netd.portal_name, problem: @r.problem,
+                                                             title: @r.record_title.to_s.truncate(100)))
   end
 end

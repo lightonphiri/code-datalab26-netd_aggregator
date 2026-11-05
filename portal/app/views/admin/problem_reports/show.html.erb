@@ -1,25 +1,25 @@
-<% content_for(:page_title) { "Problem report #{@report.id} · Admin" } %>
+<% content_for(:page_title) { nt('admin.problem_reports.show_page_title', n: @report.id) } %>
 <div class="netd-admin">
   <%= render 'admin/nav' %>
-  <h1>Problem report <%= @report.id %></h1>
+  <h1><%= nt('admin.problem_reports.show_heading_html', n: @report.id) %></h1>
   <table class="netd-about">
-    <tr><th>Status</th><td><%= @report.status %><%= " on #{admin_time(@report.resolved_at)} by #{@report.resolved_by&.name}" if @report.status == 'resolved' %></td></tr>
-    <tr><th>Received</th><td><%= admin_time(@report.created_at) %></td></tr>
-    <tr><th>Problem</th><td><%= @report.problem %></td></tr>
-    <tr><th>Message</th><td><%= simple_format(@report.message) %></td></tr>
-    <tr><th>Record</th><td><%= @report.record_url.present? ? link_to(@report.record_title.presence || @report.record_url, @report.record_url) : '—' %></td></tr>
-    <tr><th>From</th><td><%= @report.name %> &lt;<%= mail_to @report.email %>&gt;</td></tr>
-    <tr><th>Emailed to the team</th><td><%= @report.emailed ? 'yes' : "no (#{@report.email_error})" %></td></tr>
+    <tr><th><%= nt('admin.problem_reports.status_html') %></th><td><%= @report.status %><%= nt('admin.problem_reports.resolved_on', time: admin_time(@report.resolved_at), name: @report.resolved_by&.name) if @report.status == 'resolved' %></td></tr>
+    <tr><th><%= nt('admin.problem_reports.received_html') %></th><td><%= admin_time(@report.created_at) %></td></tr>
+    <tr><th><%= nt('admin.problem_reports.problem_html') %></th><td><%= @report.problem %></td></tr>
+    <tr><th><%= nt('admin.problem_reports.message_html') %></th><td><%= simple_format(@report.message) %></td></tr>
+    <tr><th><%= nt('admin.problem_reports.record_html') %></th><td><%= @report.record_url.present? ? link_to(@report.record_title.presence || @report.record_url, @report.record_url) : '—' %></td></tr>
+    <tr><th><%= nt('admin.problem_reports.from_html') %></th><td><%= @report.name %> &lt;<%= mail_to @report.email %>&gt;</td></tr>
+    <tr><th><%= nt('admin.problem_reports.emailed_team_html') %></th><td><%= @report.emailed ? nt('admin.problem_reports.yes') : nt('admin.problem_reports.no_error', error: @report.email_error) %></td></tr>
   </table>
   <%= form_with url: admin_problem_report_path(@report), method: :patch do |f| %>
-    <div class="mb-3"><%= f.label :admin_note, 'Note (what was done)', class: 'form-label' %>
+    <div class="mb-3"><%= f.label :admin_note, nt('admin.problem_reports.note'), class: 'form-label' %>
       <%= f.text_area :admin_note, value: @report.admin_note, rows: 3, class: 'form-control' %></div>
     <% if @report.status == 'open' %>
-      <%= f.button 'Mark resolved', name: 'status', value: 'resolved', class: 'btn btn-primary' %>
+      <%= f.button nt('admin.problem_reports.mark_resolved'), name: 'status', value: 'resolved', class: 'btn btn-primary' %>
     <% else %>
-      <%= f.button 'Reopen', name: 'status', value: 'open', class: 'btn btn-outline-primary' %>
-      <%= f.button 'Save note', name: 'status', value: 'resolved', class: 'btn btn-outline-secondary' %>
+      <%= f.button nt('admin.problem_reports.reopen'), name: 'status', value: 'open', class: 'btn btn-outline-primary' %>
+      <%= f.button nt('admin.problem_reports.save_note'), name: 'status', value: 'resolved', class: 'btn btn-outline-secondary' %>
     <% end %>
   <% end %>
-  <p class="mt-3"><%= link_to '← All reports', admin_problem_reports_path %></p>
+  <p class="mt-3"><%= link_to nt('admin.problem_reports.all'), admin_problem_reports_path %></p>
 </div>

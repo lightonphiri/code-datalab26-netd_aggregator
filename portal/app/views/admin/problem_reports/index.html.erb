@@ -1,21 +1,21 @@
-<% content_for(:page_title) { 'Problem reports · Admin' } %>
+<% content_for(:page_title) { nt('admin.problem_reports.page_title') } %>
 <div class="netd-admin">
   <%= render 'admin/nav' %>
-  <h1>Problem reports</h1>
+  <h1><%= nt('admin.problem_reports.heading_html') %></h1>
   <p><% ProblemReport::STATUSES.each do |st| %>
-    <%= link_to "#{st.capitalize} (#{@counts[st] || 0})", admin_problem_reports_path(status: st),
+    <%= link_to nt(st == 'open' ? 'admin.problem_reports.open' : 'admin.problem_reports.resolved', n: @counts[st] || 0), admin_problem_reports_path(status: st),
                 class: "btn btn-sm #{st == @status ? 'btn-primary' : 'btn-outline-primary'}" %>
   <% end %></p>
   <table class="table table-sm netd-admin-table">
-    <thead><tr><th>#</th><th>Received</th><th>Problem</th><th>Record</th><th>From</th><th>Emailed</th></tr></thead>
+    <thead><tr><th>#</th><th><%= nt('admin.problem_reports.received_html') %></th><th><%= nt('admin.problem_reports.problem_html') %></th><th><%= nt('admin.problem_reports.record_html') %></th><th><%= nt('admin.problem_reports.from_html') %></th><th><%= nt('admin.problem_reports.emailed_html') %></th></tr></thead>
     <tbody>
     <% @reports.each do |r| %>
       <tr><td><%= link_to r.id, admin_problem_report_path(r) %></td><td><%= admin_time(r.created_at) %></td>
         <td><%= link_to r.problem, admin_problem_report_path(r) %><br><small class="text-muted"><%= r.message.truncate(100) %></small></td>
         <td><%= r.record_title.to_s.truncate(70) %></td><td><%= r.name.presence || r.email %></td>
-        <td><%= r.emailed ? 'yes' : tag.span('no', title: r.email_error) %></td></tr>
+        <td><%= r.emailed ? nt('admin.problem_reports.yes') : tag.span(nt('admin.problem_reports.no'), title: r.email_error) %></td></tr>
     <% end %>
-    <% if @reports.empty? %><tr><td colspan="6">No <%= @status %> reports.</td></tr><% end %>
+    <% if @reports.empty? %><tr><td colspan="6"><%= nt(@status == 'open' ? 'admin.problem_reports.none_open_html' : 'admin.problem_reports.none_resolved_html') %></td></tr><% end %>
     </tbody>
   </table>
 </div>
