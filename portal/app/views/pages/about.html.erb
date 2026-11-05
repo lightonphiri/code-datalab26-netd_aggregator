@@ -4,7 +4,7 @@
   <h1 class="h3"><%= nt('about.heading_html', name: p['name']) %></h1>
   <p><%= p['summary'] %></p>
   <div class="netd-partner-logos">
-<% Netd.credits.each do |c| %>    <a href="<%= c['url'] %>" class="<%= c['class'] %>" title="<%= Netd.credit_title(c) %>" target="_blank" rel="noopener"><img src="/images/<%= c['logo'] %>" alt="<%= Netd.credit_alt(c) %>" height="<%= c['logo_height'] %>"></a>
+<% Netd.credits.each do |c| %>    <a href="<%= c['url'] %>" class="<%= c['class'] %>" title="<%= Netd.credit_title(c) %>" target="_blank" rel="noopener"><% if Netd.credit_logo(c) %><img src="/images/<%= c['logo'] %>" alt="<%= Netd.credit_alt(c) %>" height="<%= c['logo_height'] %>"><% else %><span class="netd-credit-name"><%= c['name'] %></span><% end %></a>
 <% end %>  </div>
 <% dev = Netd.credit('developed by'); host = Netd.credit('hosted by') %>  <p><% if dev %><%= nt('about.developed_by_html') %> <%= "#{dev['article']} " if dev['article'] %><%= link_to dev['name'], dev['url'], target: '_blank', rel: 'noopener' %><% end %><% if host %><%= nt('about.hosted_by_html') %>
     <%= link_to host['name'], host['url'], target: '_blank', rel: 'noopener' %><%= " (#{host['full_name']})" if host['full_name'] %><%= nt('about.hosted_role_html') %><% end %>

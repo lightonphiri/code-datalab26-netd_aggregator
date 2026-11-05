@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- Theme "default": neutral site icon (an open book on slate), BSD 3-Clause like the rest of the repository. -->
+  <rect width="512" height="512" rx="96" fill="#2f3a45"/>
+  <path d="M256 150c-42-28-98-34-150-26v236c52-8 108-2 150 26z" fill="#ffffff"/>
+  <path d="M256 150c42-28 98-34 150-26v236c-52-8-108-2-150 26z" fill="#d6e2ef"/>
+  <path d="M256 150v236" stroke="#2b6cb0" stroke-width="10"/>
+</svg>

@@ -17,17 +17,27 @@ Keep your changes on a branch of your own (or in a fork) so that upgrades can be
 
 ## 8.2 Logo and credits
 
-Credits are listed in `credits` in `config/country.yml` ([chapter 7.1](07-configuration.md)): the header bar and footer name the entry with role `developed by`, and the About and Credits pages show every entry's logo, in order. Put the logo files in your theme's `public/images/` folder (section 8.3; for example `themes/zambia/public/images/`) and name them in `logo` (with `logo_height` in pixels); they are served at `/images/<file>`. `class` is the style class of the logo link (`datalab-credit` and `zamren-credit` are styled in `netd.css`). The site icon is `portal/public/icon.png` and `icon.svg`.
+Credits are listed in `credits` in `config/country.yml` ([chapter 7.1](07-configuration.md)): the header bar and footer name the entry with role `developed by`, and the About and Credits pages show every entry's logo, in order; an entry without `logo`, or whose file is not found, is shown by its name instead (and the footer then shows no logo). Put the logo files in your theme's `public/images/` folder (section 8.3; for example `themes/zambia/public/images/`) and name them in `logo` (with `logo_height` in pixels); they are served at `/images/<file>`. `class` is the style class of the logo link (`datalab-credit` and `zamren-credit` are styled in `netd.css`). The site icons are part of the theme as well (section 8.3).
 
 ## 8.3 Colours and fonts
 
-Colours, the wordmark font and the logo files form a theme: a folder `themes/<name>/` named by `portal.theme` in `config/country.yml` ([chapter 7.1](07-configuration.md)). Two are shipped: `zambia` (navy and blue, Cinzel wordmark, the DataLab and ZAMREN logos) and `default` (neutral slate and blue, the system serif font, no logos), used when `portal.theme` is not set. To make your own, copy `themes/default` to `themes/<name>`, edit it and set `portal.theme: <name>`; then run `deploy/deploy.sh` (it rebuilds the style sheets) or restart the portal.
+Colours, the wordmark font and the logo files form a theme: a folder `themes/<name>/` named by `portal.theme` in `config/country.yml` ([chapter 7.1](07-configuration.md)). Two are shipped: `zambia` (navy and blue, Cinzel wordmark, the DataLab and ZAMREN logos) and `default` (neutral slate and blue, the system serif font, a neutral book icon, no logos), used when `portal.theme` is not set. To make your own, copy `themes/default` to `themes/<name>`, edit it and set `portal.theme: <name>`; then run `deploy/deploy.sh` (it rebuilds the style sheets) or restart the portal.
 
 ```text
 themes/<name>/
   stylesheets/theme.css    colours and fonts (below)
   public/images/           logo files named in credits; served at /images/<file>
+  public/icon.png          site icon, 512 x 512 pixels (home-screen and app icon)
+  public/icon.svg          the same icon as SVG
+  public/favicon.svg       optional browser-tab icon (or favicon.ico); without it the pages use Blacklight's
 ```
+
+The two shipped themes, on the home page and the Credits page. `default` is shown with the Zambian credits, whose logo files it does not have, so the Credits page names them instead:
+
+| `zambia` | `default` |
+|---|---|
+| ![Home page with the zambia theme](img/theme-zambia-home.jpg) | ![Home page with the default theme](img/theme-default-home.jpg) |
+| ![Credits page with the zambia theme](img/theme-zambia-credits.jpg) | ![Credits page with the default theme](img/theme-default-credits.jpg) |
 
 `theme.css` sets CSS variables that `portal/app/assets/stylesheets/netd.css` (the layout) reads:
 

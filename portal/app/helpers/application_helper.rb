@@ -3,6 +3,14 @@ module ApplicationHelper
   # available for interpolation (Netd.text_values). Keys ending in _html are HTML; other values are escaped.
   def nt(key, **values) = t("netd.#{key}", **Netd.text_values.merge(values))
 
+  # Browser-tab icon (packaging P5b): the theme's favicon.svg or favicon.ico when it has one, otherwise Blacklight's
+  # (called without arguments by Blacklight's layout).
+  def favicon_link_tag(source = 'favicon.ico', options = {})
+    f = Netd.theme_favicon
+    return super unless f
+    tag.link(rel: 'icon', type: f.end_with?('.svg') ? 'image/svg+xml' : 'image/x-icon', href: "/#{f}")
+  end
+
   # Label of the Citations facet's one item (a query facet; Blacklight calls this before using the query's label)
   def cited_facet_label(_value) = nt('facets.cited')
 

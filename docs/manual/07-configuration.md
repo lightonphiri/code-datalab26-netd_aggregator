@@ -129,7 +129,7 @@ institutions:
 | `SMTP_FROM` | sender address, if not `SMTP_USER` |
 | `ALERT_TO` | recipients of alerts and the weekly status (default `SMTP_USER`) |
 | `RAILS_FORCE_SSL` | `true` to have Rails itself force HTTPS (normally Apache does this) |
-| `OPENALEX_API_KEY` | optional, for rebuilding the fields-of-study model |
+| `OPENALEX_API_KEY` | optional: the nightly Cited by job (without a key OpenAlex allows about 100 calls a day, with a free key ten times as many; on a native install the key goes in `/opt/netd/openalex.env`, read by systemd) and rebuilding the fields-of-study model. A key OpenAlex rejects is logged and the job runs without it |
 
 `SOLR_URL` is set in the systemd unit, not here.
 

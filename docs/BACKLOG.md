@@ -9,6 +9,7 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Added | Item | Type | Notes |
 |---|---|---|---|
+| November 5, 2026 | A NETD icon for the `zambia` theme: `themes/zambia/public/icon.png` and `icon.svg` are still the Rails placeholder (a red circle; only the unused application layout and the disabled manifest use them) and the browser tab shows Blacklight's icon; adding `favicon.svg` to the theme replaces the latter | Design (Lighton) | P5b (session 19) made the icons part of the theme and kept the Zambian files unchanged; no code change needed, only the files |
 | November 5, 2026 | HEA presentation (November 5, 2026): add here whatever HEA asks for | HEA | Waiting for Lighton's notes after the presentation |
 | November 5, 2026 | Documentation track: filter lists moved to `/theses/filters/<name>` (FR-71; 301 from `/catalog/facet/<field>`); cited-by log line now says "rate-limited" or "daily budget", and a rejected key no longer stops the job; Lighton's OpenAlex key until the handover. Also: `portal/config/netd_country.rb` names "SRS FR-70" for the country configuration, which the SRS records as NFR-15 (FR-70 is unused; maintenance used FR-71 to avoid a clash) | Note (docs) | SRS 0.51, SDD 0.50, OPERATIONS "Cited by" and "Handover to HEA" |
 | November 5, 2026 | Full-collection "Cited by" figures: rerun `work/report-s14a.rb` and add an evidence row (post-paper) once every thesis has been checked | Check | The November 5 run checked none (OpenAlex refused keyless search); with the key or the retry fix about two nights |
@@ -49,10 +50,11 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Date | Item | Commit |
 |---|---|---|
+| November 5, 2026 | Site icons and credits in the theme (packaging P5b, NFR-15): `icon.png`/`icon.svg` in `themes/<name>/public`, optional theme favicon, credits without a logo file shown by name; screenshots of both themes in manual 8.3; P5 done (post-paper) | this release |
 | November 5, 2026 | "Similar theses" and "Cited by" closed by default with "+"/"−" on the right, as PMC (Lighton); links to `#cited-by` open the section | session 15 (maintenance) |
 | November 5, 2026 | Filter lists at readable addresses `/theses/filters/<name>` with 301 from `/catalog/facet/<field>` (FR-71); "Citations" list 404 instead of 500 | session 15 (maintenance) |
 | November 5, 2026 | Cited by: OpenAlex's temporary refusals waited out and logged as "rate-limited"; a rejected API key no longer stops the job (FR-69) | session 15 (maintenance) |
-| November 5, 2026 | Theme folders (packaging P5a, NFR-15): `themes/zambia` and `themes/default`, `portal.theme`; logos served from the theme (post-paper) | this release |
+| November 5, 2026 | Theme folders (packaging P5a, NFR-15): `themes/zambia` and `themes/default`, `portal.theme`; logos served from the theme (post-paper) | af727ae |
 | November 5, 2026 | Interface text in locale files, seventh and last part (packaging P4g, NFR-15): remaining admin pages, usage event labels and flash messages from `en.yml`; P4 done (post-paper) | 15594bb |
 | November 5, 2026 | Interface text in locale files, sixth part (packaging P4f, NFR-15): admin pages (first part), admin times and the problem-report mail from `en.yml`; missing translations raise in development and test (post-paper) | 222eb2e |
 | November 5, 2026 | Interface text in locale files, fifth part (packaging P4e, NFR-15): facet, field and sort labels, institution status and quality group labels, the quality page's date from `en.yml` (post-paper) | 0073385 |

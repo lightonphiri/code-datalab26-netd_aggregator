@@ -3,7 +3,7 @@
 require 'yaml'
 require 'tzinfo'
 
-# The installation's country configuration (config/country.yml; SRS FR-70, SDD "Country configuration").
+# The installation's country configuration (config/country.yml; SRS NFR-15, SDD 8.1 "Country configuration").
 # Loaded once from config/application.rb, before the environment files, so that production.rb and every class can
 # read it. A missing file or key stops start-up with a message naming the file and the key.
 module Netd
@@ -67,6 +67,17 @@ module Netd
     # Logo title and alternative text: "ZAMREN — Zambia Research and Education Network" where a full name is given.
     def credit_title(c) = c['full_name'] || c['name']
     def credit_alt(c) = c['full_name'] ? "#{c['name']} — #{c['full_name']}" : c['name']
+    # A credit's logo file name, or nil when it has no logo or the file is in neither the theme's public/images nor
+    # portal/public/images (packaging P5b): the pages then show the name instead of a broken image.
+    def credit_logo(c)
+      f = c['logo'].to_s
+      return nil if f.empty? || f.include?('/')
+      (@credit_logos ||= {})[f] ||= [File.join(theme_dir, 'public', 'images', f),
+                                     File.expand_path("../public/images/#{f}", __dir__)].any? { |x| File.file?(x) } ? f : false
+      @credit_logos[f] || nil
+    end
+    # The theme's own browser-tab icon (themes/<theme>/public/favicon.svg or favicon.ico), or nil: Blacklight's then.
+    def theme_favicon = %w[favicon.svg favicon.ico].find { |f| File.file?(File.join(theme_dir, 'public', f)) }
     # Installation words kept capitalised in citations (merged with Citation::KEEP_GENERAL).
     def keep_capitals = Array(get('citation.keep_capitals'))
     # Values every interface text may use (config/locales/en.yml, keys under netd.; SRS NFR-15, SDD 8.1):

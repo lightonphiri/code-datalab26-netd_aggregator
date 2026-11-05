@@ -22,7 +22,7 @@ Each result shows the title, the authors, a line with **year · degree · instit
 
 ## 5.3 Facets (filters)
 
-The left-hand column narrows the results. Choose a value to filter; choose it again (or the × in the filter bar) to remove it. Several facets can be combined.
+The left-hand column narrows the results. Choose a value to filter; choose it again (or the × in the filter bar) to remove it. Several facets can be combined. A facet's "more" link opens its full list at `/theses/filters/<name>` (for example `/theses/filters/field-of-study` or `/theses/filters/supervisor`), sortable by count or A to Z; older `/catalog/facet/<field>` addresses redirect there.
 
 | Facet | What it holds |
 |---|---|
@@ -55,8 +55,8 @@ A record page has the address `/theses/<short id>` (for example `/theses/unza-63
 - **Download PDF** and **Repository link** (the item on the institution's repository), and view and download counts;
 - values the portal filled in itself, marked as derived, with their origin;
 - other copies of the same thesis, if any;
-- **Cited by**: works in OpenAlex that cite the thesis, with their year, when there are any (in the right-hand column, which can be collapsed; matched weekly; most theses have none);
-- **How to cite** (below), **Similar theses** (five theses with similar titles and abstracts, a section that can be collapsed), a Google Scholar link, and **Report a problem** (a short form; reports go to the portal team).
+- **Cited by**: works in OpenAlex that cite the thesis, with their year, when there are any (in the right-hand column, matched weekly; most theses have none). The section starts closed: choose **+** to open it and **−** to close it; a link to `#cited-by` opens it;
+- **How to cite** (below), **Similar theses** (five theses with similar titles and abstracts, closed at first like Cited by; `#similar-theses` opens it), a Google Scholar link, and **Report a problem** (a short form; reports go to the portal team).
 
 ![Cited by on a record page](img/record-cited-by.jpg)
 

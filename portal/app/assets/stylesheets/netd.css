@@ -202,6 +202,8 @@ footer.netd-footer { padding: 0; background: #fff; }
 .netd-footer-text a { color: #555; text-decoration: underline; }
 /* partner logos and content pages */
 .netd-partner-logos { display: flex; align-items: center; flex-wrap: wrap; gap: 1.5rem; margin: .4rem 0 .2rem; }
+.netd-partner-logos a:has(.netd-credit-name) { text-decoration: none; padding: 6px 0; }
+.netd-credit-name { display: inline-block; font-weight: 600; font-size: 1.1rem; line-height: 1.25; }  /* credit without a logo (P5b) */
 .zamren-credit { display: inline-block; padding: 6px 0; }
 .zamren-credit img { height: 48px; width: auto; max-width: 100%; display: block; }
 .netd-credit-list { padding-left: 1.1rem; }

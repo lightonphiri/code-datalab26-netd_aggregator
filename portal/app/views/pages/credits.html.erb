@@ -6,7 +6,7 @@
     <%= link_to dev['name'], dev['url'], target: '_blank', rel: 'noopener' %><% end %><% if h %><%= nt('credits.hosted_by_html') %>
     <%= link_to (h['full_name'] ? "#{h['name']} (#{h['full_name']})" : h['name']), h['url'], target: '_blank', rel: 'noopener' %><%= nt('credits.hosted_role_html') %><% end %>.</p>
   <div class="netd-partner-logos">
-<% Netd.credits.each do |cr| %>    <a href="<%= cr['url'] %>" class="<%= cr['class'] %>" target="_blank" rel="noopener" title="<%= Netd.credit_title(cr) %>"><img src="/images/<%= cr['logo'] %>" alt="<%= Netd.credit_alt(cr) %>" height="<%= cr['logo_height'] %>"></a>
+<% Netd.credits.each do |cr| %>    <a href="<%= cr['url'] %>" class="<%= cr['class'] %>" target="_blank" rel="noopener" title="<%= Netd.credit_title(cr) %>"><% if Netd.credit_logo(cr) %><img src="/images/<%= cr['logo'] %>" alt="<%= Netd.credit_alt(cr) %>" height="<%= cr['logo_height'] %>"><% else %><span class="netd-credit-name"><%= cr['name'] %></span><% end %></a>
 <% end %>  </div>
 
   <h2 class="h5 mt-4"><%= nt('credits.core_team_html') %></h2>
