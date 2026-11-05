@@ -21,8 +21,8 @@
       <div class="more_facets">
         <a class="netd-more-toggle collapsed" data-bs-toggle="collapse" href="#<%= collapse_id %>" role="button"
            aria-expanded="false" aria-controls="<%= collapse_id %>">
-          <span class="when-collapsed">more <span class="sr-only visually-hidden">Institution</span> »</span>
-          <span class="when-expanded">« fewer</span>
+          <span class="when-collapsed"><%= helpers.nt('facets.more_institutions_html') %></span>
+          <span class="when-expanded"><%= helpers.nt('facets.fewer_html') %></span>
         </a>
       </div>
     <% end %>

@@ -34,15 +34,12 @@
 <div class="row g-5 netd-record" id="document">
   <div class="col-lg-8">
     <% if (main = d['duplicate_of_ssi'].presence) %>
-      <div class="alert alert-secondary netd-dup-note" role="note">This thesis was deposited more than once. The portal
-        lists it once, under its <%= link_to 'main record', solr_document_path(ThesisId.short(main)) %>; this copy is kept as harvested.</div>
+      <div class="alert alert-secondary netd-dup-note" role="note"><%= nt('record.duplicate_main_html', link: link_to(nt('record.duplicate_main_link'), solr_document_path(ThesisId.short(main)))) %></div>
     <% elsif (copies = rec_values(d, 'duplicates_ssim')).any? %>
-      <div class="alert alert-light netd-dup-note" role="note">This thesis was deposited more than once; the portal lists
-        it once. Other <%= copies.size == 1 ? 'copy' : 'copies' %>:
-        <%= safe_join(copies.map { |c| link_to(c, solr_document_path(ThesisId.short(c))) }, ', ') %>.</div>
+      <div class="alert alert-light netd-dup-note" role="note"><%= nt('record.duplicate_copies_html', count: copies.size, links: safe_join(copies.map { |c| link_to(c, solr_document_path(ThesisId.short(c))) }, ', ')) %></div>
     <% end %>
     <div class="netd-rec-kicker">
-      <% (rec_values(d, 'year_ssim') + ['Theses'] + rec_values(d, 'degree_level_ssim')).each do |k| %><span><%= k %></span><% end %>
+      <% (rec_values(d, 'year_ssim') + [nt('record.kicker_theses')] + rec_values(d, 'degree_level_ssim')).each do |k| %><span><%= k %></span><% end %>
     </div>
     <h1 class="netd-rec-title"><%= title %></h1>
     <p class="netd-rec-authors">
@@ -54,7 +51,7 @@
 
     <% fos = rec_values(d, 'fos_ssm').filter_map { |j| JSON.parse(j) rescue nil } %>
     <% if fos.any? %>
-      <h2 class="netd-rec-h">Field of study <%= derived_badge(derived, 'field_of_study') %></h2>
+      <h2 class="netd-rec-h"><%= nt('record.field_of_study') %> <%= derived_badge(derived, 'field_of_study') %></h2>
       <div class="netd-tags">
         <% fos.each do |f| %>
           <span class="netd-fos">
@@ -64,9 +61,9 @@
           </span>
         <% end %>
       </div>
-      <p class="netd-fos-note">Standard field from <a href="https://openalex.org" target="_blank" rel="noopener">OpenAlex Topics</a>, assigned automatically; see the <%= link_to 'FAQ', faq_path %>.</p>
+      <p class="netd-fos-note"><%= nt('record.fos_note_html', link: link_to(nt('record.fos_note_link'), faq_path)) %></p>
     <% end %>
-    <% { 'Keywords (from the repository)' => 'subject_ssim', 'Programme / Discipline' => 'discipline_ssim' }.each do |label, field| %>
+    <% { nt('record.keywords') => 'subject_ssim', nt('record.discipline') => 'discipline_ssim' }.each do |label, field| %>
       <% vals = rec_values(d, field) %>
       <% next if vals.empty? %>
       <h2 class="netd-rec-h"><%= label %> <%= derived_badge(derived, field) %></h2>
@@ -75,7 +72,7 @@
 
     <% if files.any? %>
       <section class="netd-panel">
-        <h2>Files</h2>
+        <h2><%= nt('record.files') %></h2>
         <ul class="netd-files">
           <% files.each_with_index do |f, i| %>
             <li>
@@ -85,7 +82,7 @@
               <a class="netd-file-name" href="<%= record_pdf_path(d, file: i) %>" target="_blank" rel="noopener"><%= file_label(f, i) %></a>
               <span class="netd-file-meta"><%= f['mime'] %></span>
               <span class="netd-file-meta"><%= human_size(f['size']) %></span>
-              <a class="netd-file-dl" href="<%= record_pdf_path(d, file: i) %>" target="_blank" rel="noopener" aria-label="Download <%= file_label(f, i) %>">
+              <a class="netd-file-dl" href="<%= record_pdf_path(d, file: i) %>" target="_blank" rel="noopener" aria-label="<%= nt('record.download_file_html', name: file_label(f, i)) %>">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 7v9M8 12.5l4 4 4-4"/></svg>
               </a>
             </li>
@@ -95,13 +92,13 @@
     <% end %>
 
     <section class="netd-panel">
-      <h2>More About This Work</h2>
+      <h2><%= nt('record.more_about') %></h2>
       <table class="netd-about">
         <% rows = [
-             ['Institution', 'institution_ssim', true], ['Faculty / School', 'faculty_ssim', true],
-             ['Department', 'department_ssim', true], ['Thesis Advisors', 'supervisor_ssim', true],
-             ['Degree', 'degree_ssim', true], ['Degree Level', 'degree_level_ssim', true],
-             ['Year', 'year_ssim', true], ['Language', 'language_ssim', false] ] %>
+             [nt('record.about.institution'), 'institution_ssim', true], [nt('record.about.faculty'), 'faculty_ssim', true],
+             [nt('record.about.department'), 'department_ssim', true], [nt('record.about.supervisor'), 'supervisor_ssim', true],
+             [nt('record.about.degree'), 'degree_ssim', true], [nt('record.about.degree_level'), 'degree_level_ssim', true],
+             [nt('record.about.year'), 'year_ssim', true], [nt('record.about.language'), 'language_ssim', false] ] %>
         <% rows.each do |label, field, facet| %>
           <% vals = rec_values(d, field) %>
           <% next if vals.empty? %>
@@ -110,15 +107,14 @@
           <tr><th><%= label %></th>
             <td><%= safe_join(vals.map { |v| facet ? facet_link(v, field, v) : v }, '; ') %> <%= derived_badge(derived, field) %>
               <% if written.any? && written != vals %>
-                <span class="netd-as-written">As written in the record: <%= written.join('; ') %></span>
+                <span class="netd-as-written"><%= nt('record.as_written_html', values: written.join('; ')) %></span>
               <% end %></td></tr>
         <% end %>
         <% if derived.any? %>
-          <tr><td colspan="2" class="netd-derived-note"><span class="netd-derived">derived</span> values were not in the
-            repository's record; they were read automatically from the thesis PDF and may contain errors.</td></tr>
+          <tr><td colspan="2" class="netd-derived-note"><%= nt('record.derived_note_html') %></td></tr>
         <% end %>
         <% if handle %>
-          <tr><th>Source Record</th><td><%= link_to handle, handle, target: '_blank', rel: 'noopener' %></td></tr>
+          <tr><th><%= nt('record.about.source') %></th><td><%= link_to handle, handle, target: '_blank', rel: 'noopener' %></td></tr>
         <% end %>
       </table>
     </section>
@@ -127,42 +123,42 @@
   <aside class="col-lg-4">
     <div class="netd-side">
       <% if pdf %>
-        <a class="btn btn-primary w-100 netd-dl" href="<%= record_pdf_path(d) %>" target="_blank" rel="noopener">Download</a>
+        <a class="btn btn-primary w-100 netd-dl" href="<%= record_pdf_path(d) %>" target="_blank" rel="noopener"><%= nt('record.download') %></a>
       <% else %>
-        <span class="netd-nofile">No full text available from the repository</span>
+        <span class="netd-nofile"><%= nt('record.no_full_text') %></span>
       <% end %>
       <% if @usage %>
         <% views = @usage['record_view'].to_i; dls = @usage['pdf_download'].to_i %>
-        <div class="netd-rec-usage" title="Counted by the portal since November 2, 2026, without tracking readers; downloads through this page's Download links only, crawlers not counted">
-          <span class="netd-usage-item"><%= usage_icon(:view) %><strong><%= number_with_delimiter(views) %></strong> <%= views == 1 ? 'view' : 'views' %></span>
+        <div class="netd-rec-usage" title="<%= nt('record.usage_title_html') %>">
+          <span class="netd-usage-item"><%= usage_icon(:view) %><strong><%= number_with_delimiter(views) %></strong> <%= nt('record.views', count: views) %></span>
           <span aria-hidden="true">·</span>
-          <span class="netd-usage-item"><%= usage_icon(:download) %><strong><%= number_with_delimiter(dls) %></strong> <%= dls == 1 ? 'download' : 'downloads' %></span>
+          <span class="netd-usage-item"><%= usage_icon(:download) %><strong><%= number_with_delimiter(dls) %></strong> <%= nt('record.downloads', count: dls) %></span>
         </div>
       <% end %>
       <% if handle %>
-        <div class="netd-side-label">Repository link</div>
+        <div class="netd-side-label"><%= nt('record.repository_link') %></div>
         <div class="input-group netd-copy">
-          <input type="text" class="form-control" value="<%= handle %>" readonly id="netd-handle" aria-label="Repository link">
-          <button class="btn btn-outline-secondary" type="button" title="Copy link"
-                  onclick="navigator.clipboard.writeText(document.getElementById('netd-handle').value); this.textContent='Copied';">Copy</button>
+          <input type="text" class="form-control" value="<%= handle %>" readonly id="netd-handle" aria-label="<%= nt('record.repository_link') %>">
+          <button class="btn btn-outline-secondary" type="button" title="<%= nt('record.copy_link') %>"
+                  onclick="navigator.clipboard.writeText(document.getElementById('netd-handle').value); this.textContent='<%= j nt('record.copied') %>';"><%= nt('record.copy') %></button>
         </div>
       <% end %>
       <% cite = Citation.new(d, solr_document_url(d)) %>
-      <div class="netd-side-label">How to cite</div>
+      <div class="netd-side-label"><%= nt('record.how_to_cite') %></div>
       <div class="netd-cite" id="netd-cite" data-url="<%= cite_record_path(d) %>">
         <div class="netd-cite-text" id="netd-cite-text" aria-live="polite"><%= citation_html(cite, Citation::DEFAULT) %></div>
         <div class="netd-cite-tools">
-          <label class="visually-hidden" for="netd-cite-style">Citation style</label>
+          <label class="visually-hidden" for="netd-cite-style"><%= nt('record.citation_style') %></label>
           <select class="form-select form-select-sm" id="netd-cite-style">
             <% Citation::STYLES.each do |key, (label, _)| %>
               <option value="<%= key %>"<%= ' selected' if key == Citation::DEFAULT %>><%= label %></option>
             <% end %>
           </select>
-          <button class="btn btn-outline-secondary btn-sm" type="button" id="netd-cite-copy">Copy</button>
+          <button class="btn btn-outline-secondary btn-sm" type="button" id="netd-cite-copy"><%= nt('record.copy') %></button>
         </div>
-        <div class="netd-cite-dl">Download citation:
-          <%= link_to 'RIS', cite_record_path(d, format: :ris), title: 'EndNote, Zotero, Mendeley', rel: 'nofollow' %> ·
-          <%= link_to 'BibTeX', cite_record_path(d, format: :bib), title: 'BibTeX, LaTeX', rel: 'nofollow' %></div>
+        <div class="netd-cite-dl"><%= nt('record.download_citation') %>
+          <%= link_to 'RIS', cite_record_path(d, format: :ris), title: nt('record.ris_title'), rel: 'nofollow' %> ·
+          <%= link_to 'BibTeX', cite_record_path(d, format: :bib), title: nt('record.bibtex_title'), rel: 'nofollow' %></div>
       </div>
       <script>
         (() => {
@@ -172,35 +168,35 @@
             fetch(box.dataset.url + '?style=' + encodeURIComponent(e.target.value), { headers: { Accept: 'text/html' } })
               .then((r) => r.ok ? r.text() : Promise.reject(r.status))
               .then((html) => { text.innerHTML = html; })
-              .catch(() => { text.textContent = 'This citation style could not be loaded; please try again.'; })
+              .catch(() => { text.textContent = '<%= j nt('record.cite_error') %>'; })
               .finally(() => { text.style.opacity = ''; });
           });
           document.getElementById('netd-cite-copy').addEventListener('click', (e) => {
-            navigator.clipboard.writeText(text.innerText.trim()); e.target.textContent = 'Copied';
+            navigator.clipboard.writeText(text.innerText.trim()); e.target.textContent = '<%= j nt('record.copied') %>';
           });
         })();
       </script>
       <div class="netd-share">
         <% url = request.original_url %>
-        <a href="https://twitter.com/intent/tweet?url=<%= ERB::Util.url_encode(url) %>&text=<%= ERB::Util.url_encode(title) %>" target="_blank" rel="noopener" aria-label="Share on X">
+        <a href="https://twitter.com/intent/tweet?url=<%= ERB::Util.url_encode(url) %>&text=<%= ERB::Util.url_encode(title) %>" target="_blank" rel="noopener" aria-label="<%= nt('record.share_x') %>">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="#0071c2"><rect width="24" height="24" rx="3"/><path d="M6 6l12 12M18 6L6 18" stroke="#fff" stroke-width="2"/></svg></a>
-        <a href="https://www.facebook.com/sharer/sharer.php?u=<%= ERB::Util.url_encode(url) %>" target="_blank" rel="noopener" aria-label="Share on Facebook">
+        <a href="https://www.facebook.com/sharer/sharer.php?u=<%= ERB::Util.url_encode(url) %>" target="_blank" rel="noopener" aria-label="<%= nt('record.share_facebook') %>">
           <svg width="26" height="26" viewBox="0 0 24 24"><rect width="24" height="24" rx="3" fill="#0071c2"/><path d="M13.2 19v-6h2l.3-2.4h-2.3V9.2c0-.7.2-1.2 1.2-1.2h1.2V5.9a16 16 0 0 0-1.8-.1c-1.8 0-3 1.1-3 3.1v1.7h-2V13h2v6z" fill="#fff"/></svg></a>
-        <a href="mailto:?subject=<%= ERB::Util.url_encode(title) %>&body=<%= ERB::Util.url_encode(url) %>" aria-label="Share by email">
+        <a href="mailto:?subject=<%= ERB::Util.url_encode(title) %>&body=<%= ERB::Util.url_encode(url) %>" aria-label="<%= nt('record.share_email') %>">
           <svg width="26" height="26" viewBox="0 0 24 24"><rect width="24" height="24" rx="3" fill="#8a929b"/><path d="M5 8h14v9H5z M5 8l7 5 7-5" fill="none" stroke="#fff" stroke-width="1.5"/></svg></a>
       </div>
       <div class="netd-rights">
         <% if (r = rec_values(d, 'rights_ssm').first) %>
           <%= r.start_with?('http') ? link_to(r, r, target: '_blank', rel: 'noopener') : r %>
         <% else %>
-          Rights and reuse: see the <%= link_to 'institutional repository record', handle || '#', target: '_blank', rel: 'noopener' %>.
+          <%= nt('record.rights_html', link: link_to(nt('record.rights_link'), handle || '#', target: '_blank', rel: 'noopener')) %>
         <% end %>
       </div>
-      <div class="netd-side-label mt-3">Held by</div>
+      <div class="netd-side-label mt-3"><%= nt('record.held_by') %></div>
       <div><%= facet_link(rec_values(d, 'institution_ssim').first.to_s, 'institution_ssim', rec_values(d, 'institution_ssim').first.to_s) %></div>
       <button type="button" class="netd-report" data-bs-toggle="modal" data-bs-target="#netd-report-modal">
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#6c757d"/><path d="M12 6v8M12 16.5v1.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
-        Report a problem</button>
+        <%= nt('record.report_problem') %></button>
     </div>
 
     <% author = rec_values(d, 'author_ssim').first.to_s.split(',').first.to_s.strip %>
@@ -209,19 +205,19 @@
     <% if citing.any? %>
       <%# FR-69: works citing this thesis, from OpenAlex (matched by title and year; refreshed weekly) %>
       <details class="netd-similar netd-citedby" id="cited-by" open>
-        <summary><h2>Cited by <%= number_with_delimiter(citing.size) %></h2></summary>
+        <summary><h2><%= nt('record.cited_by_html', n: number_with_delimiter(citing.size)) %></h2></summary>
         <ol>
           <% citing.each do |c| %>
             <li><%= link_to c['title'].to_s, c['url'].to_s, target: '_blank', rel: 'noopener' %>
               <span class="netd-similar-meta"><%= c['year'] %></span></li>
           <% end %>
         </ol>
-        <p class="netd-similar-meta">Citation data from <%= link_to 'OpenAlex', "https://openalex.org/works/#{d['openalex_id_ssi']}", target: '_blank', rel: 'noopener' %></p>
+        <p class="netd-similar-meta"><%= nt('record.citation_data_html', link: link_to(nt('record.citation_data_link'), "https://openalex.org/works/#{d['openalex_id_ssi']}", target: '_blank', rel: 'noopener')) %></p>
       </details>
     <% end %>
     <% if @similar.present? %>
       <details class="netd-similar" open>
-        <summary><h2>Similar theses</h2></summary>
+        <summary><h2><%= nt('record.similar') %></h2></summary>
         <ol>
           <% @similar.each do |sd| %>
             <li><%= link_to Array(sd['title_tsim']).first.to_s, solr_document_path(ThesisId.short(sd['id'])) %>
@@ -231,14 +227,14 @@
       </details>
     <% end %>
     <div class="netd-analysis">
-      <h2>Analysis</h2>
+      <h2><%= nt('record.analysis') %></h2>
       <a class="netd-analysis-row" href="<%= scholar %>" target="_blank" rel="noopener">
         <span class="netd-gs-logo" aria-hidden="true">
           <svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 2 1 9.2l11 7.2 9-5.9V17h2V9.2z" fill="#4285f4"/><circle cx="12" cy="16.5" r="5" fill="#356ac3"/><circle cx="12" cy="15" r="3.2" fill="#a0c3ff"/></svg></span>
-        <span class="netd-analysis-name">Google Scholar</span>
-        <span class="netd-analysis-val">Citations ↗</span>
+        <span class="netd-analysis-name"><%= nt('record.scholar') %></span>
+        <span class="netd-analysis-val"><%= nt('record.scholar_citations') %></span>
       </a>
-      <p class="netd-analysis-note">Opens this work on Google Scholar, where its "Cited by" count is shown.</p>
+      <p class="netd-analysis-note"><%= nt('record.scholar_note_html') %></p>
     </div>
   </aside>
 </div>
@@ -247,28 +243,28 @@
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <%= form_with url: problem_reports_path, method: :post, local: true, data: { turbo: false }, class: 'modal-content netd-report-form' do %>
       <div class="modal-header">
-        <h2 class="modal-title h5" id="netd-report-title">Report a problem with this record</h2>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h2 class="modal-title h5" id="netd-report-title"><%= nt('record.report.heading') %></h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= nt('record.report.close') %>"></button>
       </div>
       <div class="modal-body">
-        <label for="pr-problem">Problem <span class="req">*</span></label>
+        <label for="pr-problem"><%= nt('record.report.problem') %> <span class="req">*</span></label>
         <select id="pr-problem" name="problem_report[problem]" class="form-select" required>
           <% ProblemReport::PROBLEMS.each do |p| %><option><%= p %></option><% end %>
         </select>
-        <label for="pr-message">Your message <span class="req">*</span></label>
+        <label for="pr-message"><%= nt('record.report.message') %> <span class="req">*</span></label>
         <textarea id="pr-message" name="problem_report[message]" class="form-control" rows="5" required maxlength="5000"></textarea>
-        <label for="pr-name">Your name</label>
-        <input id="pr-name" name="problem_report[name]" class="form-control" value="Anonymous" maxlength="200">
-        <label for="pr-email">Your email address <span class="req">*</span></label>
+        <label for="pr-name"><%= nt('record.report.name') %></label>
+        <input id="pr-name" name="problem_report[name]" class="form-control" value="<%= nt('record.report.anonymous') %>" maxlength="200">
+        <label for="pr-email"><%= nt('record.report.email') %> <span class="req">*</span></label>
         <input id="pr-email" type="email" name="problem_report[email]" class="form-control" required>
-        <div class="netd-hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
-        <label>URL</label>
+        <div class="netd-hp" aria-hidden="true"><label><%= nt('record.report.website') %> <input name="website" tabindex="-1" autocomplete="off"></label></div>
+        <label><%= nt('record.report.url') %></label>
         <div class="netd-report-url"><%= request.original_url %></div>
         <input type="hidden" name="problem_report[record_url]" value="<%= request.original_url %>">
         <input type="hidden" name="problem_report[record_title]" value="<%= title %>">
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Send</button>
+        <button type="submit" class="btn btn-primary"><%= nt('record.report.send') %></button>
       </div>
     <% end %>
   </div>

@@ -17,9 +17,8 @@ module RecordHelper
     info = derived[solr_field.sub(/_(ssim|tsim|ssm)\z/, '')]
     return ''.html_safe unless info
 
-    tip = "Not in the repository record: filled automatically from the thesis PDF by #{info['method'].delete_prefix('model:')} " \
-          "(confidence #{format('%.2f', info['confidence'].to_f)}). It may be wrong; use Report a problem to correct it."
-    tag.span('derived', class: 'netd-derived', title: tip, tabindex: 0, 'aria-label': tip)
+    tip = nt('record.derived_tip', method: info['method'].delete_prefix('model:'), confidence: format('%.2f', info['confidence'].to_f))
+    tag.span(nt('record.derived'), class: 'netd-derived', title: tip, tabindex: 0, 'aria-label': tip)
   end
 
   def facet_link(label, field, value)
@@ -32,7 +31,7 @@ module RecordHelper
 
   def file_label(file, index)
     name = file['name'].presence
-    name || (file['mime'].to_s.include?('pdf') ? "Full text (PDF) #{index + 1}" : "File #{index + 1}")
+    name || (file['mime'].to_s.include?('pdf') ? nt('record.file_pdf', n: index + 1) : nt('record.file', n: index + 1))
   end
 
   # "How to cite" (FR-65): the rendered entry, sanitised (only the style's own markup is kept).

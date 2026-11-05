@@ -19,7 +19,7 @@ class EtdResultComponent < Blacklight::DocumentComponent
   def badges
     items = [[first('degree_level_ssim'), 'level'], [first('year_ssim'), 'year'],
              [first('institution_short_ssim'), 'inst'],
-             [(first('pdf_url_ssm') ? 'PDF' : nil), 'pdf']].select(&:first)
+             [(first('pdf_url_ssm') ? helpers.nt('results.pdf_badge') : nil), 'pdf']].select(&:first)
     safe_join(items.map { |text, kind| content_tag(:span, text, class: "etd-badge etd-badge-#{kind}") })
   end
 
@@ -39,7 +39,7 @@ class EtdResultComponent < Blacklight::DocumentComponent
     elsif (fos = fields_of_study).any?
       # No keywords from the repository: the portal's field of study (OpenAlex Topics, FR-55), marked as such.
       parts << content_tag(:div, safe_join(fos.map { |f, v| link_to(v, helpers.search_action_path(f: { f => [v] })) }),
-                           class: 'etd-subjects etd-fos', title: 'Field of study assigned by the portal (OpenAlex Topics)')
+                           class: 'etd-subjects etd-fos', title: helpers.nt('results.fos_title'))
     end
     parts << cited_line
     parts << pdf_link
@@ -56,15 +56,15 @@ class EtdResultComponent < Blacklight::DocumentComponent
     n = @document['cited_by_isi'].to_i
     return nil unless n.positive?
 
-    content_tag(:div, link_to("Cited by #{n}", "#{helpers.solr_document_path(@document)}#cited-by",
-                              title: 'Works citing this thesis, from OpenAlex'), class: 'etd-cited')
+    content_tag(:div, link_to(helpers.nt('results.cited_by', n: n), "#{helpers.solr_document_path(@document)}#cited-by",
+                              title: helpers.nt('results.cited_by_title')), class: 'etd-cited')
   end
 
   def pdf_link(css = 'etd-pdf-link')
     url = first('pdf_url_ssm')
     return nil unless url
 
-    link_to('Download PDF ↓', helpers.record_pdf_path(@document), class: css, target: '_blank', rel: 'noopener nofollow')
+    link_to(helpers.nt('results.download_pdf'), helpers.record_pdf_path(@document), class: css, target: '_blank', rel: 'noopener nofollow')
   end
 
   def snippet
@@ -75,7 +75,7 @@ class EtdResultComponent < Blacklight::DocumentComponent
   def source_link
     url = first('url_ssm')
     links = [pdf_link('btn btn-primary btn-sm me-2'),
-             (link_to('View in the institutional repository ↗', url, class: 'btn btn-outline-primary btn-sm',
+             (link_to(helpers.nt('results.view_in_repository'), url, class: 'btn btn-outline-primary btn-sm',
                                                                      target: '_blank', rel: 'noopener') if url)].compact
     links.empty? ? '' : content_tag(:p, safe_join(links), class: 'etd-source')
   end
