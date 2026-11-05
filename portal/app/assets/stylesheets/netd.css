@@ -122,12 +122,17 @@ footer.netd-footer strong { color: var(--netd-ink); font-weight: 600; }
 .netd-usage-item svg { color: var(--netd-muted, #6c757d); flex: none; }
 .netd-usage-icon { vertical-align: -.15em; color: var(--netd-muted, #6c757d); }
 .netd-similar { margin-top: 1.5rem; }
-.netd-similar summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e3e6ea; padding-bottom: .35rem; margin-bottom: .6rem; }
+.netd-similar + .netd-similar { margin-top: .5rem; }
+/* closed sections as PMC's "Resources": grey box, bold label, thin plus on the right (minus when open) */
+.netd-similar summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; background: #f0f0f0; padding: .85rem 1.1rem; }
 .netd-similar summary::-webkit-details-marker { display: none; }
-.netd-similar summary h2 { font-size: 1rem; font-weight: 600; margin: 0; }
-.netd-similar summary::after { content: ""; width: .55rem; height: .55rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); margin: 0 .3rem .2rem 0; transition: transform .15s; color: var(--netd-muted); }
-.netd-similar:not([open]) summary::after { transform: rotate(-45deg); margin-bottom: 0; }
+.netd-similar summary h2 { font-size: .95rem; font-weight: 700; margin: 0; color: #1b1b1b; }
+.netd-similar summary::after { content: ""; flex: none; width: 15px; height: 15px; background: linear-gradient(#1b1b1b, #1b1b1b) center / 100% 2px no-repeat, linear-gradient(#1b1b1b, #1b1b1b) center / 2px 100% no-repeat; }
+.netd-similar[open] summary::after { background: linear-gradient(#1b1b1b, #1b1b1b) center / 100% 2px no-repeat; }
+.netd-similar summary:hover { background: #e6e6e6; }
 .netd-similar summary:focus-visible { outline: 2px solid var(--netd-blue); outline-offset: 2px; }
+.netd-similar[open] > :not(summary) { padding-left: 1.1rem; padding-right: 1.1rem; }
+.netd-similar[open] > ol { margin-top: .75rem; padding-left: 2.2rem; }
 .netd-similar ol { padding-left: 1.1rem; margin: 0; font-size: .9rem; }
 .netd-similar li { margin-bottom: .55rem; }
 .netd-similar-meta { display: block; color: var(--netd-muted); font-size: .8rem; }

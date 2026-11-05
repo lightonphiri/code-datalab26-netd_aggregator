@@ -11,6 +11,8 @@ Every change after `paper-v1` is a post-paper change: it is not part of the resu
 Post-paper changes.
 
 ### Added
+- Record page: "Similar theses" and "Cited by" start closed, with "+"/"−" on the right as on PubMed Central; a link to `#cited-by` opens that section (maintenance session 15).
+- Filter lists at readable addresses (FR-71): the full list of one filter is at `/theses/filters/<name>` (e.g. `field-of-study`); Blacklight's `/catalog/facet/<field>` answers 301 (SRS 0.51, SDD 0.50; maintenance session 15).
 - Theme folders (packaging P5a; NFR-15): `themes/<name>/` holds the colours and wordmark font (`stylesheets/theme.css`, imported after `netd.css`) and the logo files (`public/`, served at the same addresses); `portal.theme` in `config/country.yml` picks it. Shipped: `zambia` (today's look, pages and screenshots unchanged) and `default` (neutral colours). `netd.css` now reads every brand colour from the variables (SRS 0.50, SDD 0.49).
 - Interface text in locale files, seventh and last part (packaging P4g; NFR-15): the admin dashboard, source, record correction, duplicates, quality, usage and report-form pages, the usage event labels (`netd.usage_events`) and every flash message (`netd.flash`, through `flash_text`) read their text from `en.yml`; admin dates through `I18n.l`. Every page's own text is now in `en.yml`; report contents, problem types and model validation messages stay in code (manual 8.6). Pages unchanged apart from white space (SRS 0.49, SDD 0.48).
 - Interface text in locale files, sixth part (packaging P4f; NFR-15): the admin navigation and the sign-in, password, activity log, level review, problem report and CSV upload pages, admin times (`I18n.l`) and the problem-report mail read their text from `en.yml`; missing translations raise in development and test. Pages and mail unchanged apart from white space (SRS 0.48, SDD 0.47).
@@ -33,6 +35,7 @@ Post-paper changes.
 - Record pages at `/theses/<short id>` (the DSpace default handle prefix dropped, e.g. `/theses/zcas-298`), with permanent redirects from `/catalog/<id>`; REST API 1.6.0 accepts the short id (FR-68, SRS 0.37, SDD 0.36; maintenance track).
 
 ### Fixed
+- Cited by (FR-69): OpenAlex's temporary refusals (HTTP 429 with `Retry-After`) are waited out and logged as "rate-limited" instead of stopping the night's run as "daily budget"; a rejected API key no longer stops the job; the "Citations" filter list answers 404 instead of 500 (maintenance session 15).
 - OpenAPI 1.7.0 description quoted (it did not parse); the API conformance test compares the export with every copy of a record (maintenance track, c91ea7f).
 - OAI-PMH set `level:postgraduate-diploma` answered HTTP 500 (the two-word level was not quoted in the Solr filter); `tests/oai_conformance.py` now expects every record, duplicate copies included, as OAI-PMH lists them.
 

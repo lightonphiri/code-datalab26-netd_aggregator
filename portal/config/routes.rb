@@ -72,6 +72,15 @@ Rails.application.routes.draw do
   get "contribute", to: "pages#contribute", as: :contribute   # guide for institutions (FR-59)
   get "credits", to: "pages#credits", as: :credits
   post "report-problem", to: "problem_reports#create", as: :problem_reports
+  # Full list of one filter (FR-71): /theses/filters/<name>, e.g. field-of-study; Blacklight's /catalog/facet/<field>
+  # answers 301 (query string and format kept). The pop-up's filter box asks /theses/facet_suggest/<field>
+  # (Blacklight's script builds that address from the first part of the list's address).
+  get "theses/filters/:id", to: "catalog#facet", as: :filter_list, constraints: { id: /[a-z_-]+/ }
+  get "theses/facet_suggest/:id", to: "catalog#facet", defaults: { only_values: true }, constraints: { id: /[a-z_-]+/ }
+  get "catalog/facet/:id", constraints: { id: /[a-z_]+/ }, to: redirect(status: 301) { |p, req|
+    q = req.query_string.presence
+    "/theses/filters/#{FilterSlug.slug(p[:id])}#{".#{p[:format]}" if p[:format]}#{"?#{q}" if q}"
+  }
   concern :searchable, Blacklight::Routes::Searchable.new
 
   resource :catalog, only: [], as: 'catalog', path: '/catalog', controller: 'catalog' do

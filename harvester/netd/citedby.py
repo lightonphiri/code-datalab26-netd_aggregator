@@ -15,6 +15,12 @@ whose title is the thesis's own title (another copy of it) is left out. Results 
 `openalex_citations` and indexed into Solr by `index` (`openalex_id_ssi`, `cited_by_isi`, `cited_by_ssm`).
 
 An API key (free OpenAlex account) is read from OPENALEX_API_KEY; without one OpenAlex allows $0.10 a day.
+
+Refusals (November 5, 2026): OpenAlex answers HTTP 429 with a Retry-After header when it is busy ("anonymous search
+is temporarily rate-limited"), not only when the day's allowance is used up. The client waits as asked, up to
+MAX_WAIT seconds in all per run, and then stops as "rate-limited"; the log says which of the two stopped the run.
+A key that OpenAlex rejects (HTTP 401 or 403: revoked, mistyped, or replaced at the HEA handover) does not stop the
+job: it continues without a key and logs a warning.
 """
 import json
 import os
@@ -32,6 +38,7 @@ BATCH = 40          # theses per title query (URL about 4,000 characters)
 CITES_BATCH = 50    # works per cites: query
 MIN_WORDS = 4       # shorter titles are too ambiguous to match on
 SIM = 0.8
+MAX_WAIT = 300      # seconds per run spent waiting on OpenAlex's Retry-After before giving up
 UA = f"{config.host()} cited-by ({config.portal_name()})"
 
 SCHEMA = """
@@ -58,18 +65,40 @@ class Budget(Exception):
     pass
 
 
+class RateLimited(Budget):
+    """OpenAlex is busy and asked us to retry later (HTTP 429 with Retry-After), and MAX_WAIT has been spent."""
+
+
 class Client:
-    def __init__(self, key=None, max_calls=80, min_usd=0.01):
+    def __init__(self, key=None, max_calls=80, min_usd=0.01, max_wait=MAX_WAIT, sleep=time.sleep):
         self.key, self.max_calls, self.min_usd, self.calls = key, max_calls, min_usd, 0
         self.remaining = None
+        self.max_wait, self.waited, self.sleep = max_wait, 0, sleep
+        self.key_rejected = False
+
+    def _retry_after(self, e):
+        """Seconds OpenAlex asks us to wait for a temporary refusal, or None when the allowance is used up."""
+        if e.code != 429:
+            return None
+        try:
+            secs = int(e.headers.get("Retry-After"))
+        except (TypeError, ValueError):
+            return None
+        try:
+            left = float(e.headers.get("X-RateLimit-Remaining-USD"))
+        except (TypeError, ValueError):
+            left = None
+        if left is not None and left < self.min_usd:
+            return None  # the day's allowance really is used up; waiting does not help
+        return max(1, min(secs, 120))
 
     def get(self, **q):
         if self.calls >= self.max_calls or (self.remaining is not None and self.remaining < self.min_usd):
             raise Budget()
-        if self.key:
-            q["api_key"] = self.key
-        req = urllib.request.Request(API + "?" + urllib.parse.urlencode(q), headers={"User-Agent": UA})
-        for attempt in range(3):
+        attempt = 0
+        while True:
+            params = dict(q, api_key=self.key) if self.key else q
+            req = urllib.request.Request(API + "?" + urllib.parse.urlencode(params), headers={"User-Agent": UA})
             try:
                 with urllib.request.urlopen(req, timeout=60) as r:
                     self.calls += 1
@@ -79,14 +108,28 @@ class Client:
                         pass
                     return json.load(r)
             except urllib.error.HTTPError as e:
-                if e.code in (402, 409, 429):  # allowance used up for today
-                    raise Budget() from e
-                if attempt == 2 or e.code < 500:
+                if e.code in (401, 403) and self.key:
+                    print("cited-by: WARNING OpenAlex rejected the API key (HTTP %d); continuing without a key. "
+                          "Check /opt/netd/openalex.env" % e.code, file=sys.stderr)
+                    self.key, self.key_rejected = None, True
+                    continue
+                if e.code in (402, 409, 429):
+                    secs = self._retry_after(e)
+                    if secs is None:
+                        raise Budget() from e  # allowance used up for today
+                    if self.waited + secs > self.max_wait:
+                        raise RateLimited() from e
+                    self.waited += secs
+                    self.sleep(secs + 1)
+                    continue
+                attempt += 1
+                if attempt == 3 or e.code < 500:
                     raise
             except OSError:
-                if attempt == 2:
+                attempt += 1
+                if attempt == 3:
                     raise
-            time.sleep(5 * (attempt + 1))
+            self.sleep(5 * attempt)
 
     def all_pages(self, max_pages=3, **q):
         q.update({"per-page": 200, "cursor": "*"})
@@ -165,7 +208,7 @@ def run(store, solr, max_calls=80, max_age_days=7, key=None):
     checked = {r[0]: r[1] for r in db.execute("SELECT record_id, checked_at FROM openalex_citations").fetchall()}
     cutoff = time.time() - max_age_days * 86400
     todo = sorted((t for t in theses(solr) if checked.get(t[0], 0) < cutoff), key=lambda t: checked.get(t[0], 0))
-    done, matched, stopped = 0, {}, False
+    done, matched, stopped = 0, {}, None
     try:
         for i in range(0, len(todo), BATCH):
             part = todo[i:i + BATCH]
@@ -190,8 +233,8 @@ def run(store, solr, max_calls=80, max_age_days=7, key=None):
                               citing = '[]', checked_at = excluded.checked_at""", rows)
             db.commit()
             done += len(part)
-    except Budget:
-        stopped = True
+    except Budget as e:
+        stopped = e
     # citing works for the theses matched in this run that OpenAlex says are cited
     client.max_calls, client.min_usd = max_calls, 0.005
     # also theses matched earlier whose citing works could not be fetched then (checked_at reset to 0)
@@ -206,8 +249,8 @@ def run(store, solr, max_calls=80, max_age_days=7, key=None):
         rows = [(json.dumps(lists[wid], ensure_ascii=False), now, rid) for rid, (wid, n, t) in matched.items() if wid in lists]
         db.executemany("UPDATE openalex_citations SET citing = ?, checked_at = ? WHERE record_id = ?", rows)
         db.commit()
-    except Budget:
-        stopped = True  # the counts stay; the lists are fetched on the next check of those theses
+    except Budget as e:
+        stopped = e  # the counts stay; the lists are fetched on the next check of those theses
         db.executemany("UPDATE openalex_citations SET checked_at = 0 WHERE record_id = ?",
                        [(rid,) for rid, (wid, n, t) in matched.items() if n > 0])
         db.commit()
@@ -222,8 +265,17 @@ def run(store, solr, max_calls=80, max_age_days=7, key=None):
     tot = db.execute("""SELECT count(*), count(openalex_id), sum(json_array_length(citing) > 0)
                         FROM openalex_citations""").fetchone()
     print("cited-by: %d theses checked in %d OpenAlex calls (%s key)%s; %d ambiguous; store: %d checked, %d matched, "
-          "%d cited" % (done, client.calls, "with" if key else "no", ", stopped at the daily budget" if stopped else "",
+          "%d cited" % (done, client.calls, "with" if client.key else ("no" if not client.key_rejected else "rejected"), why(stopped, client),
                         len(dup), tot[0], tot[1], tot[2] or 0), file=sys.stderr)
+
+
+def why(stopped, client):
+    """The reason a run stopped early, for the log line."""
+    if stopped is None:
+        return ""
+    if isinstance(stopped, RateLimited):
+        return ", stopped: rate-limited by OpenAlex (busy; waited %d s)" % client.waited
+    return ", stopped at the daily budget"
 
 
 def load(store):

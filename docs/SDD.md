@@ -4,7 +4,7 @@
 | Item | Value |
 |---|---|
 | Document | SDD, structured per IEEE 1016-2009 (design viewpoints) |
-| Version | 0.49 |
+| Version | 0.50 |
 | Date | November 5, 2026 |
 | Owner | Dr Lighton Phiri, DataLab Research Group, University of Zambia |
 | Related | `docs/SRS.md` (requirement IDs referenced below) |
@@ -15,6 +15,7 @@
 | 0.1 | October 30, 2026 | Initial design: harvester, raw/canonical stores, crosswalk, enrichers, Blacklight portal, deployment |
 | 0.2 | October 30, 2026 | Discipline/degree derivation; Solr analysers; URL-safe record ids; HTTPS |
 | 0.24 | November 1, 2026 | Fields of study (FR-54 to FR-57): model `openalex-fos` (`netd/ml/models/fieldofstudy.py`, data in `netd/ml/models/data/`), batch prediction in `predict.run`, per-field display thresholds in the overlay, Solr fields `fos_domain_ssim`, `fos_field_ssim`, `fos_subfield_ssim`, `fos_ssm`, `fos_tsim`, facets and record page, API `fields_of_study` (1.2.0), OAI-PMH subject scheme, training scripts in `harvester/tools/` |
+| 0.50 | November 5, 2026 | Cited by (FR-69): `citedby.Client` waits on HTTP 429 with `Retry-After` (at most 120 s a time, `MAX_WAIT` 300 s a run; not when `X-RateLimit-Remaining-USD` is below the minimum, and not on 402 or a 429 without `Retry-After`, which stay `Budget`), then raises `RateLimited` (a `Budget`); `why()` words the log line; on 401/403 with a key it drops the key and repeats the call; `sleep` injectable for `tests/test_citedby_client.py`. Filter lists (FR-71): routes `theses/filters/:id` (`filter_list`, to `catalog#facet`), `theses/facet_suggest/:id` (Blacklight's `facet_suggest.js` builds `/<first path part>/facet_suggest/<field>`) and a 301 from `catalog/facet/:id`, all before Blacklight's searchable routes; `FilterSlug` (`app/models/filter_slug.rb`: field ↔ readable name, unknown names unchanged); `CatalogController#facet` maps the name to the field (404 for a query facet) before Blacklight's action; `config/initializers/filter_list_urls.rb` prepends `FilterListUrls#url_for` to `ActionView::RoutingUrlFor`, so every link Blacklight builds with `action: 'facet'` (the "more" link, `search_facet_path`, sort and page links) carries the readable name. Record page (FR-67, FR-69): the two `<details>` sections (`#cited-by`, `#similar-theses`) are no longer `open`; `summary::after` shows "+" or "−" (`[open]`); a small inline script opens the section named in `location.hash`, on load and on `hashchange` (maintenance session 15, post-paper) |
 | 0.49 | November 5, 2026 | 8.1: theme folders (packaging P5a) (post-paper) |
 | 0.48 | November 5, 2026 | 8.1: the remaining admin pages, the usage event labels and the flash messages in `en.yml` (packaging P4g; P4 complete); what stays in code (post-paper) |
 | 0.47 | November 5, 2026 | 8.1: admin pages (first part) and the problem-report mail in `en.yml` (packaging P4f); missing translations raise in development and test (post-paper) |
@@ -378,7 +379,7 @@ classDiagram
 | Model contract (§4.1.1) | module with `NAME`, `VERSION`, `FIELDS`, `USES`, `NEEDS_TEXT`, optional `prepare(texts)`, and `predict(meta, text) -> {field: (values, confidence, evidence)}`; registered in `netd/ml/predict.py` `MODELS` |
 | Enricher contract | `def enrich(record: dict) -> dict`; set `record["provenance"][field] = "model:<name>-<version>"` and optionally `record["confidence"][field] = float` |
 | Solr | JSON `POST /solr/netd/update`; Blacklight queries `/select` (edismax, ETD `qf`) |
-| HTTP | `GET /` (search), `/theses/<short id>` (record; FR-68, old `/catalog/<id>` addresses answer 301), `/theses/<short id>/pdf` (counted download), `/theses/<short id>/cite?style=<key>` (citation fragment; `.ris`, `.bib`; FR-65), `/sitemap.xml` (FR-66), `/catalog.json?q=…` (JSON) |
+| HTTP | `GET /` (search), `/theses/<short id>` (record; FR-68, old `/catalog/<id>` addresses answer 301), `/theses/<short id>/pdf` (counted download), `/theses/<short id>/cite?style=<key>` (citation fragment; `.ris`, `.bib`; FR-65), `/theses/filters/<name>` (full list of one filter; FR-71, old `/catalog/facet/<field>` answers 301), `/sitemap.xml` (FR-66), `/catalog.json?q=…` (JSON) |
 | OAI-PMH | `GET`/`POST /oai` (§5.1) |
 | REST API | `GET /api/v1/…` (§5.3), JSON; specification `/api/v1/openapi.yaml` |
 | Admin panel | `/admin` (§5.2), signed-in portal team only |

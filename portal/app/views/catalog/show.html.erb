@@ -204,7 +204,7 @@
     <% citing = rec_values(d, 'cited_by_ssm').filter_map { |j| JSON.parse(j) rescue nil } %>
     <% if citing.any? %>
       <%# FR-69: works citing this thesis, from OpenAlex (matched by title and year; refreshed weekly) %>
-      <details class="netd-similar netd-citedby" id="cited-by" open>
+      <details class="netd-similar netd-citedby" id="cited-by">
         <summary><h2><%= nt('record.cited_by_html', n: number_with_delimiter(citing.size)) %></h2></summary>
         <ol>
           <% citing.each do |c| %>
@@ -216,7 +216,7 @@
       </details>
     <% end %>
     <% if @similar.present? %>
-      <details class="netd-similar" open>
+      <details class="netd-similar" id="similar-theses">
         <summary><h2><%= nt('record.similar') %></h2></summary>
         <ol>
           <% @similar.each do |sd| %>
@@ -226,6 +226,15 @@
         </ol>
       </details>
     <% end %>
+    <script>
+      (() => {  // sections start closed, as on PMC; a link to #cited-by or #similar-theses opens its section
+        const openFromHash = () => {
+          const el = location.hash.length > 1 && document.getElementById(location.hash.slice(1));
+          if (el && el.tagName === 'DETAILS') { el.open = true; el.scrollIntoView(); }
+        };
+        openFromHash(); window.addEventListener('hashchange', openFromHash);
+      })();
+    </script>
     <div class="netd-analysis">
       <h2><%= nt('record.analysis') %></h2>
       <a class="netd-analysis-row" href="<%= scholar %>" target="_blank" rel="noopener">

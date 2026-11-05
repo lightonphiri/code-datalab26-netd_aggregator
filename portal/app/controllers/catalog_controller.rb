@@ -171,6 +171,15 @@ class CatalogController < ApplicationController
     end
   end
 
+  # GET /theses/filters/:id (FR-71): the readable name stands for the Solr field
+  def facet
+    params[:id] = FilterSlug.field(params[:id])
+    # a filter made of fixed queries ("Citations": Cited) has no list of values: not found, not an error (HTTP 500)
+    raise ActionController::RoutingError, 'Not Found' if blacklight_config.facet_fields[params[:id]]&.query
+
+    super
+  end
+
   private
 
     # Address id (short or record id) -> the record (FR-68). Used by show (through Blacklight), pdf and cite.
