@@ -9,6 +9,7 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Added | Item | Type | Notes |
 |---|---|---|---|
+| November 5, 2026 | Problem types of the Report a problem form (`ProblemReport::PROBLEMS`) in the locale file: give each a code, store the code, migrate `problem_reports.problem`, show labels from `en.yml` in the form, admin pages and mail subject | Feature (packaging, needs the maintenance track) | Left in English in P4g (documentation track, session 18); only needed when an installation uses another language |
 | November 4, 2026 | Documentation track: REST API 1.7.0 (`openalex_id`, `cited_by`, `cited` filter, `sort=cited`; CSV columns `openalex_id`, `cited_by_count` at the end), OpenAlex identifier in OAI-PMH, "Citations (OpenAlex)" filter and "Most Cited" sort on search pages, "Cited by N" on result cards, citation sections and cited-only filter in the HEA reports | Note (docs) | For the manual and CHANGELOG; see SRS 0.39, SDD 0.38, commit 270194c |
 | November 4, 2026 | Degree names from title pages with stray words ("Master of Science Icopyright", "Master of Science November", "Master of Sicience"): about 30 one-off values in the "By degree" section of the HEA institution report | Fix (model, post-paper) | Changes the overlay (an evaluated component): new evidence row, post-paper; a cleaning list of trailing words and a check against known degree names |
 | November 4, 2026 | OpenAlex API key (optional): the cited-by job runs keyless within $0.10 a day; a free key ($1 a day) would refresh the whole collection nightly. Needs an OpenAlex account (HEA's, ideally), then `/opt/netd/openalex.env` | Lighton / HEA | Account creation is for a person; see `docs/OPERATIONS.md` "Cited by" |
@@ -45,7 +46,8 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Date | Item | Commit |
 |---|---|---|
-| November 5, 2026 | Interface text in locale files, sixth part (packaging P4f, NFR-15): admin pages (first part), admin times and the problem-report mail from `en.yml`; missing translations raise in development and test (post-paper) | this release |
+| November 5, 2026 | Interface text in locale files, seventh and last part (packaging P4g, NFR-15): remaining admin pages, usage event labels and flash messages from `en.yml`; P4 done (post-paper) | this release |
+| November 5, 2026 | Interface text in locale files, sixth part (packaging P4f, NFR-15): admin pages (first part), admin times and the problem-report mail from `en.yml`; missing translations raise in development and test (post-paper) | 222eb2e |
 | November 5, 2026 | Interface text in locale files, fifth part (packaging P4e, NFR-15): facet, field and sort labels, institution status and quality group labels, the quality page's date from `en.yml` (post-paper) | 0073385 |
 | November 5, 2026 | Interface text in locale files, fourth part (packaging P4d, NFR-15): record page, Report a problem form, result cards and facet toggles from `en.yml` (post-paper) | 938b22d |
 | November 5, 2026 | Interface text in locale files, third part (packaging P4c, NFR-15): Browse by Faculty, Follow a search, Metadata Quality and the Follow this search button from `en.yml` (post-paper) | ee86c76 |

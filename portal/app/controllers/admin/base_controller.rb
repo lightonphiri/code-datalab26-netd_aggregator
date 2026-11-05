@@ -23,7 +23,7 @@ module Admin
 
       quiet = controller_name == 'dashboard' && action_name == 'index'   # the landing page after sign-in
       redirect_to admin_etd_reports_path,
-                  alert: (quiet ? nil : 'Your account can use the ETD reports, metadata quality and usage pages only.')
+                  alert: (quiet ? nil : flash_text('viewer_only'))
     end
 
     def require_password_change

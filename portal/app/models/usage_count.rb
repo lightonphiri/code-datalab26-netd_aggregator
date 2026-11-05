@@ -3,15 +3,8 @@
 # Aggregate usage counts (SRS FR-61): searches, record views, PDF downloads, API and OAI-PMH requests per day.
 # Privacy by design: only the day, the kind of event, the record id and its institution are kept, as a count.
 class UsageCount < ApplicationRecord
-  EVENTS = {
-    'home' => 'Home page visits',
-    'search' => 'Searches (first results page)',
-    'browse' => 'Browse pages',
-    'record_view' => 'Record page views',
-    'pdf_download' => 'PDF downloads (via the portal)',
-    'api' => 'API requests',
-    'oai' => 'OAI-PMH requests'
-  }.freeze
+  # Kinds of use; labels in portal/config/locales/en.yml under netd.usage_events (packaging P4g)
+  EVENTS = LocalisedLabels.new('netd.usage_events', %w[home search browse record_view pdf_download api oai])
 
   # Adds one to today's count (UTC day). Never raises: analytics must not break a page.
   def self.bump(event, record_id: '', institution: '')

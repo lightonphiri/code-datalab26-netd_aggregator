@@ -1,5 +1,5 @@
 <div class="mt-3 d-flex gap-2 flex-wrap">
-  <button type="submit" class="btn btn-sm btn-primary" formaction="<%= admin_etd_report_path(kind, format: :xlsx) %>">Excel (.xlsx)</button>
-  <button type="submit" class="btn btn-sm btn-primary" formaction="<%= admin_etd_report_path(kind, format: :pdf) %>">PDF</button>
-  <button type="submit" class="btn btn-sm btn-outline-secondary" formaction="<%= admin_etd_report_path(kind) %>">Preview here</button>
+  <button type="submit" class="btn btn-sm btn-primary" formaction="<%= admin_etd_report_path(kind, format: :xlsx) %>"><%= nt('admin.reports.excel') %></button>
+  <button type="submit" class="btn btn-sm btn-primary" formaction="<%= admin_etd_report_path(kind, format: :pdf) %>"><%= nt('admin.reports.pdf') %></button>
+  <button type="submit" class="btn btn-sm btn-outline-secondary" formaction="<%= admin_etd_report_path(kind) %>"><%= nt('admin.reports.preview') %></button>
 </div>

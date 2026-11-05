@@ -15,18 +15,18 @@ module Admin
 
     def run
       src = Harvester.source(params[:id])
-      return redirect_to(admin_root_path, alert: 'Unknown source.') unless src
+      return redirect_to(admin_root_path, alert: flash_text('unknown_source')) unless src
 
       if Harvester.start_run(src['id'])
         audit('harvest_started', src['id'])
-        redirect_to admin_source_path(src['id']), notice: "Harvest of #{src['name']} started. Refresh this page to follow it."
+        redirect_to admin_source_path(src['id']), notice: flash_text('harvest_started', name: src['name'])
       else
-        redirect_to admin_root_path, alert: 'A harvest is already running. Try again when it has finished.'
+        redirect_to admin_root_path, alert: flash_text('harvest_busy')
       end
     end
 
     def source
-      @source = Harvester.source(params[:id]) or return redirect_to(admin_root_path, alert: 'Unknown source.')
+      @source = Harvester.source(params[:id]) or return redirect_to(admin_root_path, alert: flash_text('unknown_source'))
       @runs = Harvester.recent_runs(@source['id'])
       @excluded = Harvester.excluded(@source['id'])
       @log = Harvester.run_log(@source['id'])

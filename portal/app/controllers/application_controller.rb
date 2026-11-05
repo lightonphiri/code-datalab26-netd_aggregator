@@ -5,4 +5,9 @@ class ApplicationController < ActionController::Base
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
+
+  private
+
+  # A flash message from portal/config/locales/en.yml under netd.flash, with the country values (packaging P4g)
+  def flash_text(key, **values) = I18n.t("netd.flash.#{key}", **Netd.text_values.merge(values))
 end

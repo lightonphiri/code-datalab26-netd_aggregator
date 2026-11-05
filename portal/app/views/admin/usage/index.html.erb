@@ -1,26 +1,22 @@
-<% content_for(:page_title) { 'Usage · Admin' } %>
+<% content_for(:page_title) { nt('admin.usage.page_title') } %>
 <% labels = UsageCount::EVENTS %>
 <div class="netd-admin netd-usage">
   <%= render 'admin/nav' %>
-  <h1>Usage</h1>
-  <p class="netd-admin-help">Counted by the portal itself: no third-party trackers, no cookies for counting, and no IP
-    addresses, browser details or search words are stored, only a count per day (UTC), kind of use, record and
-    institution, plus counts per country and approximate city and per facet value chosen. Crawlers, link previews and signed-in administrators are not counted; API and OAI-PMH requests are
-    all counted (their users are programs). PDF downloads are counted when the reader uses the portal's Download
-    link; a PDF opened from the repository's own page is not.
-    <% if @first_day %>Counting since <%= @first_day.strftime('%B %-d, %Y') %>.<% end %></p>
-  <p>Period:
+  <h1><%= nt('admin.usage.heading_html') %></h1>
+  <p class="netd-admin-help"><%= nt('admin.usage.intro_html') %>
+    <% if @first_day %><%= nt('admin.usage.since_html', date: l(@first_day, format: :netd)) %><% end %></p>
+  <p><%= nt('admin.usage.period_html') %>
     <% Admin::UsageController::PERIODS.each do |n| %>
-      <% if n == @days %><strong>last <%= n %> days</strong><% else %><%= link_to "last #{n} days", admin_usage_path(days: n) %><% end %> ·
+      <% if n == @days %><strong><%= nt('admin.usage.last_days', n: n) %></strong><% else %><%= link_to nt('admin.usage.last_days', n: n), admin_usage_path(days: n) %><% end %> ·
     <% end %>
-    CSV: <%= link_to 'events', admin_usage_path(days: @days, format: :csv) %> ·
-    <%= link_to 'places', admin_usage_path(days: @days, format: :csv, table: 'places') %> ·
-    <%= link_to 'facet values', admin_usage_path(days: @days, format: :csv, table: 'facets') %></p>
+    <%= nt('admin.usage.csv_html') %> <%= link_to nt('admin.usage.csv_events'), admin_usage_path(days: @days, format: :csv) %> ·
+    <%= link_to nt('admin.usage.csv_places'), admin_usage_path(days: @days, format: :csv, table: 'places') %> ·
+    <%= link_to nt('admin.usage.csv_facets'), admin_usage_path(days: @days, format: :csv, table: 'facets') %></p>
 
   <% if @totals.empty? %>
-    <p>Nothing counted in this period yet.</p>
+    <p><%= nt('admin.usage.nothing_html') %></p>
   <% else %>
-    <h2>Totals</h2>
+    <h2><%= nt('admin.usage.totals_html') %></h2>
     <table class="table table-sm netd-admin-table w-auto">
       <tbody>
       <% labels.each do |ev, label| %>
@@ -29,15 +25,15 @@
       </tbody>
     </table>
 
-    <h2>By day</h2>
+    <h2><%= nt('admin.usage.by_day_html') %></h2>
     <% peak = [@dates.map { |d| @daily[[d, 'record_view']].to_i }.max.to_i, 1].max %>
     <div class="table-responsive" style="max-height: 28rem">
     <table class="table table-sm netd-admin-table">
-      <thead><tr><th>Day</th><% labels.each_key do |ev| %><th class="text-end"><%= labels[ev].split(' (').first %></th><% end %><th><%= usage_icon(:view) %> Record views</th></tr></thead>
+      <thead><tr><th><%= nt('admin.usage.day_html') %></th><% labels.each_key do |ev| %><th class="text-end"><%= labels[ev].split(' (').first %></th><% end %><th><%= usage_icon(:view) %> <%= nt('admin.usage.record_views_html') %></th></tr></thead>
       <tbody>
       <% @dates.reverse_each do |d| %>
         <% rv = @daily[[d, 'record_view']].to_i %>
-        <tr><td><%= d.strftime('%B %-d, %Y') %></td>
+        <tr><td><%= l(d, format: :netd) %></td>
           <% labels.each_key do |ev| %><td class="text-end"><%= number_with_delimiter(@daily[[d, ev]].to_i) %></td><% end %>
           <td style="min-width: 10rem"><span style="display:inline-block;height:.7rem;background:#0071c2;width:<%= (100.0 * rv / peak).round(1) %>%" aria-hidden="true"></span></td></tr>
       <% end %>
@@ -45,23 +41,23 @@
     </table>
     </div>
 
-    <h2>By institution</h2>
+    <h2><%= nt('admin.usage.by_institution_html') %></h2>
     <% insts = @by_inst.keys.map(&:first).uniq.sort_by { |i| -@by_inst[[i, 'record_view']].to_i } %>
     <table class="table table-sm netd-admin-table w-auto">
-      <thead><tr><th>Institution</th><th class="text-end"><%= usage_icon(:view) %> Record views</th><th class="text-end"><%= usage_icon(:download) %> PDF downloads</th></tr></thead>
+      <thead><tr><th><%= nt('admin.usage.institution_html') %></th><th class="text-end"><%= usage_icon(:view) %> <%= nt('admin.usage.record_views_html') %></th><th class="text-end"><%= usage_icon(:download) %> <%= nt('admin.usage.pdf_downloads_html') %></th></tr></thead>
       <tbody>
       <% insts.each do |i| %>
-        <tr><td><%= i.presence || '(unknown)' %></td><td class="text-end"><%= number_with_delimiter(@by_inst[[i, 'record_view']].to_i) %></td>
+        <tr><td><%= i.presence || nt('admin.usage.unknown') %></td><td class="text-end"><%= number_with_delimiter(@by_inst[[i, 'record_view']].to_i) %></td>
           <td class="text-end"><%= number_with_delimiter(@by_inst[[i, 'pdf_download']].to_i) %></td></tr>
       <% end %>
       </tbody>
     </table>
 
     <div class="row">
-      <% [['Most viewed records', @top_views], ['Most downloaded PDFs', @top_pdfs]].each do |heading, rows| %>
+      <% [[:view, nt('admin.usage.most_viewed'), @top_views], [:download, nt('admin.usage.most_downloaded'), @top_pdfs]].each do |icon, heading, rows| %>
         <div class="col-lg-6">
-          <h2><%= usage_icon(heading.include?('viewed') ? :view : :download, size: 20) %> <%= heading %></h2>
-          <% if rows.empty? %><p>None yet.</p><% else %>
+          <h2><%= usage_icon(icon, size: 20) %> <%= heading %></h2>
+          <% if rows.empty? %><p><%= nt('admin.none_yet_html') %></p><% else %>
           <ol class="small">
             <% rows.each do |id, n| %>
               <li><%= link_to(@titles[id] || id, solr_document_path(ThesisId.short(id))) %> · <%= number_with_delimiter(n) %></li>
@@ -72,20 +68,18 @@
       <% end %>
     </div>
 
-    <h2>Where readers are</h2>
-    <p class="netd-admin-help">Looked up offline from the reader's address, which is not kept
-      (<a href="https://db-ip.com" target="_blank" rel="noopener">IP Geolocation by DB-IP</a>, CC BY 4.0). Country is
-      reliable; city is approximate: mobile networks often appear at their Lusaka gateways.
-      <% unless @geo_ready %><strong>The place database is not installed on this server yet.</strong><% end %></p>
-    <% if @countries.empty? %><p>None in this period.</p><% else %>
+    <h2><%= nt('admin.usage.where_html') %></h2>
+    <p class="netd-admin-help"><%= nt('admin.usage.places_help_html') %>
+      <% unless @geo_ready %><strong><%= nt('admin.usage.no_geo_html') %></strong><% end %></p>
+    <% if @countries.empty? %><p><%= nt('admin.usage.none_period_html') %></p><% else %>
     <div class="row">
       <div class="col-lg-6">
         <% names = @countries.keys.map(&:first).uniq.sort_by { |c| -@countries[[c, 'record_view']].to_i } %>
         <table class="table table-sm netd-admin-table w-auto">
-          <thead><tr><th>Country</th><th class="text-end"><%= usage_icon(:view) %> Record views</th><th class="text-end"><%= usage_icon(:download) %> PDF downloads</th><th class="text-end">Searches</th></tr></thead>
+          <thead><tr><th><%= nt('admin.usage.country_html') %></th><th class="text-end"><%= usage_icon(:view) %> <%= nt('admin.usage.record_views_html') %></th><th class="text-end"><%= usage_icon(:download) %> <%= nt('admin.usage.pdf_downloads_html') %></th><th class="text-end"><%= nt('admin.usage.searches_html') %></th></tr></thead>
           <tbody>
           <% names.each do |c| %>
-            <tr><td><%= c.presence || '(unknown)' %></td>
+            <tr><td><%= c.presence || nt('admin.usage.unknown') %></td>
               <% %w[record_view pdf_download search].each do |ev| %><td class="text-end"><%= number_with_delimiter(@countries[[c, ev]].to_i) %></td><% end %></tr>
           <% end %>
           </tbody>
@@ -93,7 +87,7 @@
       </div>
       <div class="col-lg-6">
         <table class="table table-sm netd-admin-table w-auto">
-          <thead><tr><th>City (approximate)</th><th>Country</th><th class="text-end">Views, downloads, searches</th></tr></thead>
+          <thead><tr><th><%= nt('admin.usage.city_html') %></th><th><%= nt('admin.usage.country_html') %></th><th class="text-end"><%= nt('admin.usage.views_downloads_searches_html') %></th></tr></thead>
           <tbody>
           <% @cities.each do |(city, country), n| %>
             <tr><td><%= city %></td><td><%= country %></td><td class="text-end"><%= number_with_delimiter(n) %></td></tr>
@@ -104,10 +98,9 @@
     </div>
     <% end %>
 
-    <h2>Popular searches (facet values chosen)</h2>
-    <p class="netd-admin-help">What readers narrowed their searches by, counted only when the search found records; the
-      words typed in the search box are never stored.</p>
-    <% if @facets.empty? %><p>None in this period.</p><% else %>
+    <h2><%= nt('admin.usage.popular_html') %></h2>
+    <p class="netd-admin-help"><%= nt('admin.usage.popular_help_html') %></p>
+    <% if @facets.empty? %><p><%= nt('admin.usage.none_period_html') %></p><% else %>
     <div class="row">
       <% @facets.sort.each do |label, rows| %>
         <div class="col-md-6 col-xl-4">
@@ -120,13 +113,13 @@
     </div>
     <% end %>
 
-    <h2>API and OAI-PMH</h2>
-    <% if @endpoints.empty? %><p>None in this period.</p><% else %>
+    <h2><%= nt('admin.usage.api_oai_html') %></h2>
+    <% if @endpoints.empty? %><p><%= nt('admin.usage.none_period_html') %></p><% else %>
     <table class="table table-sm netd-admin-table w-auto">
-      <thead><tr><th>Interface</th><th>Endpoint or verb</th><th class="text-end">Requests</th></tr></thead>
+      <thead><tr><th><%= nt('admin.usage.interface_html') %></th><th><%= nt('admin.usage.endpoint_html') %></th><th class="text-end"><%= nt('admin.usage.requests_html') %></th></tr></thead>
       <tbody>
       <% @endpoints.each do |(ev, key), n| %>
-        <tr><td><%= ev == 'api' ? 'API v1' : 'OAI-PMH' %></td><td><code><%= key.presence || '(none)' %></code></td><td class="text-end"><%= number_with_delimiter(n) %></td></tr>
+        <tr><td><%= ev == 'api' ? 'API v1' : 'OAI-PMH' %></td><td><code><%= key.presence || nt('admin.usage.none_key') %></code></td><td class="text-end"><%= number_with_delimiter(n) %></td></tr>
       <% end %>
       </tbody>
     </table>

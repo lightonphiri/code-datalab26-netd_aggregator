@@ -1,23 +1,21 @@
-<% content_for(:page_title) { 'Metadata quality · Admin' } %>
+<% content_for(:page_title) { nt('admin.quality.page_title') } %>
 <% groups = QualityReport::GROUPS %>
 <div class="netd-admin netd-quality">
   <%= render 'admin/nav' %>
-  <h1>Metadata quality by institution</h1>
-  <p class="netd-admin-help">Visible to signed-in administrators only; the public <%= link_to 'Metadata Quality', quality_path %>
-    page shows overall figures. Same measure as the public page: where each value comes from, against
-    <a href="https://ndltd.org/wp-content/uploads/2021/04/etd-ms-v1.1.html" target="_blank" rel="noopener">ETD-MS 1.1</a>.</p>
+  <h1><%= nt('admin.quality.heading_html') %></h1>
+  <p class="netd-admin-help"><%= nt('admin.quality.help_html', link: link_to(nt('admin.quality.public_link'), quality_path)) %></p>
   <% if @report.nil? %>
-    <p>No quality report yet (<code>netd.cli quality-report</code>; it also runs after every scheduled harvest).</p>
+    <p><%= nt('admin.quality.no_report_html') %></p>
   <% else %>
     <% all = @report['institutions'].find { |i| i['id'].nil? } %>
     <% insts = @report['institutions'].reject { |i| i['id'].nil? } %>
     <%= render 'quality/legend' %>
-    <h2>Summary</h2>
+    <h2><%= nt('admin.quality.summary_html') %></h2>
     <table class="table table-sm netd-admin-table netd-qtable">
-      <thead><tr><th>Institution</th><th class="text-end">ETDs</th>
-        <th class="text-end" title="Mean share of the 12 ETD-MS elements that the repository supplies in the proper element">ETD-MS compliance at source</th>
-        <th class="text-end" title="Mean share of all 15 elements with a value, after the portal's filling">Complete in the portal</th>
-        <th>All elements</th></tr></thead>
+      <thead><tr><th><%= nt('admin.quality.institution_html') %></th><th class="text-end"><%= nt('admin.quality.etds_html') %></th>
+        <th class="text-end" title="<%= nt('admin.quality.compliance_title_html') %>"><%= nt('admin.quality.compliance_html') %></th>
+        <th class="text-end" title="<%= nt('admin.quality.complete_title_html') %>"><%= nt('admin.quality.complete_html') %></th>
+        <th><%= nt('admin.quality.all_elements_html') %></th></tr></thead>
       <tbody>
       <% (insts + [all]).compact.each do |i| %>
         <tr class="<%= 'netd-qtotal' if i['id'].nil? %>">
@@ -31,15 +29,15 @@
       </tbody>
     </table>
 
-    <h2>By element</h2>
+    <h2><%= nt('admin.quality.by_element_html') %></h2>
     <table class="table table-sm netd-admin-table netd-qtable netd-qmatrix">
-      <thead><tr><th>Element <small>(ETD-MS)</small></th><% insts.each do |i| %><th><%= i['name'] %></th><% end %></tr></thead>
+      <thead><tr><th><%= nt('admin.quality.element_etdms_html') %></th><% insts.each do |i| %><th><%= i['name'] %></th><% end %></tr></thead>
       <tbody>
       <% insts.first['elements'].each_with_index do |e0, k| %>
         <tr><td><%= e0['label'] %><% if e0['etdms'] %><br><small><code><%= e0['etdms'] %></code></small><% end %></td>
           <% insts.each do |i| e = i['elements'][k] %>
             <td><%= quality_bar(e, "#{i['name']}, #{e['label']}") %>
-              <small class="netd-qnum"><%= e['repository'] %>% at source · <%= (100 - e['missing']).round(1) %>% filled</small></td>
+              <small class="netd-qnum"><%= nt('admin.quality.cell_html', source: e['repository'], filled: (100 - e['missing']).round(1)) %></small></td>
           <% end %></tr>
       <% end %>
       </tbody>
@@ -47,23 +45,22 @@
 
     <% insts.each do |i| %>
       <h2 id="q-<%= i['id'] %>"><%= i['name'] %></h2>
-      <p><%= number_with_delimiter(i['records']) %> ETDs. ETD-MS compliance at source <strong><%= i['etdms_compliance'] %>%</strong>;
-        complete in the portal <strong><%= i['complete_after_portal'] %>%</strong>. <%= link_to 'Source page', admin_source_path(i['id']) %>.</p>
+      <p><%= nt('admin.quality.inst_summary_html', n: number_with_delimiter(i['records']), compliance: i['etdms_compliance'], complete: i['complete_after_portal'], link: link_to(nt('admin.quality.source_page'), admin_source_path(i['id']))) %></p>
       <% if i['to_improve'].present? %>
-        <p class="mb-1"><strong>Suggested improvements at the repository</strong> (elements the repository supplies in the proper place for fewer than half of its ETDs):</p>
+        <p class="mb-1"><%= nt('admin.quality.improve_html') %></p>
         <ul><% i['to_improve'].each do |a| %><li><%= a %></li><% end %></ul>
       <% end %>
       <details>
-        <summary>Figures by element</summary>
+        <summary><%= nt('admin.quality.figures_html') %></summary>
         <table class="table table-sm netd-admin-table netd-qtable">
-          <thead><tr><th>Element</th><% groups.each_value do |(l, _)| %><th class="text-end"><%= l %></th><% end %></tr></thead>
+          <thead><tr><th><%= nt('admin.quality.element_html') %></th><% groups.each_value do |(l, _)| %><th class="text-end"><%= l %></th><% end %></tr></thead>
           <tbody><% i['elements'].each do |e| %>
             <tr><td><%= e['label'] %></td><% groups.each_key do |g| %><td class="text-end"><%= e[g] %>%</td><% end %></tr>
           <% end %></tbody>
         </table>
       </details>
     <% end %>
-    <p class="netd-admin-help">Computed <%= Time.parse(@report['generated_at']).in_time_zone(Netd.time_zone).strftime('%B %-d, %Y, %H:%M') %> (<%= Netd.time_zone_label %> time).
-      Download: <%= link_to 'CSV', admin_quality_path(format: :csv) %> · <%= link_to 'JSON', admin_quality_path(format: :json) %>.</p>
+    <p class="netd-admin-help"><%= nt('admin.quality.computed_html', time: l(Time.parse(@report['generated_at']).in_time_zone(Netd.time_zone), format: :netd), tz: Netd.time_zone_label) %>
+      <%= nt('admin.quality.download_html') %> <%= link_to 'CSV', admin_quality_path(format: :csv) %> · <%= link_to 'JSON', admin_quality_path(format: :json) %>.</p>
   <% end %>
 </div>

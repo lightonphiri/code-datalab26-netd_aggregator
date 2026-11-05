@@ -10,7 +10,7 @@ module Admin
     # GET /admin/records?id=... (a record id or a portal record URL)
     def lookup
       id = params[:id].to_s.strip.split('/').last.to_s[/\A[A-Za-z0-9_-]+\z/]
-      return redirect_to(admin_root_path, alert: 'Enter a record id or a portal record address.') unless id
+      return redirect_to(admin_root_path, alert: flash_text('enter_record')) unless id
 
       redirect_to admin_record_path(id)
     end
@@ -25,43 +25,42 @@ module Admin
     # POST /admin/records/:id/corrections  field, values (one per line; empty clears the field), note
     def correct
       field = params[:field].to_s
-      return redirect_to(admin_record_path(@id), alert: 'That field cannot be corrected here.') unless
+      return redirect_to(admin_record_path(@id), alert: flash_text('not_correctable')) unless
         Harvester::CORRECTABLE.include?(field) || field == '_scope'
 
       values = params[:values].to_s.split(/\r?\n/).map(&:strip).reject(&:empty?).uniq
       values = values.first(1) if %w[degree_level degree year title _scope].include?(field)
       if field == 'field_of_study' && values.any? { |v| !v.match?(%r{\A(domains|fields|subfields)/\d+\z}) }
-        return redirect_to(admin_record_path(@id), alert: 'Field of study: use OpenAlex ids such as subfields/2739.')
+        return redirect_to(admin_record_path(@id), alert: flash_text('fos_ids'))
       end
       if field == 'degree_level' && values.any? && !Harvester::LEVELS.include?(values.first)
-        return redirect_to(admin_record_path(@id), alert: 'Unknown degree level.')
+        return redirect_to(admin_record_path(@id), alert: flash_text('unknown_level'))
       end
 
       ok, out = Harvester.correct(@id, field, values, by: current_admin.email_address, note: params[:note].to_s.strip)
-      return redirect_to(admin_record_path(@id), alert: "Correction not saved: #{out.lines.last}") unless ok
+      return redirect_to(admin_record_path(@id), alert: flash_text('correction_not_saved', detail: out.lines.last)) unless ok
 
       audit('record_corrected', "record:#{@id}", "#{field} = #{values.empty? ? '(cleared)' : values.join(' || ')}" \
                                                  "#{params[:note].present? ? " (#{params[:note].strip})" : ''}")
-      redirect_to admin_record_path(@id), notice: "#{field.humanize} corrected. It shows on the portal once the source is " \
-                                                  'processed again (tonight, or use Apply now).'
+      redirect_to admin_record_path(@id), notice: flash_text('corrected', field: field.humanize)
     end
 
     # DELETE /admin/records/:id/corrections/:field
     def uncorrect
       ok, out = Harvester.uncorrect(@id, params[:field].to_s)
-      return redirect_to(admin_record_path(@id), alert: "Not removed: #{out.lines.last}") unless ok
+      return redirect_to(admin_record_path(@id), alert: flash_text('not_removed', detail: out.lines.last)) unless ok
 
       audit('correction_removed', "record:#{@id}", params[:field].to_s)
-      redirect_to admin_record_path(@id), notice: "Correction to #{params[:field].to_s.humanize.downcase} removed."
+      redirect_to admin_record_path(@id), notice: flash_text('correction_removed', field: params[:field].to_s.humanize.downcase)
     end
 
     # POST /admin/records/:id/apply  process and index the record's source again
     def apply
       if Harvester.start_reprocess(@record['source'])
         audit('reprocess_started', @record['source'], "after corrections to #{@id}")
-        redirect_to admin_record_path(@id), notice: 'Processing started; the portal updates in a few minutes.'
+        redirect_to admin_record_path(@id), notice: flash_text('processing_started')
       else
-        redirect_to admin_record_path(@id), alert: 'A harvest or text extraction is running; corrections apply when the next run processes this source.'
+        redirect_to admin_record_path(@id), alert: flash_text('apply_busy')
       end
     end
 
@@ -69,7 +68,7 @@ module Admin
 
     def load_record
       @id = params[:id].to_s
-      @record = Harvester.record(@id) or redirect_to(admin_root_path, alert: "No record #{@id} in the staging store.")
+      @record = Harvester.record(@id) or redirect_to(admin_root_path, alert: flash_text('not_in_store', id: @id))
     end
   end
 end

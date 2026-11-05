@@ -16,9 +16,9 @@ module Admin
 
     def create
       file = params[:file]
-      return back_with('Choose a CSV file to upload.') unless file.respond_to?(:path)
-      return back_with('The file must have a .csv extension.') unless file.original_filename.to_s.downcase.end_with?('.csv')
-      return back_with('The file is larger than 50 MB.') if file.size > MAX_BYTES
+      return back_with(flash_text('csv_choose_file')) unless file.respond_to?(:path)
+      return back_with(flash_text('csv_extension')) unless file.original_filename.to_s.downcase.end_with?('.csv')
+      return back_with(flash_text('csv_too_large')) if file.size > MAX_BYTES
 
       @target = target_from_params or return
       FileUtils.mkdir_p(TMP)
@@ -36,7 +36,7 @@ module Admin
     def load_file
       token = params[:token].to_s
       path = TMP.join("#{token}.csv")
-      return back_with('That upload has expired; upload the file again.') unless token.match?(TOKEN) && File.exist?(path)
+      return back_with(flash_text('csv_expired')) unless token.match?(TOKEN) && File.exist?(path)
 
       target = target_from_params or return
       Harvester.add_csv_source(id: target[:id], name: target[:name], short_name: target[:short_name]) if target[:new]
@@ -46,11 +46,10 @@ module Admin
             "#{params[:filename]} -> #{installed}")
       if Harvester.start_run(target[:id])
         audit('harvest_started', target[:id])
-        redirect_to admin_source_path(target[:id]), notice: "File installed; loading #{target[:name]} now."
+        redirect_to admin_source_path(target[:id]), notice: flash_text('csv_loading', name: target[:name])
       else
         redirect_to admin_source_path(target[:id]),
-                    notice: 'File installed. Another harvest is running; press "Run now" when it has finished, ' \
-                            'or the nightly harvest will load it.'
+                    notice: flash_text('csv_waiting')
       end
     rescue ArgumentError => e
       back_with(e.message)
@@ -67,18 +66,18 @@ module Admin
     def target_from_params
       if params[:source_id].present?
         src = Harvester.csv_sources.find { |s| s['id'] == params[:source_id] }
-        return back_with('Choose a CSV source.') unless src
+        return back_with(flash_text('csv_choose_source')) unless src
 
         { id: src['id'], name: src['name'], short_name: src['short_name'], new: false }
       else
         name = params[:institution].to_s
         short = params[:short_name].to_s.strip.upcase
-        return back_with('Choose an institution.') unless InstitutionRegistry.names.include?(name)
-        return back_with('Give a short name of 2 to 16 letters or digits (e.g. CBU).') unless short.match?(/\A[A-Z0-9]{2,16}\z/)
+        return back_with(flash_text('csv_choose_institution')) unless InstitutionRegistry.names.include?(name)
+        return back_with(flash_text('csv_short_name')) unless short.match?(/\A[A-Z0-9]{2,16}\z/)
 
         id = short.downcase
         id = "h#{id}" unless id.match?(/\A[a-z]/)
-        return back_with("The source id #{id} is already in use; choose another short name.") if Harvester.source(id)
+        return back_with(flash_text('csv_id_in_use', id: id)) if Harvester.source(id)
 
         { id: id, name: name, short_name: short, new: true }
       end

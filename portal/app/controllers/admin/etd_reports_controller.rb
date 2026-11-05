@@ -19,12 +19,12 @@ module Admin
     rescue StandardError => e
       Rails.logger.warn("reports form: #{e.class}: #{e.message}")
       @values = Hash.new([])
-      flash.now[:alert] = 'The search index is not answering; lists of values are empty. Try again shortly.'
+      flash.now[:alert] = flash_text('index_down')
     end
 
     def show
       kind = params[:kind].to_s
-      return redirect_to(admin_etd_reports_path, alert: 'Unknown report.') unless KINDS.include?(kind)
+      return redirect_to(admin_etd_reports_path, alert: flash_text('unknown_report')) unless KINDS.include?(kind)
 
       p = params.permit(*PERMITTED).to_h
       preview = request.format.html?
@@ -43,7 +43,7 @@ module Admin
       end
     rescue RSolr::Error::Http, Errno::ECONNREFUSED, Faraday::Error => e
       Rails.logger.warn("report #{kind}: #{e.class}: #{e.message}")
-      redirect_to admin_etd_reports_path, alert: 'The search index is not answering; try the report again shortly.'
+      redirect_to admin_etd_reports_path, alert: flash_text('report_down')
     end
 
     private

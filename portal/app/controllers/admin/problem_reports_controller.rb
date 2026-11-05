@@ -19,7 +19,7 @@ module Admin
       @report.update!(status: resolve ? 'resolved' : 'open', admin_note: params[:admin_note].to_s.strip.presence,
                       resolved_at: resolve ? Time.current : nil, resolved_by: resolve ? current_admin : nil)
       audit(resolve ? 'report_resolved' : 'report_reopened', "problem_report:#{@report.id}", @report.admin_note)
-      redirect_to admin_problem_reports_path, notice: "Report #{@report.id} marked #{@report.status}."
+      redirect_to admin_problem_reports_path, notice: flash_text('report_marked', n: @report.id, status: @report.status)
     end
   end
 end

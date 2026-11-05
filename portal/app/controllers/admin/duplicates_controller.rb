@@ -15,17 +15,17 @@ module Admin
     def decide
       id = params[:id].to_s
       decision = params[:decision].to_s
-      return redirect_to(admin_duplicates_path, alert: 'Unknown decision.') unless %w[distinct primary].include?(decision)
+      return redirect_to(admin_duplicates_path, alert: flash_text('unknown_decision')) unless %w[distinct primary].include?(decision)
 
-      record = Harvester.record(id) or return redirect_to(admin_duplicates_path, alert: "No record #{id}.")
+      record = Harvester.record(id) or return redirect_to(admin_duplicates_path, alert: flash_text('no_record', id: id))
       note = decision == 'distinct' ? 'not a duplicate' : 'main record of its group'
       ok, out = Harvester.correct(id, '_duplicate', [decision], by: current_admin.email_address, note: note)
-      return redirect_to(admin_duplicates_path, alert: "Decision not saved: #{out.lines.last}") unless ok
+      return redirect_to(admin_duplicates_path, alert: flash_text('decision_not_saved', detail: out.lines.last)) unless ok
 
       audit(decision == 'distinct' ? 'duplicate_rejected' : 'duplicate_primary_chosen', "record:#{id}", note)
       started = Harvester.start_reprocess(record['source'])
-      redirect_to admin_duplicates_path, notice: "#{id}: #{note}. " +
-        (started ? 'Processing started; the portal updates in a few minutes.' : 'Applies when the source is next processed.')
+      redirect_to admin_duplicates_path, notice: "#{flash_text(decision == 'distinct' ? 'duplicate_distinct' : 'duplicate_primary', id: id)} " +
+        flash_text(started ? 'processing_started' : 'applies_later')
     end
   end
 end

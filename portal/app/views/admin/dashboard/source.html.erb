@@ -1,44 +1,43 @@
-<% content_for(:page_title) { "#{@source['name']} · Admin" } %>
+<% content_for(:page_title) { nt('admin.source.page_title', name: @source['name']) } %>
 <div class="netd-admin">
   <%= render 'admin/nav' %>
   <h1><%= @source['name'] %></h1>
   <table class="netd-about">
-    <tr><th>Source id</th><td><code><%= @source['id'] %></code><%= ' (added from the admin panel)' if @source['local'] %></td></tr>
-    <tr><th>Loader</th><td><%= @source['loader'] || 'OAI-PMH' %></td></tr>
-    <% if @source['base_url'] %><tr><th>OAI-PMH base URL</th><td><code><%= @source['base_url'] %></code></td></tr><% end %>
+    <tr><th><%= nt('admin.source.id_html') %></th><td><code><%= @source['id'] %></code><%= nt('admin.source.local') if @source['local'] %></td></tr>
+    <tr><th><%= nt('admin.source.loader_html') %></th><td><%= @source['loader'] || 'OAI-PMH' %></td></tr>
+    <% if @source['base_url'] %><tr><th><%= nt('admin.source.base_url_html') %></th><td><code><%= @source['base_url'] %></code></td></tr><% end %>
     <% if @source['csv_url'] || @source['csv_path'] %><tr><th>CSV</th><td><code><%= @source['csv_url'] || @source['csv_path'] %></code></td></tr><% end %>
   </table>
   <p>
-    <%= button_to 'Run now', admin_run_source_path(@source['id']), class: 'btn btn-outline-primary', disabled: @running, form_class: 'd-inline' %>
-    <% if @source['loader'] == 'csv' %><%= link_to 'Upload a new CSV file', new_admin_csv_upload_path(source_id: @source['id']), class: 'btn btn-outline-secondary' %><% end %>
-    <% if @running %><span class="badge text-bg-warning">A harvest is running now</span><% end %>
+    <%= button_to nt('admin.run_now'), admin_run_source_path(@source['id']), class: 'btn btn-outline-primary', disabled: @running, form_class: 'd-inline' %>
+    <% if @source['loader'] == 'csv' %><%= link_to nt('admin.source.upload'), new_admin_csv_upload_path(source_id: @source['id']), class: 'btn btn-outline-secondary' %><% end %>
+    <% if @running %><span class="badge text-bg-warning"><%= nt('admin.running') %></span><% end %>
   </p>
-  <h2>Recent harvests</h2>
+  <h2><%= nt('admin.source.recent_html') %></h2>
   <table class="table table-sm netd-admin-table">
-    <thead><tr><th>Started</th><th>Finished</th><th>Status</th><th class="text-end">Records</th><th class="text-end">Deleted</th><th>Message</th></tr></thead>
+    <thead><tr><th><%= nt('admin.source.started_html') %></th><th><%= nt('admin.source.finished_html') %></th><th><%= nt('admin.source.status_html') %></th><th class="text-end"><%= nt('admin.source.records_html') %></th><th class="text-end"><%= nt('admin.source.deleted_html') %></th><th><%= nt('admin.source.message_html') %></th></tr></thead>
     <tbody>
     <% @runs.each do |r| %>
       <tr><td><%= admin_time(r['started_at']) %></td><td><%= admin_time(r['finished_at']) %></td><td><%= run_badge(r['status']) %></td>
         <td class="text-end"><%= number_with_delimiter(r['records'].to_i) %></td><td class="text-end"><%= r['deleted'].to_i %></td>
         <td><small><%= r['message'] %></small></td></tr>
     <% end %>
-    <% if @runs.empty? %><tr><td colspan="6">Not harvested yet.</td></tr><% end %>
+    <% if @runs.empty? %><tr><td colspan="6"><%= nt('admin.source.not_harvested_html') %></td></tr><% end %>
     </tbody>
   </table>
-  <h2>Excluded records (<%= @excluded.size %>)</h2>
-  <p class="netd-admin-help">Harvested but left out of the portal: outside the postgraduate scope, or listed under
-    <code>exclude_records</code> in <code>harvester/sources.yml</code> (SRS FR-47). The harvested metadata is kept.</p>
+  <h2><%= nt('admin.source.excluded_html', n: @excluded.size) %></h2>
+  <p class="netd-admin-help"><%= nt('admin.source.excluded_help_html') %></p>
   <table class="table table-sm netd-admin-table">
-    <thead><tr><th>Record</th><th>Title</th><th>Reason</th></tr></thead>
+    <thead><tr><th><%= nt('admin.source.record_html') %></th><th><%= nt('admin.source.title_html') %></th><th><%= nt('admin.source.reason_html') %></th></tr></thead>
     <tbody>
     <% @excluded.each do |r| %>
       <tr><td><code><%= r['oai_id'] %></code></td><td><%= r['title'] %></td><td><small><%= r['reason'] %></small></td></tr>
     <% end %>
-    <% if @excluded.empty? %><tr><td colspan="3">None.</td></tr><% end %>
+    <% if @excluded.empty? %><tr><td colspan="3"><%= nt('admin.none_html') %></td></tr><% end %>
     </tbody>
   </table>
   <% if @log %>
-    <h2>Output of the last run started here</h2>
+    <h2><%= nt('admin.source.last_run_html') %></h2>
     <pre class="netd-code netd-admin-log"><%= @log %></pre>
   <% end %>
 </div>

@@ -1,4 +1,4 @@
-<% content_for(:page_title) { "Record #{@id} · Admin" } %>
+<% content_for(:page_title) { nt('admin.records.page_title', id: @id) } %>
 <% r = @record; prov = r['provenance'] || {}; conf = r['confidence'] || {} %>
 <div class="netd-admin">
   <%= render 'admin/nav' %>
@@ -6,63 +6,60 @@
   <p>
     <code><%= @id %></code> · <%= r['institution_short'] %>
     <% if r['excluded'] %>
-      · <span class="badge text-bg-secondary">Excluded</span> <small><%= r['excluded'] %></small>
+      · <span class="badge text-bg-secondary"><%= nt('admin.records.excluded') %></span> <small><%= r['excluded'] %></small>
     <% else %>
-      · <%= link_to 'Portal page', solr_document_path(ThesisId.short(@id)), target: '_blank', rel: 'noopener' %>
+      · <%= link_to nt('admin.records.portal_page'), solr_document_path(ThesisId.short(@id)), target: '_blank', rel: 'noopener' %>
     <% end %>
-    <% if (pdf = Array(r['pdf_url']).first) %> · <%= link_to 'PDF', pdf, target: '_blank', rel: 'noopener' %><% end %>
-    · PDF text: <%= @text ? "#{@text['status']}#{" (#{@text['pages']} pages)" if @text['pages']}" : 'not extracted yet' %>
+    <% if (pdf = Array(r['pdf_url']).first) %> · <%= link_to nt('admin.records.pdf'), pdf, target: '_blank', rel: 'noopener' %><% end %>
+    · <%= nt('admin.records.pdf_text_html') %> <%= @text ? "#{@text['status']}#{" (#{nt('admin.records.pages', n: @text['pages'])})" if @text['pages']}" : nt('admin.records.not_extracted') %>
   </p>
-  <p class="netd-admin-help">Correct a value when the repository's record or a model got it wrong. A correction
-    overrides harvested and derived values, survives re-harvests and is logged (SRS FR-51). Enter one value per line;
-    save an empty box to clear a field. Changes reach the portal when the source is processed again.
-    <%= button_to 'Apply now', admin_apply_record_path(@id), class: 'btn btn-sm btn-outline-primary', form_class: 'd-inline',
+  <p class="netd-admin-help"><%= nt('admin.records.help_html') %>
+    <%= button_to nt('admin.records.apply_now'), admin_apply_record_path(@id), class: 'btn btn-sm btn-outline-primary', form_class: 'd-inline',
                   disabled: @running || r['excluded'].present? %>
-    <% if @running %><span class="badge text-bg-warning">A run is in progress</span><% end %></p>
+    <% if @running %><span class="badge text-bg-warning"><%= nt('admin.records.in_progress') %></span><% end %></p>
 
   <table class="table table-sm netd-admin-table">
-    <thead><tr><th>Field</th><th>Current value</th><th>Source</th><th>Correct</th></tr></thead>
+    <thead><tr><th><%= nt('admin.records.field_html') %></th><th><%= nt('admin.records.current_html') %></th><th><%= nt('admin.records.source_html') %></th><th><%= nt('admin.records.correct_html') %></th></tr></thead>
     <tbody>
     <% Harvester::CORRECTABLE.each do |f| %>
       <% c = @corrections[f] %>
       <tr>
-        <th><%= f.humanize %><% if f == 'field_of_study' %><br><small>OpenAlex ids, one per line, e.g. <code>subfields/2739</code>, <code>fields/27</code> (<a href="https://openalex.org" target="_blank" rel="noopener">openalex.org</a>)</small><% end %></th>
-        <td><%= Array(r[f]).join(' || ').presence || content_tag(:em, 'empty') %></td>
+        <th><%= f.humanize %><% if f == 'field_of_study' %><br><small><%= nt('admin.records.fos_help_html') %></small><% end %></th>
+        <td><%= Array(r[f]).join(' || ').presence || content_tag(:em, nt('admin.records.empty')) %></td>
         <td><small><%= prov[f] %><%= " (#{format('%.2f', conf[f])})" if conf[f] && prov[f].to_s.start_with?('model:') %>
-          <% if c %><br>by <%= c['made_by'] %>, <%= admin_time(c['created_at']) %><% end %></small></td>
+          <% if c %><br><%= nt('admin.records.by_html', who: c['made_by'], when: admin_time(c['created_at'])) %><% end %></small></td>
         <td>
           <%= form_with url: admin_correct_record_path(@id), method: :post, local: true, data: { turbo: false }, class: 'netd-correct' do %>
             <%= hidden_field_tag :field, f %>
             <% if f == 'degree_level' %>
-              <%= select_tag :values, options_for_select([['(clear)', '']] + Harvester::LEVELS, Array(r[f]).first), class: 'form-select form-select-sm' %>
+              <%= select_tag :values, options_for_select([[nt('admin.records.clear'), '']] + Harvester::LEVELS, Array(r[f]).first), class: 'form-select form-select-sm' %>
             <% else %>
               <%= text_area_tag :values, Array(r[f]).join("\n"), rows: [Array(r[f]).size, 1].max, class: 'form-control form-control-sm' %>
             <% end %>
-            <%= text_field_tag :note, nil, placeholder: 'Note (optional)', class: 'form-control form-control-sm' %>
-            <%= submit_tag 'Save', class: 'btn btn-sm btn-primary' %>
+            <%= text_field_tag :note, nil, placeholder: nt('admin.records.note'), class: 'form-control form-control-sm' %>
+            <%= submit_tag nt('admin.records.save'), class: 'btn btn-sm btn-primary' %>
           <% end %>
-          <% if c %><%= button_to 'Remove correction', admin_uncorrect_record_path(@id, f), method: :delete, class: 'btn btn-link btn-sm p-0' %><% end %>
+          <% if c %><%= button_to nt('admin.records.remove'), admin_uncorrect_record_path(@id, f), method: :delete, class: 'btn btn-link btn-sm p-0' %><% end %>
         </td>
       </tr>
     <% end %>
     <% if (s = @corrections['_scope']) %>
-      <tr><th>Scope</th><td><%= JSON.parse(s['value']).first %></td><td><small>by <%= s['made_by'] %>: <%= s['note'] %></small></td>
-        <td><%= button_to 'Remove decision', admin_uncorrect_record_path(@id, '_scope'), method: :delete, class: 'btn btn-link btn-sm p-0' %></td></tr>
+      <tr><th><%= nt('admin.records.scope_html') %></th><td><%= JSON.parse(s['value']).first %></td><td><small><%= nt('admin.records.by_note_html', who: s['made_by'], note: s['note']) %></small></td>
+        <td><%= button_to nt('admin.remove_decision'), admin_uncorrect_record_path(@id, '_scope'), method: :delete, class: 'btn btn-link btn-sm p-0' %></td></tr>
     <% end %>
     </tbody>
   </table>
 
-  <h2>Model predictions (<%= @predictions.count { |p| p['value'] != '[]' } %>)</h2>
-  <p class="netd-admin-help">Every prediction is kept, including those below the display threshold; only the best one
-    above the threshold fills an empty field (SRS FR-49, FR-50).</p>
+  <h2><%= nt('admin.records.predictions_html', n: @predictions.count { |p| p['value'] != '[]' }) %></h2>
+  <p class="netd-admin-help"><%= nt('admin.records.predictions_help_html') %></p>
   <table class="table table-sm netd-admin-table">
-    <thead><tr><th>Field</th><th>Value</th><th>Model</th><th class="text-end">Confidence</th><th>Evidence</th></tr></thead>
+    <thead><tr><th><%= nt('admin.records.field_html') %></th><th><%= nt('admin.records.value_html') %></th><th><%= nt('admin.records.model_html') %></th><th class="text-end"><%= nt('admin.records.confidence_html') %></th><th><%= nt('admin.records.evidence_html') %></th></tr></thead>
     <tbody>
     <% @predictions.reject { |p| p['value'] == '[]' }.each do |p| %>
       <tr><td><%= p['field'] %></td><td><%= JSON.parse(p['value']).join(' || ') %></td><td><small><%= p['model'] %>-<%= p['version'] %></small></td>
         <td class="text-end"><%= format('%.2f', p['confidence'].to_f) %></td><td><small><%= p['evidence'] %></small></td></tr>
     <% end %>
-    <% if @predictions.none? { |p| p['value'] != '[]' } %><tr><td colspan="5">None yet.</td></tr><% end %>
+    <% if @predictions.none? { |p| p['value'] != '[]' } %><tr><td colspan="5"><%= nt('admin.none_yet_html') %></td></tr><% end %>
     </tbody>
   </table>
 </div>

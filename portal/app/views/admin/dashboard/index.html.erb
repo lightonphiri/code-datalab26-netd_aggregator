@@ -1,16 +1,16 @@
-<% content_for(:page_title) { 'Dashboard · Admin' } %>
+<% content_for(:page_title) { nt('admin.dashboard.page_title') } %>
 <div class="netd-admin">
   <%= render 'admin/nav' %>
-  <h1>Dashboard</h1>
-  <% if @status[:error] %><div class="alert alert-danger">Staging store not readable: <%= @status[:error] %></div><% end %>
+  <h1><%= nt('admin.dashboard.heading_html') %></h1>
+  <% if @status[:error] %><div class="alert alert-danger"><%= nt('admin.dashboard.store_error_html', error: @status[:error]) %></div><% end %>
   <p>
-    <%= @running ? tag.span('A harvest is running now', class: 'badge text-bg-warning') : tag.span('No harvest running', class: 'badge text-bg-light') %>
-    · Records in the search index: <strong><%= number_with_delimiter(@indexed.values.sum) %></strong>
-    · <%= link_to pluralize(@open_reports, 'open problem report'), admin_problem_reports_path %>
+    <%= @running ? tag.span(nt('admin.running'), class: 'badge text-bg-warning') : tag.span(nt('admin.dashboard.not_running'), class: 'badge text-bg-light') %>
+    · <%= nt('admin.dashboard.indexed_html') %> <strong><%= number_with_delimiter(@indexed.values.sum) %></strong>
+    · <%= link_to nt('admin.dashboard.open_reports', count: @open_reports), admin_problem_reports_path %>
   </p>
-  <h2>Sources</h2>
+  <h2><%= nt('admin.dashboard.sources_html') %></h2>
   <table class="table table-sm netd-admin-table">
-    <thead><tr><th>Source</th><th>Loader</th><th>Last harvest</th><th>Status</th><th class="text-end">In store</th><th class="text-end">Indexed</th><th></th></tr></thead>
+    <thead><tr><th><%= nt('admin.dashboard.source_html') %></th><th><%= nt('admin.dashboard.loader_html') %></th><th><%= nt('admin.dashboard.last_harvest_html') %></th><th><%= nt('admin.dashboard.status_html') %></th><th class="text-end"><%= nt('admin.dashboard.in_store_html') %></th><th class="text-end"><%= nt('admin.dashboard.indexed_col_html') %></th><th></th></tr></thead>
     <tbody>
     <% @sources.each do |s| run = @status[:runs][s['id']] %>
       <tr>
@@ -20,28 +20,27 @@
         <td><%= run_badge(run && run['status']) %> <small class="text-muted"><%= run && run['message'].to_s.truncate(80) %></small></td>
         <td class="text-end"><%= number_with_delimiter(@status[:counts][s['id']] || 0) %></td>
         <td class="text-end"><%= number_with_delimiter(@indexed[s['id']] || 0) %></td>
-        <td class="text-end"><%= button_to 'Run now', admin_run_source_path(s['id']), class: 'btn btn-sm btn-outline-primary', disabled: @running,
-                                 form: { data: { turbo_confirm: "Harvest #{s['name']} now?" } } %></td>
+        <td class="text-end"><%= button_to nt('admin.run_now'), admin_run_source_path(s['id']), class: 'btn btn-sm btn-outline-primary', disabled: @running,
+                                 form: { data: { turbo_confirm: nt('admin.dashboard.confirm_run', name: s['name']) } } %></td>
       </tr>
     <% end %>
     </tbody>
   </table>
-  <p class="netd-admin-help">The nightly harvest of all sources runs at 04:30 (<%= Netd.time_zone_label %> time). "Run now" harvests one source;
-    only one harvest runs at a time.</p>
-  <h2>Institutions not yet harvested</h2>
+  <p class="netd-admin-help"><%= nt('admin.dashboard.nightly_html', tz: Netd.time_zone_label) %></p>
+  <h2><%= nt('admin.dashboard.not_harvested_html') %></h2>
   <% if @repo_check %>
-    <p class="netd-admin-help">Weekly check of the repositories in <code>harvester/institutions.yml</code> (FR-58), last run
+    <p class="netd-admin-help"><%= nt('admin.dashboard.weekly_check_html') %>
       <%= admin_time(Time.parse(@repo_check['checked_at']).to_i) rescue @repo_check['checked_at'] %>.
-      <% if @repo_check['changes'].present? %><strong>Changes since the previous check:</strong> <%= @repo_check['changes'].join('; ') %><% end %></p>
+      <% if @repo_check['changes'].present? %><strong><%= nt('admin.dashboard.changes_html') %></strong> <%= @repo_check['changes'].join('; ') %><% end %></p>
     <table class="table table-sm netd-admin-table">
-      <thead><tr><th>Institution</th><th>Registry status</th><th>Repository</th><th>Reachable</th><th class="text-end">OAI-PMH records</th><th class="text-end">In ETD sets</th></tr></thead>
+      <thead><tr><th><%= nt('admin.dashboard.institution_html') %></th><th><%= nt('admin.dashboard.registry_status_html') %></th><th><%= nt('admin.dashboard.repository_html') %></th><th><%= nt('admin.dashboard.reachable_html') %></th><th class="text-end"><%= nt('admin.dashboard.oai_records_html') %></th><th class="text-end"><%= nt('admin.dashboard.etd_sets_html') %></th></tr></thead>
       <tbody>
       <% @repo_check['repositories'].each do |r| %>
         <tr>
           <td><%= r['name'] %></td>
           <td><%= InstitutionRegistry::STATUS_LABELS[r['status']] || r['status'] %></td>
           <td><%= link_to (r['repository'] || r['oai']).to_s.truncate(50), r['repository'] || r['oai'], target: '_blank', rel: 'noopener' %></td>
-          <td><%= r['reachable'] ? tag.span('yes', class: 'badge text-bg-success') : tag.span('no', class: 'badge text-bg-danger') %></td>
+          <td><%= r['reachable'] ? tag.span(nt('admin.answer_yes'), class: 'badge text-bg-success') : tag.span(nt('admin.answer_no'), class: 'badge text-bg-danger') %></td>
           <td class="text-end"><%= r['records'] || '–' %></td>
           <td class="text-end"><%= r['etd_sets'].present? ? (r['etd_records'] || '–') : '' %></td>
         </tr>
@@ -49,11 +48,10 @@
       </tbody>
     </table>
   <% else %>
-    <p class="netd-admin-help">No repository check yet (<code>netd.cli check-repositories</code> runs weekly).</p>
+    <p class="netd-admin-help"><%= nt('admin.dashboard.no_check_html') %></p>
   <% end %>
-  <p class="netd-admin-help">Institutions without a repository can contribute by CSV (Upload CSV) — see the
-    <%= link_to 'guide for institutions', contribute_path %>.</p>
-  <h2>Recent activity</h2>
+  <p class="netd-admin-help"><%= nt('admin.dashboard.no_repository_html', link: link_to(nt('admin.dashboard.guide'), contribute_path)) %></p>
+  <h2><%= nt('admin.dashboard.recent_html') %></h2>
   <%= render 'admin/events/table', events: @events %>
-  <p><%= link_to 'Full activity log', admin_events_path %></p>
+  <p><%= link_to nt('admin.dashboard.full_log'), admin_events_path %></p>
 </div>
