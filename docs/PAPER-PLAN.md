@@ -345,6 +345,10 @@ Nothing in this session changes an evaluated component (text extraction, OCR, mo
 - The citation list of words kept capitalised was split into a general part (continents, directions, diseases, international bodies, Roman numerals) and the installation's part (21 Zambian places, institutions and bodies); the merged list equals the old one (46 words).
 - Blacklight's application name moved from a YAML locale file to a Ruby locale file reading the configuration; emptying the YAML key instead would have merged an empty `blacklight:` over the gem's own translations.
 - The boot test in a scratch copy of the portal (22 pages and responses compared with the running portal) found two traps of the test itself, not of the release: a tar that contains a harvester file turns the copy's `harvester` link into a folder, and the copy shares nothing but keeps its own Rails file cache, so a first failed run is served again for 10 minutes; clear `tmp/cache` before re-running.
+- Released as 644412a (deployed); after it, captures of 12 pages, OAI-PMH and REST responses and screenshots matched those before (For Institutions in white space only; the home page differed only by Turbo's progress-bar style, injected depending on load timing); `tests/api_conformance.py` 0 problems; `tests/oai_conformance.py` 48 checks, 0 problems.
+
+### Documentation
+- Manual chapters 5 and 10 now describe Cited by (FR-69, maintenance track): result cards, the Most Cited sort and Citations filter, the record page (new screenshots), the API 1.7.0 fields and the OpenAlex identifier in OAI-PMH.
 
 ## Technical record from session 14 (November 4, 2026, documentation and packaging track; post-paper)
 

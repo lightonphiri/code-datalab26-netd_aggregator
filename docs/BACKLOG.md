@@ -45,7 +45,8 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Date | Item | Commit |
 |---|---|---|
-| November 5, 2026 | Country configuration, second part (packaging P3b, NFR-15): country, regulator, wordmark, credits and portal name in page text, Blacklight name, OAI-PMH `Identify`, RIS, citation capitals from `config/country.yml`; Zambian pages unchanged (post-paper) | this release |
+| November 5, 2026 | Manual: Cited by in chapters 5 (result cards, Most Cited sort, Citations filter, new record-page screenshots) and 10 (API 1.7.0 fields, filter, sort and CSV columns; OpenAlex identifier and the postgraduate-diploma set in OAI-PMH) | this release |
+| November 5, 2026 | Country configuration, second part (packaging P3b, NFR-15): country, regulator, wordmark, credits and portal name in page text, Blacklight name, OAI-PMH `Identify`, RIS, citation capitals from `config/country.yml`; Zambian pages unchanged (post-paper) | 644412a |
 | November 5, 2026 | OAI-PMH set `level:postgraduate-diploma` answered HTTP 500 (two-word level unquoted in the Solr filter); `tests/oai_conformance.py` expected the search count (5,474 distinct theses) instead of every record (5,719) | de053e0 |
 | November 5, 2026 | GitHub Pages switched on for `gh-pages` (manual at https://lightonphiri.github.io/code-datalab26-netd_aggregator/); GitHub releases `v0.1.0` to `v0.9.0` created from the CHANGELOG text, in the built-in browser signed in by Lighton | settings |
 | November 4, 2026 | Country configuration, first part (packaging P3a, NFR-15): `config/country.yml` read by portal, harvester and deployment scripts; host, contacts, senders, time zone, portal name in mail and reports; pages unchanged (post-paper) | 544fb81 |

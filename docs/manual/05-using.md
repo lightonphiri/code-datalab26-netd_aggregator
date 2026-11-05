@@ -14,9 +14,9 @@ Type words in the search box and press Enter. The menu next to the box limits th
 
 ![Search results](img/results.jpg)
 
-Each result shows the title, the authors, a line with **year · degree · institution**, up to three lines of the abstract, and the keywords (or, when the repository gave none, the portal's field of study in italics). A **Download PDF** link appears when the repository gives a direct link to the full text.
+Each result shows the title, the authors, a line with **year · degree · institution**, up to three lines of the abstract, and the keywords (or, when the repository gave none, the portal's field of study in italics). A **Download PDF** link appears when the repository gives a direct link to the full text, and **Cited by N** when works in OpenAlex cite the thesis (it leads to the record page's Cited by section).
 
-- **Sort by:** Best Match, Published Latest, Published Earliest, Title A-Z, Title Z-A, Newest Additions.
+- **Sort by:** Best Match, Published Latest, Published Earliest, Title A-Z, Title Z-A, Newest Additions, Most Cited (most citing works in OpenAlex first).
 - **Show:** 10, 20, 50 or 100 results per page.
 - **Duplicates:** a thesis deposited more than once is listed once, under its main record.
 
@@ -28,6 +28,7 @@ The left-hand column narrows the results. Choose a value to filter; choose it ag
 |---|---|
 | Institution | contributing institutions (top 10, "more" for the rest) |
 | Full text | whether a direct full-text link exists |
+| Citations (OpenAlex) | **Cited**: only theses cited by at least one work in OpenAlex |
 | Degree level | Masters, Doctoral, Postgraduate Diploma |
 | Research domain, Field of study, Subfield | the standard OpenAlex Topics classification assigned by the portal to every thesis |
 | Faculty / School, Department | from the repository's collections or the title page; spelling variants merged |
@@ -54,8 +55,10 @@ A record page has the address `/theses/<short id>` (for example `/theses/unza-63
 - **Download PDF** and **Repository link** (the item on the institution's repository), and view and download counts;
 - values the portal filled in itself, marked as derived, with their origin;
 - other copies of the same thesis, if any;
-- **Cited by**: works in OpenAlex that cite the thesis, when there are any (matched weekly; most theses have none);
+- **Cited by**: works in OpenAlex that cite the thesis, with their year, when there are any (in the right-hand column, which can be collapsed; matched weekly; most theses have none);
 - **How to cite** (below), **Similar theses** (five theses with similar titles and abstracts, a section that can be collapsed), a Google Scholar link, and **Report a problem** (a short form; reports go to the portal team).
+
+![Cited by on a record page](img/record-cited-by.jpg)
 
 ## 5.6 How to cite
 

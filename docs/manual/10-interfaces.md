@@ -8,7 +8,7 @@ Base address `/api/v1`. Read-only JSON, no authentication, CORS open. The contra
 
 | Endpoint | What |
 |---|---|
-| `GET /api/v1/records` | search: `q`, filters (institution, degree level, year range, field of study, and more), `page`, `per_page` (up to 10,000 results in all) |
+| `GET /api/v1/records` | search: `q`, filters (institution, degree level, year range, field of study, `cited=true` or `false`, and more), `sort` (`relevance`, `newest`, `cited` and others), `page`, `per_page` (up to 10,000 results in all) |
 | `GET /api/v1/records/{id}` | one record (full id, or the short id of its page address) |
 | `GET /api/v1/institutions` | every institution expected, with record counts, harvest status and last run |
 | `GET /api/v1/stats` | counts by institution, level and year, and completeness per field (cached 10 minutes) |
@@ -18,7 +18,7 @@ Base address `/api/v1`. Read-only JSON, no authentication, CORS open. The contra
 curl -s 'https://netd.ac.zm/api/v1/records?q=malaria&per_page=5' | python3 -m json.tool
 ```
 
-Each record has stable public field names (`title`, `authors`, `supervisors`, `degree`, `degree_level`, `institution {id, name}`, `fields_of_study`, `links {portal, source, pdf, api}`, `files`, `duplicate_of`, `other_copies`, `updated_at`) and a `derived` list naming every value the portal filled in, with its method and confidence. Lists are always arrays; missing single values are `null`.
+Each record has stable public field names (`title`, `authors`, `supervisors`, `degree`, `degree_level`, `institution {id, name}`, `fields_of_study`, `links {portal, source, pdf, api}`, `files`, `duplicate_of`, `other_copies`, `openalex_id`, `cited_by {count, works}`, `updated_at`) and a `derived` list naming every value the portal filled in, with its method and confidence. Lists are always arrays; missing single values are `null`. `cited_by.count` is `null` when the thesis has not been matched in OpenAlex (not yet checked, or no confident match) and 0 when it was matched and nobody cites it; each citing work has `openalex_id`, `title`, `year`, `type` and `url`. The CSV export ends with the columns `openalex_id` and `cited_by_count` (API 1.7.0).
 
 **Limits:** 120 requests a minute per address, 20 an hour for the export. Errors: 400 with a message for bad parameters, 404, 503 when the index is unavailable.
 
@@ -32,8 +32,8 @@ Base address `/oai` (OAI-PMH 2.0), for aggregators such as NDLTD's Global ETD Se
 |---|---|
 | Verbs | all six, GET or POST |
 | Formats | `oai_dc`; `etdms` (ETD-MS v1.1, supervisors as `contributor role="advisor"`, `degree` with name, level, discipline and grantor) |
-| Sets | `inst:<source id>` per institution; `level:masters`, `level:doctoral` |
-| Identifiers | `oai:<host>:<record id>` |
+| Sets | `inst:<source id>` per institution; `level:masters`, `level:doctoral`, `level:postgraduate-diploma` |
+| Identifiers | `oai:<host>:<record id>`; in the records, `dc:identifier` (oai_dc) and `identifier` (ETD-MS) list the portal page, the repository page, the PDF and, when matched, the thesis in OpenAlex (`https://openalex.org/W…`) |
 | Datestamps | when the record's content last changed in the portal (seconds granularity), so incremental harvesting only returns real changes |
 | Paging | 100 records per page; stateless resumption tokens valid 24 hours |
 | Deleted records | `transient` |
