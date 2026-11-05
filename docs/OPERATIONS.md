@@ -206,7 +206,7 @@ The portal holds postgraduate work only (SRS FR-47). Records identified as below
 
 ## REST API
 
-https://netd.ac.zm/api/v1 (SRS EI-6, FR-42 to FR-46; SDD §5.3; specification `portal/public/api/v1/openapi.yaml`). It reads Solr only, so it shows whatever the nightly index holds. `/api/v1/stats` and `/api/v1/institutions` are cached for 10 minutes. The export files are built in `portal/tmp/api_export/` when first requested and rebuilt when more than 6 hours old; deleting them is safe. Rate limits (120 requests a minute per address per endpoint, 20 exports an hour) are counted in the Rails cache and reset when the portal restarts. Any change to the API's fields must be made in the specification too.
+https://netd.ac.zm/api/v1 (SRS EI-6, FR-42 to FR-46; SDD §5.3; specification `portal/app/views/static_files/openapi.text.erb`, served at `/api/v1/openapi.yaml`; it was `portal/public/api/v1/openapi.yaml` until packaging P6a). It reads Solr only, so it shows whatever the nightly index holds. `/api/v1/stats` and `/api/v1/institutions` are cached for 10 minutes. The export files are built in `portal/tmp/api_export/` when first requested and rebuilt when more than 6 hours old; deleting them is safe. Rate limits (120 requests a minute per address per endpoint, 20 exports an hour) are counted in the Rails cache and reset when the portal restarts. Any change to the API's fields must be made in the specification too.
 
 ## Admin panel
 

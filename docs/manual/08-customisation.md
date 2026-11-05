@@ -13,7 +13,7 @@ Keep your changes on a branch of your own (or in a fork) so that upgrades can be
 | Footer credit line, header group bar | `credits` in `config/country.yml` (sentence built in `portal/app/views/shared/_footer.html.erb`) |
 | Home page introduction | `portal.name`, `country.adjective` and `regulator` in `config/country.yml`; the rest of the text in `portal/app/views/catalog/_home_text.html.erb` |
 | Emails (problem reports, alerts), Excel and PDF reports, OAI-PMH administrator e-mail | `portal.name`, `portal.host`, `contact.email` in `config/country.yml` |
-| REST API specification | `portal/public/api/v1/openapi.yaml` (title, contact, server) |
+| REST API specification | `portal.name`, `portal.host`, `country.adjective`, `regulator.name`, `contact.email` and the `developed by` credit in `config/country.yml`; the rest in `portal/app/views/static_files/openapi.text.erb` |
 
 ## 8.2 Logo and credits
 

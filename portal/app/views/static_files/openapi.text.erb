@@ -1,23 +1,23 @@
 openapi: 3.0.3
 info:
-  title: Zambia National ETD Portal REST API
+  title: <%= Netd.portal_name %> REST API
   version: 1.7.0
   description: |
-    Read-only access to the theses and dissertations aggregated by the Zambia National ETD Portal
-    (https://netd.ac.zm) from Zambian higher education institutions: postgraduate diploma, master's and doctoral work. No key is needed. Responses are JSON
+    Read-only access to the theses and dissertations aggregated by the <%= Netd.portal_name %>
+    (<%= Netd.base_url %>) from <%= Netd.country_adjective %> higher education institutions: postgraduate diploma, master's and doctoral work. No key is needed. Responses are JSON
     (UTF-8); the export is also available as CSV. Each endpoint allows 120 requests a minute from one address
     (the export, 20 an hour); over the limit, the API answers 429. Field names in this version will not change;
     additions are backwards compatible. For metadata harvesting, the OAI-PMH interface at
-    https://netd.ac.zm/oai is usually better suited.
+    <%= Netd.base_url %>/oai is usually better suited.
   contact:
-    name: DataLab Research Group
-    email: datalab@unza.zm
-    url: https://datalab.unza.zm/projects/zambia-national-etd-portal
+    name: <%= @contact_name %>
+    email: <%= Netd.contact_email %>
+    url: <%= @contact_url %>
   license:
     name: Metadata are provided by the contributing institutions; see each record's rights statement.
-    url: https://netd.ac.zm/about
+    url: <%= Netd.base_url %>/about
 servers:
-  - url: https://netd.ac.zm/api/v1
+  - url: <%= Netd.base_url %>/api/v1
 tags:
   - name: Records
   - name: Institutions
@@ -105,7 +105,7 @@ paths:
     get:
       tags: [Institutions]
       summary: Institutions
-      description: Every institution with an accredited postgraduate programme listed by the Higher Education Authority, with 0 records where nothing has been harvested yet.
+      description: Every institution with an accredited postgraduate programme listed by the <%= Netd.regulator_name %>, with 0 records where nothing has been harvested yet.
       operationId: listInstitutions
       responses:
         '200':
@@ -187,7 +187,7 @@ components:
       required: [id, oai_identifier, title, authors, supervisors, faculty, department, subjects, institution, links, files]
       properties:
         id: {type: string, example: unza-123456789-9150}
-        oai_identifier: {type: string, example: 'oai:netd.ac.zm:unza-123456789-9150'}
+        oai_identifier: {type: string, example: 'oai:<%= Netd.host %>:unza-123456789-9150'}
         title: {type: string, nullable: true}
         authors: {type: array, items: {type: string}, description: 'Surname, Given names'}
         supervisors: {type: array, items: {type: string}}
@@ -212,7 +212,7 @@ components:
           type: object
           required: [portal, api]
           properties:
-            portal: {type: string, format: uri, description: 'Record page on the portal, https://netd.ac.zm/theses/<short id> since API 1.6.0'}
+            portal: {type: string, format: uri, description: 'Record page on the portal, <%= Netd.base_url %>/theses/<short id> since API 1.6.0'}
             source: {type: string, nullable: true, format: uri, description: Record page at the institution}
             pdf: {type: string, nullable: true, format: uri, description: Full text}
             api: {type: string, format: uri}

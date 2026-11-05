@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   match 'oai', to: 'oai#index', via: [:get, :post], as: :oai  # OAI-PMH data provider (SRS EI-4)
-  # Public REST API v1 (SRS EI-6, FR-42 to FR-46); specification in public/api/v1/openapi.yaml
+  # Files naming the installation, rendered from config/country.yml (packaging P6a; were static files in public/)
+  get 'robots.txt', to: 'static_files#robots', format: false
+  get 'api/v1/openapi.yaml', to: 'static_files#openapi', format: false
+  # Public REST API v1 (SRS EI-6, FR-42 to FR-46); specification in app/views/static_files/openapi.text.erb
   scope 'api/v1', module: 'api/v1', as: 'api_v1', defaults: { format: 'json' } do
     get 'records', to: 'records#index', as: :records
     get 'records/:id', to: 'records#show', as: :record, constraints: { id: /[A-Za-z0-9_-]+/ }

@@ -4,7 +4,7 @@ NETD offers its collection to programs through four interfaces. All of them read
 
 ## 10.1 REST API v1
 
-Base address `/api/v1`. Read-only JSON, no authentication, CORS open. The contract is `portal/public/api/v1/openapi.yaml` (OpenAPI 3.0.3), rendered with an interactive reference at `/developers/api`.
+Base address `/api/v1`. Read-only JSON, no authentication, CORS open. The contract is `/api/v1/openapi.yaml` (OpenAPI 3.0.3, rendered from `portal/app/views/static_files/openapi.text.erb` with the installation's names and addresses), rendered with an interactive reference at `/developers/api`.
 
 | Endpoint | What |
 |---|---|

@@ -163,8 +163,8 @@ The Blacklight schema with ASCII folding instead of ICU analysers (the slim Solr
 | `portal/app/controllers/catalog_controller.rb` | facets, search fields, sort options, results per page |
 | `portal/config/publications.yml` | publications shown on the About page (and written to `PUBLICATIONS.md` by `deploy/gen_publications_md.py`) |
 | `portal/config/csl/` | citation styles and the locale file (see [chapter 8](08-customisation.md)) |
-| `portal/public/robots.txt` | crawler rules (facet combinations, feeds and data formats disallowed) and the sitemap address |
-| `portal/public/api/v1/openapi.yaml` | the REST API specification (server address inside) |
+| `portal/app/views/static_files/robots.text.erb` | crawler rules (facet combinations, feeds and data formats disallowed); served at `/robots.txt` with the sitemap address from `portal.host` |
+| `portal/app/views/static_files/openapi.text.erb` | the REST API specification, served at `/api/v1/openapi.yaml` with the names and addresses from `config/country.yml` |
 | `portal/public/netd-etd-template.csv` | the CSV template for institutions |
 
 ## 7.10 Search engines
@@ -178,6 +178,5 @@ These are planned to move into `config/country.yml` or templates rendered from i
 | What | Where now |
 |---|---|
 | Administrator address and host name in the Apache sites | `deploy/apache/` |
-| Host name and contact in static files | `portal/public/robots.txt` (sitemap address), `portal/public/api/v1/openapi.yaml` |
 | Host name in the upgrade check and the backup destination | `deploy/ops/upgrade/upgrade-check.sh`, `deploy/ops/netd-backup-to-gdrive.sh` |
 | Words that are never names (title-page rules) | `harvester/netd/ml/models/titlepage.py` |

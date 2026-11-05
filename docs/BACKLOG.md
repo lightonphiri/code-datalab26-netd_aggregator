@@ -9,6 +9,7 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Added | Item | Type | Notes |
 |---|---|---|---|
+| November 5, 2026 | Maintenance track: the REST API specification is now `portal/app/views/static_files/openapi.text.erb` (served at `/api/v1/openapi.yaml`; host, names and contact are ERB values) and `robots.txt` is `portal/app/views/static_files/robots.text.erb`. Edit those, never `portal/public/`: a file put back there is served first (the portal warns at start-up) | Note (maintenance) | Packaging P6a (documentation track, session 19) |
 | November 5, 2026 | A NETD icon for the `zambia` theme: `themes/zambia/public/icon.png` and `icon.svg` are still the Rails placeholder (a red circle; only the unused application layout and the disabled manifest use them) and the browser tab shows Blacklight's icon; adding `favicon.svg` to the theme replaces the latter | Design (Lighton) | P5b (session 19) made the icons part of the theme and kept the Zambian files unchanged; no code change needed, only the files |
 | November 5, 2026 | HEA presentation (November 5, 2026): add here whatever HEA asks for | HEA | Waiting for Lighton's notes after the presentation |
 | November 5, 2026 | Documentation track: filter lists moved to `/theses/filters/<name>` (FR-71; 301 from `/catalog/facet/<field>`); cited-by log line now says "rate-limited" or "daily budget", and a rejected key no longer stops the job; Lighton's OpenAlex key until the handover. Also: `portal/config/netd_country.rb` names "SRS FR-70" for the country configuration, which the SRS records as NFR-15 (FR-70 is unused; maintenance used FR-71 to avoid a clash) | Note (docs) | SRS 0.51, SDD 0.50, OPERATIONS "Cited by" and "Handover to HEA" |
@@ -50,7 +51,8 @@ Items that change an evaluated component (text extraction, OCR, models, the over
 
 | Date | Item | Commit |
 |---|---|---|
-| November 5, 2026 | Site icons and credits in the theme (packaging P5b, NFR-15): `icon.png`/`icon.svg` in `themes/<name>/public`, optional theme favicon, credits without a logo file shown by name; screenshots of both themes in manual 8.3; P5 done (post-paper) | this release |
+| November 5, 2026 | `robots.txt` and the REST API specification rendered from the country configuration (packaging P6a, NFR-15): `portal/app/views/static_files/`, `StaticFilesController` (post-paper) | this release |
+| November 5, 2026 | Site icons and credits in the theme (packaging P5b, NFR-15): `icon.png`/`icon.svg` in `themes/<name>/public`, optional theme favicon, credits without a logo file shown by name; screenshots of both themes in manual 8.3; P5 done (post-paper) | 933cb79 |
 | November 5, 2026 | "Similar theses" and "Cited by" closed by default with "+"/"−" on the right, as PMC (Lighton); links to `#cited-by` open the section | session 15 (maintenance) |
 | November 5, 2026 | Filter lists at readable addresses `/theses/filters/<name>` with 301 from `/catalog/facet/<field>` (FR-71); "Citations" list 404 instead of 500 | session 15 (maintenance) |
 | November 5, 2026 | Cited by: OpenAlex's temporary refusals waited out and logged as "rate-limited"; a rejected API key no longer stops the job (FR-69) | session 15 (maintenance) |
