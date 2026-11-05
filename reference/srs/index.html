@@ -1,0 +1,2918 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Manual for NETD, open-source software for a national ETD aggregator (Zambia National ETD Portal)">
+      
+      
+      
+        <link rel="canonical" href="https://lightonphiri.github.io/code-datalab26-netd_aggregator/reference/srs/">
+      
+      
+        <link rel="prev" href="../../12-developing/">
+      
+      
+        <link rel="next" href="../sdd/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>Software requirements (SRS) - NETD manual</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#software-requirements-specification-srs" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="NETD manual" class="md-header__button md-logo" aria-label="NETD manual" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NETD manual
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Software requirements (SRS)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/lightonphiri/code-datalab26-netd_aggregator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="NETD manual" class="md-nav__button md-logo" aria-label="NETD manual" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    NETD manual
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/lightonphiri/code-datalab26-netd_aggregator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-installing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Installing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-upgrading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Upgrading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05-using/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Using the portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. System administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Configuration reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../08-customisation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Customisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../09-metadata-filling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Metadata filling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../10-interfaces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../11-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../12-developing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Developing and contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software requirements (SRS)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software requirements (SRS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#zambia-national-etd-aggregator-netd-v2-harvesting-cleaning-and-discovery-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zambia National ETD Aggregator (NETD v2) — Harvesting, Cleaning and Discovery Service
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Zambia National ETD Aggregator (NETD v2) — Harvesting, Cleaning and Discovery Service">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#revision-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revision history
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introduction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Purpose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-definitions-acronyms-and-abbreviations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Definitions, acronyms and abbreviations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-overall-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Overall description
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Overall description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-product-perspective" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Product perspective
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-product-functions-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Product functions (summary)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-user-classes-and-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 User classes and characteristics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-operating-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Operating environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-design-and-implementation-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Design and implementation constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-assumptions-and-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Assumptions and dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-specific-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Specific requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Specific requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-external-interface-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 External interface requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-functional-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Functional requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-non-functional-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Non-functional requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-data-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Data requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Verification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Verification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-traceability-to-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Traceability to sources
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sdd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software design (SDD)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#zambia-national-etd-aggregator-netd-v2-harvesting-cleaning-and-discovery-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zambia National ETD Aggregator (NETD v2) — Harvesting, Cleaning and Discovery Service
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Zambia National ETD Aggregator (NETD v2) — Harvesting, Cleaning and Discovery Service">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#revision-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revision history
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introduction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Purpose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-definitions-acronyms-and-abbreviations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Definitions, acronyms and abbreviations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-overall-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Overall description
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Overall description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-product-perspective" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Product perspective
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-product-functions-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Product functions (summary)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-user-classes-and-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 User classes and characteristics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-operating-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Operating environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-design-and-implementation-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Design and implementation constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-assumptions-and-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Assumptions and dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-specific-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Specific requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Specific requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-external-interface-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 External interface requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-functional-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Functional requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-non-functional-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Non-functional requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-data-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Data requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Verification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Verification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-traceability-to-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Traceability to sources
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="software-requirements-specification-srs">Software Requirements Specification (SRS)<a class="headerlink" href="#software-requirements-specification-srs" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Project document</p>
+<p>Published from <a href="https://github.com/lightonphiri/code-datalab26-netd_aggregator/blob/main/docs/SRS.md"><code>docs/SRS.md</code></a>, the master copy, each time the manual is built.</p>
+</div>
+<h2 id="zambia-national-etd-aggregator-netd-v2-harvesting-cleaning-and-discovery-service">Zambia National ETD Aggregator (NETD v2) — Harvesting, Cleaning and Discovery Service<a class="headerlink" href="#zambia-national-etd-aggregator-netd-v2-harvesting-cleaning-and-discovery-service" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Document</td>
+<td>SRS, structured per ISO/IEC/IEEE 29148:2018 (supersedes IEEE 830-1998)</td>
+</tr>
+<tr>
+<td>Version</td>
+<td>0.53</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>November 5, 2026</td>
+</tr>
+<tr>
+<td>Owner</td>
+<td>Dr Lighton Phiri, DataLab Research Group, University of Zambia</td>
+</tr>
+<tr>
+<td>Repository</td>
+<td>https://github.com/lightonphiri/code-datalab26-netd_aggregator</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Draft for review</td>
+</tr>
+</tbody>
+</table>
+<h3 id="revision-history">Revision history<a class="headerlink" href="#revision-history" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.1</td>
+<td>October 30, 2026</td>
+<td>Initial SRS: harvesting (UNZA, UNILUS), cleaning pipeline, Blacklight discovery</td>
+</tr>
+<tr>
+<td>0.2</td>
+<td>October 30, 2026</td>
+<td>Discipline and Degree fields (FR-12, FR-21); institution entry points (FR-26); HTTPS (NFR-9); PDF pilot and onboarding findings (§4)</td>
+</tr>
+<tr>
+<td>0.26</td>
+<td>November 1, 2026</td>
+<td>Standard fields of study: FR-54 scheme (OpenAlex Topics), FR-55 assignment to every record with back-off, FR-56 exposure (portal facets, record page, REST API <code>fields_of_study</code> (API 1.2.0), OAI-PMH <code>etdms</code> subject scheme and <code>oai_dc</code> URIs, FAQ and Developer Resources), FR-57 model, training data and evaluation; repository subjects shown as "Keywords (from the repository)"</td>
+</tr>
+<tr>
+<td>0.53</td>
+<td>November 5, 2026</td>
+<td>NFR-15: <code>robots.txt</code> and the REST API specification rendered from the country configuration (packaging P6a); verification row added (post-paper)</td>
+</tr>
+<tr>
+<td>0.52</td>
+<td>November 5, 2026</td>
+<td>NFR-15: site icons in the theme, an optional theme favicon, credits without a logo shown by name (packaging P5b); verification row added (post-paper)</td>
+</tr>
+<tr>
+<td>0.51</td>
+<td>November 5, 2026</td>
+<td>FR-69: OpenAlex's temporary refusals (HTTP 429 with Retry-After, "anonymous search is temporarily rate-limited") are waited out within five minutes a run and logged as "rate-limited", not as the daily budget; a rejected API key no longer stops the job (it continues without a key). FR-71 (new): readable addresses for the full list of one filter, <code>/theses/filters/&lt;name&gt;</code> (e.g. <code>field-of-study</code>), with 301 from Blacklight's <code>/catalog/facet/&lt;field&gt;</code>; a filter made of fixed queries ("Citations") answers 404 instead of 500. FR-67 and FR-69: "Similar theses" and "Cited by" on the record page start closed, with "+"/"−" on the right as PMC; a link to <code>#cited-by</code> (result cards) or <code>#similar-theses</code> opens its section (maintenance session 15, post-paper)</td>
+</tr>
+<tr>
+<td>0.50</td>
+<td>November 5, 2026</td>
+<td>NFR-15: theme folders (packaging P5a: <code>themes/&lt;name&gt;/</code> with colours, wordmark font and logos; <code>portal.theme</code>); verification row added (post-paper)</td>
+</tr>
+<tr>
+<td>0.49</td>
+<td>November 5, 2026</td>
+<td>NFR-15: locale files, seventh and last part (packaging P4g: admin dashboard, source, record correction, duplicates, quality, usage and report pages, usage event labels, flash messages); what stays in code listed; verification row added (post-paper)</td>
+</tr>
+<tr>
+<td>0.48</td>
+<td>November 5, 2026</td>
+<td>NFR-15: locale files, sixth part (packaging P4f: admin navigation, sign-in, password, activity log, level review, problem reports, CSV upload, admin times, the problem-report mail); verification row added (post-paper)</td>
+</tr>
+<tr>
+<td>0.47</td>
+<td>November 5, 2026</td>
+<td>NFR-15: locale files, fifth part (packaging P4e: facet, record field, search field and sort labels, institution status and quality group labels, the quality page's date); verification row added (post-paper)</td>
+</tr>
+<tr>
+<td>0.46</td>
+<td>November 5, 2026</td>
+<td>NFR-15: locale files, fourth part (packaging P4d: record page, result cards, the problem-report form, the facets' more and fewer toggles); verification row added (post-paper)</td>
+</tr>
+<tr>
+<td>0.45</td>
+<td>November 5, 2026</td>
+<td>NFR-15: locale files, third part (packaging P4c: Browse by Faculty, Follow a search, Metadata Quality, the Follow this search button); verification row added (post-paper)</td>
+</tr>
+<tr>
+<td>0.44</td>
+<td>November 5, 2026</td>
+<td>NFR-15: locale files, second part (packaging P4b: About, Credits, FAQ, For Institutions, Developer Resources, REST API reference); verification row added (post-paper)</td>
+</tr>
+<tr>
+<td>0.43</td>
+<td>November 5, 2026</td>
+<td>NFR-15: interface text in locale files (packaging P4, first part P4a: header, footer and home page); verification row added (post-paper)</td>
+</tr>
+<tr>
+<td>0.42</td>
+<td>November 5, 2026</td>
+<td>Context diagram (2.1): the portal at netd.ac.zm (it left <code>/beta</code> on October 31, 2026); published in the manual site as a Reference page; FR-34's e-mail subject written as code (a bare <code>&lt;title&gt;</code> broke the published page)</td>
+</tr>
+<tr>
+<td>0.41</td>
+<td>November 5, 2026</td>
+<td>NFR-15 second part (packaging P3b): country, regulator, wordmark, credits and portal name in page text, and the citation capitals list, from <code>config/country.yml</code>; verification row extended (post-paper)</td>
+</tr>
+<tr>
+<td>0.40</td>
+<td>November 4, 2026</td>
+<td>NFR-15 Configurability: the installation's identity (country, portal name and host, regulator, contacts, mail senders, credits, time zone) in one file, <code>config/country.yml</code>, read at start-up; first part (packaging P3a): host, contacts, senders, time zone and portal name in mail, reports and OAI-PMH (post-paper)</td>
+</tr>
+<tr>
+<td>0.39</td>
+<td>November 4, 2026</td>
+<td>FR-69 second part: citations in the REST API (API 1.7.0: <code>openalex_id</code>, <code>cited_by</code> with count and citing works, <code>cited</code> filter, <code>sort=cited</code>; two CSV columns appended), the OpenAlex work as an identifier in OAI-PMH (<code>oai_dc</code> and <code>etdms</code>), a "Citations (OpenAlex)" filter ("Cited") and a "Most Cited" sort on search pages, "Cited by N" on result cards, and citations in the HEA reports (summary rows, cited theses by institution, the 20 most cited, a "Cited by" column and a cited-only filter) (post-paper)</td>
+</tr>
+<tr>
+<td>0.38</td>
+<td>November 4, 2026</td>
+<td>FR-69 Cited by: theses matched to OpenAlex works by title and year (dissertations only, never an article derived from the thesis), citing works listed on the record page, refreshed weekly within OpenAlex's free allowance (post-paper)</td>
+</tr>
+<tr>
+<td>0.37</td>
+<td>November 4, 2026</td>
+<td>FR-68 record page addresses <code>/theses/&lt;short id&gt;</code> (the DSpace default handle prefix dropped: <code>/theses/zcas-298</code> for record <code>zcas-123456789-298</code>), permanent redirects from the old <code>/catalog/</code> addresses; record ids unchanged everywhere else; REST API 1.6.0 accepts the short id (post-paper)</td>
+</tr>
+<tr>
+<td>0.36</td>
+<td>November 4, 2026</td>
+<td>FR-66 discoverability by Google and Google Scholar (Highwire Press meta tags, sitemap, canonical links, Open Graph); FR-67 similar theses on record pages; FR-55: search results without repository keywords show the portal's field of study; FR-65: titles written in capitals put into sentence case in citations, and the record page's "Persistent link" renamed "Repository link"; FR-61: icons also on the admin usage page (Lighton, November 4, 2026)</td>
+</tr>
+<tr>
+<td>0.35</td>
+<td>November 4, 2026</td>
+<td>FR-65 "How to cite" on record pages: the same ten citation styles as OJS (APA by default), copy, and RIS and BibTeX downloads; the link cited, and the record page's repository link, is the item on the repository's current host, built from the OAI identifier (Lighton, November 4, 2026)</td>
+</tr>
+<tr>
+<td>0.34</td>
+<td>November 4, 2026</td>
+<td>FR-61: the view and download counts on each record page are shown with icons (an eye for views, a download arrow for downloads), not as text alone (Lighton, November 4, 2026)</td>
+</tr>
+<tr>
+<td>0.33</td>
+<td>November 2, 2026</td>
+<td>FR-64 supervisor name variants (one name per person within an institution, display only, original spellings kept and shown on the record page); FR-36 account roles (admin, and a read-only viewer role for HEA staff: reports, metadata quality and usage only); FR-61 crawler filter extended (scanners, user agents without a platform)</td>
+</tr>
+<tr>
+<td>0.32</td>
+<td>November 2, 2026</td>
+<td>FR-48/FR-50/FR-52/FR-53: OCR backlog finished, final apply and FINAL scanned evaluation recorded; FR-63 reports for HEA: predefined per-institution reports and reports by supervisor, and custom reports (filters, grouping by one or two fields, chosen list columns), as Excel and PDF, for signed-in administrators only, with usage figures as an option (Lighton, November 2, 2026)</td>
+</tr>
+<tr>
+<td>0.31</td>
+<td>November 2, 2026</td>
+<td>FR-49: <code>titlepage-rules</code> v11 (supervisors); FR-52: 39 more undergraduate dissertations excluded after hand checks; FR-61 extended: country and approximate city (offline DB-IP lookup, no address stored), facet values chosen (popular searches without search words), view and download counts on record pages; FR-49: baseline model <code>titlepage-rules</code> v10 (supervisor statements in more forms; unit names with comma lists; name-first patterns bounded to the text around "supervis", about 17× faster); FR-53: <code>gold-sample</code> takes several sources and whole institutions, leaves out duplicate copies and assigns halves by duplicate group; supervisor matching corrected (titles such as "Professor" and "Mrs" were mis-split) and people matched on surname with compatible initials; FR-52: 97 further LLB essays excluded after hand checks; FR-48/FR-50/FR-52 verification updated (born-digital final with v10; scanned interim while OCR runs)</td>
+</tr>
+<tr>
+<td>0.30</td>
+<td>November 2, 2026</td>
+<td>(Library collection kept as its own unit: a separate entity at UNZA.) FR-61 usage analytics: aggregate daily counts kept by the portal (no third-party trackers, no IP addresses, browser details or search words), admin page <code>/admin/usage</code> with CSV, counted PDF downloads through <code>/catalog/:id/pdf</code>, FAQ note; Blacklight search history kept one day; FR-62 department name variants merged per institution, and UNZA collections that are not Schools mapped by configuration (<code>set_units</code>); one non-thesis excluded</td>
+</tr>
+<tr>
+<td>0.29</td>
+<td>November 2, 2026</td>
+<td>FR-19 met: duplicate theses detected (DOI, then near-identical title with compatible authors and years), listed once in search, facets and counts under a main record, copies linked, admin decisions (API 1.5.0: <code>duplicate_of</code>, <code>other_copies</code>, <code>duplicates</code> parameter); FR-25 met: Browse by Faculty page (<code>/browse</code>); FR-53: evaluation by kind of PDF text (<code>evaluate --strata</code>); FR-52: the apply guard counts only new model exclusions; final evaluation of born-digital records recorded (FR-48, FR-50, FR-52 verification)</td>
+</tr>
+<tr>
+<td>0.28</td>
+<td>November 2, 2026</td>
+<td>Platform: server upgraded Ubuntu 20.04 → 22.04 → 24.04 → 26.04.1 LTS (§ constraints); Ruby 3.3.6 rebuilt against OpenSSL 3.5, harvester venv recreated (uv Python 3.12); no functional requirement changed</td>
+</tr>
+<tr>
+<td>0.27</td>
+<td>November 1, 2026</td>
+<td>Institution onboarding: FR-58 weekly check of the repositories of institutions not yet harvested (admin panel, weekly email); FR-59 public guide for institutions ("For Institutions" page); FR-29 status <code>no-etds-yet</code> (API 1.3.0); registry survey of November 1, 2026 recorded in §4; FR-28 met: metadata quality by origin of each value against ETD-MS 1.1, overall on the public page <code>/quality</code>, per institution in the admin panel <code>/admin/quality</code> (CSV and JSON for both); footer Administration sign-in link; FR-60 following new additions (date added, Newest Additions sort, Follow this search with Atom/RSS feeds, API 1.4.0)</td>
+</tr>
+<tr>
+<td>0.25</td>
+<td>November 1, 2026</td>
+<td>Metadata filling: FR-14 refined (models over PDF text, prediction cache, precedence, threshold); new FR-48 PDF text cache with OCR, FR-49 prediction cache and models, FR-50 derived values marked on the portal and in the API, FR-51 manual corrections, FR-52 degree-level review and exclusion, FR-53 gold-standard evaluation; FR-43 API record gains <code>derived</code> (API 1.1.0); staging store in WAL mode (NFR-14)</td>
+</tr>
+<tr>
+<td>0.24</td>
+<td>November 1, 2026</td>
+<td>FR-47 postgraduate scope: records identified as below postgraduate level, or listed per source, are excluded when processing (one UNZA record, a Bachelor of Laws dissertation, excluded); Postgraduate Diploma recognised as a degree level in the cleaning, CSV upload (FR-10), REST API (FR-42, FR-45) and OAI-PMH sets (EI-4)</td>
+</tr>
+<tr>
+<td>0.23</td>
+<td>November 1, 2026</td>
+<td>REST API v1 at https://netd.ac.zm/api/v1: EI-6 (interface, OpenAPI 3 specification, versioning, rate limits, CORS), FR-42 to FR-46 (search, record, institutions, statistics, bulk export); EI-3 now describes the search-page JSON as following the website and subject to change; Developer Resources documents the API with an interactive reference</td>
+</tr>
+<tr>
+<td>0.22</td>
+<td>November 1, 2026</td>
+<td>Admin panel at https://netd.ac.zm/admin: FR-36 sign-in, FR-37 dashboard and harvest on demand, FR-38 problem-report handling, FR-39 CSV upload with checking, FR-40 adding a CSV institution, FR-41 activity log; NFR-13 admin security; portal administrator user class updated</td>
+</tr>
+<tr>
+<td>0.21</td>
+<td>November 1, 2026</td>
+<td>FR-10: CSV loader met, for HEIs without a working repository (file on the server, or a URL the HEI keeps current, read nightly); public template and column guide on Developer Resources; <code>netd.cli csv-check</code></td>
+</tr>
+<tr>
+<td>0.20</td>
+<td>October 31, 2026</td>
+<td>EI-4 raised from C to M and met: OAI-PMH 2.0 data provider at https://netd.ac.zm/oai (all six verbs; <code>oai_dc</code> and <code>etdms</code> (ETD-MS v1.1); sets <code>inst:&lt;institution&gt;</code> and <code>level:masters</code>/<code>level:doctoral</code>; datestamps are the last change of a record in the portal, at seconds granularity); Developer Resources no longer marks it as in development (FR-35)</td>
+</tr>
+<tr>
+<td>0.19</td>
+<td>October 31, 2026</td>
+<td>FR-23: abstract snippet (up to three lines) restored under the YEAR · DEGREE · INSTITUTION line; FR-22: 10 results per page by default (as on Google Scholar), with a "Show" menu for 20, 50 or 100</td>
+</tr>
+<tr>
+<td>0.18</td>
+<td>October 31, 2026</td>
+<td>NFR-11 recoverability (nightly backups on the server and Google Drive, restore procedure) and NFR-12 monitoring (failure alerts, site probe, weekly status, post-harvest health check); see <code>docs/OPERATIONS.md</code></td>
+</tr>
+<tr>
+<td>0.17</td>
+<td>October 31, 2026</td>
+<td>FR-23: result items as on Academic Commons — authors; YEAR · DEGREE · INSTITUTION; subject links</td>
+</tr>
+<tr>
+<td>0.16</td>
+<td>October 31, 2026</td>
+<td>FR-35: footer with About, FAQ, Developer Resources and Credits; FAQ, Developer Resources (REST API; OAI-PMH in development) and Credits pages; ZAMREN hosting credit with logo</td>
+</tr>
+<tr>
+<td>0.15</td>
+<td>October 31, 2026</td>
+<td>FR-34: Report a problem popup form (stored and emailed) replaces the email link</td>
+</tr>
+<tr>
+<td>0.14</td>
+<td>October 31, 2026</td>
+<td>FR-24: Report a problem email link and Analysis panel (Google Scholar link) on record pages</td>
+</tr>
+<tr>
+<td>0.13</td>
+<td>October 31, 2026</td>
+<td>EI-5: header link row limited to About and Explore</td>
+</tr>
+<tr>
+<td>0.12</td>
+<td>October 31, 2026</td>
+<td>FR-22: "Sort by" menu as on Academic Commons — Best Match, Published Latest, Published Earliest, Title A-Z, Title Z-A</td>
+</tr>
+<tr>
+<td>0.11</td>
+<td>October 31, 2026</td>
+<td>FR-31: About page lists project members with their DataLab roles and only publications based on the Zambia National ETD Portal project, with an explanatory paragraph</td>
+</tr>
+<tr>
+<td>0.10</td>
+<td>October 31, 2026</td>
+<td>FR-24: record page modelled on Academic Commons — subject tags, Files panel, More About This Work panel, download/persistent-link panel</td>
+</tr>
+<tr>
+<td>0.9</td>
+<td>October 31, 2026</td>
+<td>Interface modelled on Columbia's Academic Commons [R15]: new header and theme (EI-5); landing page with stats at a glance and Master's/PhD explore cards (FR-33)</td>
+</tr>
+<tr>
+<td>0.8</td>
+<td>October 31, 2026</td>
+<td>Portal moved to the site root, https://netd.ac.zm/, replacing the earlier ETD Portal; HTTP redirects to HTTPS; /beta and old portal addresses redirect (EI-2, C3, §1.2)</td>
+</tr>
+<tr>
+<td>0.7</td>
+<td>October 31, 2026</td>
+<td>FR-21: Year facet lists newest years first, 5 visible with a "more »" toggle</td>
+</tr>
+<tr>
+<td>0.6</td>
+<td>October 31, 2026</td>
+<td>FR-29: Institution facet shows the top 10 rows with a "more »" toggle for the rest</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>October 31, 2026</td>
+<td>Direct links to full-text files (FR-32): PDF link on result cards and record pages, Full text facet</td>
+</tr>
+<tr>
+<td>0.4</td>
+<td>October 31, 2026</td>
+<td>Mulungushi University harvested via DSpace 6 METS exports (FR-10); EI-2 clarified for HTTPS form posts</td>
+</tr>
+<tr>
+<td>0.3</td>
+<td>October 31, 2026</td>
+<td>HEA institution registry with zero counts (FR-29, FR-30); About page with publications (FR-31); ZCAS via DSpace REST fallback (FR-10); ML/PDF extraction deferred until the portal is complete (FR-14); new sources [R12]–[R14]</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1-introduction">1. Introduction<a class="headerlink" href="#1-introduction" title="Permanent link">&para;</a></h2>
+<h3 id="11-purpose">1.1 Purpose<a class="headerlink" href="#11-purpose" title="Permanent link">&para;</a></h3>
+<p>This document specifies the requirements for a national Electronic Theses and Dissertations (ETD) aggregation service for Zambia. The service harvests ETD metadata from Higher Education Institution (HEI) institutional repositories (IRs) using OAI-PMH, cleans and enriches it, and offers faceted discovery by Title, Author, Subject, Supervisor, Faculty and Department. It is intended for the DataLab project team, HEI repository managers, and reviewers such as the Higher Education Authority (HEA).</p>
+<h3 id="12-scope">1.2 Scope<a class="headerlink" href="#12-scope" title="Permanent link">&para;</a></h3>
+<p>The system ("NETD v2") replaces, in stages, the current Zambia National ETD Portal at https://netd.ac.zm, which runs the UCT ETD Portal software [R4] and holds about 5,269 UNZA records [R1]. Since October 31, 2026 (v0.8) it is served at <code>https://netd.ac.zm/</code>, replacing the earlier portal, and covers:</p>
+<ul>
+<li>harvesting from four HEIs (UNZA RIMS and UNILUS over OAI-PMH; ZCAS University over the DSpace REST API; Mulungushi University from DSpace 6 METS exports), and listing all HEA-accredited postgraduate institutions [R12], [R13];</li>
+<li>a cleaning pipeline with a plug-in point for DataLab's machine-learning (ML) models;</li>
+<li>a Blacklight 9 discovery interface over Apache Solr.</li>
+</ul>
+<p>Out of scope: depositing ETDs, user accounts and hosting full texts. (Replacing the earlier portal was completed in v0.8.)</p>
+<h3 id="13-definitions-acronyms-and-abbreviations">1.3 Definitions, acronyms and abbreviations<a class="headerlink" href="#13-definitions-acronyms-and-abbreviations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ETD</td>
+<td>Electronic Thesis or Dissertation</td>
+</tr>
+<tr>
+<td>HEI</td>
+<td>Higher Education Institution</td>
+</tr>
+<tr>
+<td>IR</td>
+<td>Institutional Repository (e.g. DSpace)</td>
+</tr>
+<tr>
+<td>OAI-PMH</td>
+<td>Open Archives Initiative Protocol for Metadata Harvesting, v2.0</td>
+</tr>
+<tr>
+<td><code>oai_dc</code>, <code>dim</code>, <code>etdms</code></td>
+<td>OAI-PMH metadata formats: unqualified Dublin Core; DSpace Intermediate Metadata; ETD-MS</td>
+</tr>
+<tr>
+<td>ETD-MS</td>
+<td>NDLTD's interoperability metadata standard for ETDs (v1.1)</td>
+</tr>
+<tr>
+<td>Raw store</td>
+<td>Unmodified harvested metadata, kept so cleaning can be re-run</td>
+</tr>
+<tr>
+<td>Canonical record</td>
+<td>Cleaned ETD record with per-field provenance</td>
+</tr>
+<tr>
+<td>Provenance</td>
+<td>The origin of a field value: harvested, derived from sets, extracted from text, or produced by a model</td>
+</tr>
+<tr>
+<td>Enricher</td>
+<td>A cleaning/enrichment function, rule-based or ML, run on canonical records</td>
+</tr>
+</tbody>
+</table>
+<h3 id="14-references">1.4 References<a class="headerlink" href="#14-references" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[R1] Chileshe, E. &amp; Phiri, L. (2024). <em>Zambia National ETD Portal: Implementation of an Interoperable National Electronic Thesis and Dissertation Portal.</em> ETD 2024 poster. https://docs.google.com/presentation/d/18grbYjU2LdcqHDs4V-cququXvMyJCenFykFJUq8xnBc/edit</li>
+<li>[R2] <em>Quality of Metadata in the Zambia National ETD Portal</em> (abstract). https://docs.google.com/document/d/1HKeNgRV_AzEjIGdtOKItG0TGanwYF43voNgMNtibj_g/edit</li>
+<li>[R3] <em>Design and Implementation of an Interoperable Zambia National Electronic Thesis and Dissertation Portal</em> (ETD 2024 abstract). https://docs.google.com/document/d/1RgbfrHOBhbt5Y1aHFGt0bXS5SZjJ8lUtLVD-mU3t-vM/edit</li>
+<li>[R4] Webley, L., Chipeperekwa, T. &amp; Suleman, H. (2011). <em>Creating a National Electronic Thesis and Dissertation Portal in South Africa.</em> ETD 2011. Project page: https://dl.cs.uct.ac.za/projects/etd_portal.html</li>
+<li>[R5] Chanda, Kanfwa &amp; Mainda (2023). <em>Zambia National ETD Pre-Processing Pipeline.</em> https://datalab.unza.zm/sites/default/files/2023-12/reports-unza23-ict4014-chanda_kanfwa_mainda.pdf</li>
+<li>[R6] Chisale, A. (2024). <em>Identification of Sources for Missing Electronic Theses and Dissertations Metadata in Higher Education in Zambia.</em> MLIS dissertation, University of Zambia. https://datalab.unza.zm/sites/default/files/2024-06/etds-datalab24-mlis-dissertation-adrian_chisale.pdf</li>
+<li>[R7] NDLTD (2021). <em>ETD-MS v1.1.</em> https://ndltd.org/wp-content/uploads/2021/04/etd-ms-v1.1.html</li>
+<li>[R8] Open Archives Initiative. <em>OAI-PMH v2.0.</em> https://www.openarchives.org/OAI/openarchivesprotocol.html</li>
+<li>[R9] NDLTD Union Catalog. https://ndltdunion.cs.uct.ac.za/portal/</li>
+<li>[R10] Project Blacklight. https://projectblacklight.org/</li>
+<li>[R11] ISO/IEC/IEEE 29148:2018 <em>Systems and software engineering — Life cycle processes — Requirements engineering.</em></li>
+</ul>
+<h3 id="15-overview">1.5 Overview<a class="headerlink" href="#15-overview" title="Permanent link">&para;</a></h3>
+<p>Section 2 describes the product context and constraints. Section 3 lists verifiable requirements. Section 4 gives verification methods and traceability.</p>
+<hr />
+<h2 id="2-overall-description">2. Overall description<a class="headerlink" href="#2-overall-description" title="Permanent link">&para;</a></h2>
+<h3 id="21-product-perspective">2.1 Product perspective<a class="headerlink" href="#21-product-perspective" title="Permanent link">&para;</a></h3>
+<p>NETD v2 follows the SA NETD multi-tier model [R4]: <em>Harvester → Repository (store) → Portal</em>. It adds a <strong>cleaning tier</strong> with provenance between harvesting and indexing, motivated by the metadata-quality findings in [R2], [R5] and [R6]. Downstream, it exposes its own OAI-PMH data provider (https://netd.ac.zm/oai, EI-4) so that NDLTD [R9] and other aggregators can harvest Zambia as a single source.</p>
+<pre class="mermaid"><code>flowchart LR
+  subgraph HEIs
+    A[UNZA RIMS&lt;br/&gt;DSpace 7+] ; B[UNILUS&lt;br/&gt;DSpace 7+] ; C[Other HEI IRs]
+  end
+  A &amp; B &amp; C -- OAI-PMH --&gt; H[Harvester]
+  H --&gt; R[(Raw store)]
+  R --&gt; P[Crosswalk + Enrichers&lt;br/&gt;rules &amp; ML models]
+  P --&gt; K[(Canonical records&lt;br/&gt;with provenance)]
+  K --&gt; S[(Solr index)]
+  S --&gt; U[Blacklight portal&lt;br/&gt;netd.ac.zm]
+  K --&gt; O[OAI-PMH provider /oai] --&gt; N[NDLTD Union Catalog]</code></pre>
+<h3 id="22-product-functions-summary">2.2 Product functions (summary)<a class="headerlink" href="#22-product-functions-summary" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Register and onboard HEI repositories (source registry).</li>
+<li>Harvest ETD metadata selectively (by set) and incrementally.</li>
+<li>Keep raw metadata unchanged, and process it into canonical records.</li>
+<li>Clean and enrich fields with rules and pluggable ML models, recording provenance.</li>
+<li>Index records and offer search, faceting, sorting and record pages.</li>
+<li>Report field completeness per institution.</li>
+</ol>
+<h3 id="23-user-classes-and-characteristics">2.3 User classes and characteristics<a class="headerlink" href="#23-user-classes-and-characteristics" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>User class</th>
+<th>Description</th>
+<th>Main needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Researcher / student (public)</td>
+<td>Searches for ETDs nationally</td>
+<td>Fast search; facets by institution, faculty, department, supervisor, subject, year; link to full text</td>
+</tr>
+<tr>
+<td>HEI repository manager</td>
+<td>Librarian responsible for an IR</td>
+<td>Confirm their ETDs are harvested; see completeness gaps</td>
+</tr>
+<tr>
+<td>Portal administrator (DataLab)</td>
+<td>Runs the service; signs in to the admin panel (FR-36 to FR-41)</td>
+<td>Add sources, run harvests, load CSV files, handle problem reports, monitor</td>
+</tr>
+<tr>
+<td>Data scientist (DataLab)</td>
+<td>Builds cleaning/ML models</td>
+<td>Plug models in without changing platform code; compare model versions</td>
+</tr>
+<tr>
+<td>Oversight body (HEA)</td>
+<td>Reviews national ETD output</td>
+<td>Aggregate counts and quality indicators</td>
+</tr>
+</tbody>
+</table>
+<h3 id="24-operating-environment">2.4 Operating environment<a class="headerlink" href="#24-operating-environment" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Server <code>portal</code> (netd.ac.zm): Ubuntu 26.04.1 LTS since November 2, 2026 (was 20.04.6; upgraded one LTS at a time, see <code>docs/OPERATIONS.md</code>), 2 vCPU, 3.8 GiB RAM, 2 GiB swap file, 162 GB free disk. It is shared with other live services: Apache (80/443), Tomcat (current portal, :8080), Orthanc, MySQL (8.4) and nginx, and the EMI Drupal site (Drupal 11 on PHP 8.5).</li>
+<li>No Docker. Python 3.12 (standalone, via <code>uv</code>), Ruby 3.3 (<code>ruby-build</code>), OpenJDK 11, Solr 9.11 (slim), SQLite.</li>
+<li>Browsers: current Chrome, Firefox, Edge and Safari, including mobile.</li>
+</ul>
+<h3 id="25-design-and-implementation-constraints">2.5 Design and implementation constraints<a class="headerlink" href="#25-design-and-implementation-constraints" title="Permanent link">&para;</a></h3>
+<ul>
+<li>C1 Must not disturb the live portal or other services on the server, and must not upgrade or remove system packages (apt was in a broken state on October 30, 2026). Exception (November 1, 2026): three leaf packages for OCR (FR-48) — <code>tesseract-ocr</code>, <code>tesseract-ocr-eng</code>, <code>poppler-utils</code> — were added after <code>apt-get -s</code> showed 7 new packages and nothing upgraded or removed.</li>
+<li>C2 Memory budget: Solr heap ≤ 512 MB; web app ≤ 300 MB resident.</li>
+<li>C3 Must not depend on actions by third parties (e.g. DNS changes). The <code>/beta</code> sub-path was used while both portals ran (October 30–31, 2026); retired in v0.8.</li>
+<li>C4 Open-source components only; source code versioned on GitHub.</li>
+<li>C5 ML models are Python; the cleaning tier must be Python.</li>
+<li>C6 British English in the interface and documentation.</li>
+</ul>
+<h3 id="26-assumptions-and-dependencies">2.6 Assumptions and dependencies<a class="headerlink" href="#26-assumptions-and-dependencies" title="Permanent link">&para;</a></h3>
+<ul>
+<li>A1 HEI repositories expose OAI-PMH. Verified on October 30, 2026 for UNZA RIMS (<code>https://rims.unza.ac.zm/server/oai/request</code>) and UNILUS (<code>https://research.unilus.ac.zm/server/oai/request</code>). Both offer <code>dim</code>, <code>etdms</code>, <code>oai_dc</code> and others.</li>
+<li>A2 Supervisor and department are <strong>not</strong> present in the harvested metadata of either sample source (0% completeness, measured on October 30, 2026). They will require text/PDF extraction or ML (FR-14).</li>
+<li>A3 Full texts remain in the source IRs; NETD stores links only.</li>
+</ul>
+<hr />
+<h2 id="3-specific-requirements">3. Specific requirements<a class="headerlink" href="#3-specific-requirements" title="Permanent link">&para;</a></h2>
+<p>Priority: <strong>M</strong> = must (v0.1), <strong>S</strong> = should (v0.2), <strong>C</strong> = could (later).</p>
+<h3 id="31-external-interface-requirements">3.1 External interface requirements<a class="headerlink" href="#31-external-interface-requirements" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EI-1</td>
+<td>The harvester shall act as an OAI-PMH 2.0 client supporting <code>Identify</code>, <code>ListMetadataFormats</code>, <code>ListSets</code> and <code>ListRecords</code>, with resumption tokens.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>EI-2</td>
+<td>The portal shall be served over HTTPS at the root of netd.ac.zm through the existing Apache server (reverse proxy), with HTTP redirected to HTTPS and the former <code>/beta/</code> and old ETD Portal addresses (<code>/portal</code>, <code>/summary</code>, <code>/harvester</code>) redirected; the HTTPS proxy shall pass <code>X-Forwarded-Proto: https</code> so that form posts pass Rails' origin check.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>EI-3</td>
+<td>The portal shall offer a JSON view of search results and records (Blacklight <code>.json</code>). It follows the website's search interface and internal field names and may change; EI-6 is the stable interface.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>EI-4</td>
+<td>The system shall expose an OAI-PMH 2.0 data provider of canonical records at https://netd.ac.zm/oai, supporting all six verbs, the formats <code>oai_dc</code> and <code>etdms</code> (ETD-MS v1.1), one set per institution and per degree level (Masters, Doctoral, Postgraduate Diploma), resumption tokens, and incremental harvesting by the date a record last changed in the portal.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>EI-5</td>
+<td>The UI shall follow the style of Columbia's Academic Commons [R15]: system UI typography, a navy group bar, a serif wordmark with the search box, a link row (About, Explore), white pages with light cards, one blue for links and actions; facet sidebar and result list with badges on search pages.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>EI-6</td>
+<td>The system shall offer a read-only REST API at https://netd.ac.zm/api/v1 (FR-42 to FR-46), described by an OpenAPI 3 specification at /api/v1/openapi.yaml with an interactive reference on Developer Resources. It shall need no key, answer in JSON (UTF-8) with errors as <code>{"error": {status, title, detail}}</code> (400, 404, 429, 503), allow calls from other websites (CORS), and limit each address to 120 requests a minute per endpoint (export: 20 an hour). Field names within v1 shall not change; incompatible changes shall go into a new version, with the previous one kept for at least 6 months.</td>
+<td>M</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-functional-requirements">3.2 Functional requirements<a class="headerlink" href="#32-functional-requirements" title="Permanent link">&para;</a></h3>
+<p><strong>Source management and harvesting</strong></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-1</td>
+<td>Sources shall be configured in a registry file (<code>harvester/sources.yml</code>) giving id, name, short name, base URL, preferred metadata formats, ETD sets, and set-name rules.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-2</td>
+<td>For each source, the harvester shall choose the first preferred format the source offers (default order <code>dim</code>, <code>etdms</code>, <code>oai_dc</code>).</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-3</td>
+<td>The harvester shall restrict harvesting to the configured ETD sets.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-4</td>
+<td>The harvester shall support full and incremental (<code>from=</code> last successful run minus one day) harvests.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-5</td>
+<td>The harvester shall record OAI deletions and remove deleted records from the index.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-6</td>
+<td>The harvester shall retry on HTTP 500/502/503/504 and honour <code>Retry-After</code>.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-7</td>
+<td>Each harvest run shall be logged (source, start/end, from-date, counts, status, message).</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-8</td>
+<td>The harvester shall store the set hierarchy (<code>ListSets</code>) for each source.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-9</td>
+<td>Harvests shall run on a schedule (daily) without manual action.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-10</td>
+<td>Fallback adapters shall be available for HEIs without working OAI-PMH: DSpace 7 REST API (v0.3, used for ZCAS); DSpace 6 XMLUI browse pages + per-item METS exports (v0.4, used for Mulungushi); CSV (v0.21): a file on the server or a published URL, in the template published on Developer Resources, with invalid rows reported and skipped and rows removed from the file deleted.</td>
+<td>S</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Processing, cleaning and enrichment</strong></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-11</td>
+<td>Raw metadata shall be stored unmodified; processing shall be re-runnable from the raw store without re-harvesting.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-12</td>
+<td>A crosswalk shall map <code>dim</code>, <code>etdms</code> and <code>oai_dc</code> to canonical fields: title, author, supervisor, subject, faculty, department, discipline, degree, degree level, year, abstract, URL, language, type, institution.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-13</td>
+<td>Faculty/Department shall be derived from the set hierarchy where a source's collections represent units (per-source rule <code>collections_are</code>).</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-14</td>
+<td>Metadata filling. Fields the repository leaves empty (degree level, degree, discipline, supervisor, department, faculty) shall be filled by metadata-filling models working on the text of each ETD's front matter (FR-48), through a prediction cache (FR-49). Precedence per field: manual correction (FR-51) over harvested value over predicted value; a prediction fills a field only if the field is empty and the prediction's confidence is at least the display threshold (<code>ml.show_threshold</code>, 0.8), and it is marked as derived (FR-50). Free-text rules (v0.2) remain for harvested fields. (Deferred on October 31, 2026; resumed on November 1, 2026.)</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-15</td>
+<td>Every canonical field value shall carry provenance (<code>harvested:</code>, <code>set:</code>, <code>text:</code>, <code>rule:</code>, <code>model:</code>).</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-16</td>
+<td>Enrichers shall be pluggable as Python callables <code>f(record) -&gt; record</code>, registered in <code>enrichers.yml</code> without code changes to the platform.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-17</td>
+<td>Enrichers may set a confidence per field. Values below <code>min_confidence</code> shall stay searchable but shall not be used as facet values.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-18</td>
+<td>Built-in rules shall normalise whitespace, ALL-CAPS titles (keeping the original), personal names, and ALL-CAPS unit names.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-19</td>
+<td>Duplicate ETDs, in one source or across sources, shall be detected: by DOI, then by title (same or nearly the same, similarity ≥ 0.93 after folding case, accents and punctuation) with compatible authors (a shared name word, or a typing slip) and years at most 2 apart. A thesis deposited more than once shall be listed once in search results, facets and counts, under a main record (the admin's choice, or else the copy with a PDF and the most metadata); the other copies keep their record pages, which link to the main record, and stay available through OAI-PMH and the REST API (<code>duplicate_of</code>, <code>other_copies</code>; search returns main records only unless <code>duplicates=include</code>). Records are never merged or deleted. The admin panel lists the groups; an admin can mark a record as not a duplicate or choose a group's main record (stored as <code>_duplicate</code> corrections, kept across re-harvests) (Lighton, November 2, 2026).</td>
+<td>C</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Discovery</strong></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-20</td>
+<td>Users shall search by keyword across all fields, or within Title, Author, Supervisor or Subject.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-21</td>
+<td>Users shall filter by facets: Institution, Degree level, Faculty/School, Department, Programme/Discipline, Degree, Supervisor, Subject, Year (newest first; the 5 latest years visible, the rest behind "more »").</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-22</td>
+<td>Users shall sort results from a "Sort by" menu beside the result count, as on Academic Commons [R15]: Best Match (default), Published Latest, Published Earliest, Title A-Z, Title Z-A. Results shall be shown 10 per page by default, as on Google Scholar, with a "Show" menu offering 20, 50 or 100 per page.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-23</td>
+<td>Each search result shall show, as on Academic Commons [R15]: the title (link to the record); the authors; a line "YEAR · DEGREE · INSTITUTION" (degree name, or degree level when no name is recorded); an abstract snippet of up to three lines; the subjects as links to subject searches; and a Download PDF link when available.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-24</td>
+<td>Record pages shall follow the Academic Commons record layout [R15]: year/type/degree-level kicker, title, authors, abstract; Subjects and Programme/Discipline as tag buttons linking to searches; a Files panel (name, type, size, download per file); all other metadata (institution, faculty, department, thesis advisors, degree, degree level, year, language, source record) in a "More About This Work" panel; and a top-right panel with Download, persistent link with copy, sharing links, rights and holding institution, a "Report a problem" button opening the form in FR-34, and an Analysis panel linking to the work on Google Scholar, where its "Cited by" count is shown. Google Scholar has no public API, so the count itself is not shown on the portal.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-25</td>
+<td>Hierarchical browsing: a Browse by Faculty page (<code>/browse</code>, linked from the header) shall list each institution, its faculties or schools and, under each, its departments, with counts of theses (each thesis once, FR-19), each linking to the matching search. Faculty–department pairs are offered only where both values are facetable.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-26</td>
+<td>Institution entry points (InvenioRDM "communities" equivalent): the home page lists each institution with its ETD count. Implemented in v0.2.</td>
+<td>S</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reporting</strong></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-27</td>
+<td>The administrator shall obtain a per-institution field-completeness report from the command line.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-28</td>
+<td>A quality dashboard (completeness and ETD-MS compliance per HEI): public with overall figures only; the per-institution breakdown and suggested improvements in the admin panel until publication is agreed with HEA (Lighton, November 1, 2026). For each harvested institution (and overall) and element (the 12 ETD-MS 1.1 elements the portal uses, plus faculty, department and full-text PDF), it shall show the share of ETDs whose value is (a) supplied by the repository in the proper element, (b) present in the repository only in collection names or free text, (c) filled by the portal (models, corrections), or (d) missing; an ETD-MS compliance score at source (mean of (a) over the ETD-MS elements); completeness in the portal; suggested improvements per institution; and downloads as CSV and JSON. Recomputed after every scheduled run.</td>
+<td>C</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Coverage and project information</strong></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Pri</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-29</td>
+<td>An institution registry (<code>harvester/institutions.yml</code>) shall list every HEI with at least one HEA-accredited Master's or Doctoral programme [R12], [R13]. The home page and the Institution facet shall show every registry institution (the facet shows the top 10 rows, harvested institutions first, with a "more »" toggle for the rest), with <strong>0</strong> where nothing is harvested and the reason (no repository known, no ETD collection, no theses in the ETD collection yet, repository not reachable or not harvestable).</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-30</td>
+<td>The home page shall state that metadata is meant to be harvested from all institutions offering HEA-accredited Master's and PhD programmes, citing HEA.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-31</td>
+<td>The portal (About page) and the repository (<code>PUBLICATIONS.md</code>) shall list the project details [R14], the project members with their roles as on the DataLab people page (the PI marked Principal Investigator), and the publications, dissertations and capstone reports based on the Zambia National ETD Portal project, with a short explanation of how they relate to the portal, from one source file (<code>portal/config/publications.yml</code>).</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-35</td>
+<td>Every page shall have a footer, as on Academic Commons [R15], with links to About, FAQ, Developer Resources and Credits, the contact address datalab@unza.zm, and a line crediting the DataLab Research Group (development) and ZAMREN (hosting). The About page shall credit both, with their logos. Developer Resources shall document the JSON (REST) API and the OAI-PMH interface (EI-4). Credits shall name DataLab and ZAMREN, the Core Team (Lighton Phiri, Lead Developer and Principal Investigator; Elijah Chileshe, Assistant Programmer/Analyst), and as Contributors and Former Team Members the students listed on the project page [R14].</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-34</td>
+<td>Record pages shall offer a "Report a problem" popup form (problem type, message, name, email address, record URL). Each report shall be stored in the portal database and emailed to lighton.phiri@unza.ac.zm and datalab@unza.zm (subject <code>(&lt;portal name&gt;) &lt;problem&gt;: &lt;title&gt;</code>, reply-to the reporter) through an authenticated SMTP account; the form shall have a spam trap and a rate limit.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-36</td>
+<td>Admin sign-in. The system shall provide an admin panel at /admin for the portal team only. Access shall require an email address and password; accounts shall be created, reset and disabled from the server's command line only (no self-registration). A new or reset account shall get a one-time password that must be changed at first sign-in (at least 12 characters). Sessions shall end after 2 hours of inactivity or 12 hours in total, and on sign-out. Each account shall have a role: "admin" (every admin page and action) or "viewer" (read-only, e.g. for HEA staff: the reports for HEA, metadata quality and usage pages, and changing its own password; every other admin page redirects to the reports and is left out of the menu). The role is set from the command line (November 2, 2026).</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-37</td>
+<td>Admin dashboard. The panel shall show every source with its loader, latest harvest (time, status, message), records in the staging store and in the search index, whether a harvest is running, and the number of open problem reports; a source page shall list its recent harvests. An administrator shall be able to start a harvest of one source ("Run now"); it shall never run at the same time as another harvest, including the nightly one.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-38</td>
+<td>Problem reports in the panel. Reports received through FR-34 shall be listed (open or resolved), shown in full, and marked resolved or reopened with a note recording what was done; the panel shall record who resolved a report and when.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-39</td>
+<td>CSV upload in the panel. An administrator shall be able to upload an institution's CSV file (FR-10, at most 50 MB); the system shall first show the result of the CSV check (rows, valid rows, each problem by line) and change nothing until the administrator confirms. On confirmation, the file shall replace the institution's current file (the previous one archived) and be loaded. A file with no valid rows shall not be loadable.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-40</td>
+<td>Adding a CSV institution. While uploading, an administrator shall be able to choose an HEA-listed institution (FR-29) that has no source yet and give its short name; the system shall register it as a CSV source without editing the configuration files in the repository.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-41</td>
+<td>Activity log. Every sign-in, failed sign-in attempt and change made through the panel (password changes, harvests started, CSV files checked and loaded, sources added, reports resolved or reopened), and account changes made from the command line, shall be recorded with the time, the account, the subject and the IP address, and shown in the panel.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-42</td>
+<td>API search. <code>GET /api/v1/records</code> shall search records with keywords (all fields or one of title, author, supervisor, subject, using the portal's search weighting) and filters for institution, degree level (Masters, Doctoral or Postgraduate Diploma), year or year range, full text available, changed since a date, and exact faculty, department, discipline, degree, subject and supervisor; sort by relevance, newest, oldest, title or last change; page through at most 10,000 results, 1 to 100 per page (20 by default); and return the records with the total, page count and next/previous links. Unknown or invalid parameters shall be rejected with a message saying what is wrong.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-43</td>
+<td>API record. <code>GET /api/v1/records/{id}</code> shall return one record: identifiers (portal id and OAI-PMH identifier), title, authors, supervisors, abstract, year, degree, degree level, discipline, faculty, department, subjects, language, type, rights, institution (id and name), links (portal page, source page, PDF, API) and files, which fields were derived by a model (FR-50; added in API 1.1.0), and when it last changed in the portal.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-44</td>
+<td>API institutions. <code>GET /api/v1/institutions</code> shall list every HEA-listed institution (FR-29) with its id (when harvested), short name, postgraduate levels, record count, status, repository, harvest method and last harvest.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-45</td>
+<td>API statistics. <code>GET /api/v1/stats</code> shall return the total, counts by institution, degree level (Masters, Doctoral, Postgraduate Diploma and unknown) and year, and for each institution and overall the percentage of records with supervisor, subject, faculty, department, degree, degree level, abstract and full text.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-46</td>
+<td>Bulk export. <code>GET /api/v1/export.csv</code> and <code>/api/v1/export.jsonl</code> shall return every record (CSV with a header row and <code>||</code> between list values; JSON Lines with one API record per line), rebuilt at most every 6 hours.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-47</td>
+<td>Postgraduate scope. The portal shall hold postgraduate work only: postgraduate diploma, master's and doctoral theses, dissertations and reports. When processing, a record whose degree level is identified (from the repository's degree level, or from its degree name, type or description text) as anything else shall be left out, as shall any record listed for exclusion for its source with a reason; records whose level cannot be identified shall be kept until it can be (FR-14). Raw harvested records shall be kept (FR-11), and every excluded record and its reason shall be listed (<code>netd.cli report</code>, admin source page).</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-48</td>
+<td>PDF text cache. For each record with a full-text link, the text of the first pages (8 per file) shall be extracted and cached, reading front-matter files first when a repository splits a thesis into several files (cover, preliminary pages, main document; at most 3 files). PDFs without a text layer (scans) shall be read with OCR (first 5 pages). A PDF shall be fetched again only when the record's files change, or on request after an error. Extraction shall run at low priority under the harvest lock, so it never overlaps a harvest.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-49</td>
+<td>Prediction cache and models. Each model shall have a name and version and shall write, per record and field, its value(s), a confidence in 0..1, the evidence text it used, and a hash of its input; a model shall run again for a record only when that hash changes. Models shall see harvested values only, never other models' output. Predictions computed elsewhere (e.g. a Colab notebook) shall be loadable as JSON Lines into the same cache. The baseline model reads the title-page degree statement, the supervision statements (title page, approval page, acknowledgements) and the academic units named on the first pages.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-50</td>
+<td>Derived values. A value filled by a model shall be marked "derived" on the record page (with the model and confidence, and a note that it may contain errors) and in the REST API record (<code>derived</code> object: field → method and confidence), without changing existing API fields (EI-6). Derived values shall be facetable when their confidence is at least <code>min_confidence</code> (FR-17).</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-51</td>
+<td>Manual corrections. A signed-in administrator shall be able to look up a record (by id or portal address), see each field's value and where it came from (harvested, rule, model with confidence, corrected), see all predictions with their evidence, and correct or clear any of degree level, degree, discipline, supervisor, department, faculty, subjects, year, title and authors. Corrections shall override harvested and predicted values, persist across re-harvests and reprocessing, be logged in the activity log (FR-40) with the administrator and an optional note, be removable, and take effect when the record's source is next processed (nightly, or on request with "Apply now").</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-52</td>
+<td>Degree-level review. A predicted degree level below postgraduate with confidence at or above <code>ml.level_auto_exclude</code> (0.95) shall exclude the record under FR-47, the reason naming the model; between <code>ml.level_review_min</code> (0.6) and that threshold the record shall stay in the portal and be listed for review in the admin panel with the evidence and a PDF link. An administrator's decision (exclude, or keep as postgraduate) shall be stored as a correction, override the model and FR-47's level rule, and be logged.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-53</td>
+<td>Evaluation. It shall be possible to draw a gold-standard sample stratified by institution for manual annotation (<code>netd.cli gold-sample</code>), and to report, per model, version and field, coverage, precision, recall and F1 against it at several confidence thresholds (<code>netd.cli evaluate</code>), so that each new model is compared with the baseline before it is enabled.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-54</td>
+<td>Subject scheme. Besides each repository's own subject headings (inconsistent and often missing: 16.6% of records had none on November 1, 2026), every record shall carry standard fields of study from OpenAlex Topics (CC0): 4 domains, 26 fields and 252 subfields, identified by OpenAlex ids and URIs. The taxonomy version used shall be recorded with the model.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-55</td>
+<td>Assignment. Fields of study shall be assigned to every record with a title or abstract by a model (FR-49 contract), at the most specific level the model is confident about: one subfield (two if the second is also likely), else the field, else the domain. They are derived values (FR-50), correctable in the admin panel (FR-51), and do not replace or alter harvested subjects.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-56</td>
+<td>Exposure. The portal shall offer Research domain, Field of study and Subfield facets as its main subject facets and show the field of study (domain › field › subfield) on record pages with a link to OpenAlex; repository subjects shall be shown and searchable as "Keywords (from the repository)". The REST API shall add <code>fields_of_study</code> (id, URI, name, level, field, domain, confidence); OAI-PMH shall add <code>&lt;subject scheme="OpenAlex"&gt;</code> (etdms) and the name and URI as <code>dc:subject</code> (oai_dc). The FAQ and Developer Resources shall state the scheme, its source and version, how values are assigned, and that they can be corrected.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-60</td>
+<td>Following new additions. The system shall record when each record first appears in the portal ("date added"; records present before November 1, 2026 take their institution's first harvest date), offer a "Newest Additions" sort, give Atom and RSS feeds of the newest additions for any search and filters (dated by date added) through a "Follow this search" page linked from results and the home page, and expose <code>added_at</code> and <code>sort=added</code> in the REST API (1.4.0). No accounts or personal data (phase 1); email alerts with confirmed subscriptions are deferred until after the handover to HEA (phase 2).</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-58</td>
+<td>Repository watch. The system shall check, weekly, every repository listed in the institution registry for institutions not yet harvested (repository page; OAI-PMH Identify; records listed overall and in the ETD sets named in the registry), keep the latest result, show it on the admin dashboard and in the weekly status email, and list changes since the previous check (a repository becoming reachable or unreachable, records appearing in its ETD sets).</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-59</td>
+<td>Guide for institutions. A public page shall explain to HEI librarians how to take part: the scope (postgraduate only), the repository route (reachable from outside the campus, OAI-PMH switched on, OAI index kept current, ETDs in their own collections, public PDFs, recommended fields) and the CSV route (template, required columns, published Google Sheet), linked from the home page, the footer, Developer Resources and the admin panel.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-61</td>
+<td>Usage analytics without third-party trackers. The portal shall count, per day (UTC): home page visits, searches (first results page), Browse pages, record page views and PDF downloads (per record and institution, through the portal's own Download links, which redirect to the repository's file), and API and OAI-PMH requests (per endpoint or verb). Only the day, the kind of use, the record id and its institution are stored with each count: no IP address, browser details, cookie or search words. Requests from crawlers, link previews, prefetches and signed-in administrators are not counted (API and OAI-PMH requests are); crawlers are recognised by user agent, including scanners that send a browser-like user agent without a platform ("Mozilla/5.0 AppleWebKit/..."). Signed-in administrators see totals, a daily table, figures by institution, the most viewed records and most downloaded PDFs, and API and OAI-PMH use for the last 7, 30, 90 or 365 days, and can download the daily counts as CSV (<code>/admin/usage</code>). The FAQ says what is counted. Blacklight's search history (needed for "Back to search") is kept one day and is not written for crawlers; <code>robots.txt</code> keeps crawlers off facet combinations, feeds and data formats. Extension (November 2, 2026): the country and approximate city of each home visit, search, Browse page, record view and PDF download, looked up on the portal's server from an offline database and counted per day, the address discarded; the facet values chosen on first results pages that found records (never typed words); and, on each record page, its view and download counts, each with an icon (an eye for views, a download arrow for downloads; November 4, 2026).</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-62</td>
+<td>Department and faculty names. Within an institution, spellings of the same department shall be shown under one name in the record page, facets, Browse, the API and OAI-PMH: "&amp;" read as "and", hyphen spacing and trailing fragments removed, values grouped by a key that ignores case, word order, plural endings and "of/and/the", each group shown under its most frequent spelling, and a value seen at most twice joined to a group with at least three times as many records whose key is nearly the same (similarity ≥ 0.92). The value as harvested or predicted is kept (<code>department_orig_ssm</code>); the staging store and the model predictions are not changed. Collections that are not faculties or schools may be mapped per source to a faculty and department, or to none (<code>set_units</code> in <code>sources.yml</code>).</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-63</td>
+<td>Reports for HEA. Signed-in administrators (and HEA staff once given administrator accounts) shall be able to produce, from <code>/admin/etd-reports</code>, reports as Excel workbooks (a Summary sheet with the filters, contents and notes, and one styled sheet per table with filters, a frozen header, data bars and a chart where useful) and as PDF (A4, title band, charts, tables with repeated headers, page numbers), or preview them in the browser: (a) per institution or for all institutions: summary and completeness, theses by year, degree level, year and degree level, type, faculty, faculty and department, and degree, and, for all institutions, every HEA institution with 0 where nothing is harvested; optionally usage (record views and PDF downloads by institution, most viewed records, readers by country; FR-61, with its caveats); (b) by supervisor: each supervisor name with theses by degree level and first and last year, and the theses under each supervisor with whether the supervisor came from the repository or the portal; (c) custom: filters (institution, years, degree level, type, faculty, department, field of study, supervisor name, words in title or abstract), grouping by one field or a table of two fields, and a list of theses with chosen columns (including which values the portal filled). Counts are of distinct theses (other copies left out, FR-19). Each report run is written to the activity log. Reports are not public (Lighton, November 2, 2026).</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-64</td>
+<td>Supervisor names. Within an institution, spellings of the same supervisor shall be shown under one name in the record page, facets, Browse, the reports for HEA, the API and OAI-PMH ("J. Phiri", "Jackson Phiri", "Dr Phiri J"). Two spellings are the same person when the surnames are equal and the given names or initials, read in order, agree (initials equal; full names equal or one a prefix of the other; the same full names in another order also agree). For common surnames a spelling joins a group only when it agrees with every spelling in it and exactly one group qualifies, or exactly one shares a department (failing that, a faculty) with the spelling's records; a bare surname is never joined. Each group is shown under its fullest spelling in ordinary capitals. The values as harvested or predicted are kept (<code>supervisor_orig_ssm</code>), shown on the record page ("As written in the record") and still found by a supervisor search; the staging store and the model predictions are not changed.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-65</td>
+<td>How to cite. Each record page shall show, in its side panel, a citation of the thesis in APA style, with a choice of the citation styles OJS offers (ACM, ACS, APA, ABNT, Chicago, Harvard, IEEE, MLA, Turabian, Vancouver), a Copy button, and downloads for reference managers (RIS for EndNote, Zotero and Mendeley; BibTeX). Citations are produced from the official Citation Style Language styles with British English terms, as an item of type thesis (authors, year, title (put into sentence case when the repository wrote it in capitals, keeping place names and acronyms such as Zambia and HIV), "Doctoral thesis", "Master's thesis" or "Postgraduate diploma dissertation" from the degree level, the awarding institution). The link cited is the item on the institution's own repository, which holds the version of record; the portal's record page is cited only when the repository link is unusable. Repository links are built from the OAI identifier on the repository's current host (<code>https://&lt;host&gt;/handle/&lt;handle&gt;</code>), not taken from <code>dc.identifier.uri</code>, which names old or local hosts for many records (all UNZA records named dspace.unza.zm, which is no longer in DNS; November 4, 2026); a source can keep its harvested links (<code>record_url: harvested</code>). Citation requests are not counted as usage and are kept out of search engines. (Lighton, November 4, 2026.)</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-66</td>
+<td>Discoverability. Each record page shall carry the bibliographic meta tags Google Scholar reads (Highwire Press: <code>citation_title</code>, <code>citation_author</code>, <code>citation_publication_date</code>, <code>citation_dissertation_institution</code>, <code>citation_dissertation_name</code>, <code>citation_publisher</code>, <code>citation_abstract</code>, <code>citation_abstract_html_url</code>, <code>citation_pdf_url</code> pointing to the repository's PDF, <code>citation_keywords</code>, <code>citation_language</code>), a description and Open Graph tags for link previews, and a canonical link to itself. The portal shall publish <code>/sitemap.xml</code> listing the home page, Browse and every listed record page (other copies of duplicates left out), named in <code>robots.txt</code>. (Lighton, November 4, 2026; Google Scholar showed no portal records.)</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-67</td>
+<td>Similar theses. Each record page shall list up to five similar theses held in the portal (Solr MoreLikeThis on title, abstract and keywords; other copies of duplicates left out), each with its year and institution, in a section the reader can collapse and expand, closed by default and marked "+" (closed) or "−" (open) on the right, as PubMed Central's Resources sections (Lighton, November 5, 2026). (Lighton, November 4, 2026.)</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-68</td>
+<td>Record page addresses. Each record page shall be at <code>https://netd.ac.zm/theses/&lt;short id&gt;</code>, where the short id is the record id without the DSpace default handle prefix <code>123456789</code> (<code>/theses/zcas-298</code> for record <code>zcas-123456789-298</code>); ids without that prefix are used unchanged, and no short id may stand for two records. The PDF and citation addresses follow (<code>/theses/&lt;short id&gt;/pdf</code>, <code>/theses/&lt;short id&gt;/cite</code>). Every earlier address (<code>/catalog/&lt;record id&gt;</code>, its <code>/pdf</code> and <code>/cite</code> variants and <code>.json</code>) and <code>/theses/&lt;record id&gt;</code> shall redirect permanently (HTTP 301) to the new one, keeping the query string. The sitemap, canonical link, Google Scholar and Open Graph tags, citations, feeds, the OAI-PMH record link and the API's <code>links.portal</code> use the new address. Record ids in the index, the store, usage counts, OAI-PMH identifiers and the API are unchanged; the API also accepts the short id. Search stays at <code>/catalog</code>. (Lighton, November 4, 2026, before search engines index the old addresses.)</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-69</td>
+<td>Cited by. Each thesis shall be matched, about weekly, to a work in OpenAlex by normalised title (word overlap of at least 0.8) and year (within one year); only a dissertation (or an untyped item without a DOI) may match, never a journal article, even one derived from the thesis or merged with it in OpenAlex; a work matching two theses matches neither. When the matched work is cited, the record page shall show "Cited by N" with the citing works (title, year, link to the DOI or OpenAlex) in a section the reader can collapse, and credit OpenAlex; nothing is shown when N is 0. The job shall stay within OpenAlex's free daily allowance and never stop the nightly harvest. Search pages shall offer a "Cited" filter and a "Most Cited" sort, and result cards shall show "Cited by N" when N is above 0. The REST API record shall carry the OpenAlex work id and the citing works (count null when the thesis is not matched), with a <code>cited</code> filter and a <code>cited</code> sort (API 1.7.0); OAI-PMH records shall carry the OpenAlex work address as an identifier; the HEA reports (FR-63) shall count matched and cited theses, list cited theses by institution and the most cited theses, and offer a "Cited by" column and a cited-only filter. Citations between theses from their own reference lists are out of scope (backlog). (Lighton, November 4, 2026.) When OpenAlex asks the job to retry later (busy), the job shall wait as asked, up to five minutes a run, and log the run as rate-limited rather than as the daily budget; an API key that OpenAlex rejects shall not stop the job, which then continues without a key and logs a warning (Lighton, November 5, 2026, after the first nightly run was refused).</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-71</td>
+<td>Filter list addresses. The full list of values of one search filter (the list behind a filter's "more" link, shown in a pop-up or on its own page) shall be at <code>https://netd.ac.zm/theses/filters/&lt;name&gt;</code>, with a readable name per filter (<code>institution</code>, <code>full-text</code>, <code>degree-level</code>, <code>research-domain</code>, <code>field-of-study</code>, <code>subfield</code>, <code>faculty</code>, <code>department</code>, <code>programme</code>, <code>degree</code>, <code>supervisor</code>, <code>keywords</code>, <code>year</code>, <code>author</code>), the search kept in the query string; sorting and paging links inside the list use the same address. Blacklight's <code>/catalog/facet/&lt;field&gt;</code> addresses shall redirect permanently (HTTP 301) to the new ones, keeping the query string and format. A filter made of fixed queries ("Citations (OpenAlex)") has no list and answers 404. Searches stay on the home page (<code>/?q=</code>). (Lighton, November 5, 2026: the HEA presentation slides linked to <code>/catalog/facet/…</code>, the only <code>/catalog/</code> address readers could still reach.)</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-57</td>
+<td>Model and evaluation. The field-of-study model shall run on the server's CPU (no GPU), be trained on OpenAlex works labelled by OpenAlex (reproducibly, from scripts in the repository), and be evaluated on held-out OpenAlex works and on an annotated sample of portal records before each new version is enabled; results are recorded in <code>docs/PAPER-PLAN.md</code>.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>FR-33</td>
+<td>The landing page shall show a one-line introduction, two prominent buttons — Explore Master's Manuscripts and Explore PhD Manuscripts (degree-level filtered searches) — "stats at a glance" (total ETDs, master's, doctoral, with full-text PDF, institutions contributing of those listed, years covered) and the contributing institutions, with the not-yet-harvested HEA institutions behind a toggle.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>FR-32</td>
+<td>For every ETD whose repository exposes it, the portal shall link directly to the full-text file (bitstream), preferring the largest PDF, on result cards and record pages, and offer a Full text facet (PDF available / other file / metadata only). Files stay in the source repositories.</td>
+<td>M</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-non-functional-requirements">3.3 Non-functional requirements<a class="headerlink" href="#33-non-functional-requirements" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Category</th>
+<th>Requirement</th>
+<th>Pri</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NFR-1</td>
+<td>Performance</td>
+<td>Search result pages shall render in ≤ 1.5 s (server time, p95) for 10,000 records.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-2</td>
+<td>Capacity</td>
+<td>v0.1 shall handle ≥ 50,000 records within constraint C2.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-3</td>
+<td>Resource</td>
+<td>Total added resident memory ≤ 1 GB under normal load.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-4</td>
+<td>Availability</td>
+<td>Services shall restart automatically (systemd) after failure or reboot.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-5</td>
+<td>Isolation</td>
+<td>Services run as unprivileged user <code>netd</code>; Solr binds to 127.0.0.1 only.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-6</td>
+<td>Maintainability</td>
+<td>Adding a new DSpace source shall need only a registry entry.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-7</td>
+<td>Portability</td>
+<td>Installation scripted (<code>deploy/install-server.sh</code>, <code>deploy/deploy.sh</code>).</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-8</td>
+<td>Usability</td>
+<td>Responsive layout; WCAG 2.1 AA colour contrast for badges and links.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>NFR-9</td>
+<td>Security</td>
+<td>HTTPS for netd.ac.zm with a valid certificate (in place since October 30, 2026; Let's Encrypt, auto-renewing).</td>
+<td>S</td>
+</tr>
+<tr>
+<td>NFR-10</td>
+<td>Politeness</td>
+<td>At most one concurrent request per source.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-11</td>
+<td>Recoverability</td>
+<td>The staging store and portal database shall be backed up nightly, verified by checksum, kept 14 days on the server and about 60 days off the server (Google Drive); a restore procedure shall be documented and tested.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-12</td>
+<td>Monitoring</td>
+<td>The maintainer shall be emailed when a scheduled job or service fails, when a source's latest harvest failed or is more than 30 hours old, when the index disagrees with the store, and when the public site stops serving results (once per outage, plus recovery); a weekly status email shall confirm the alert path works.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-14</td>
+<td>Concurrency</td>
+<td>The staging store shall allow reading (admin panel, reports, backups) while a harvest, text extraction or correction writes to it (SQLite WAL mode, 120 s busy timeout); only the <code>netd</code> user shall open it for writing.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-13</td>
+<td>Admin security</td>
+<td>The admin panel shall be served over HTTPS only, with passwords stored as bcrypt hashes, a signed HTTP-only session cookie, CSRF protection on every form, at most 10 sign-in attempts per 3 minutes from one address, no caching of admin pages, and admin pages excluded from search engines.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>NFR-15</td>
+<td>Configurability</td>
+<td>Everything that identifies an installation (country name and adjective, time zone, portal name, wordmark and host, regulator, public contact, problem-report recipients, mail senders, credits) shall be read from one file, <code>config/country.yml</code> (path overridable with <code>NETD_COUNTRY</code>), by the portal, the harvester and the deployment scripts; a missing file, a missing required key or an unknown time zone shall stop start-up with a message naming the file and the key. The Zambian file shall reproduce the Zambian pages and API responses unchanged. Other countries copy an example from <code>config/examples/</code>. The interface text of the pages shall be kept in locale files (<code>portal/config/locales/en.yml</code>, keys under <code>netd.</code>), with the configuration's names interpolated, so that a translation or a change of wording is one file per language (packaging P4, in parts). (Lighton, November 4, 2026: open-source release for other countries; <code>docs/PACKAGING-PLAN.md</code>.)</td>
+<td>S</td>
+</tr>
+</tbody>
+</table>
+<h3 id="34-data-requirements">3.4 Data requirements<a class="headerlink" href="#34-data-requirements" title="Permanent link">&para;</a></h3>
+<p>The canonical record is a JSON object stored in SQLite (<code>records.data</code>):
+<code>id, source, institution, institution_short, oai_id, datestamp, title[], author[], supervisor[], subject[], faculty[], department[], degree[], degree_level[], year[], abstract[], url[], language[], type[], provenance{field: origin}, confidence{field: 0..1}, derived{field: {method, confidence}}, facetable{field: bool}, raw_fields[]</code>.
+Provenance values: <code>harvested:&lt;element&gt;</code>, <code>set:&lt;setSpec&gt;</code>, <code>rule:&lt;name&gt;</code>, <code>model:&lt;name&gt;-&lt;version&gt;</code>, <code>corrected:&lt;administrator e-mail&gt;</code>.
+Metadata-filling tables in the same store: <code>pdf_text</code> (record, files read, status ok/ocr/no_text/ocr_failed/too_large/error, pages, text, text hash), <code>predictions</code> (record, field, model, version, value, confidence, input hash, evidence), <code>corrections</code> (record, field or <code>_scope</code>, value, note, administrator, time) and <code>level_review</code> (record, predicted level, confidence, model, evidence, status).</p>
+<hr />
+<h2 id="4-verification">4. Verification<a class="headerlink" href="#4-verification" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Requirement(s)</th>
+<th>Method</th>
+<th>v0.1 evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EI-1, FR-2–FR-8</td>
+<td>Test: full harvest of both sources</td>
+<td>October 30, 2026: UNZA 6,287 headers (37 deleted) and UNILUS 77 (15 deleted), both via <code>dim</code>, status ok</td>
+</tr>
+<tr>
+<td>FR-11–FR-13, FR-15, FR-18</td>
+<td>Test: <code>netd process</code>; inspect provenance</td>
+<td>5,798 canonical records; UNZA Faculty 100% from sets</td>
+</tr>
+<tr>
+<td>FR-27</td>
+<td>Demonstration: <code>netd report</code></td>
+<td>Completeness table (below)</td>
+</tr>
+<tr>
+<td>FR-20–FR-24, EI-2, EI-5</td>
+<td>Demonstration in browser at <code>/beta/</code></td>
+<td>Screenshots in release notes</td>
+</tr>
+<tr>
+<td>NFR-1, NFR-3</td>
+<td>Measurement (<code>curl -w</code>, <code>ps</code>)</td>
+<td>Recorded at deployment</td>
+</tr>
+<tr>
+<td>NFR-4, NFR-5</td>
+<td>Inspection of systemd units</td>
+<td><code>deploy/systemd/*.service</code></td>
+</tr>
+<tr>
+<td>NFR-11, NFR-12</td>
+<td>Test backup and restore check; test alert (<code>netd-alert@test</code>)</td>
+<td>October 31, 2026; <code>docs/OPERATIONS.md</code></td>
+</tr>
+<tr>
+<td>FR-36–FR-41, NFR-13</td>
+<td>Test: scripted walk through every admin page and action (sign-in, forced password change, dashboard, source page, resolving a report, CSV check and load creating a new source, activity log, sign-out)</td>
+<td>November 1, 2026: all passed before deployment; repeated on the live site after deployment</td>
+</tr>
+<tr>
+<td>EI-6, FR-42–FR-46</td>
+<td>Test: OpenAPI specification validated; every endpoint called on the live site and each response checked against the specification's schemas; parameter errors, paging links, filters, CORS and export contents checked</td>
+<td>November 1, 2026</td>
+</tr>
+<tr>
+<td>FR-47</td>
+<td>Test: processing run on a copy of the live store, then on the store</td>
+<td>November 1, 2026: 1 record excluded (UNZA 123456789/8053, Bachelor of Laws, listed in <code>sources.yml</code>); no other record identified below postgraduate level; 3,553 records of unknown level kept; the record no longer answers on the portal, the REST API or OAI-PMH</td>
+</tr>
+<tr>
+<td>FR-48</td>
+<td>Test: <code>extract-text</code> over every record with a PDF link, then <code>text-report</code></td>
+<td>November 1, 2026: text from 3,721 UNZA, 107 ZCAS, 51 UNILUS and 11 Mulungushi PDFs; 1,455 UNZA PDFs are scans (OCR running at about 18 s each); 431 UNZA and 11 UNILUS links returned repository errors (to retry); front-matter files read first for split theses. November 2, 2026: 680 of 1,466 scans OCRed; 786 waiting since UNZA's DNS stopped answering (about 15:20 UTC on November 1); the resume job (<code>deploy/ops/ocr-resume.sh</code>, 7-day window) finishes the OCR, retries, applies and evaluates by itself; 5 encrypted PDFs need <code>pypdf[crypto]</code> (now in <code>requirements.txt</code>) November 2, 2026 (session 09): the OCR backlog finished at 16:42 UTC after UNZA's repository came back (16:18 UTC): UNZA texts: 3,722 born-digital, 1,465 OCRed, 1 OCR failure, 430 repository errors, 14 too large; ZCAS 111 (1 too large), UNILUS 51 (11 errors), MU 11. Met</td>
+</tr>
+<tr>
+<td>FR-49</td>
+<td>Test: <code>predict</code> twice (second run recomputes nothing); model versions 1–7 refined on real text with random-sample checks of values and evidence</td>
+<td>November 1, 2026: <code>titlepage-rules</code> v7 over 3,905 texts; values at confidence ≥ 0.8: degree level 3,622, degree 3,607, discipline 2,996, supervisor 2,054, faculty 501, department 277. November 2, 2026 (session 08): v10 and v11 tuned on the dev half only; held-out test, born-digital: supervisor P/R/F1 0.876 / 0.643 / 0.741 with v11 (v10 0.879 / 0.591 / 0.707; v9 0.797 / 0.422 / 0.552 under the old matching), other fields unchanged; a second <code>predict</code> recomputed only newly OCRed texts</td>
+</tr>
+<tr>
+<td>FR-14, FR-50</td>
+<td>Test: guarded apply (<code>deploy/ops/netd-ml-apply.sh</code>: dry run on a copy, then <code>reprocess</code>); record page and <code>/api/v1/records/{id}</code> inspected; <code>/api/v1/stats</code> before and after</td>
+<td>November 1, 2026: 3,366 records gained derived values. Completeness, all sources: supervisor 0% → 34.7%, degree 17% → 62.3%, degree level 40% → 71.2% (unknown 3,553 → 1,705; Master's 2,202 → 3,966; Doctoral 170 → 245, 12 of 12 sampled correct), department 0% → 4.7%. Badges and the API <code>derived</code> object present (e.g. <code>unza-123456789-1005</code>); supervisor facet links work  November 2, 2026 (680 of 1,466 scans OCRed): UNZA filled by the portal: supervisor 39.3%, degree 54.0%, degree level 36.6% (40.5% more from collections), discipline 42.8%, department 6.8%; UNZA complete in the portal 82.1% November 2, 2026 (session 09): final apply after the OCR backlog (v11) live at 16:42 UTC: 5,719 records = 5,474 distinct theses, 245 copies in 234 duplicate groups, 207 excluded</td>
+</tr>
+<tr>
+<td>FR-52</td>
+<td>Test: dry run before applying</td>
+<td>2 records excluded on the model's say at confidence 0.96, both checked against the PDF (Bachelor of Adult Education; Bachelor of Agricultural Sciences); 0 records in the review list. November 2, 2026 (after partial OCR): 29 model exclusions stopped the apply (limit 10); 27 new ones all "Bachelor of Laws (LLB)" essays (2010–2011) on their OCRed title pages; applied with the limit at 30; 1 record in the review list. November 2, 2026 (session 06): the same 29 stopped the apply again although all were already live; the guard now counts and lists only exclusions not already on the live store (0 new). November 2, 2026 (session 08, v10 over the scans OCRed since the last apply): 97 new exclusions stopped the apply; all 97 checked from their evidence (School of Law essays, "Bachelor of Laws" on the OCRed title page); applied with the limit at 97; 31 records in the review list. v11 apply: 39 more (7 LLB, 32 other undergraduate dissertations) checked and applied with the limit at 39; the 40 records then in the review list (35 LLB, 4 BSc Natural Resources, 1 garbled LLB) checked from their evidence and decided as exclusions November 2, 2026 (session 09, final apply after the OCR backlog): no new exclusions (207 in all), 0 records in the review list</td>
+</tr>
+<tr>
+<td>FR-51, FR-52 (panel)</td>
+<td>Test: scripted requests against a local copy of the portal (sign-in, record page, correction saved and logged, review decision)</td>
+<td>November 1, 2026: all passed before deployment</td>
+</tr>
+<tr>
+<td>FR-53</td>
+<td>Demonstration: walkthrough notebook (§13) runs <code>gold-sample</code> and <code>evaluate</code>; test: <code>evaluate --strata</code> on a synthetic store, then on both gold halves on the live store</td>
+<td>November 1, 2026: harness works. November 2, 2026: held-out test half (1,390 annotated) by kind of PDF text: born-digital 719, scanned and OCRed 299, scanned waiting for OCR 252, no PDF text 120; figures in <code>docs/PAPER-PLAN.md</code>. November 2, 2026 (session 08): supervisor matching checked on known pairs ("Professor K. L. Samui" = "K. L. Samui", "Prof Siziya" = "Seter Siziya", "Ng’andu" = "Ng'andu", "Dr J Banda" ≠ "D. Banda"); all fields rerun with the corrected matching. <code>gold-sample --source zcas,unilus,mu --all</code> on the live store: 176 theses (ZCAS 103, UNILUS 62, MU 11), 9 duplicate copies left out, each row with its duplicate group and half (2adbf20) November 2, 2026 (session 09): every annotated scan OCRed (test half: born-digital 719, OCRed 551, no PDF text 120); FINAL scanned figures in <code>docs/PAPER-PLAN.md</code>; split check without test records that have a copy in the dev half (1,338): F1 within 0.005 of the full test half for every field except department (0.522 against 0.511)</td>
+</tr>
+<tr>
+<td>FR-19</td>
+<td>Test: matcher on synthetic records (name variants, typing slips, a leading article, same title by different authors, years 9 apart, both kinds of admin decision); read-only trial on the live store with every non-identical match inspected; then <code>netd.cli dedup</code> and <code>index</code>; portal, API and admin page checked</td>
+<td>November 2, 2026: 236 groups, 247 copies (all within UNZA; 1 within ZCAS; none across institutions), 1.1 s for 5,896 records; 42 non-identical matches inspected, all the same thesis except one uncertain pair (same title, same surname, different given names) left for the admin. Theses listed: 5,649 (search, facets, <code>/api/v1/stats</code>, API search); <code>duplicates=include</code> returns 5,896; copy and main record pages show their notices (<code>unza-123456789-951</code>, <code>unza-123456789-1002</code>); <code>/admin/duplicates</code> rendered on the server and redirects to sign-in when signed out</td>
+</tr>
+<tr>
+<td>FR-25</td>
+<td>Test: <code>/browse</code> fetched and rendered in a browser; a department link's result count compared with the page</td>
+<td>November 2, 2026: 4 institutions, UNZA 16 faculties (10 with departments), ZCAS 4 schools; "Department of Plant Science" 10 on the page and 10 in search</td>
+</tr>
+<tr>
+<td>FR-61</td>
+<td>Test: browser-like and crawler requests to the home page, a search (pages 1 and 2), Browse, a record page (HTML and JSON), the PDF link (good, bad file number, unknown record), the API and OAI-PMH; counts read from <code>usage_counts</code></td>
+<td>November 2, 2026: home 1, search 1 (page 2 not counted), browse 1, record view counted for HTML only, crawler not counted, PDF download counted and redirected to the repository (302), bad links 404, API and OAI counted per endpoint and verb. Met. November 2, 2026 (extension, ba0bb07): a browser-like record view and three searches from the server were counted as Zambia / Lusaka; a search on faculty "Medicine" counted the facet value, a made-up value (no results) and a malformed <code>f</code> were not counted and did not fail; the record page showed "1 view · 0 downloads"; <code>/admin/usage</code> rendered the new sections; test hits then removed</td>
+</tr>
+<tr>
+<td>FR-62</td>
+<td>Test: canonicaliser on the live UNZA department values; record and Browse pages after reindexing</td>
+<td>November 2, 2026: 94 distinct UNZA department names → 80 (15 variants merged, all checked by hand; none wrongly joined, e.g. "Mathematics" kept apart from "Mathematics and Statistics"). UNZA reprocessed and reindexed (dry run on a copy first: only the intended 2 records changed and 1 excluded); live: 36 records shown with a merged name, UNZA 80 department names, no "Medical Journal of Zambia", "Ministry of Health" or "Students' Projects" faculty, "Library" kept (80). Met</td>
+</tr>
+<tr>
+<td>FR-63</td>
+<td>Test: every report kind built on the live index (8 variants) and rendered as HTML, Excel and PDF in <code>rails runner</code>; full-stack requests for the three kinds in all three formats; signed-out requests; the activity log</td>
+<td>November 2, 2026: all variants built in at most 1.8 s; Excel opened and checked (sheets, charts, data bars, totals); PDFs checked visually (title band, charts, repeated headers, page numbers; at most 1,000 rows per table, compressed); requests returned 200 with the Excel and PDF media types and file names such as <code>netd-report-institution-unilus-2026-11-02.xlsx</code>; unknown kinds 404; signed out: redirect to sign-in; each run logged as <code>report</code>. Met</td>
+</tr>
+<tr>
+<td>FR-64</td>
+<td>Test: grouping on the live store (all four institutions); supervisor precision, recall and F1 on both gold halves and every kind of PDF text with and without the display mapping applied to the v11 predictions; random sample of merged groups checked by hand; Solr and record pages after reindexing</td>
+<td>November 2, 2026: supervisor names shown 1,950 → 1,300 (UNZA), 64 → 57 (UNILUS), 49 → 44 (ZCAS), 10 (MU, none merged); 1,117 of 5,474 distinct theses show a merged name. F1 identical with and without the mapping on test and dev, all strata (test born-digital 0.741, OCRed 0.317). Hand check: 40 random groups, 39 clearly one person, 1 likely ("Sam Phiri" with "Samson Phiri" and "S. J. Phiri"). An earlier version that joined bare surnames lost 3 gold matches ("Mweemba", "Mwansa": other people of that surname), so bare surnames are never joined. Live: "J.Phiri" record shown as "Jackson Phiri" and found by a search for "J.Phiri"; record page shows "As written in the record: A. M. Cheyeka". Met</td>
+</tr>
+<tr>
+<td>FR-65</td>
+<td>Test: every style rendered for records from each institution (authors given as "Surname, Given" and as "Given Surname", missing year or degree level); markup in a title escaped; RIS and BibTeX downloads; links built from OAI identifiers resolve on each repository (UNZA, ZCAS, UNILUS, MU, November 4, 2026); citation requests not counted (<code>usage_counts</code> unchanged).</td>
+<td></td>
+</tr>
+<tr>
+<td>FR-66</td>
+<td>Test: meta tags present and escaped on live record pages; <code>/sitemap.xml</code> valid XML with one URL per listed record; <code>robots.txt</code> allows it. Google Scholar inclusion takes weeks and cannot be tested at once.</td>
+<td></td>
+</tr>
+<tr>
+<td>FR-67</td>
+<td>Test: similar theses for records from each institution checked by hand; no duplicate copies; record page still renders when Solr's MoreLikeThis fails.</td>
+<td></td>
+</tr>
+<tr>
+<td>FR-68</td>
+<td>Test: every short id unique and no short id equal to another record id (5,719 records, November 4, 2026); old record, PDF, citation and JSON addresses answer 301 to the new ones with the query string kept; <code>/theses/&lt;record id&gt;</code> answers 301; new addresses answer 200; sitemap, canonical, <code>citation_abstract_html_url</code>, feeds, OAI-PMH and API links use <code>/theses/</code>; PDF downloads still counted under the record id; Blacklight's <code>/catalog</code> search routes unaffected.</td>
+<td></td>
+</tr>
+<tr>
+<td>FR-69</td>
+<td>Test: matching rules checked on hand-made cases (journal-located "dissertation" rejected, year more than one apart rejected, misspelt title accepted); one batched call on the session 12 sample of 40 theses matched 19 (session 12: 16 with 40 single calls); record pages of cited theses list the citing works and credit OpenAlex; uncited theses show nothing; the nightly unit runs the job before the harvest and a failure of the job leaves the harvest running. Second part (November 4, 2026): <code>tests/api_conformance.py</code> checks <code>cited_by</code> on a record and <code>cited=true&amp;sort=cited</code> (every result cited, counts descending, works listed equal the count) and rejects <code>cited=yes</code>; the "Cited" filter count equals Solr's <code>cited_by_isi:[1 TO *]</code>; "Most Cited" lists the most cited thesis first; OAI-PMH <code>GetRecord</code> of a matched thesis lists <code>https://openalex.org/W…</code>; the institution report (Excel, PDF, preview) shows the citation sections.</td>
+<td></td>
+</tr>
+<tr>
+<td>FR-71</td>
+<td>Test (November 5, 2026, a copy of the portal on the server with the live Solr, before release): every filter's list answers 200 at <code>/theses/filters/&lt;name&gt;</code> ("Citations" 404); every <code>/catalog/facet/&lt;field&gt;?q=…&amp;facet.page=2</code> answers 301 to <code>/theses/filters/&lt;name&gt;</code> with the query string (and <code>.json</code> kept); the results page's "more" links, the pop-up (XHR), its filter box (<code>/theses/facet_suggest/&lt;field&gt;</code>) and the sort and next-page links inside the list use <code>/theses/filters/</code>; no <code>/catalog/facet</code> on the results page; record pages, old record addresses (301) and <code>/catalog?q=</code> unchanged.</td>
+<td></td>
+</tr>
+<tr>
+<td>FR-36 (roles)</td>
+<td>Test: full-stack sign-in with a temporary viewer account; every admin page requested</td>
+<td>November 2, 2026: sign-in lands on the reports; reports, quality, usage and password pages 200 with the viewer menu; dashboard, problem reports, activity log, level review, duplicates, CSV upload and record corrections redirect to the reports; existing accounts kept the admin role; the test account and its log rows removed. Met</td>
+</tr>
+<tr>
+<td>NFR-14</td>
+<td>Test: readers during long writes (extraction, OCR, prediction, admin panel)</td>
+<td>November 1, 2026: no lock errors after switching to WAL; one earlier "disk I/O error" under the rollback journal (store intact)</td>
+</tr>
+<tr>
+<td>NFR-15</td>
+<td>Test (November 4, 2026, P3a): HTML of 12 public pages and the admin sign-in page, OAI-PMH <code>Identify</code> and <code>GetRecord</code>, a REST API record and its 404 answer identical before and after the release (tokens and response dates masked), screenshots identical; <code>tests/api_conformance.py</code> and <code>tests/oai_conformance.py</code> pass; a missing file and a missing key stop the portal and the harvester with the file and key named.</td>
+<td></td>
+</tr>
+<tr>
+<td>NFR-15</td>
+<td>Test (November 5, 2026, P6a): in a scratch copy without <code>portal/public/robots.txt</code> and <code>portal/public/api/v1/openapi.yaml</code>, both addresses were answered by the portal from the templates with the same bytes as the running portal's static files (content types <code>text/plain</code> and <code>text/yaml</code>), and the public boot test gave identical responses; after the deploy the REST API conformance test (which reads the specification first) gave 0 problems.</td>
+<td></td>
+</tr>
+<tr>
+<td>NFR-15</td>
+<td>Test (November 5, 2026, P5b): in a scratch copy with <code>icon.png</code> and <code>icon.svg</code> removed from <code>portal/public</code>, both were served from <code>themes/zambia/public</code> with the same bytes, the browser-tab icon stayed Blacklight's, and the public boot test gave 37 responses with only the statistics differing (timestamp); eight live pages loaded with the changed <code>netd.css</code> gave screenshots identical to captures taken before. The same copy started with <code>portal.theme: default</code> and the Zambian credits served the theme's <code>favicon.svg</code> and neutral icons, returned 404 for the Zambian logo files and showed both credits by name on About and Credits, with no image tag left on any of five pages.</td>
+<td></td>
+</tr>
+<tr>
+<td>NFR-15</td>
+<td>Test (November 5, 2026, P5a): before release, eight live pages (home, search, record, About, Credits, Metadata Quality, Browse, admin sign-in) were loaded with the changed <code>netd.css</code> and a theme's <code>theme.css</code> served in place of the live style sheet: with the <code>zambia</code> theme seven screenshots were pixel-identical to captures taken before, the sign-in page differing only by the blinking text cursor; the <code>default</code> theme showed its own colours and wordmark font. In a scratch copy with the logos removed from <code>portal/public/images</code> and the assets precompiled, <code>application.css</code> imported the theme's style sheet, both logos were served from <code>themes/zambia/public/images</code> with the same bytes and cache header as before, and the public boot test gave 37 responses, 0 differences.</td>
+<td></td>
+</tr>
+<tr>
+<td>NFR-15</td>
+<td>Test (November 5, 2026, P4g): two scratch copies (the running code unchanged, and with P4g) rendered 19 admin pages and responses (dashboard, two source pages, four record correction pages: with corrections, a scope decision, excluded, with model predictions; duplicates, admin quality, usage for 30 and 7 days and its CSV, the report form and three report previews, level review, activity log, sign-in), three flash messages after redirects and a duplicates decision table rendered from in-memory rows, sign-in bypassed in that process only. Run at the same moment, all were identical or identical except for white space, apart from the duplicates page's "harvest running" note (the two copies probed the harvest lock at the same instant; the template render with a running harvest is identical); a second run of the changed copy a few minutes later differed only in live usage counts and activity-log times. One real difference found and fixed before release: an apostrophe in a <code>title</code> attribute was escaped by a plain key. Public boot test: 37 responses, 0 differences; usage event labels and the flash text checked in the copy.</td>
+<td></td>
+</tr>
+<tr>
+<td>NFR-15</td>
+<td>Test (November 5, 2026, P4f): admin pages cannot be compared with the running portal without signing in, so two scratch copies (the running code unchanged, and with P4f) rendered the same 16 outputs with the sign-in check bypassed in that process only: 9 admin pages (sign-in, dashboard, password, activity log, both level-review lists, both problem-report lists, CSV upload), 2 problem reports and 3 CSV check results rendered from in-memory records (open and resolved; rows skipped, a new source, no valid rows), and 2 problem mails (subject, recipients and body; with and without a name and a date); 12 identical and 4 pages identical except for white space; the public boot test with the same copy: 37 responses, 0 differences.</td>
+<td></td>
+</tr>
+<tr>
+<td>NFR-15</td>
+<td>Test (November 5, 2026, P4e): the scratch copy answers 37 pages and responses (P4d's plus a title search, two sorted searches with a facet filter and a Follow page with a filter) identically to the running portal, only the statistics differing (time stamp); in the copy the 15 facet labels equal the old <code>label:</code> values, the 12 record field, 5 search field and 7 sort labels, the 5 institution statuses and the 4 quality groups print as before, the admin usage page's facet names are unchanged, and <code>l(..., format: :netd)</code> prints "November 5, 2026, 09:07" and "January 3, 2027"; screenshots identical before and after the release.</td>
+<td></td>
+</tr>
+<tr>
+<td>NFR-15</td>
+<td>Test (November 5, 2026, P4d): the scratch copy answers 33 pages and responses (P4c's plus three searches whose result cards show Cited by, fields of study and ZCAS records, and eight record pages chosen from Solr: derived values, a main record with two copies and one with one copy, a copy of a main record, several files, Cited by, "As written in the record", a field of study without keywords) like the running portal: the nine record pages identical except for white space, all search results and every other page and response identical; singular and plural (copy, view, download) as before; screenshots of the record pages and search results identical before and after the release.</td>
+<td></td>
+</tr>
+<tr>
+<td>NFR-15</td>
+<td>Test (November 5, 2026, P4c): the scratch copy, reading the live quality report (<code>NETD_LOGS</code>) so that the full quality page is compared, answers 24 pages and responses (P4b's and <code>/follow?q=malaria</code>) like the running portal: Metadata Quality, Browse and both Follow pages identical except for white space, all other pages and responses identical (search results with the changed Follow button included), only the statistics differing (time stamp); department counts in singular and plural as before; screenshots identical before and after the release.</td>
+<td></td>
+</tr>
+<tr>
+<td>NFR-15</td>
+<td>Test (November 5, 2026, P4b): the portal with the text of About, Credits, FAQ, For Institutions, Developer Resources and the REST API reference read from <code>en.yml</code> booted in a scratch copy answers 23 pages and responses (the 22 of P4a and the REST API reference) like the running portal: the six changed pages identical except for white space, all other pages and responses identical, the quality page and statistics environmental; no missing translation; screenshots of the changed pages identical before and after the release.</td>
+<td></td>
+</tr>
+<tr>
+<td>NFR-15</td>
+<td>Test (November 5, 2026, P4a): the portal with the header, footer and home-page text read from <code>en.yml</code> booted in a scratch copy on the server answers the same 22 pages and responses as the running portal: the 9 OAI-PMH, REST API and citation responses identical, the 11 HTML pages identical except for white space (template line breaks are now single spaces), the quality page and statistics differing for the copy's environment; no missing translation; after the release, screenshots of the 12 pages identical to those before.</td>
+<td></td>
+</tr>
+<tr>
+<td>NFR-15</td>
+<td>Test (November 5, 2026, P3b): the changed portal booted in production mode in a scratch copy on the server answers 22 pages and responses (home, About, FAQ, Developer Resources, For Institutions, Credits, Browse, Follow, admin sign-in, search, record page, OAI-PMH <code>Identify</code> and <code>GetRecord</code>, REST API record, 404, institutions and stats, RIS and APA citations) identically to the running portal, except For Institutions (white space only) and the quality page and statistics (environment of the copy); the citation capitals list equals the earlier constant; after the release, HTML and screenshots of 12 pages and the OAI-PMH and REST captures identical to those before; <code>tests/api_conformance.py</code> and <code>tests/oai_conformance.py</code> pass; a <code>credits</code> entry without name, URL or role and a wordmark that is not two parts stop start-up.</td>
+<td></td>
+</tr>
+<tr>
+<td>FR-54, FR-55</td>
+<td>Test: <code>openalex-fos</code> over all records; <code>/api/v1/stats</code></td>
+<td>November 1, 2026: field of study 100% of 5,923 records (any subject 83.4% before); model version 4 (version 3, EM prior adaptation, withdrawn the same day after implausible counts)</td>
+</tr>
+<tr>
+<td>FR-56</td>
+<td>Inspection: facets, record page (<code>zcas-123456789-301</code>), <code>/api/v1/records/{id}</code> <code>fields_of_study</code>, OAI-PMH <code>etdms</code> <code>&lt;subject scheme="OpenAlex"&gt;</code> and <code>oai_dc</code> URI, FAQ and Developer Resources</td>
+<td>November 1, 2026: all present</td>
+</tr>
+<tr>
+<td>FR-58</td>
+<td>Test: <code>netd.cli check-repositories</code> on the live server; change detection tested with two synthetic runs; dashboard section rendered on the server; weekly unit inspected</td>
+<td>November 1, 2026: 9 repositories checked in about 1 minute: reachable Eden (63 OAI-PMH records, 1 in its ETD set), LAMU (2,727 listed, 0 in sets), Mukuba, Kapasa Makasa, NIPA (0 listed: OAI indexes empty); unreachable CBU (502), Cavendish (403), Chalimbana and LMMU (no answer)</td>
+</tr>
+<tr>
+<td>FR-28</td>
+<td>Test: <code>netd.cli quality-report</code> on the live store (computation also tested on synthetic records); <code>/quality</code> (and <code>.csv</code>, <code>.json</code>) fetched and rendered in a browser; checked to name no institution; <code>/admin/quality</code> rendered on the server and redirects to sign-in when signed out</td>
+<td>November 1, 2026: ETD-MS compliance at source UNZA 65.0%, ZCAS 61.2%, UNILUS 65.1%, MU 66.7% (all 64.9%); complete in the portal 80.3% overall. No repository supplies supervisor, degree name or discipline in the proper element (0% at source everywhere)</td>
+</tr>
+<tr>
+<td>FR-59</td>
+<td>Inspection: <code>/contribute</code>, home page link, footer, Developer Resources, admin dashboard</td>
+<td>November 1, 2026: all present on the live site</td>
+</tr>
+<tr>
+<td>FR-57</td>
+<td>Test: held-out OpenAlex works (4,127); threshold tuning table in <code>netd/ml/models/data/openalex-fos-v1-report.md</code></td>
+<td>Subfield top-1 0.530, top-3 0.753; field 0.707; domain 0.852; with back-off (subfield ≥ 0.30, field ≥ 0.40) subfield for 78% at precision 0.622. Evaluation on annotated portal records still to do</td>
+</tr>
+</tbody>
+</table>
+<p>Completeness (October 31, 2026, v0.3):</p>
+<table>
+<thead>
+<tr>
+<th>Institution</th>
+<th>Records</th>
+<th>Title</th>
+<th>Author</th>
+<th>Supervisor</th>
+<th>Subject</th>
+<th>Faculty</th>
+<th>Department</th>
+<th>Discipline</th>
+<th>Degree</th>
+<th>Degree level</th>
+<th>Year</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNILUS</td>
+<td>62</td>
+<td>100%</td>
+<td>100%</td>
+<td>0%</td>
+<td>85%</td>
+<td>0%</td>
+<td>0%</td>
+<td>0%</td>
+<td>0%</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>UNZA</td>
+<td>5,736</td>
+<td>100%</td>
+<td>100%</td>
+<td>0%</td>
+<td>84%</td>
+<td>100%</td>
+<td>0%</td>
+<td>16%</td>
+<td>18%</td>
+<td>40%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>MU</td>
+<td>12</td>
+<td>100%</td>
+<td>100%</td>
+<td>0%</td>
+<td>100%</td>
+<td>0%</td>
+<td>0%</td>
+<td>0%</td>
+<td>0%</td>
+<td>0%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>ZCASU</td>
+<td>116</td>
+<td>99%</td>
+<td>98%</td>
+<td>0%</td>
+<td>49%</td>
+<td>100%</td>
+<td>0%</td>
+<td>0%</td>
+<td>0%</td>
+<td>0%</td>
+<td>99%</td>
+</tr>
+</tbody>
+</table>
+<p>Direct PDF links (October 31, 2026, v0.5): UNZA 98%, UNILUS 100%, ZCASU 97%, MU 92% of records; every sampled link returned the PDF itself.</p>
+<p>Institution registry (October 31, 2026): 34 HEIs have HEA-accredited postgraduate programmes, taken from HEA's accredited-programmes data and checked against [R12] (text) — [R13] is a scanned PDF and could not be machine-read. 4 are harvested (Mulungushi University since v0.4: OAI-PMH and REST are switched off on its DSpace 6.3, so its Theses and Dissertations collection is read from per-item METS exports); Mukuba University's repository has no ETD collection; 29 have no known public repository. Kapasa Makasa University and NIPA repositories were checked but have no ETD collection and no HEA-accredited postgraduate programme. ZCAS's OAI-PMH endpoint answers but returns no records for any set, so its items are read from the DSpace 7 REST API (FR-10).</p>
+<p>Repository survey (November 1, 2026, session 04): starting from the ten DSpace repositories reported by [R6] and by probing likely host names (<code>dspace.</code>, <code>repository.</code>, <code>ir.</code>, <code>elibrary.</code> … of each institution's domain) and the institutions' library pages from the portal server. No further institution could be harvested on that date:</p>
+<table>
+<thead>
+<tr>
+<th>Institution</th>
+<th>Repository</th>
+<th>Finding (November 1, 2026)</th>
+<th>Registry status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Eden University</td>
+<td>DSpace 7, <code>dspace.edenuniversity.edu.zm</code></td>
+<td>OAI-PMH works (all formats incl. <code>etdms</code>); repository set up October 31, 2026; its Dissertation and Thesis community holds one journal article</td>
+<td>no-etds-yet (watched weekly)</td>
+</tr>
+<tr>
+<td>Lusaka Apex Medical University</td>
+<td>DSpace JSPUI, <code>41.173.41.146:8080</code></td>
+<td>OAI-PMH index stale and corrupt: 2,727 identifiers <code>oai:oai:mydspace.org::…</code>, GetRecord fails for 84 of 88 tried, ListRecords HTTP 500, set queries empty; the Theses and Dissertations community holds 2 MPH theses</td>
+<td>repository-unreachable; needs <code>dspace oai import -c</code></td>
+</tr>
+<tr>
+<td>Copperbelt University</td>
+<td>DSpace 7, <code>dspace.cbu.ac.zm</code></td>
+<td>User interface 502, REST API and OAI-PMH 404</td>
+<td>repository-unreachable</td>
+</tr>
+<tr>
+<td>Cavendish University</td>
+<td>DSpace, <code>dspace.cavendishza.org</code></td>
+<td>403 Forbidden on every path</td>
+<td>repository-unreachable</td>
+</tr>
+<tr>
+<td>Chalimbana University</td>
+<td>DSpace XMLUI, <code>dspace.chau.ac.zm:8080</code></td>
+<td>No answer from the portal server ([R6]: 10 ETDs in 2022)</td>
+<td>repository-unreachable</td>
+</tr>
+<tr>
+<td>Levy Mwanawasa Medical University</td>
+<td><code>dspace.lmmu.ac.zm</code></td>
+<td>Resolves, no answer</td>
+<td>repository-unreachable</td>
+</tr>
+<tr>
+<td>Mukuba University</td>
+<td>DSpace 6 JSPUI</td>
+<td>Reading resources, books and videos; no theses; OAI index empty</td>
+<td>no-etd-collection</td>
+</tr>
+<tr>
+<td>Kwame Nkrumah University, ICU</td>
+<td>DSpace per [R6]</td>
+<td>No public address found</td>
+<td>no-repository-known</td>
+</tr>
+<tr>
+<td>Chreso University</td>
+<td>Website page "Research Reports/Thesis"</td>
+<td>No list on the page</td>
+<td>no-repository-known (CSV route)</td>
+</tr>
+<tr>
+<td>Kapasa Makasa University, NIPA (not HEA-listed for postgraduate)</td>
+<td>DSpace 7</td>
+<td>Kapasa Makasa: undergraduate project reports only; NIPA: none</td>
+<td>other repositories</td>
+</tr>
+</tbody>
+</table>
+<p>Most obstacles are on the repository side (OAI index not rebuilt, firewalls, broken front ends), so FR-58 rechecks these repositories weekly and FR-59 tells librarians how to fix them or use the CSV route.</p>
+<p>PDF pilot (October 30, 2026): the OAI-PMH <code>ore</code> format exposes each ETD's PDF link. Of 12 randomly sampled UNZA PDFs (0.2–16 MB; 2 links returned HTTP 500), 4 had no extractable text (scanned images), and no supervisor name was found by rules in the first six pages; 1 yielded a department. Supervisor/Department extraction therefore needs OCR and ML, not rules — the intended use of FR-14/FR-16. UNILUS PDF links point to an internal address (<code>41.63.7.239:4000</code>) that the portal cannot reach.</p>
+<p>These gaps (Supervisor, Department, UNZA degree level) are the targets for the DataLab ML enrichers (FR-14, FR-16).</p>
+<h3 id="41-traceability-to-sources">4.1 Traceability to sources<a class="headerlink" href="#41-traceability-to-sources" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Need (source)</th>
+<th>Requirements</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Central national access to ETDs [R3]</td>
+<td>FR-1–FR-9, FR-20–FR-24</td>
+</tr>
+<tr>
+<td>Metadata quality and standardisation [R2], [R5]</td>
+<td>FR-11–FR-18</td>
+</tr>
+<tr>
+<td>ETD-MS compliance gaps; elements in different places per HEI [R6]</td>
+<td>FR-12–FR-14, FR-28</td>
+</tr>
+<tr>
+<td>SA NETD tiered architecture [R4]</td>
+<td>§2.1</td>
+</tr>
+<tr>
+<td>Feed NDLTD [R9]</td>
+<td>EI-4</td>
+</tr>
+<tr>
+<td>Faceting by Supervisor/Faculty/Department (project brief)</td>
+<td>FR-21, FR-25</td>
+</tr>
+<tr>
+<td>National coverage of HEA-accredited postgraduate institutions [R12], [R13]</td>
+<td>FR-29, FR-30</td>
+</tr>
+<tr>
+<td>Project visibility and publications [R14]</td>
+<td>FR-31</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../12-developing/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 12. Developing and contributing">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                12. Developing and contributing
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../sdd/" class="md-footer__link md-footer__link--next" aria-label="Next: Software design (SDD)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Software design (SDD)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      NETD is released under the BSD 3-Clause licence.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.footer", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+    
+  </body>
+</html>

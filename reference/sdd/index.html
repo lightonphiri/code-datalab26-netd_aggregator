@@ -1,0 +1,2789 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Manual for NETD, open-source software for a national ETD aggregator (Zambia National ETD Portal)">
+      
+      
+      
+        <link rel="canonical" href="https://lightonphiri.github.io/code-datalab26-netd_aggregator/reference/sdd/">
+      
+      
+        <link rel="prev" href="../srs/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>Software design (SDD) - NETD manual</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#software-design-description-sdd" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="NETD manual" class="md-header__button md-logo" aria-label="NETD manual" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NETD manual
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Software design (SDD)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/lightonphiri/code-datalab26-netd_aggregator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="NETD manual" class="md-nav__button md-logo" aria-label="NETD manual" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    NETD manual
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/lightonphiri/code-datalab26-netd_aggregator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-installing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Installing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-upgrading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Upgrading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05-using/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Using the portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. System administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Configuration reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../08-customisation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Customisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../09-metadata-filling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Metadata filling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../10-interfaces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../11-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../12-developing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Developing and contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../srs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software requirements (SRS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software design (SDD)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software design (SDD)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#zambia-national-etd-aggregator-netd-v2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zambia National ETD Aggregator (NETD v2)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Zambia National ETD Aggregator (NETD v2)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#revision-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revision history
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introduction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-purpose-and-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Purpose and scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-stakeholders-and-concerns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Stakeholders and concerns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-context-viewpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Context viewpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Context viewpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Use cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-system-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 System context
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-composition-viewpoint-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Composition viewpoint (components)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-information-viewpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Information viewpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Information viewpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-persistent-data-sqlite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Persistent data (SQLite)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1 Persistent data (SQLite)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#411-metadata-filling-fr-14-fr-48-to-fr-53" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.1 Metadata filling (FR-14, FR-48 to FR-53)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-canonical-record-class-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Canonical record (class view)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-field-mapping-crosswalk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Field mapping (crosswalk)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-solr-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Solr document
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-interface-viewpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Interface viewpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Interface viewpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-oai-pmh-data-provider-ei-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 OAI-PMH data provider (EI-4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-admin-panel-fr-36-to-fr-41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Admin panel (FR-36 to FR-41)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-rest-api-v1-ei-6-fr-42-to-fr-46" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 REST API v1 (EI-6, FR-42 to FR-46)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-interaction-viewpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Interaction viewpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Interaction viewpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-scheduled-harvest-and-indexing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Scheduled harvest and indexing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-plugging-in-an-ml-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Plugging in an ML model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Search
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-state-dynamics-viewpoint-harvest-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. State dynamics viewpoint (harvest run)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-deployment-viewpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Deployment viewpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Deployment viewpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-country-configuration-nfr-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Country configuration (NFR-15)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-design-rationale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Design rationale
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-known-limitations-v08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Known limitations (v0.8)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#zambia-national-etd-aggregator-netd-v2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zambia National ETD Aggregator (NETD v2)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Zambia National ETD Aggregator (NETD v2)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#revision-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revision history
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introduction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-purpose-and-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Purpose and scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-stakeholders-and-concerns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Stakeholders and concerns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-context-viewpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Context viewpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Context viewpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Use cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-system-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 System context
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-composition-viewpoint-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Composition viewpoint (components)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-information-viewpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Information viewpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Information viewpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-persistent-data-sqlite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Persistent data (SQLite)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1 Persistent data (SQLite)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#411-metadata-filling-fr-14-fr-48-to-fr-53" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.1 Metadata filling (FR-14, FR-48 to FR-53)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-canonical-record-class-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Canonical record (class view)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-field-mapping-crosswalk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Field mapping (crosswalk)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-solr-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Solr document
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-interface-viewpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Interface viewpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Interface viewpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-oai-pmh-data-provider-ei-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 OAI-PMH data provider (EI-4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-admin-panel-fr-36-to-fr-41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Admin panel (FR-36 to FR-41)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-rest-api-v1-ei-6-fr-42-to-fr-46" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 REST API v1 (EI-6, FR-42 to FR-46)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-interaction-viewpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Interaction viewpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Interaction viewpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-scheduled-harvest-and-indexing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Scheduled harvest and indexing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-plugging-in-an-ml-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Plugging in an ML model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Search
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-state-dynamics-viewpoint-harvest-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. State dynamics viewpoint (harvest run)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-deployment-viewpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Deployment viewpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Deployment viewpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-country-configuration-nfr-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Country configuration (NFR-15)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-design-rationale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Design rationale
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-known-limitations-v08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Known limitations (v0.8)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="software-design-description-sdd">Software Design Description (SDD)<a class="headerlink" href="#software-design-description-sdd" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Project document</p>
+<p>Published from <a href="https://github.com/lightonphiri/code-datalab26-netd_aggregator/blob/main/docs/SDD.md"><code>docs/SDD.md</code></a>, the master copy, each time the manual is built.</p>
+</div>
+<h2 id="zambia-national-etd-aggregator-netd-v2">Zambia National ETD Aggregator (NETD v2)<a class="headerlink" href="#zambia-national-etd-aggregator-netd-v2" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Document</td>
+<td>SDD, structured per IEEE 1016-2009 (design viewpoints)</td>
+</tr>
+<tr>
+<td>Version</td>
+<td>0.52</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>November 5, 2026</td>
+</tr>
+<tr>
+<td>Owner</td>
+<td>Dr Lighton Phiri, DataLab Research Group, University of Zambia</td>
+</tr>
+<tr>
+<td>Related</td>
+<td><code>docs/SRS.md</code> (requirement IDs referenced below)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="revision-history">Revision history<a class="headerlink" href="#revision-history" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.1</td>
+<td>October 30, 2026</td>
+<td>Initial design: harvester, raw/canonical stores, crosswalk, enrichers, Blacklight portal, deployment</td>
+</tr>
+<tr>
+<td>0.2</td>
+<td>October 30, 2026</td>
+<td>Discipline/degree derivation; Solr analysers; URL-safe record ids; HTTPS</td>
+</tr>
+<tr>
+<td>0.24</td>
+<td>November 1, 2026</td>
+<td>Fields of study (FR-54 to FR-57): model <code>openalex-fos</code> (<code>netd/ml/models/fieldofstudy.py</code>, data in <code>netd/ml/models/data/</code>), batch prediction in <code>predict.run</code>, per-field display thresholds in the overlay, Solr fields <code>fos_domain_ssim</code>, <code>fos_field_ssim</code>, <code>fos_subfield_ssim</code>, <code>fos_ssm</code>, <code>fos_tsim</code>, facets and record page, API <code>fields_of_study</code> (1.2.0), OAI-PMH subject scheme, training scripts in <code>harvester/tools/</code></td>
+</tr>
+<tr>
+<td>0.52</td>
+<td>November 5, 2026</td>
+<td>5.3 and 8.1: <code>robots.txt</code> and the OpenAPI specification rendered from the country configuration (packaging P6a) (post-paper)</td>
+</tr>
+<tr>
+<td>0.51</td>
+<td>November 5, 2026</td>
+<td>8.1: site icons, theme favicon and credits without a logo (packaging P5b) (post-paper)</td>
+</tr>
+<tr>
+<td>0.50</td>
+<td>November 5, 2026</td>
+<td>Cited by (FR-69): <code>citedby.Client</code> waits on HTTP 429 with <code>Retry-After</code> (at most 120 s a time, <code>MAX_WAIT</code> 300 s a run; not when <code>X-RateLimit-Remaining-USD</code> is below the minimum, and not on 402 or a 429 without <code>Retry-After</code>, which stay <code>Budget</code>), then raises <code>RateLimited</code> (a <code>Budget</code>); <code>why()</code> words the log line; on 401/403 with a key it drops the key and repeats the call; <code>sleep</code> injectable for <code>tests/test_citedby_client.py</code>. Filter lists (FR-71): routes <code>theses/filters/:id</code> (<code>filter_list</code>, to <code>catalog#facet</code>), <code>theses/facet_suggest/:id</code> (Blacklight's <code>facet_suggest.js</code> builds <code>/&lt;first path part&gt;/facet_suggest/&lt;field&gt;</code>) and a 301 from <code>catalog/facet/:id</code>, all before Blacklight's searchable routes; <code>FilterSlug</code> (<code>app/models/filter_slug.rb</code>: field ↔ readable name, unknown names unchanged); <code>CatalogController#facet</code> maps the name to the field (404 for a query facet) before Blacklight's action; <code>config/initializers/filter_list_urls.rb</code> prepends <code>FilterListUrls#url_for</code> to <code>ActionView::RoutingUrlFor</code>, so every link Blacklight builds with <code>action: 'facet'</code> (the "more" link, <code>search_facet_path</code>, sort and page links) carries the readable name. Record page (FR-67, FR-69): the two <code>&lt;details&gt;</code> sections (<code>#cited-by</code>, <code>#similar-theses</code>) are no longer <code>open</code>; <code>summary::after</code> shows "+" or "−" (<code>[open]</code>); a small inline script opens the section named in <code>location.hash</code>, on load and on <code>hashchange</code> (maintenance session 15, post-paper)</td>
+</tr>
+<tr>
+<td>0.49</td>
+<td>November 5, 2026</td>
+<td>8.1: theme folders (packaging P5a) (post-paper)</td>
+</tr>
+<tr>
+<td>0.48</td>
+<td>November 5, 2026</td>
+<td>8.1: the remaining admin pages, the usage event labels and the flash messages in <code>en.yml</code> (packaging P4g; P4 complete); what stays in code (post-paper)</td>
+</tr>
+<tr>
+<td>0.47</td>
+<td>November 5, 2026</td>
+<td>8.1: admin pages (first part) and the problem-report mail in <code>en.yml</code> (packaging P4f); missing translations raise in development and test (post-paper)</td>
+</tr>
+<tr>
+<td>0.46</td>
+<td>November 5, 2026</td>
+<td>8.1: field, facet and sort labels under Blacklight's own keys, <code>LocalisedLabels</code> for status and quality group labels, <code>netd</code> date formats (packaging P4e) (post-paper)</td>
+</tr>
+<tr>
+<td>0.45</td>
+<td>November 5, 2026</td>
+<td>8.1: record page, result cards, problem-report form and facet toggles in <code>en.yml</code> (packaging P4d); JavaScript strings through <code>j</code> (post-paper)</td>
+</tr>
+<tr>
+<td>0.44</td>
+<td>November 5, 2026</td>
+<td>8.1: Browse, Follow, Metadata Quality and the Follow this search button in <code>en.yml</code> (packaging P4c); first plural key (post-paper)</td>
+</tr>
+<tr>
+<td>0.43</td>
+<td>November 5, 2026</td>
+<td>8.1: static pages' text in <code>en.yml</code> (packaging P4b); <code>Netd.text_values</code> adds <code>email</code>, <code>host</code>, <code>base_url</code>; <code>credits.hosting</code> removed from <code>publications.yml</code> (post-paper)</td>
+</tr>
+<tr>
+<td>0.42</td>
+<td>November 5, 2026</td>
+<td>8.1: interface text in <code>config/locales/en.yml</code> read through the <code>nt</code> helper with the configuration's values (<code>Netd.text_values</code>); header, footer and home page moved (packaging P4a, post-paper)</td>
+</tr>
+<tr>
+<td>0.41</td>
+<td>November 5, 2026</td>
+<td>Diagrams: <code>/beta</code> removed from the context, composition and search diagrams (the portal is at the site root since October 31, 2026); two labels quoted so that GitHub's Mermaid renders them; published in the manual site as a Reference page</td>
+</tr>
+<tr>
+<td>0.40</td>
+<td>November 5, 2026</td>
+<td>Country configuration, second part (NFR-15, packaging P3b): <code>Netd</code> accessors for wordmark, regulator and credits, citation capitals; page text, titles, Blacklight <code>application_name</code> (<code>config/locales/netd_country.rb</code>), OAI-PMH repository name and RIS database name from the configuration (post-paper)</td>
+</tr>
+<tr>
+<td>0.39</td>
+<td>November 4, 2026</td>
+<td>Country configuration (NFR-15, packaging P3a): <code>config/country.yml</code>; <code>Netd</code> module (<code>portal/config/netd_country.rb</code>, required by <code>config/application.rb</code> before the environment files); <code>netd.config</code> in the harvester; <code>deploy/site.env</code> written by <code>deploy.sh</code> (<code>python -m netd.config --env</code>) and read by <code>netd-probe.sh</code> and <code>netd-alert.py</code>; release archive includes <code>config/</code>; OAI-PMH <code>level:</code> set filter quoted (<code>Postgraduate Diploma</code> is two words) (post-paper)</td>
+</tr>
+<tr>
+<td>0.38</td>
+<td>November 4, 2026</td>
+<td>Cited by, second part (FR-69): <code>ApiRecord</code> reads <code>openalex_id_ssi</code>, <code>cited_by_isi</code>, <code>cited_by_ssm</code> (<code>openalex_id</code>; <code>cited_by</code> = <code>{count, works: [{openalex_id, title, year, type, url}]}</code>, count null when unmatched; CSV columns <code>openalex_id</code>, <code>cited_by_count</code> appended at the end), <code>Api::V1::RecordsController</code> <code>cited</code> (fq <code>cited_by_isi:[1 TO *]</code>, negated for false) and sort <code>cited</code> (<code>cited_by_isi desc, year_isi desc, id asc</code>; unmatched theses have no value and sort with 0), OpenAPI 1.7.0; <code>OaiController#identifiers</code> adds <code>https://openalex.org/&lt;W id&gt;</code> (repeatable <code>dc:identifier</code> / ETD-MS <code>identifier</code>, so both formats stay schema-valid); <code>CatalogController</code> query facet <code>cited</code> ("Citations (OpenAlex)", one value "Cited") and sort <code>cited</code> ("Most Cited"); <code>EtdResultComponent#cited_line</code> links to <code>#cited-by</code> on the record page; <code>HeaReport</code>: <code>CITED</code>, <code>MATCHED</code>, <code>Filters#cited</code> (form checkbox in <code>_filters</code>), summary rows, <code>citation_sections</code> (JSON facet on <code>institution_ssim</code> with query sub-facets and <code>sum(cited_by_isi)</code>; the 20 most cited through <code>each_doc</code>), listing column <code>cited_by</code>. No Solr schema change (dynamic fields from session 13); no harvester change</td>
+</tr>
+<tr>
+<td>0.37</td>
+<td>November 4, 2026</td>
+<td>Cited by (FR-69): <code>netd/citedby.py</code> (<code>netd.cli cited-by</code>, <code>--max-calls</code>, <code>--max-age-days</code>): Solr main records not checked for <code>max_age_days</code>, oldest first, 40 per OpenAlex <code>/works?filter=title.search:"…" OR "…"</code> (first ten words of each title; cursor paging, at most 3 pages), <code>best_match</code> (Jaccard of title words &gt;= 0.8, year within 1, <code>acceptable</code>: dissertation, or <code>other</code> without DOI, never a journal-located work; dissertation preferred), then <code>cites:W1\|W2…</code> (50 per call) with <code>referenced_works</code> to assign citing works, own-title copies left out; <code>Client</code> counts calls and reads <code>X-RateLimit-Remaining-USD</code>, stops on budget (<code>Budget</code>, also HTTP 402/409/429); store table <code>openalex_citations</code> (written in whole batches, WAL rule); works matching two theses cleared; <code>citedby.load</code> in <code>cli.do_index</code> sets <code>rec['_openalex']</code>, <code>index.to_solr</code> writes <code>openalex_id_ssi</code>, <code>cited_by_isi</code>, <code>cited_by_ssm</code>; record page section <code>netd-similar netd-citedby</code> above Similar theses; <code>netd-harvest.service</code> <code>ExecStartPre=-flock … cited-by</code>, <code>EnvironmentFile=-/opt/netd/openalex.env</code> (<code>OPENALEX_API_KEY</code>)</td>
+</tr>
+<tr>
+<td>0.36</td>
+<td>November 4, 2026</td>
+<td>Record page addresses (FR-68): <code>ThesisId</code> (<code>app/models/thesis_id.rb</code>: <code>short</code>, <code>candidates</code>, <code>resolve</code> in one Solr request, trying <code>&lt;source&gt;-123456789-&lt;n&gt;</code> before the literal id so CSV-loaded ids still work), <code>SolrDocument#to_param</code> returns the short id, so Blacklight's links, feeds (<code>polymorphic_url</code>) and <code>solr_document_path(doc)</code> use it; <code>resources :solr_documents, path: '/theses'</code>; <code>record_pdf</code> and <code>cite_record</code> at <code>/theses/:id/…</code>; 301 redirect routes from <code>/catalog/:id(.:format)</code>, <code>/catalog/:id/pdf</code>, <code>/catalog/:id/cite(.:format)</code> (old ids always contain a hyphen, so Blacklight's <code>/catalog/&lt;action&gt;</code> routes are never caught) and <code>/theses</code> to <code>/</code>; <code>CatalogController#retrieve_document</code> resolves the short id (used by <code>show</code>, <code>pdf</code>, <code>cite</code>), <code>before_action :canonical_thesis_address</code> redirects <code>/theses/&lt;record id&gt;</code>; sitemap, OAI-PMH <code>PORTAL_RECORD_URL</code>, <code>ApiRecord</code> <code>links.portal</code>, HEA usage report links, admin links and <code>robots.txt</code> (<code>/theses/*/pdf</code>, <code>/theses/*/cite</code>) updated; <code>Api::V1::RecordsController#show</code> accepts the short id (API 1.6.0). Usage counting unchanged (record ids)</td>
+</tr>
+<tr>
+<td>0.35</td>
+<td>November 4, 2026</td>
+<td>FR-66: record page <code>content_for(:head)</code> with Highwire Press, description, Open Graph and canonical tags; <code>CatalogController#sitemap</code> (<code>/sitemap.xml</code>, Solr pages of 2,000 ids, <code>Rails.cache</code> one day); <code>robots.txt</code> <code>Allow: /sitemap.xml</code> and <code>Sitemap:</code> line. FR-67: <code>CatalogController#similar_theses</code> (one <code>select</code> with <code>mlt=true</code>, <code>mlt.fl=title_tsim,abstract_tesim,subject_tsim</code>, <code>mintf</code> 1, <code>mindf</code> 2, 10 candidates, duplicate copies dropped, 5 shown; errors logged and the panel left out), panel <code>netd-similar</code> (a <code>&lt;details&gt;</code> element, open by default, that readers can collapse and expand, as PMC's similar articles). <code>EtdResultComponent#fields_of_study</code> (subfield, else field) when a result has no <code>subject_ssim</code>, class <code>etd-fos</code>. <code>Citation.sentence_case</code> (titles at least 80% capitals; <code>KEEP</code> list of place names and acronyms). <code>ApplicationHelper#usage_icon(:view|:download)</code> shared by the record page and <code>/admin/usage</code></td>
+</tr>
+<tr>
+<td>0.34</td>
+<td>November 4, 2026</td>
+<td>"How to cite" (FR-65): <code>Citation</code> model (<code>app/models/citation.rb</code>; gems <code>citeproc-ruby</code> and <code>csl</code>; CSL files and the en-GB locale in <code>config/csl</code>, see its README), <code>CatalogController#cite</code> (<code>/catalog/:id/cite?style=</code>, an HTML fragment; <code>.ris</code>, <code>.bib</code>), <code>RecordHelper#citation_html</code> (sanitised), panel <code>netd-cite</code> on the record page (default APA rendered with the page; other styles fetched on change); <code>robots.txt</code> disallows <code>/catalog/*/cite</code>. Crosswalk: <code>record_link(oai_id, src)</code> sets <code>url</code> to <code>https://&lt;host&gt;/handle/&lt;handle&gt;</code> from the OAI identifier (provenance <code>derived:oai_id</code>; the harvested value kept as <code>url_harvested</code> when different; <code>record_url: harvested</code> in <code>sources.yml</code> to opt out)</td>
+</tr>
+<tr>
+<td>0.33</td>
+<td>November 4, 2026</td>
+<td>Record page <code>netd-rec-usage</code> (FR-61): each count in a <code>netd-usage-item</code> span with an inline SVG icon (eye; download arrow), <code>aria-hidden</code>, coloured with <code>--netd-muted</code>; styles in <code>netd.css</code>. Display only: the counting code (<code>usage_counting.rb</code>, <code>usage_count.rb</code>) is unchanged since <code>paper-v1</code></td>
+</tr>
+<tr>
+<td>0.32</td>
+<td>November 3, 2026</td>
+<td>Off-site backups use the project's own Google OAuth client (Google Cloud project "DataLab backups", unza.ac.zm, consent screen Internal, Desktop client, scope <code>drive.file</code>) instead of rclone's shared client; handover of the backup destination and other account-bound services to HEA described in <code>docs/OPERATIONS.md</code></td>
+</tr>
+<tr>
+<td>0.31</td>
+<td>November 2, 2026</td>
+<td>Supervisor name variants (FR-64): <code>netd/people.py</code> (<code>canonical()</code> per institution over (supervisors, departments, faculties) of each record; <code>apply()</code>), names parsed by <code>ml.evaluate.person_words</code> (split out of <code>_person</code>, behaviour unchanged); applied in <code>cli.do_index</code> after the department mapping; Solr <code>supervisor_orig_ssm</code>, original spellings added to <code>supervisor_tsim</code>; record page "As written in the record" line for department and supervisor; Blacklight show field <code>supervisor_ssim</code>; <code>tests/test_people.py</code>. Account roles (FR-36): <code>users.role</code> (<code>admin</code>|<code>viewer</code>, migration 20261102190000), <code>User#admin?</code>/<code>#viewer?</code>, <code>Admin::BaseController#require_role</code> with <code>VIEWER_PAGES</code>, menu by role, <code>netd:user:add ROLE=</code>, <code>netd:user:role</code>. Crawler filter (FR-61): <code>UsageCounting::BOT</code> extended, <code>NO_PLATFORM</code></td>
+</tr>
+<tr>
+<td>0.30</td>
+<td>November 2, 2026</td>
+<td>Reports for HEA (FR-63): <code>app/reports/hea_report.rb</code> (<code>HeaReport</code>: builds sections from Solr facets, two-level pivots and cursor-paged listings over main records; <code>Filters</code> turns form parameters into filter queries; supervisor name filter matched against the supervisor facet values, ignoring case and punctuation), <code>report_xlsx.rb</code> (gem <code>caxlsx</code>: Summary sheet with contents links, one sheet per section, data bars, native bar, column and stacked charts) and <code>report_pdf.rb</code> (gems <code>prawn</code>, <code>prawn-table</code>; DejaVu Sans from the server's fonts, Helvetica fallback; charts drawn directly; at most 1,000 rows per table, landscape for listings); <code>Admin::EtdReportsController</code> at <code>/admin/etd-reports</code> (form) and <code>/admin/etd-reports/:kind(.xlsx|.pdf)</code> (<code>institution</code>, <code>supervisors</code>, <code>custom</code>; GET, so a report address can be bookmarked); MIME type <code>xlsx</code> registered; audit action <code>report</code></td>
+</tr>
+<tr>
+<td>0.29</td>
+<td>November 2, 2026</td>
+<td><code>titlepage-rules</code> v11 (see baseline model); <code>evaluate._person</code> reads surname-first gold names ("Dr Mapoma C"). Usage analytics extended (FR-61): tables <code>usage_places(day, event, country_code, country, city, hits)</code> and <code>usage_facets(day, field, value, hits)</code> (unique keys, upsert); <code>GeoLookup</code> (gem <code>maxmind-db</code>, DB-IP City Lite <code>/opt/netd/geoip/city.mmdb</code>, file mode, reopened when the file changes, private addresses skipped); <code>UsageCounting#count_usage</code> also counts the place; <code>CatalogController#count_facets</code> (configured facet fields, at most 10 values, only when the search found records); record page <code>netd-rec-usage</code>; <code>/admin/usage</code> sections "Where readers are" and "Popular searches", CSV <code>?table=places|facets</code>; <code>deploy/ops/geoip-update.sh</code> (run by <code>deploy.sh</code> when the file is missing and weekly before the status email; installs a new monthly edition). <code>titlepage-rules</code> v10: supervisor patterns extended (see baseline model), <code>_rejoin(names=True)</code> for supervisor text, name-first patterns tried only within 120 characters before each "supervis" cue (<code>CUE</code>); unit names keep comma lists. <code>evaluate.py</code>: <code>_person</code>, <code>_same_person</code>, <code>_people_tp</code> (one-to-one supervisor matching on surname with compatible initials; apostrophes ignored; glued names split); title lookahead made case-sensitive. <code>netd-ml-apply.sh</code> runs <code>predict</code> under <code>run.lock</code>. <code>evaluate.sample</code> (<code>gold-sample</code>): <code>--source</code> (comma-separated), <code>--all</code>, copies in <code>duplicates</code> left out, columns <code>split_group</code> and <code>half</code> (SHA-256 of the group); <code>cli.selected</code> accepts comma-separated source ids</td>
+</tr>
+<tr>
+<td>0.28</td>
+<td>November 2, 2026</td>
+<td>Usage analytics (FR-61): Rails table <code>usage_counts</code> (day, event, record_id, institution, hits; unique key, upsert <code>hits = hits + 1</code>), model <code>UsageCount</code>, concern <code>UsageCounting</code> (crawler, prefetch and signed-in admin filter) in <code>CatalogController#index/#show</code>, <code>BrowseController</code>, after-actions in <code>Api::V1::BaseController</code> and <code>OaiController</code>; <code>CatalogController#pdf</code> (<code>/catalog/:id/pdf?file=n</code>, counted 302 to the stored link only); <code>Admin::UsageController</code> at <code>/admin/usage</code> (HTML, CSV); nightly prune of Blacklight <code>searches</code> to one day (<code>netd-backup.service</code> <code>ExecStartPre</code>). Department names (FR-62): <code>netd/units.py</code>, applied per institution in <code>cli.do_index</code>, Solr <code>department_orig_ssm</code>; <code>set_units</code> per source in <code>crosswalk.to_canonical</code> (provenance <code>set_units:&lt;spec&gt;</code>, counted as filled by the portal in the quality report)</td>
+</tr>
+<tr>
+<td>0.27</td>
+<td>November 2, 2026</td>
+<td>Duplicates (FR-19): <code>netd/dedup.py</code> (<code>netd.cli dedup</code>, also at the end of every processing run, over the whole store), table <code>duplicates</code>, corrections <code>_duplicate</code> (<code>distinct</code> | <code>primary</code>, ignored by the overlay like <code>_scope</code>), Solr <code>duplicate_of_ssi</code> / <code>duplicates_ssim</code>, <code>SearchBuilder#collapse_duplicates</code>, API counts and search of main records only (<code>duplicates=include</code>; API 1.5.0 <code>duplicate_of</code>, <code>other_copies</code>), record-page notices, <code>Admin::DuplicatesController</code> at <code>/admin/duplicates</code>; Browse by Faculty (FR-25): <code>BrowseController</code> at <code>/browse</code> (two Solr pivots, cached 10 minutes), <code>faculty_department_ssim</code> only for facetable pairs; <code>evaluate --strata</code> (FR-53); <code>netd-ml-apply.sh</code> guard counts new exclusions only; <code>ocr-resume.sh</code> with <code>WINDOW_HOURS</code> and the final apply and evaluation</td>
+</tr>
+<tr>
+<td>0.26</td>
+<td>November 2, 2026</td>
+<td>Deployment view: Ubuntu 26.04.1 LTS (kernel 7.0), MySQL 8.4, PHP 8.5 for the co-hosted sites; NETD unchanged in design: Ruby 3.3.6 rebuilt against OpenSSL 3.5, venv recreated; <code>netd-backup.sh</code> waits for Solr after a reboot; <code>deploy/ops/ocr-resume.sh</code> and <code>deploy/ops/upgrade/</code> (upgrade scripts) added</td>
+</tr>
+<tr>
+<td>0.25</td>
+<td>November 1, 2026</td>
+<td>Repository watch (FR-58): <code>netd/repocheck.py</code>, <code>netd.cli check-repositories</code>, result in <code>/opt/netd/logs/repository-check.json</code>, run by <code>netd-weekly.service</code> (ExecStartPre) before the weekly email, admin dashboard section via <code>Harvester.repository_check</code>; registry keys <code>oai</code>, <code>etd_sets</code>, <code>checked</code>, <code>note</code> and status <code>no-etds-yet</code> (API 1.3.0); <code>/contribute</code> page (FR-59); metadata quality (FR-28): <code>netd/quality.py</code> (<code>netd.cli quality-report</code>, also after <code>run</code> and <code>reprocess</code>) writes <code>logs/quality.json</code>, read by <code>QualityReport</code>; public <code>QualityController</code> at <code>/quality</code> shows overall figures only, <code>Admin::QualityController</code> at <code>/admin/quality</code> the per-institution breakdown (both with <code>.csv</code>, <code>.json</code>); date added (FR-60): table <code>first_seen</code> (written once in <code>Store.put_record</code>; backfilled with each source's first harvest), Solr <code>added_dtsi</code>, sort <code>added</code>, Atom/RSS entry templates <code>catalog/_document.{atom,rss}.builder</code> dated by <code>added_dtsi</code>, results tool <code>follow_search_link</code>, <code>FollowController</code> at <code>/follow</code>, API <code>added_at</code> / <code>sort=added</code> (1.4.0)</td>
+</tr>
+<tr>
+<td>0.23</td>
+<td>November 1, 2026</td>
+<td>Metadata filling (FR-14, FR-48 to FR-53): package <code>netd.ml</code> (text cache with OCR, prediction cache, overlay, predict runner, evaluation, baseline model <code>titlepage-rules</code>); overlay step in processing; <code>derived_ssm</code> in Solr; record-page badges; API <code>derived</code> (1.1.0); admin record corrections and degree-level review; <code>netd.cli reprocess</code>; store in WAL mode (NFR-14); backup reads the store as <code>netd</code>; OCR packages on the server; documented walkthrough notebook <code>notebooks/netd26-03-ml_metadata_filling-walkthrough.ipynb</code> (runs every step on a sample from the public API, locally or in Colab)</td>
+</tr>
+<tr>
+<td>0.22</td>
+<td>November 1, 2026</td>
+<td>Postgraduate scope (FR-47): <code>scope.degree_levels</code> and per-source <code>exclude_records</code> in <code>sources.yml</code>; <code>cli.exclusion()</code> in processing; table <code>excluded</code>; <code>index.ids()</code> so indexing removes from Solr every document the store no longer holds; Postgraduate Diploma in <code>DEGREE_PAT</code>, repository-supplied levels normalised; level set <code>level:postgraduate-diploma</code> and API level <code>postgraduate_diploma</code></td>
+</tr>
+<tr>
+<td>0.21</td>
+<td>November 1, 2026</td>
+<td>REST API v1 (§5.3, EI-6, FR-42 to FR-46): <code>Api::V1::</code> controllers on <code>ActionController::API</code>, <code>ApiRecord</code> representation, OpenAPI 3 specification <code>public/api/v1/openapi.yaml</code>, interactive reference <code>/developers/api</code>, export files in <code>portal/tmp/api_export/</code></td>
+</tr>
+<tr>
+<td>0.20</td>
+<td>November 1, 2026</td>
+<td>Admin panel (§5.2, FR-36 to FR-41, NFR-13): <code>Admin::</code> controllers, <code>AdminAuthentication</code>, <code>Harvester</code> model, portal tables <code>users</code>, <code>sessions</code>, <code>admin_events</code> and problem-report resolution columns (§4.1); <code>harvester/sources.local.yml</code>; shared <code>run.lock</code>; <code>netd-user.sh</code> account management; backups include CSV files</td>
+</tr>
+<tr>
+<td>0.19</td>
+<td>November 1, 2026</td>
+<td><code>netd.csvload</code> CSV loader (FR-10), <code>netd.cli csv-check</code>, template <code>portal/public/netd-etd-template.csv</code>, <code>deploy.sh</code> creates <code>harvester/uploads/</code></td>
+</tr>
+<tr>
+<td>0.18</td>
+<td>October 31, 2026</td>
+<td>OAI-PMH data provider (§5.1, EI-4): <code>OaiController</code> at <code>/oai</code>, read from Solr only; <code>records.updated_at</code> now changes only when a record's content changes and is indexed as <code>updated_dtsi</code> (datestamp); <code>netd.cli check</code> asserts that <code>Identify</code> answers; conformance test <code>tests/oai_conformance.py</code></td>
+</tr>
+<tr>
+<td>0.17</td>
+<td>October 31, 2026</td>
+<td>Operations (§8): <code>netd.cli check</code>; <code>deploy/ops/</code> backup, Drive upload, alert and probe scripts; <code>netd-backup</code>, <code>netd-probe</code>, <code>netd-weekly</code> timers and <code>netd-alert@</code> template with <code>OnFailure=</code> on every unit</td>
+</tr>
+<tr>
+<td>0.16</td>
+<td>October 31, 2026</td>
+<td><code>PagesController#faq/#developers/#credits</code>; footer partial; <code>credits</code> section in <code>publications.yml</code>; ZAMREN logo in <code>public/images/</code></td>
+</tr>
+<tr>
+<td>0.10</td>
+<td>October 31, 2026</td>
+<td>Record page <code>catalog/show.html.erb</code> + <code>RecordHelper</code>; index gains <code>files_ssm</code> (name, type, size, URL per file) and <code>rights_ssm</code></td>
+</tr>
+<tr>
+<td>0.9</td>
+<td>October 31, 2026</td>
+<td><code>NetdHeaderComponent</code> (header), landing page redesign, new theme <code>netd.css</code> modelled on Academic Commons</td>
+</tr>
+<tr>
+<td>0.8</td>
+<td>October 31, 2026</td>
+<td>Served at the site root; Apache sites managed in <code>deploy/apache</code> (HTTP→HTTPS, redirects for <code>/beta</code> and old portal paths, <code>/znrp</code> and <code>/ojs</code> excluded); old Tomcat portal no longer proxied</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>October 31, 2026</td>
+<td><code>bitstreams</code> table; file links from OAI <code>ore</code>, DSpace REST bundles and METS; <code>pdf_url</code>, <code>full_text_ssim</code></td>
+</tr>
+<tr>
+<td>0.4</td>
+<td>October 31, 2026</td>
+<td>DSpace 6 METS loader (<code>netd.mets</code>); HTTPS proxy passes X-Forwarded-Proto (fixes record clicks)</td>
+</tr>
+<tr>
+<td>0.3</td>
+<td>October 31, 2026</td>
+<td>DSpace REST loader (<code>netd.rest</code>); institution registry, zero-count Institution facet and home page; About page from <code>publications.yml</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1-introduction">1. Introduction<a class="headerlink" href="#1-introduction" title="Permanent link">&para;</a></h2>
+<h3 id="11-purpose-and-scope">1.1 Purpose and scope<a class="headerlink" href="#11-purpose-and-scope" title="Permanent link">&para;</a></h3>
+<p>This SDD describes how NETD v2 meets the SRS: the system's context, components, information model, interfaces, interaction, state, deployment, and the main design decisions. It covers release 0.22.</p>
+<h3 id="12-stakeholders-and-concerns">1.2 Stakeholders and concerns<a class="headerlink" href="#12-stakeholders-and-concerns" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Stakeholder</th>
+<th>Concerns</th>
+<th>Viewpoints</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DataLab developers</td>
+<td>Structure, extension points, deployment</td>
+<td>Composition, Interface, Deployment</td>
+</tr>
+<tr>
+<td>Data scientists</td>
+<td>Where ML models plug in; provenance</td>
+<td>Information, Interaction (§6.2)</td>
+</tr>
+<tr>
+<td>Portal administrator</td>
+<td>Operation, resource use, recovery</td>
+<td>Deployment, State</td>
+</tr>
+<tr>
+<td>Project lead / reviewers</td>
+<td>Alignment with SA NETD and NDLTD; trade-offs</td>
+<td>Context, Rationale</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-context-viewpoint">2. Context viewpoint<a class="headerlink" href="#2-context-viewpoint" title="Permanent link">&para;</a></h2>
+<h3 id="21-use-cases">2.1 Use cases<a class="headerlink" href="#21-use-cases" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart LR
+  R((Researcher)):::actor
+  A((Administrator)):::actor
+  D((Data scientist)):::actor
+  M((HEI repository&lt;br/&gt;manager)):::actor
+  subgraph NETD v2
+    UC1[Search ETDs]
+    UC2[Filter by facets]
+    UC3[View ETD record]
+    UC4[Open full text in source IR]
+    UC5[Register source]
+    UC6[Run / schedule harvest]
+    UC7[Re-process records]
+    UC8[View completeness report]
+    UC9[Register enricher / ML model]
+  end
+  R --- UC1 &amp; UC2 &amp; UC3 &amp; UC4
+  A --- UC5 &amp; UC6 &amp; UC7 &amp; UC8
+  D --- UC9 &amp; UC7
+  M --- UC8
+  classDef actor fill:#fff,stroke:#333</code></pre>
+<h3 id="22-system-context">2.2 System context<a class="headerlink" href="#22-system-context" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart TB
+  subgraph External
+    IR1[UNZA RIMS OAI-PMH]
+    IR2[UNILUS OAI-PMH]
+    NDLTD[NDLTD Union Catalog]
+    Users[Web users]
+  end
+  NETD[[NETD v2]]
+  IR1 --&gt;|ListRecords dim| NETD
+  IR2 --&gt;|ListRecords dim| NETD
+  Users --&gt;|HTTPS| NETD
+  NETD --&gt;|OAI-PMH /oai oai_dc, etdms| NDLTD</code></pre>
+<hr />
+<h2 id="3-composition-viewpoint-components">3. Composition viewpoint (components)<a class="headerlink" href="#3-composition-viewpoint-components" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>flowchart LR
+  subgraph harvester ["harvester/ — Python 3.12"]
+    CLI[netd.cli&lt;br/&gt;commands]
+    HV[netd.harvest&lt;br/&gt;Sickle client]
+    CW[netd.crosswalk&lt;br/&gt;dim/etdms/oai_dc → canonical]
+    EN[netd.enrich&lt;br/&gt;rules + plug-in enrichers]
+    IX[netd.index&lt;br/&gt;Solr JSON update]
+    ST[netd.store&lt;br/&gt;SQLite]
+  end
+  ML[DataLab ML models&lt;br/&gt;package:function]
+  DB[(netd.sqlite3)]
+  SOLR[(Solr core 'netd')]
+  subgraph portal ["portal/ — Rails 8 + Blacklight 9"]
+    CC[CatalogController&lt;br/&gt;facets, fields, sorts]
+    RC[EtdResultComponent&lt;br/&gt;cards, badges]
+    TH[netd.css theme]
+  end
+  APA[Apache reverse proxy]
+  CLI --&gt; HV --&gt; ST
+  CLI --&gt; CW --&gt; EN --&gt; ST
+  EN -.-&gt;|registered in enrichers.yml| ML
+  CLI --&gt; IX --&gt; SOLR
+  ST --- DB
+  CC --&gt; SOLR
+  APA --&gt; portal</code></pre>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Responsibility</th>
+<th>SRS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>netd.harvest</code></td>
+<td>OAI-PMH client, format choice, sets, incremental runs, retries, run log</td>
+<td>EI-1, FR-2–FR-8</td>
+</tr>
+<tr>
+<td><code>netd.store</code></td>
+<td>Raw layer, set names, canonical layer, harvest runs</td>
+<td>FR-7, FR-11</td>
+</tr>
+<tr>
+<td><code>netd.crosswalk</code></td>
+<td>Flattening of <code>dim</code>/<code>etdms</code>/<code>oai_dc</code>; field mapping; set-based and text-based derivation; provenance</td>
+<td>FR-12–FR-15</td>
+</tr>
+<tr>
+<td><code>netd.enrich</code></td>
+<td>Built-in rules; loading and running external enrichers; confidence → facetable</td>
+<td>FR-16–FR-18</td>
+</tr>
+<tr>
+<td><code>netd.index</code></td>
+<td>Canonical → Solr document (Blacklight dynamic-field names)</td>
+<td>FR-21</td>
+</tr>
+<tr>
+<td><code>netd.rest</code></td>
+<td>Fallback loader: DSpace 7 REST API items → <code>dim</code> XML in the raw layer (set specs from collection and parent community)</td>
+<td>FR-10</td>
+</tr>
+<tr>
+<td>file links (all loaders)</td>
+<td>OAI-PMH sources: second <code>ListRecords</code> pass in <code>ore</code>, taking <code>ore:aggregates</code> links (DSpace 7 UI download links normalised to <code>/server/api/core/bitstreams/&lt;uuid&gt;/content</code> on the repository host); REST: item ORIGINAL bundle; METS: CONTENT file group. Stored in table <code>bitstreams</code>; crosswalk sets <code>pdf_url</code> (largest PDF first) or <code>file_url</code></td>
+<td>FR-32</td>
+</tr>
+<tr>
+<td><code>netd.mets</code></td>
+<td>Fallback loader: DSpace 6 XMLUI collection browse pages → item handles → <code>/metadata/handle/&lt;h&gt;/mets.xml</code> → embedded <code>dim</code> stored in the raw layer</td>
+<td>FR-10</td>
+</tr>
+<tr>
+<td><code>netd.csvload</code></td>
+<td>Fallback loader for HEIs without a repository: CSV from <code>csv_url</code> (fetched each run, at most 50 MB) or <code>csv_path</code> (file or folder; default <code>/opt/netd/harvester/uploads/&lt;id&gt;/</code>). Delimiter sniffed (<code>,</code> <code>;</code> tab); UTF-8 or cp1252. Valid rows become <code>dim</code> XML in the raw layer with oai_id <code>csv:&lt;id&gt;:&lt;identifier&gt;</code>; <code>pdf_url</code> becomes a bitstream; rows missing from the CSV are marked deleted; invalid or duplicate rows are skipped and logged. A source with no valid rows fails the run instead of deleting its records</td>
+<td>FR-10</td>
+</tr>
+<tr>
+<td><code>netd.cli</code></td>
+<td><code>harvest</code>, <code>process</code>, <code>index</code>, <code>run</code>, <code>report</code></td>
+<td>FR-9, FR-27</td>
+</tr>
+<tr>
+<td><code>institutions.yml</code> + <code>InstitutionRegistry</code></td>
+<td>All HEA-accredited postgraduate HEIs with harvest status; for those not yet harvested, the repository's <code>oai</code> endpoint, <code>etd_sets</code>, last manual check and a note</td>
+<td>FR-29</td>
+</tr>
+<tr>
+<td><code>netd/dedup.py</code> (<code>dedup</code>)</td>
+<td>Duplicate theses (FR-19): DOI, then near-identical titles (≥ 0.93) with compatible authors and years ≤ 2 apart, blocked by author name words and the first three title words; union into groups; main record by admin choice, else PDF, completeness, later datestamp; table <code>duplicates</code>; <code>load()</code> gives indexing <code>duplicate_of</code> / <code>duplicates</code></td>
+<td>FR-19</td>
+</tr>
+<tr>
+<td><code>netd/units.py</code></td>
+<td>Department name variants (FR-62): <code>clean()</code> (no corpus), <code>key()</code> (case, word order, plural endings, stop words ignored), <code>canonical()</code> per institution (most frequent spelling; rare values joined to a much larger group with key similarity ≥ 0.92); used by <code>do_index</code> only, so the store and predictions are unchanged</td>
+<td>FR-62</td>
+</tr>
+<tr>
+<td><code>netd/people.py</code></td>
+<td>Supervisor name variants (FR-64): <code>canonical(records)</code> per institution: spellings parsed into surname and ordered given names (<code>ml.evaluate.person_words</code>), grouped per surname from most to least specific; a spelling joins a group only if it agrees with every member (<code>_agree</code>: initials equal, full names equal or prefix ≥ 3 letters, or the same full names reordered) and the group is the only candidate or the only one sharing a department (then faculty); bare surnames never join; shown spelling by <code>_rank</code> (ordinary capitals, full given name, most given names, most written in full, most records). Used by <code>do_index</code> only</td>
+<td>FR-64</td>
+</tr>
+<tr>
+<td><code>netd/quality.py</code> (<code>quality-report</code>)</td>
+<td>Per institution and element, share of records by origin of the value (provenance <code>harvested</code>/<code>rule</code> → repository element; <code>set</code>/<code>text</code> → elsewhere in the repository; <code>model</code>/<code>corrected</code> → portal; none → missing); ETD-MS compliance at source; advice for elements below 50% at source; <code>logs/quality.json</code> for <code>/quality</code></td>
+<td>FR-28</td>
+</tr>
+<tr>
+<td><code>netd/repocheck.py</code> (<code>check-repositories</code>)</td>
+<td>Weekly check of not-yet-harvested repositories: page status, OAI-PMH Identify, <code>ListIdentifiers</code> counts overall and per ETD set (one request at a time, 30–90 s timeouts); writes <code>logs/repository-check.json</code> with changes since the previous run; read by the admin dashboard and <code>netd-alert.py --weekly</code></td>
+<td>FR-58</td>
+</tr>
+<tr>
+<td><code>InstitutionFacetComponent</code></td>
+<td>Institution facet listing registry institutions with no records as 0 (hidden once an institution is selected)</td>
+<td>FR-29</td>
+</tr>
+<tr>
+<td><code>NetdHeaderComponent</code></td>
+<td>Group bar, wordmark, search box, link row (About, Explore, Master's, PhD)</td>
+<td>EI-5</td>
+</tr>
+<tr>
+<td>Home page (<code>catalog/_home_text</code>)</td>
+<td>Intro line; Explore Master's/PhD cards; stats at a glance; contributing institutions with the HEA list behind a toggle</td>
+<td>FR-26, FR-30, FR-33</td>
+</tr>
+<tr>
+<td><code>PagesController#about</code> + <code>publications.yml</code></td>
+<td>Project details and publications; <code>deploy/gen_publications_md.py</code> writes <code>PUBLICATIONS.md</code> from the same file</td>
+<td>FR-31</td>
+</tr>
+<tr>
+<td>Blacklight portal</td>
+<td>Search UI, facets, sorting, record pages, JSON API</td>
+<td>FR-20–FR-24, EI-3, EI-5</td>
+</tr>
+<tr>
+<td>Solr core <code>netd</code></td>
+<td>Blacklight schema (ICU analysers replaced by built-in ASCII folding, as the slim Solr distribution lacks the ICU module); <code>qf</code> tuned to ETD fields</td>
+<td>NFR-1</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-information-viewpoint">4. Information viewpoint<a class="headerlink" href="#4-information-viewpoint" title="Permanent link">&para;</a></h2>
+<h3 id="41-persistent-data-sqlite">4.1 Persistent data (SQLite)<a class="headerlink" href="#41-persistent-data-sqlite" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>erDiagram
+  RAW_RECORDS {
+    text source PK
+    text oai_id PK
+    text datestamp
+    text set_specs "JSON list"
+    int deleted
+    text metadata_prefix
+    text xml "untouched payload"
+    real harvested_at
+  }
+  SET_NAMES {
+    text source PK
+    text set_spec PK
+    text set_name
+  }
+  RECORDS {
+    text id PK "source-handle, e.g. unza-123456789-9143"
+    text source
+    text data "canonical JSON"
+    real updated_at
+  }
+  HARVEST_RUNS {
+    int id PK
+    text source
+    real started_at
+    real finished_at
+    text from_date
+    int records
+    int deleted
+    text status
+    text message
+  }
+  EXCLUDED {
+    text id PK
+    text source
+    text oai_id
+    text title
+    text reason
+    real excluded_at
+  }
+  RAW_RECORDS ||--o| RECORDS : "processed into"
+  RAW_RECORDS ||--o| EXCLUDED : "or left out (FR-47)"
+  SET_NAMES ||--o{ RAW_RECORDS : "names setSpecs of"
+  HARVEST_RUNS }o--|| RAW_RECORDS : "writes"</code></pre>
+<p>Portal database (<code>portal/storage/production.sqlite3</code>, Rails migrations), besides Blacklight's <code>searches</code> and <code>bookmarks</code>:
+<pre class="mermaid"><code>erDiagram
+  USERS {
+    int id PK
+    string email_address UK
+    string name
+    string password_digest "bcrypt"
+    bool active
+    bool must_change_password
+    datetime last_sign_in_at
+  }
+  SESSIONS {
+    int id PK
+    int user_id FK
+    string ip_address
+    string user_agent
+    datetime created_at
+    datetime updated_at "last activity"
+  }
+  ADMIN_EVENTS {
+    int id PK
+    int user_id FK "null for command-line actions and failed sign-ins"
+    string action
+    string subject
+    text detail
+    string ip_address
+    datetime created_at
+  }
+  PROBLEM_REPORTS {
+    int id PK
+    string problem
+    text message
+    string email
+    string record_url
+    bool emailed
+    string status "open | resolved"
+    datetime resolved_at
+    int resolved_by_id FK
+    text admin_note
+  }
+  USERS ||--o{ SESSIONS : "signs in with"
+  USERS ||--o{ ADMIN_EVENTS : "performs"
+  USERS ||--o{ PROBLEM_REPORTS : "resolves"</code></pre></p>
+<p>Postgraduate scope (FR-47). After the crosswalk and the enrichers, <code>cli.exclusion()</code> decides whether a record enters <code>records</code>: it is left out if its source lists its <code>oai_id</code> under <code>exclude_records</code> (with a reason), or if its <code>degree_level</code> is identified and not in <code>scope.degree_levels</code> (default Doctoral, Masters, Postgraduate Diploma). Records of unknown level are kept. Excluded records go to <code>excluded</code> with the reason (rebuilt for a source on every processing run) and are shown by <code>netd.cli report</code> and on the admin source page; <code>raw_records</code> is untouched, so an exclusion is undone by removing it from <code>sources.yml</code>. Indexing then deletes from Solr every document of the source that <code>records</code> no longer holds (<code>index.ids()</code>), which also covers records deleted at the source. Levels come from the repository's own value, normalised, or from <code>DEGREE_PAT</code> over the degree name, type, description and collection names, postgraduate levels first; the ML models (FR-14) will fill the unknown levels later through the same field.</p>
+<h4 id="411-metadata-filling-fr-14-fr-48-to-fr-53">4.1.1 Metadata filling (FR-14, FR-48 to FR-53)<a class="headerlink" href="#411-metadata-filling-fr-14-fr-48-to-fr-53" title="Permanent link">&para;</a></h4>
+<p>Package <code>harvester/netd/ml</code>. Models never write to <code>records</code>; they write to a cache that processing reads.</p>
+<pre class="mermaid"><code>flowchart LR
+  R[(records)] --&gt;|pdf_url, files| T[textcache&lt;br/&gt;extract-text, ocr-text]
+  T --&gt;|first pages, front matter first| PT[(pdf_text)]
+  PT --&gt; P[predict runner]
+  R --&gt;|harvested values only| P
+  M["models/titlepage.py&lt;br/&gt;NAME, VERSION, FIELDS, USES,&lt;br/&gt;prepare(texts), predict(meta, text)"] --&gt; P
+  C[Colab / elsewhere] --&gt;|JSON Lines| L[load-predictions]
+  P --&gt; PR[(predictions)]
+  L --&gt; PR
+  A[Admin panel] --&gt;|netd.cli correct| CO[(corrections)]
+  PR --&gt; O[overlay.apply]
+  CO --&gt; O
+  O --&gt;|after enrichers, before FR-47| X[cli.exclusion]
+  O --&gt; LR[(level_review)]
+  X --&gt; R</code></pre>
+<ul>
+<li><strong>Text cache</strong> (<code>textcache.py</code>, FR-48). <code>front_urls()</code> orders a record's PDFs so files named cover/title come first, then other front-matter names (prelim, abstract, declaration, approval, certificate), then the rest; with no front-matter file only the first PDF is read; at most 3. <code>extract-text</code> downloads each file (≤ 60 MB, 2 threads fetching, SQLite written from the main thread only), keeps the first 8 pages with <code>pypdf</code>, and stores status <code>ok</code>, <code>no_text</code> (no text layer), <code>too_large</code> or <code>error</code>. <code>ocr-text</code> takes the <code>no_text</code> rows one at a time: <code>pdftoppm</code> at 200 dpi, greyscale, first 5 pages, then <code>tesseract</code> (English), both under <code>nice 19</code>; status <code>ocr</code> or <code>ocr_failed</code>. The <code>url</code> column holds the files read, so a change in the record's files makes it pending again. Both commands run under <code>run.lock</code> in batches (500 PDFs, 50 OCRs), so a nightly harvest waits at most one batch.</li>
+<li><strong>Prediction cache</strong> (<code>cache.py</code>, FR-49). <code>predictions</code> is keyed by (record, field, model) and holds version, value list, confidence, input hash and evidence. <code>predict.run()</code> builds each record's input from its PDF text and the harvested values of the fields the model <code>USES</code> (values with provenance <code>model:</code> or <code>corrected:</code> are removed, so models never learn from each other), hashes it with the model version, and calls <code>predict()</code> only when the hash changed; fields a model covers but finds nothing for are stored as <code>[]</code>, so they are not recomputed. <code>prepare(texts)</code> gives a model corpus-level state (the baseline's word counts). <code>load-predictions</code> accepts JSON Lines from other environments.</li>
+<li><strong>Overlay</strong> (<code>overlay.py</code>, FR-14, FR-50 to FR-52), called by <code>do_process</code> after the enrichers and before <code>cli.exclusion()</code>. A record with neither predictions nor corrections is returned untouched (byte-identical, so OAI-PMH datestamps do not move). Otherwise, for each predicted field that is empty and not corrected, the best prediction is applied if its confidence ≥ <code>ml.show_threshold</code>; it sets the value, <code>provenance[field] = model:&lt;name&gt;-&lt;version&gt;</code>, <code>confidence[field]</code> and <code>derived[field]</code>. A predicted level below postgraduate is applied only at ≥ <code>ml.level_auto_exclude</code> (FR-47 then excludes the record, naming the model); between <code>ml.level_review_min</code> and that it goes to <code>level_review</code> instead. Corrections then overwrite (or clear) fields with <code>provenance = corrected:&lt;e-mail&gt;</code>. A <code>_scope</code> correction is returned to <code>cli.exclusion()</code>, where <code>include</code> keeps the record whatever FR-47's level rule says and <code>exclude</code> removes it with the administrator's note. <code>save_review()</code> rebuilds the pending rows for the processed sources; decided rows stay.</li>
+<li><strong>Baseline model</strong> <code>titlepage-rules</code> (<code>models/titlepage.py</code>). Degree statement: a statement keyword (fulfilment, requirement, submitted, award) followed within 200 characters by a degree head (Master/Doctor/Bachelor/Postgraduate Diploma of/in), parsed into degree, discipline and level (0.96); otherwise a degree name on the first three pages (0.82); otherwise an abbreviation such as MSc or PhD (0.70, level only). Supervisors (v10, v11 additions: title words never name parts, bare initials in a row, title + surname alone when the name ends there, up to eight words in "for his … supervision", "and [academic] mentor" / "and co-supervisor", "X (Supervisor)" at 0.80): labelled lines "Supervisor:" (0.92), "Supervisor Dr X" without a colon (0.90), "supervised by" (0.90), "under the supervision of" (0.88), acknowledgements "my [up to two words] supervisor(s)[ and mentor][,;:][ namely] Dr X, Prof Y and Dr Z" (up to four people, 0.86) and "Dr X , my supervisor" (0.82), "Dr X for his/her [able] supervision", "for accepting to supervise", "who supervised" (0.80), "X (principal/co-supervisor)" (0.75); name parts may be bare initials ("W Chakanika", "W.W"); names are cut at words that are not names (Sign, Dissertation, Public Health, MMed …), lose titles (including "Dr ." and "D r."), and all-caps names are title-cased. Patterns that start with a name are tried only within 120 characters before an occurrence of "supervis" (unbounded, they backtracked for up to 29 s on one OCRed page of acronyms). Supervisor text is rejoined without one-letter fragments (<code>_rejoin(names=True)</code>), and apostrophes inside surnames are closed up ("Hang ’ombe"). Units: "Department of …" → department, "School of …"/"Faculty of …" → faculty, from the first three pages (0.88 on page one, else 0.78). Text extraction often splits words ("M aster", "Eco nomics"); degree keywords are matched letter by letter with optional spaces, and other words are rejoined when the joined word is more frequent in the corpus than the rarer fragment.</li>
+<li><strong>Evaluation</strong> (<code>evaluate.py</code>, FR-53). <code>gold-sample</code> writes a CSV stratified by institution (proportional, at least 20 each) with harvested values and empty <code>gold_*</code> columns; <code>evaluate</code> normalises values (case, accents, titles, unit words; people by surname with compatible initials, one-to-one, apostrophes ignored, since v0.29; before, surname and first initial) and prints coverage, precision, recall and F1 per model, version and field at thresholds 0, 0.8 and 0.95. Corrections are a second source of labels.</li>
+<li><strong>Fields of study</strong> (FR-54 to FR-57). Model <code>openalex-fos</code> (<code>models/fieldofstudy.py</code>): title + abstract (harvested only) → <code>sentence-transformers/all-MiniLM-L6-v2</code> sentence embedding via fastembed (ONNX, CPU, about 90 MB on disk under <code>harvester/models/fastembed</code>) → multinomial logistic regression over the 252 OpenAlex subfields (weights <code>models/data/openalex-fos-v1.npz</code>, 252 × 384; taxonomy <code>models/data/openalex-taxonomy.json</code>). <code>decide()</code> backs off: subfield if p ≥ 0.30 (a second if p ≥ 0.30), else the field whose subfields sum to ≥ 0.40 (version 2; tuned on held-out works, see the report), else the most likely domain, so every record with text gets a value. Values are OpenAlex ids in the canonical field <code>field_of_study</code>; the overlay applies them with the per-field threshold <code>ml.thresholds.field_of_study: 0.0</code>. Models exposing <code>predict_batch()</code> are called in chunks of 256. <code>index.fos_docs()</code> turns ids into <code>fos_domain_ssim</code>, <code>fos_field_ssim</code>, <code>fos_subfield_ssim</code> (facets), <code>fos_tsim</code> (searched with the default and subject <code>qf</code>) and <code>fos_ssm</code> (JSON per value for the record page, API and OAI-PMH). Training data: <code>tools/openalex_training.py</code> (taxonomy and about 120 English works with abstracts per subfield, labelled by OpenAlex's primary topic) and <code>tools/train_fieldofstudy.py</code> (85/15 stratified split; report in <code>models/data/openalex-fos-v1-report.md</code>).</li>
+<li><strong>Walkthrough:</strong> <code>notebooks/netd26-03-ml_metadata_filling-walkthrough.ipynb</code> documents and runs each step above on a sample of public records, in a throwaway store, with the earlier DataLab work it builds on.</li>
+<li><strong>Configuration</strong> (<code>enrichers.yml</code>, key <code>ml</code>): <code>show_threshold</code> 0.8, <code>level_auto_exclude</code> 0.95, <code>level_review_min</code> 0.6; <code>nightly</code> (true), <code>nightly_pdfs</code> (300 per source) and <code>nightly_ocr</code> (30).</li>
+<li>
+<p><strong>Nightly</strong> (<code>cli.nightly_ml</code>): the scheduled <code>run</code> extracts text for new or changed records, OCRs a few scans and runs <code>predict</code> after harvesting and before processing, so new ETDs get derived values the same night. Errors there are printed and skipped; the harvest, processing and indexing go on.</p>
+</li>
+<li>
+<p><strong>Usage counts</strong> (portal database <code>storage/production.sqlite3</code>, FR-61). <code>usage_counts(day date, event, record_id, institution, hits)</code>, unique on (day, event, record_id, institution); <code>event</code> is one of <code>home</code>, <code>search</code>, <code>browse</code>, <code>record_view</code>, <code>pdf_download</code>, <code>api</code> (record_id = endpoint), <code>oai</code> (record_id = verb). Days are UTC. Nothing identifying a visitor is stored; rows are kept indefinitely (aggregate data). Backed up with the portal database. Places and facet values (since November 2, 2026): <code>usage_places</code> and <code>usage_facets</code>, as above; the reader's address is looked up in memory (<code>request.remote_ip</code>, set from Apache's <code>X-Forwarded-For</code>) and discarded. Attribution "IP Geolocation by DB-IP" (CC BY 4.0) on <code>/admin/usage</code> and the FAQ.</p>
+</li>
+</ul>
+<h3 id="42-canonical-record-class-view">4.2 Canonical record (class view)<a class="headerlink" href="#42-canonical-record-class-view" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>classDiagram
+  class Source {
+    +id: str
+    +name: str
+    +short_name: str
+    +base_url: str
+    +formats: list
+    +sets: list
+    +ignore_set_names: list
+    +collections_are: faculty or department
+  }
+  class CanonicalRecord {
+    +id: str
+    +institution: str
+    +title: list
+    +author: list
+    +supervisor: list
+    +subject: list
+    +faculty: list
+    +department: list
+    +degree: list
+    +degree_level: list
+    +year: list
+    +abstract: list
+    +url: list
+    +provenance: dict
+    +confidence: dict
+    +facetable: dict
+  }
+  class Enricher {
+    &lt;&lt;interface&gt;&gt;
+    +__call__(record) record
+  }
+  class TitleCase
+  class PersonNames
+  class MLModel {
+    model:name-version
+  }
+  Source "1" --&gt; "*" CanonicalRecord
+  Enricher &lt;|.. TitleCase
+  Enricher &lt;|.. PersonNames
+  Enricher &lt;|.. MLModel
+  Enricher ..&gt; CanonicalRecord : modifies + records provenance</code></pre>
+<h3 id="43-field-mapping-crosswalk">4.3 Field mapping (crosswalk)<a class="headerlink" href="#43-field-mapping-crosswalk" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Canonical</th>
+<th><code>dim</code> source fields (priority order)</th>
+<th>Fallbacks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>title</td>
+<td><code>dc.title</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>author</td>
+<td><code>dc.contributor.author</code>, <code>dc.creator</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>supervisor</td>
+<td><code>dc.contributor.advisor</code>, <code>.supervisor</code>, <code>.promoter</code></td>
+<td>ML/PDF (planned)</td>
+</tr>
+<tr>
+<td>subject</td>
+<td><code>dc.subject</code>, <code>.other</code>, <code>.lcsh</code>, <code>.ddc</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>faculty</td>
+<td><code>thesis.degree.faculty</code>, local fields</td>
+<td>set hierarchy (<code>collections_are</code>, "School/Faculty of …")</td>
+</tr>
+<tr>
+<td>department</td>
+<td><code>thesis.degree.department</code>, local fields</td>
+<td>set hierarchy; "Department of …" pattern in descriptions</td>
+</tr>
+<tr>
+<td>degree, discipline</td>
+<td><code>thesis.degree.name</code>, <code>thesis.degree.discipline</code></td>
+<td>"Master of X in Y" / "PhD Y" patterns in <code>dc.description</code></td>
+</tr>
+<tr>
+<td>degree_level</td>
+<td><code>thesis.degree.level</code></td>
+<td>patterns over degree, type, description and set names</td>
+</tr>
+<tr>
+<td>year</td>
+<td><code>dc.date.issued</code></td>
+<td>first 4-digit year</td>
+</tr>
+<tr>
+<td>url</td>
+<td>built from the OAI identifier: <code>https://&lt;host&gt;/handle/&lt;handle&gt;</code> (FR-65)</td>
+<td><code>dc.identifier.uri</code> (sources with <code>record_url: harvested</code>, or identifiers that are not DSpace handles)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="44-solr-document">4.4 Solr document<a class="headerlink" href="#44-solr-document" title="Permanent link">&para;</a></h3>
+<p><code>id, title_tsim/ssm/ssort, author_tsim/ssim, supervisor_tsim/ssim, subject_tsim/ssim, faculty_tsim/ssim, department_tsim/ssim, faculty_department_ssim ("Faculty|Dept", only when both values are facetable; FR-25 browsing), discipline_tsim/ssim, degree_ssim, degree_level_ssim, year_isi/ssim, abstract_tesim, url_ssm, pdf_url_ssm, rights_ssm, language_ssim, type_ssim, institution_ssim, institution_short_ssim, source_ssi, oai_id_ssi, datestamp_ssi (source datestamp), updated_dtsi (last content change in the portal; OAI-PMH datestamp), provenance_ssm, derived_ssm (FR-50), duplicate_of_ssi (main record of a copy, FR-19), duplicates_ssim (copies of a main record), completeness_isi</code>. Searches, facets and counts add <code>fq=-duplicate_of_ssi:[* TO *]</code> (FR-19); OAI-PMH, exports and <code>/get</code> do not. A facet (<code>*_ssim</code>) value is omitted when its field is not <code>facetable</code> (FR-17).</p>
+<hr />
+<h2 id="5-interface-viewpoint">5. Interface viewpoint<a class="headerlink" href="#5-interface-viewpoint" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Interface</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CLI</td>
+<td><code>python -m netd.cli {harvest|process|index|run|reprocess|report|check|csv-check FILE} [--source ID] [--full] [--limit N] [--db PATH] [--solr URL]</code>; metadata filling: <code>extract-text [--limit N] [--retry-failed]</code>, <code>ocr-text [--limit N]</code>, <code>text-report</code>, <code>predict [--model NAME] [--all]</code>, <code>load-predictions FILE.jsonl</code>, <code>export-predictions FILE.csv</code>, <code>correct RECORD FIELD [VALUE ...] --by EMAIL [--note TEXT]</code>, <code>uncorrect RECORD FIELD</code>, <code>gold-sample FILE.csv [--n N] [--seed S]</code>, <code>evaluate GOLD.csv</code>; env <code>NETD_DB</code>, <code>NETD_SOLR</code>, <code>NETD_SOURCES</code>, <code>NETD_ENRICHERS</code></td>
+</tr>
+<tr>
+<td>Model contract (§4.1.1)</td>
+<td>module with <code>NAME</code>, <code>VERSION</code>, <code>FIELDS</code>, <code>USES</code>, <code>NEEDS_TEXT</code>, optional <code>prepare(texts)</code>, and <code>predict(meta, text) -&gt; {field: (values, confidence, evidence)}</code>; registered in <code>netd/ml/predict.py</code> <code>MODELS</code></td>
+</tr>
+<tr>
+<td>Enricher contract</td>
+<td><code>def enrich(record: dict) -&gt; dict</code>; set <code>record["provenance"][field] = "model:&lt;name&gt;-&lt;version&gt;"</code> and optionally <code>record["confidence"][field] = float</code></td>
+</tr>
+<tr>
+<td>Solr</td>
+<td>JSON <code>POST /solr/netd/update</code>; Blacklight queries <code>/select</code> (edismax, ETD <code>qf</code>)</td>
+</tr>
+<tr>
+<td>HTTP</td>
+<td><code>GET /</code> (search), <code>/theses/&lt;short id&gt;</code> (record; FR-68, old <code>/catalog/&lt;id&gt;</code> addresses answer 301), <code>/theses/&lt;short id&gt;/pdf</code> (counted download), <code>/theses/&lt;short id&gt;/cite?style=&lt;key&gt;</code> (citation fragment; <code>.ris</code>, <code>.bib</code>; FR-65), <code>/theses/filters/&lt;name&gt;</code> (full list of one filter; FR-71, old <code>/catalog/facet/&lt;field&gt;</code> answers 301), <code>/sitemap.xml</code> (FR-66), <code>/catalog.json?q=…</code> (JSON)</td>
+</tr>
+<tr>
+<td>OAI-PMH</td>
+<td><code>GET</code>/<code>POST /oai</code> (§5.1)</td>
+</tr>
+<tr>
+<td>REST API</td>
+<td><code>GET /api/v1/…</code> (§5.3), JSON; specification <code>/api/v1/openapi.yaml</code></td>
+</tr>
+<tr>
+<td>Admin panel</td>
+<td><code>/admin</code> (§5.2), signed-in portal team only</td>
+</tr>
+<tr>
+<td>Accounts</td>
+<td><code>deploy/ops/netd-user.sh add|reset|disable|enable|list</code> (root on the server; Rake tasks <code>netd:user:*</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="51-oai-pmh-data-provider-ei-4">5.1 OAI-PMH data provider (EI-4)<a class="headerlink" href="#51-oai-pmh-data-provider-ei-4" title="Permanent link">&para;</a></h3>
+<p><code>OaiController</code> (<code>portal/app/controllers/oai_controller.rb</code>) answers OAI-PMH 2.0 at https://netd.ac.zm/oai. It reads Solr only, so the harvester's SQLite store is never touched by web requests, and it needs no new service.</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Design</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Verbs</td>
+<td><code>Identify</code>, <code>ListMetadataFormats</code>, <code>ListSets</code>, <code>ListIdentifiers</code>, <code>ListRecords</code>, <code>GetRecord</code>; GET or POST; repeated, missing or illegal arguments give <code>badArgument</code>, an unknown verb gives <code>badVerb</code></td>
+</tr>
+<tr>
+<td>Identifiers</td>
+<td><code>oai:netd.ac.zm:&lt;Solr id&gt;</code>, e.g. <code>oai:netd.ac.zm:unza-123456789-9150</code></td>
+</tr>
+<tr>
+<td>Datestamp</td>
+<td><code>updated_dtsi</code>: when the record's canonical content last changed (<code>records.updated_at</code>, which <code>Store.put_record</code> leaves alone when a reprocessed record is unchanged). Granularity <code>YYYY-MM-DDThh:mm:ssZ</code>; <code>from</code>/<code>until</code> accept days or seconds (same granularity for both)</td>
+</tr>
+<tr>
+<td>Sets</td>
+<td><code>inst:&lt;source id&gt;</code> (from a Solr pivot of <code>source_ssi</code> and <code>institution_ssim</code>) and <code>level:masters</code>, <code>level:doctoral</code> (<code>degree_level_ssim</code>)</td>
+</tr>
+<tr>
+<td>Formats</td>
+<td><code>oai_dc</code>; <code>etdms</code> (ETD-MS v1.1, elements in schema order, supervisors as <code>contributor role="advisor"</code>, <code>degree</code> with name, level, discipline (or department) and grantor). Identifiers are the portal record page, the source landing page and the full-text link</td>
+</tr>
+<tr>
+<td>Paging</td>
+<td>100 records per page; Solr <code>cursorMark</code> with <code>sort=id asc</code>. Resumption tokens are stateless: URL-safe Base64 JSON of prefix, set, date bounds, cursor mark, cursor and a 24-hour expiry; <code>completeListSize</code> and <code>cursor</code> are given</td>
+</tr>
+<tr>
+<td>Deletions</td>
+<td><code>deletedRecord=transient</code>: records the harvester removes disappear from Solr</td>
+</tr>
+<tr>
+<td>Errors</td>
+<td><code>badVerb</code>, <code>badArgument</code>, <code>cannotDisseminateFormat</code>, <code>idDoesNotExist</code>, <code>noRecordsMatch</code> (also for an unknown set), <code>badResumptionToken</code>; <code>noSetHierarchy</code> does not apply</td>
+</tr>
+<tr>
+<td>Monitoring</td>
+<td><code>netd.cli check</code> fails if <code>Identify</code> does not answer (NFR-12)</td>
+</tr>
+<tr>
+<td>Verification</td>
+<td><code>tests/oai_conformance.py</code> (Sickle and lxml): validates responses against the OAI-PMH and <code>oai_dc</code> schemas, checks ETD-MS element order, harvests every record in each format through resumption tokens, and exercises sets, dates, <code>GetRecord</code> and every error condition</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="52-admin-panel-fr-36-to-fr-41">5.2 Admin panel (FR-36 to FR-41)<a class="headerlink" href="#52-admin-panel-fr-36-to-fr-41" title="Permanent link">&para;</a></h3>
+<p>The panel is part of the Rails portal (no new service). Every admin controller inherits from <code>Admin::BaseController</code>, which includes <code>AdminAuthentication</code>; public controllers never do. Accounts have a role (<code>users.role</code>): <code>admin</code>, or <code>viewer</code> (read-only, for HEA staff). <code>Admin::BaseController#require_role</code> lets a viewer reach only the controllers in <code>VIEWER_PAGES</code> (<code>etd_reports</code>, <code>quality</code>, <code>usage</code>, <code>passwords</code>, <code>sessions</code>) and redirects every other admin request (any verb) to the reports; the admin bar shows a viewer only those pages. Roles are set with <code>deploy/ops/netd-user.sh add ... ROLE=viewer</code> or <code>netd-user.sh role EMAIL=... ROLE=...</code> (which also signs the account out).</p>
+<table>
+<thead>
+<tr>
+<th>Page</th>
+<th>Route</th>
+<th>Controller</th>
+<th>Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sign in / out</td>
+<td><code>GET</code>/<code>POST /admin/sign-in</code>, <code>DELETE /admin/sign-out</code></td>
+<td><code>Admin::SessionsController</code> (rate-limited)</td>
+<td>FR-36</td>
+</tr>
+<tr>
+<td>Change password</td>
+<td><code>/admin/password/edit</code></td>
+<td><code>Admin::PasswordsController</code> (forced while <code>must_change_password</code>)</td>
+<td>FR-36</td>
+</tr>
+<tr>
+<td>Dashboard</td>
+<td><code>/admin</code></td>
+<td><code>Admin::DashboardController#index</code></td>
+<td>FR-37</td>
+</tr>
+<tr>
+<td>Source page, Run now</td>
+<td><code>/admin/sources/&lt;id&gt;</code>, <code>POST /admin/sources/&lt;id&gt;/run</code></td>
+<td><code>Admin::DashboardController#source</code>, <code>#run</code></td>
+<td>FR-37</td>
+</tr>
+<tr>
+<td>Problem reports</td>
+<td><code>/admin/reports</code>, <code>/admin/reports/&lt;id&gt;</code></td>
+<td><code>Admin::ProblemReportsController</code></td>
+<td>FR-38</td>
+</tr>
+<tr>
+<td>Upload CSV (check, then load)</td>
+<td><code>/admin/csv/new</code>, <code>POST /admin/csv</code>, <code>POST /admin/csv/load</code></td>
+<td><code>Admin::CsvUploadsController</code></td>
+<td>FR-39, FR-40</td>
+</tr>
+<tr>
+<td>Activity log</td>
+<td><code>/admin/log</code></td>
+<td><code>Admin::EventsController</code></td>
+<td>FR-41</td>
+</tr>
+<tr>
+<td>Correct a record (lookup box in the admin bar; record page with values, provenance, corrections and predictions; Apply now)</td>
+<td><code>GET /admin/records?id=</code>, <code>/admin/records/&lt;id&gt;</code>, <code>POST /admin/records/&lt;id&gt;/corrections</code>, <code>DELETE /admin/records/&lt;id&gt;/corrections/&lt;field&gt;</code>, <code>POST /admin/records/&lt;id&gt;/apply</code></td>
+<td><code>Admin::RecordsController</code></td>
+<td>FR-51</td>
+</tr>
+<tr>
+<td>Degree-level review (waiting / decided)</td>
+<td><code>/admin/review</code>, <code>POST /admin/review/&lt;id&gt;</code> (<code>decision=exclude\|include</code>)</td>
+<td><code>Admin::ReviewsController</code></td>
+<td>FR-52</td>
+</tr>
+<tr>
+<td>Duplicates (groups, decisions)</td>
+<td><code>/admin/duplicates</code>, <code>POST /admin/duplicates/&lt;id&gt;</code> (<code>decision=distinct\|primary</code>); decisions removed through the record's corrections</td>
+<td><code>Admin::DuplicatesController</code></td>
+<td>FR-19</td>
+</tr>
+<tr>
+<td>Usage (totals, by day, by institution, most viewed and downloaded, API and OAI-PMH; 7/30/90/365 days; CSV)</td>
+<td><code>/admin/usage</code>, <code>/admin/usage.csv?days=n</code></td>
+<td><code>Admin::UsageController</code></td>
+<td>FR-61</td>
+</tr>
+<tr>
+<td>ETD reports for HEA (per institution, by supervisor, custom; preview, Excel, PDF)</td>
+<td><code>/admin/etd-reports</code>, <code>/admin/etd-reports/:kind</code>, <code>.xlsx</code>, <code>.pdf</code></td>
+<td><code>Admin::EtdReportsController</code>, <code>HeaReport</code>, <code>ReportXlsx</code>, <code>ReportPdf</code></td>
+<td>FR-63</td>
+</tr>
+</tbody>
+</table>
+<p>Corrections and review decisions are written by <code>netd.cli correct</code> / <code>uncorrect</code> (the panel opens the staging store read-only, as for CSV loading) and logged as <code>record_corrected</code>, <code>correction_removed</code>, <code>level_review_excluded</code>, <code>level_review_kept</code>, <code>duplicate_rejected</code>, <code>duplicate_primary_chosen</code> and <code>reprocess_started</code>. A duplicate decision starts <code>reprocess</code> for the record's source at once. "Apply now" runs <code>netd.cli reprocess --source &lt;id&gt;</code> (process and index, no harvest) under the harvest lock; when the lock is held, the change waits for the next run.</p>
+<pre class="mermaid"><code>classDiagram
+  class AdminBaseController {
+    +require_admin()
+    +require_password_change()
+    +no_store()
+    +audit(action, subject, detail)
+  }
+  class AdminAuthentication {
+    &lt;&lt;concern&gt;&gt;
+    +resume_session()
+    +start_session(user)
+    +end_session()
+  }
+  class Harvester {
+    &lt;&lt;model&gt;&gt;
+    +sources() sources.yml + sources.local.yml
+    +status() runs and counts (read-only SQLite)
+    +running() bool (run.lock)
+    +csv_check(path) netd.cli csv-check
+    +start_run(id) netd.cli run --source, under run.lock
+    +install_csv(id, path)
+    +add_csv_source(id, name, short_name)
+  }
+  class User { +has_secure_password }
+  class Session { +expired() }
+  class AdminEvent { +record() }
+  AdminBaseController ..|&gt; AdminAuthentication
+  AdminAuthentication --&gt; Session
+  Session --&gt; User
+  AdminBaseController --&gt; AdminEvent
+  AdminBaseController &lt;|-- DashboardController
+  AdminBaseController &lt;|-- CsvUploadsController
+  AdminBaseController &lt;|-- ProblemReportsController
+  DashboardController --&gt; Harvester
+  CsvUploadsController --&gt; Harvester</code></pre>
+<p>Sign-in and session (FR-36, NFR-13): <code>SessionsController#create</code> checks the bcrypt hash, creates a <code>sessions</code> row and sets the signed, HTTP-only, <code>Secure</code>, <code>SameSite=Lax</code> cookie <code>netd_admin_session</code> holding its id. Each request looks the session up, rejects it if the account is disabled or the session has been idle for 2 hours or is 12 hours old, and refreshes its <code>updated_at</code> at most once a minute. A one-time password (from <code>netd-user.sh add</code> or <code>reset</code>) sends the user to the password page until it is changed; changing it signs out the account's other sessions. Admin responses carry <code>Cache-Control: no-store</code> and <code>X-Robots-Tag: noindex</code>, and <code>robots.txt</code> disallows <code>/admin</code>.</p>
+<p>The panel and the harvester (FR-37, FR-39, FR-40): the portal reads the staging store read-only and never writes to it. Anything that changes data runs <code>netd.cli</code> as a background process, as the same <code>netd</code> user, under <code>flock</code> on <code>harvester/run.lock</code>; the nightly <code>netd-harvest.service</code> takes the same lock (waiting up to 2 hours), so harvests never overlap. CSV upload has two steps:</p>
+<pre class="mermaid"><code>sequenceDiagram
+  actor A as Administrator
+  participant P as CsvUploadsController
+  participant H as Harvester
+  participant C as netd.cli
+  A-&gt;&gt;P: POST /admin/csv (institution, file)
+  P-&gt;&gt;P: save tmp/csv_uploads/&lt;random token&gt;.csv
+  P-&gt;&gt;C: csv-check file
+  C--&gt;&gt;P: problems by line, rows/valid counts
+  P--&gt;&gt;A: check page (nothing changed yet)
+  A-&gt;&gt;P: POST /admin/csv/load (token)
+  opt new institution
+    P-&gt;&gt;H: add_csv_source → harvester/sources.local.yml
+  end
+  P-&gt;&gt;H: install_csv → uploads/&lt;id&gt;/records.csv (previous one to archive/)
+  P-&gt;&gt;H: start_run(id)
+  H-&gt;&gt;C: flock -n run.lock netd.cli run --source &lt;id&gt; (background)
+  P--&gt;&gt;A: source page (follow the run)</code></pre>
+<p>Sources added from the panel are written to <code>harvester/sources.local.yml</code> (server only, not in git), which <code>netd.cli</code> reads together with <code>sources.yml</code>. Moving such a source into <code>sources.yml</code> is a normal code change.</p>
+<h3 id="53-rest-api-v1-ei-6-fr-42-to-fr-46">5.3 REST API v1 (EI-6, FR-42 to FR-46)<a class="headerlink" href="#53-rest-api-v1-ei-6-fr-42-to-fr-46" title="Permanent link">&para;</a></h3>
+<p>Since API 1.1.0 each record carries <code>derived</code> (FR-50), built by <code>ApiRecord.derived</code> from the Solr field <code>derived_ssm</code> (one JSON object per derived field: field, method, confidence); field names follow the API (<code>supervisors</code>, <code>subjects</code>). The addition changes no existing field (EI-6).</p>
+<p>A read-only JSON API inside the Rails portal. Its controllers inherit from <code>Api::V1::BaseController</code> (<code>ActionController::API</code>: no sessions, cookies or CSRF), which adds CORS headers, the per-address rate limit and JSON error handling. Like the OAI-PMH provider, it reads Solr only. The contract is <code>portal/app/views/static_files/openapi.text.erb</code>, served at <code>/api/v1/openapi.yaml</code> (OpenAPI 3.0.3), which Developer Resources renders with Swagger UI at <code>/developers/api</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Controller</th>
+<th>Solr use</th>
+<th>Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET /api/v1/records</code></td>
+<td><code>RecordsController#index</code></td>
+<td><code>/select</code>: <code>q</code> with edismax and the portal's <code>qf</code>/<code>pf</code> (per field through <code>${title_qf}</code> etc.), filters as <code>fq</code> (<code>{!term}</code>, <code>{!terms}</code>, ranges), <code>start</code>/<code>rows</code></td>
+<td>FR-42</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/records/{id}</code></td>
+<td><code>RecordsController#show</code></td>
+<td><code>{!term f=id}</code></td>
+<td>FR-43</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/institutions</code></td>
+<td><code>InstitutionsController#index</code></td>
+<td>facet on <code>institution_ssim</code>; joined with <code>InstitutionRegistry</code> and <code>Harvester</code> (source ids, last runs)</td>
+<td>FR-44</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/stats</code></td>
+<td><code>StatsController#index</code></td>
+<td>facets on <code>source_ssi</code>, <code>degree_level_ssim</code>, <code>year_isi</code>, and <code>source_ssi</code> once per completeness field with an <code>fq</code> for its presence (9 requests, cached 10 minutes)</td>
+<td>FR-45</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/export.csv</code>, <code>.jsonl</code></td>
+<td><code>ExportsController#show</code></td>
+<td><code>cursorMark</code> over all records, 500 at a time, <code>sort=id asc</code></td>
+<td>FR-46</td>
+</tr>
+</tbody>
+</table>
+<pre class="mermaid"><code>flowchart LR
+  C[API client or browser] --&gt;|GET /api/v1/...| AP[Apache TLS]
+  AP --&gt; B[Api::V1::BaseController&lt;br/&gt;CORS, rate limit, errors]
+  B --&gt; R[RecordsController]
+  B --&gt; I[InstitutionsController]
+  B --&gt; S[StatsController]
+  B --&gt; E[ExportsController]
+  R --&gt; AR[ApiRecord&lt;br/&gt;stable field names]
+  E --&gt; AR
+  R --&gt; SO[(Solr core netd)]
+  I --&gt; SO
+  S --&gt; SO
+  E --&gt; SO
+  I --&gt; REG[InstitutionRegistry&lt;br/&gt;institutions.yml]
+  I --&gt; H[Harvester&lt;br/&gt;sources, last runs]
+  S --&gt; CA[(Rails cache&lt;br/&gt;10 min)]
+  I --&gt; CA
+  E --&gt; F[(tmp/api_export&lt;br/&gt;records.csv / .jsonl)]</code></pre>
+<ul>
+<li><strong>Representation.</strong> <code>ApiRecord</code> maps Solr documents to the public field names (<code>title</code>, <code>authors</code>, <code>supervisors</code>, <code>degree_level</code>, <code>institution {id, name}</code>, <code>links {portal, source, pdf, api}</code>, <code>files</code>, <code>updated_at</code>), so index changes do not reach clients. Lists are always arrays and missing single values are <code>null</code>.</li>
+<li><strong>Paging.</strong> <code>page</code>/<code>per_page</code> up to 10,000 results (Solr <code>start</code>/<code>rows</code> stay cheap at that depth); the response gives <code>meta.total</code>, <code>meta.pages</code> and <code>links.next</code>/<code>prev</code>. Complete copies come from the export or OAI-PMH, which page with <code>cursorMark</code>.</li>
+<li><strong>Export.</strong> Built on demand into <code>portal/tmp/api_export/</code> when the file is missing or more than 6 hours old, under an exclusive lock so concurrent requests wait for one build; written to a temporary file and renamed, then sent with <code>Last-Modified</code>.</li>
+<li><strong>Limits and errors.</strong> Rails 8 <code>rate_limit</code> (cache-store counters, per address and controller): 120 a minute, and 20 an hour for the export. Unknown parameters, bad values and paging beyond the limit give 400 with a specific message; unknown paths 404; Solr unavailable 503.</li>
+<li><strong>Versioning.</strong> The version is in the path. Within v1 fields are only added, never renamed or removed; an incompatible change means <code>/api/v2</code>, with v1 kept for at least 6 months (EI-6). The older <code>/catalog.json</code> view (EI-3) is unchanged and documented as subject to change.</li>
+</ul>
+<h2 id="6-interaction-viewpoint">6. Interaction viewpoint<a class="headerlink" href="#6-interaction-viewpoint" title="Permanent link">&para;</a></h2>
+<h3 id="61-scheduled-harvest-and-indexing">6.1 Scheduled harvest and indexing<a class="headerlink" href="#61-scheduled-harvest-and-indexing" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>sequenceDiagram
+  autonumber
+  participant T as systemd timer
+  participant C as netd.cli run
+  participant H as harvest
+  participant IR as HEI OAI-PMH
+  participant S as store (SQLite)
+  participant X as crosswalk+enrich
+  participant Q as Solr
+  T-&gt;&gt;C: daily 02:30
+  loop each source
+    C-&gt;&gt;H: harvest_source(src)
+    H-&gt;&gt;IR: ListMetadataFormats / ListSets
+    H-&gt;&gt;S: put_set_names
+    H-&gt;&gt;IR: ListRecords(prefix, set, from)
+    IR--&gt;&gt;H: records + resumptionToken (repeat)
+    H-&gt;&gt;S: put_raw(...) untouched XML
+    H-&gt;&gt;S: log_run(status)
+  end
+  C-&gt;&gt;X: to_canonical + enrichers (from raw)
+  X-&gt;&gt;S: put_record(canonical + provenance)
+  C-&gt;&gt;Q: POST /update (batches of 500), deletes, commit</code></pre>
+<h3 id="62-plugging-in-an-ml-model">6.2 Plugging in an ML model<a class="headerlink" href="#62-plugging-in-an-ml-model" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>sequenceDiagram
+  participant DS as Data scientist
+  participant Y as enrichers.yml
+  participant C as netd.cli process
+  participant M as model function
+  DS-&gt;&gt;Y: add "datalab_models.supervisors:extract"
+  DS-&gt;&gt;C: netd process &amp;&amp; netd index
+  C-&gt;&gt;M: record
+  M--&gt;&gt;C: record (+provenance "model:…", confidence)
+  Note over C: below min_confidence → searchable, not faceted</code></pre>
+<h3 id="63-search">6.3 Search<a class="headerlink" href="#63-search" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>sequenceDiagram
+  participant B as Browser
+  participant A as Apache
+  participant P as Puma + Blacklight
+  participant Q as Solr
+  B-&gt;&gt;A: GET /?q=malaria&amp;f[faculty_ssim][]=Medicine
+  A-&gt;&gt;P: proxy 127.0.0.1:3010
+  P-&gt;&gt;Q: /select edismax + facet.field…
+  Q--&gt;&gt;P: docs + facet counts
+  P--&gt;&gt;B: HTML (cards, facets)</code></pre>
+<hr />
+<h2 id="7-state-dynamics-viewpoint-harvest-run">7. State dynamics viewpoint (harvest run)<a class="headerlink" href="#7-state-dynamics-viewpoint-harvest-run" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>stateDiagram-v2
+  [*] --&gt; Discovering: ListMetadataFormats/ListSets
+  Discovering --&gt; Harvesting: format chosen
+  Harvesting --&gt; Harvesting: resumptionToken
+  Harvesting --&gt; Retrying: HTTP 5xx
+  Retrying --&gt; Harvesting: after Retry-After
+  Retrying --&gt; Failed: retries exhausted
+  Harvesting --&gt; Completed: no token / NoRecordsMatch
+  Completed --&gt; [*]: status=ok (sets next from=)
+  Failed --&gt; [*]: status=error (next run repeats window)</code></pre>
+<hr />
+<h2 id="8-deployment-viewpoint">8. Deployment viewpoint<a class="headerlink" href="#8-deployment-viewpoint" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>flowchart TB
+  subgraph server ["Server portal — netd.ac.zm — Ubuntu 26.04.1, 2 vCPU, 3.8 GiB + 2 GiB swap"]
+    AP[Apache 2.4 :80/:443&lt;br/&gt;netd.ac.zm: / → Puma; HTTP → HTTPS]
+    TC["Tomcat :8080&lt;br/&gt;other applications; old portal no longer proxied"]
+    PU[netd-portal.service&lt;br/&gt;Puma 127.0.0.1:3010, 1 worker]
+    SO[netd-solr.service&lt;br/&gt;Solr 9.11 127.0.0.1:8983, 512 MB heap]
+    TI[netd-harvest.timer&lt;br/&gt;daily harvest+process+index, then check]
+    BK[netd-backup.timer&lt;br/&gt;nightly backup + Drive copy]
+    PR[netd-probe.timer&lt;br/&gt;site check every 15 min]
+    AL["netd-alert@ unit&lt;br/&gt;email via SMTP"]
+    FS["/opt/netd: harvester, portal, solr, ruby, netd.sqlite3"]
+  end
+  AP --&gt; PU
+  PU --&gt; SO
+  TI --&gt; SO
+  BK --&gt; GD[(Google Drive&lt;br/&gt;NETD portal backups)]
+  TI -. OnFailure .-&gt; AL
+  BK -. OnFailure .-&gt; AL
+  PR -. OnFailure .-&gt; AL</code></pre>
+<ul>
+<li>All NETD services run as the unprivileged user <code>netd</code> (NFR-5) and are installed under <code>/opt/netd</code>.</li>
+<li>Admin panel state on the server: accounts, sessions and the activity log in the portal database; CSV files in <code>harvester/uploads/&lt;id&gt;/</code> (current <code>records.csv</code>, earlier ones in <code>archive/</code>); panel-added sources in <code>harvester/sources.local.yml</code>. The nightly backup includes all three (<code>csv-sources.tgz</code> holds the files). A harvest started from the panel runs inside the Puma service's process group, so restarting the portal (for example during a deployment) stops it; the next run finishes the job.</li>
+<li>No Docker (C1). Python comes via <code>uv</code>; Ruby is compiled with <code>ruby-build</code> (rebuilt in place after an OS release upgrade: <code>deploy/ops/upgrade/rebuild-ruby.sh</code>). System packages are not upgraded or removed; the only additions are <code>tesseract-ocr</code>, <code>tesseract-ocr-eng</code> and <code>poppler-utils</code> for OCR (FR-48, November 1, 2026).</li>
+<li>The staging store is in WAL mode with a 120 s busy timeout (NFR-14). Only <code>netd</code> opens it (the backup runs <code>sqlite3 .backup</code> as <code>netd</code> through <code>runuser</code>), so no root-owned <code>-wal</code>/<code>-shm</code> files can block the harvester.</li>
+<li>PDF text extraction and OCR run as transient units (<code>systemd-run --unit=netd-mltext --uid=netd --nice=10</code>) or by hand, in batches under <code>run.lock</code>; see <code>docs/OPERATIONS.md</code>.</li>
+<li>Apache sites for netd.ac.zm live in <code>deploy/apache/</code> and are installed by <code>deploy.sh</code>, which backs up the previous files in <code>/opt/netd/</code>. Rollback: restore those backups and restart Apache.</li>
+<li>Operations (NFR-11, NFR-12): every NETD unit has <code>OnFailure=netd-alert@%n.service</code>, which emails the unit's status and log. The harvest service ends with <code>netd.cli check</code>, which fails if a source's latest run failed or is stale, or if Solr per-source counts fall below 90% of the store. <code>netd-backup.sh</code> writes a dated folder only when every step succeeds, and <code>netd-backup-to-gdrive.sh</code> copies and verifies it with rclone (own OAuth client, scope <code>drive.file</code>, since November 3, 2026; a second destination is one more remote in the script's <code>REMOTES</code>, which is how HEA's own storage is added at the handover). The Solr index is not backed up because it is rebuilt from the store. Details and the restore procedure are in <code>docs/OPERATIONS.md</code>.</li>
+<li>The earlier ETD Portal (Tomcat :8080) is no longer proxied; Tomcat keeps running because it hosts other applications.</li>
+</ul>
+<h3 id="81-country-configuration-nfr-15">8.1 Country configuration (NFR-15)<a class="headerlink" href="#81-country-configuration-nfr-15" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>config/country.yml</code> (repository root; <code>/opt/netd/config/country.yml</code> on the server) holds the installation's identity: <code>country</code> (name, adjective, IANA <code>time_zone</code>), <code>portal</code> (name, wordmark, host), <code>regulator</code>, <code>contact</code> (public <code>email</code>, <code>reports_to</code>), <code>mail</code> (<code>from</code>, <code>sender</code>), <code>credits</code>, <code>locale</code>. <code>config/examples/zambia/</code> is the shipped example. <code>NETD_COUNTRY</code> names another file.</li>
+<li><strong>Portal:</strong> <code>portal/config/netd_country.rb</code> defines <code>Netd</code> (plain Ruby, YAML and TZInfo only) and is required from <code>config/application.rb</code> after <code>Bundler.require</code>, so <code>production.rb</code> (mailer host) and every class can use it. <code>Netd.config</code> loads and validates once (required keys, time zone) and freezes the hash; accessors <code>host</code>, <code>base_url</code>, <code>portal_name</code>, <code>contact_email</code>, <code>reports_to</code>, <code>mail_from</code>, <code>mail_sender</code>, <code>time_zone</code>, <code>time_zone_label</code> ("Lusaka"), <code>country_name</code>, <code>country_adjective</code>, <code>wordmark</code> (two parts, checked at load), <code>regulator_name</code>, <code>regulator_short_name</code>, <code>regulator_url</code>, <code>regulator_register_url</code>, <code>credits</code> (each entry needs <code>name</code>, <code>url</code>, <code>role</code>; checked at load), <code>credit(role)</code>, <code>credit_title</code>, <code>credit_alt</code> and <code>keep_capitals</code>. Read by <code>OaiController</code> (base URL, repository identifier, admin e-mail, record links), <code>ApiRecord</code>, the API's 404 text, <code>ApplicationMailer</code>, <code>ProblemMailer</code>, <code>AdminHelper#admin_time</code>, the quality pages, the dashboard, <code>ReportPdf</code>, <code>ReportXlsx</code>, the footer and the For Institutions, FAQ and Developer Resources pages. Rails' own <code>config.time_zone</code> stays UTC (stored and API times are UTC).</li>
+<li><strong>Harvester:</strong> <code>netd/config.py</code> (<code>load</code>, <code>get</code>, <code>host</code>, <code>base_url</code>, <code>portal_name</code>), used for user agents (<code>repocheck</code>, <code>csvload</code>, <code>textcache</code>, <code>citedby</code>) and the gold-sample links of <code>ml.evaluate</code> (no effect on scores). <code>python -m netd.config --env</code> prints the deployment settings.</li>
+<li><strong>Deployment:</strong> <code>deploy.sh</code> writes <code>/opt/netd/deploy/site.env</code> (<code>NETD_HOST</code>, <code>NETD_BASE_URL</code>, <code>NETD_PORTAL_NAME</code>, <code>NETD_CONTACT_EMAIL</code>, <code>NETD_TIME_ZONE</code>; not in git) right after the harvester environment; an invalid file stops the deployment there. <code>netd-probe.sh</code> sources it; <code>netd-alert.py</code> reads it and still sends alerts without it. The release archive (<code>access/release.sh</code>) includes <code>config/</code>.</li>
+<li><strong>Page text (P3b):</strong> the header component (group bar link and wordmark), footer (developer logo, description sentence built from <code>credits</code> in order, "developed by the …" using <code>article</code>), home text, About and Credits (logos looped from <code>credits</code> with <code>class</code>, <code>logo_height</code>, title and alternative text), FAQ, For Institutions, Developer Resources, page titles, admin CSV upload and reports pages, the problem-report e-mail body, OAI-PMH <code>repositoryName</code>, the RIS <code>DB</code> field, the <code>/api/v1/institutions</code> source note, the institution report note and the harvester's "not in the … institution list" error. Blacklight's <code>application_name</code> is set in <code>config/locales/netd_country.rb</code> (a Ruby locale file read after the gem's locales), replacing <code>blacklight.en.yml</code>. <code>Citation::KEEP</code> merges <code>KEEP_GENERAL</code> (continents, directions, diseases, international bodies, Roman numerals) with <code>citation.keep_capitals</code>. The templates keep the exact markup (attribute order, white space) so that Zambian pages are byte-identical; <code>publications.yml</code> still supplies the project, members and publications (its <code>credits.hosting</code> block is no longer read).</li>
+<li><strong>Interface text (P4, from P4a):</strong> <code>portal/config/locales/en.yml</code> holds the pages' wording under <code>netd.&lt;area&gt;.&lt;key&gt;</code> (P4a: <code>header</code>, <code>footer</code>, <code>home</code>; P4b: <code>common</code>, <code>about</code>, <code>credits</code>, <code>faq</code>, <code>contribute</code>, <code>developers</code>, <code>api_docs</code>; P4c: <code>browse</code>, <code>follow</code>, <code>quality</code>, <code>follow_search</code>; P4d: <code>record</code> (with <code>record.about</code> for the More About This Work rows and <code>record.report</code> for the problem-report form), <code>results</code>, <code>facets</code>). Text inside the record page's inline script is written with <code>j nt(...)</code> (<code>escape_javascript</code>), so that a translation with an apostrophe cannot break the script. P4e: the labels of facets, record fields, search fields and sort options are no longer <code>label:</code> values in <code>CatalogController</code> but keys under <code>blacklight.search.fields.&lt;context&gt;.&lt;field&gt;</code> (context <code>facet</code>, <code>show</code>, <code>search</code> or <code>sort</code>), which Blacklight 9 reads first; the two places that read a facet's label (<code>FollowController</code>, the admin usage page) call <code>display_label('facet')</code>, and the Citations facet's one item takes its label from the helper <code>cited_facet_label</code> (<code>netd.facets.cited</code>). The fixed code lists <code>InstitutionRegistry::STATUS_LABELS</code> and <code>QualityReport::GROUPS</code> are <code>LocalisedLabels</code> objects: they answer <code>[]</code>, <code>fetch</code>, <code>keys</code>, <code>each</code> and <code>to_h</code> like the hashes they replace (so <code>HeaReport</code> and the views are unchanged) and look up <code>netd.institution_status.&lt;code&gt;</code> and <code>netd.quality_groups.&lt;code&gt;.label</code>/<code>.description</code> at each use. Dates on public pages are printed with <code>l(time, format: :netd)</code> (<code>time.formats.netd</code> and <code>date.formats.netd</code> in <code>en.yml</code>, same output as the earlier <code>strftime</code>). P4f: <code>netd.admin</code> holds the admin navigation and the sign-in, password, activity log, level review, problem report and CSV upload pages (<code>admin_time</code> uses <code>l(..., format: :netd)</code>); <code>netd.mail.problem</code> holds the problem-report mail, subject included (<code>ProblemMailer</code> calls <code>I18n.t</code>; the text template is not HTML-escaped, so its keys are plain and keep the label padding). Development and test set <code>config.i18n.raise_on_missing_translations = true</code>, so a key missing from <code>en.yml</code> fails at once there; production keeps the English fallback. P4g: <code>netd.admin</code> also holds the dashboard, source, record correction, duplicates, quality, usage and report-filter pages (dates through <code>l(..., format: :netd)</code>, <code>:netd_utc</code> for the duplicates decisions, <code>date.formats.netd</code> for the usage days); <code>UsageCount::EVENTS</code> is a <code>LocalisedLabels</code> over <code>netd.usage_events</code> (the counting code reads only its codes); every flash message comes from <code>netd.flash</code> through <code>ApplicationController#flash_text</code> (private; plain keys, escaped by the layout). Text that stays in code: the contents of the reports for the regulator (<code>HeaReport</code>: titles, headings, notes, its <code>GROUPS</code> and <code>COLUMNS</code> labels, maintenance track), the problem types <code>ProblemReport::PROBLEMS</code> (stored as text in each report and validated against the list; translating them needs codes and a data migration, left to a release agreed with the maintenance track), model validation messages (<code>errors.full_messages</code>, the <code>Harvester</code> source checks), field names on the record correction page (<code>humanize</code> of the field code), and values from the data or the quality report (element labels, institution names, suggested improvements). Counts that need a plural use I18n's <code>one</code>/<code>other</code> keys with <code>count:</code> (<code>browse.departments</code>, replacing <code>pluralize</code>). Templates call <code>nt('area.key', **values)</code> (<code>ApplicationHelper</code>; components use <code>helpers.nt</code>), which adds <code>Netd.text_values</code> (<code>portal</code>, <code>country</code>, <code>country_adjective</code>, <code>regulator</code>, <code>regulator_short</code>, <code>email</code>, <code>host</code>, <code>base_url</code>) for interpolation. Each heading, paragraph, list item and table cell is one key (<code>heading_html</code> for the page heading, <code>page_title</code> for the browser title; other keys are named after their first words); a link inside a sentence is <code>%{linkN}</code> with its text in a plain key <code>&lt;key&gt;_linkN</code>. Sentences built around optional credits (About, Credits, For Institutions) are split into parts that the template joins. Project, members, contributors and publications stay data in <code>publications.yml</code> (its <code>credits.hosting</code> block was removed in P4b: the host comes from <code>config/country.yml</code>). Text that was written in the template is a <code>_html</code> key (output as written, interpolated values escaped); text that was a Ruby string passed to a helper is a plain key (escaped where shown), so that the escaping, and therefore the output, stays as before. <code>regulator_link</code> writes the regulator's linked name with the same attribute order as before. Line breaks inside a sentence are now single spaces: pages differ from the earlier ones in white space only. A second language is a copy of <code>en.yml</code> under its own code (production sets <code>config.i18n.fallbacks = true</code>, so a key missing from a translation falls back to English).</li>
+<li><strong>Theme (P5a):</strong> <code>themes/&lt;name&gt;/</code> holds <code>stylesheets/theme.css</code> (the <code>--netd-*</code> and Bootstrap <code>--bs-*</code> custom properties, the wordmark font and its web-font import) and <code>public/</code> (logos and other files). <code>portal.theme</code> in <code>country.yml</code> names it (<code>Netd.theme</code>, <code>"default"</code> when absent; <code>Netd.theme_dir</code>). The initializer <code>netd_theme.rb</code> stops start-up if <code>theme.css</code> is missing, adds <code>stylesheets/</code> to the Propshaft asset paths (<code>application.css</code> imports <code>theme.css</code> last, so a theme can also override rules) and serves <code>public/</code> with a second <code>ActionDispatch::Static</code> after the one for <code>portal/public</code> (same cache headers), so a credit's <code>logo</code> keeps its <code>/images/&lt;file&gt;</code> address. <code>netd.css</code> keeps the layout and reads every brand colour through the variables. Shipped: <code>zambia</code> (today's look) and <code>default</code> (neutral slate and blue, system serif wordmark, no logos). The release archive (<code>access/release.sh</code>) includes <code>themes/</code>.</li>
+<li><strong>Theme, second part (P5b):</strong> the site icons <code>icon.png</code> and <code>icon.svg</code> (used by the Rails application layout and the web app manifest) moved from <code>portal/public</code> to the theme's <code>public/</code> (<code>zambia</code>: the same files; <code>default</code>: a neutral book icon); a file in <code>portal/public</code> would be served first, so none is left there. The browser-tab icon of the Blacklight pages comes from <code>favicon_link_tag</code>, which <code>ApplicationHelper</code> overrides: when the theme has <code>public/favicon.svg</code> or <code>public/favicon.ico</code> (<code>Netd.theme_favicon</code>) it links that file, otherwise it calls Blacklight's own (the <code>zambia</code> theme has none, so its pages are unchanged; <code>default</code> has <code>favicon.svg</code>). <code>Netd.credit_logo(c)</code> returns a credit's <code>logo</code> only when the file exists in the theme's <code>public/images</code> or in <code>portal/public/images</code> (looked up once per file name); without it, About and Credits show the credit's name (<code>span.netd-credit-name</code>, styled in <code>netd.css</code>) inside the same link, and the footer leaves the logo link out (the sentence beside it already names and links the credit).</li>
+<li><strong>Rendered files (P6a):</strong> <code>robots.txt</code> (the sitemap address) and the REST API specification (portal name, adjective, regulator, addresses, OAI identifier prefix, contact) are ERB templates in <code>portal/app/views/static_files/</code> (<code>robots.text.erb</code>, <code>openapi.text.erb</code>) served by <code>StaticFilesController</code> (<code>ActionController::Base</code>: no layout, no usage counting) at <code>/robots.txt</code> and <code>/api/v1/openapi.yaml</code> with <code>text/plain</code> and <code>text/yaml</code> and one day's public caching; the contact is the <code>developed by</code> credit and the project address in <code>publications.yml</code>. They are no longer in <code>portal/public</code>, which is served before the routes; the initializer <code>netd_static_files.rb</code> warns at start-up if a copy is left there. The specification's example values (<code>unza</code>, <code>University of Zambia</code>) stay as examples. <strong>Changes to the API specification are now made in <code>portal/app/views/static_files/openapi.text.erb</code></strong> (maintenance track).</li>
+<li>Not yet configurable (later packaging releases): the problem types <code>ProblemReport::PROBLEMS</code> (stored as text in each report and would need codes first) and the reports for the regulator (<code>HeaReport</code>, maintenance track: English headings and <code>strftime</code> dates), the Apache sites and the operations scripts (P6), and the title-page word list (P9, a model change). The class <code>HeaReport</code> keeps its name (not visible to users; a rename would touch the maintenance track's report code for no visible gain).</li>
+</ul>
+<hr />
+<h2 id="9-design-rationale">9. Design rationale<a class="headerlink" href="#9-design-rationale" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Alternatives considered</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Custom Python pipeline + Blacklight</td>
+<td>InvenioRDM; VuFind; DSpace as aggregator</td>
+<td>ML models are Python; the raw store makes cleaning re-runnable; InvenioRDM's harvester module is experimental and its "harvest always wins" policy overwrites cleaning; the server's RAM (3.8 GiB, shared) rules out an Invenio stack</td>
+</tr>
+<tr>
+<td>SQLite (v0.1)</td>
+<td>PostgreSQL</td>
+<td>Zero extra memory or daemon; adequate for ≤ 100k records; can migrate later</td>
+</tr>
+<tr>
+<td><code>dim</code> before <code>etdms</code>/<code>oai_dc</code></td>
+<td><code>oai_dc</code> only</td>
+<td>Retains qualified DSpace fields (advisor, local fields)</td>
+</tr>
+<tr>
+<td>Set hierarchy for Faculty</td>
+<td>Manual mapping only</td>
+<td>UNZA RIMS ETD collections are Schools; derivable with provenance <code>set:</code></td>
+</tr>
+<tr>
+<td>Provenance and confidence on every value</td>
+<td>Overwrite in place</td>
+<td>Lets the team measure each model's contribution; low-confidence values don't pollute facets</td>
+</tr>
+<tr>
+<td>Sub-path <code>/beta</code></td>
+<td>New sub-domain</td>
+<td>No DNS change needed (constraint C3)</td>
+</tr>
+<tr>
+<td>Native systemd services</td>
+<td>Docker</td>
+<td>Lower memory overhead on a shared 4 GB server</td>
+</tr>
+<tr>
+<td>REST API v1 in Rails on <code>ActionController::API</code>, own representation and OpenAPI file</td>
+<td>Blacklight's <code>.json</code> views only; GraphQL; a separate API service</td>
+<td><code>.json</code> exposes Solr field names and changes with the interface; GraphQL adds a dependency and is harder to cache and rate-limit; no new service or memory; the OpenAPI file gives clients a contract and generated documentation</td>
+</tr>
+<tr>
+<td>Admin panel inside the Rails portal, Rails 8 built-in authentication</td>
+<td>A separate admin application; Devise; HTTP basic authentication in Apache</td>
+<td>No new service or memory; one gem (<code>bcrypt</code>); sessions can be listed, expired and audited, unlike basic authentication; accounts from the command line keep the attack surface small</td>
+</tr>
+<tr>
+<td>OAI-PMH provider in Rails, reading Solr</td>
+<td>A separate OAI server (e.g. jOAI); serving from the SQLite store</td>
+<td>No extra service or memory; Solr already holds every exposed field; stateless tokens survive Puma restarts</td>
+</tr>
+</tbody>
+</table>
+<h2 id="10-known-limitations-v08">10. Known limitations (v0.8)<a class="headerlink" href="#10-known-limitations-v08" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Supervisor and Department are empty in every source's harvested metadata; they are now filled from PDF front matter by the baseline model where its confidence reaches 0.8 (FR-14). Older UNZA ETDs are scanned and depend on OCR; about 15% of UNZA PDF links return HTTP 500 from the repository. UNILUS PDF links point to an internal address the portal cannot reach.</li>
+<li>30 of the 34 HEA-listed institutions show 0 (no reachable ETD repository).</li>
+<li>HTTPS for netd.ac.zm is in place (NFR-9); HTTP redirects to HTTPS since v0.8.</li>
+<li>The old portal's OAI-PMH endpoint (/OAI-PMH) is retired with it; NETD v2's own provider at /oai (EI-4) replaces it from release 0.18.</li>
+<li>No deduplication (FR-19).</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../srs/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Software requirements (SRS)">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Software requirements (SRS)
+              </div>
+            </div>
+          </a>
+        
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      NETD is released under the BSD 3-Clause licence.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.footer", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+    
+  </body>
+</html>
